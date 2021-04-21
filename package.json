@@ -84,5 +84,8 @@
     "packages/ie11",
     "packages/tools",
     "packages/playground"
-  ]
+  ],
+  "dependencies": {
+    "@zxing/library": "^0.18.5"
+  }
 }
