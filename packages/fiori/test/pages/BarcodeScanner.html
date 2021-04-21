@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta charset="utf-8">
+
+	<title>Barcode scanner</title>
+
+	<script>delete Document.prototype.adoptedStyleSheets</script>
+	<script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+	<script src="../../resources/bundle.esm.js" type="module"></script>
+	<script nomodule src="../../resources/bundle.es5.js"></script>
+
+
+</head>
+
+<body style="background-color: var(--sapBackgroundColor);">
+
+	<ui5-button
+		id="openerBtn"
+		icon="camera"
+		title="Start Camera">Scan</ui5-button>
+
+	<ui5-barcode-scanner id="scanner"></ui5-barcode-scanner>
+
+	<ui5-label id="result"></ui5-label>
+
+
+	<script>
+
+		openerBtn.addEventListener("click", function(event) {
+			scanner.open();
+		})
+
+		scanner.addEventListener("scanSuccess", function(event) {
+			result.innerHTML = event.detail.result;
+			scanner.close();
+		})
+	</script>
+</body>
+</html>

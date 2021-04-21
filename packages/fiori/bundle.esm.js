@@ -7,6 +7,7 @@ import "./dist/Assets.js";
 import "./dist/features/CoPilotAnimation.js";
 
 // FIORI components
+import BarcodeScanner from "./dist/BarcodeScanner.js";
 import Bar from "./dist/Bar.js";
 import FlexibleColumnLayout from "./dist/FlexibleColumnLayout.js";
 import ProductSwitch from "./dist/ProductSwitch.js";
