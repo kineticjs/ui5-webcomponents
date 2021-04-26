@@ -1,7 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import { BrowserMultiFormatReader } from "@zxing/library";
+import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
 // Template
 import BarcodeScannerPopoverTemplate from "./generated/templates/BarcodeScannerPopoverTemplate.lit.js";
@@ -23,7 +23,8 @@ const metadata = {
 		 */
 		 scanSuccess: {
 			detail: {
-				result: { type: String },
+				text: { type: String },
+				rawBytes: { type: Object }, // TODO Uint8Array
 			},
 		},
 
@@ -90,9 +91,13 @@ class BarcodeScanner extends UI5Element {
 			// => user should be prompted to choose which <code>deviceId</code>
 			this.codeReader.decodeFromVideoDevice(deviceId, videoElement, (result, err) => {
 				if (result) {
-					this.fireEvent("scanSuccess", { result });
+					this.fireEvent("scanSuccess",
+						{
+							text: result.getText(),
+							rawBytes: result.getRawBytes()
+						});
 				}
-				if (err) {
+				if (err && !(err instanceof NotFoundException)) {
 					this.fireEvent("scanError", { err });
 				}
 
