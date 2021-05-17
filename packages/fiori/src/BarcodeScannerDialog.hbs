@@ -1,0 +1,24 @@
+<ui5-dialog class="ui-barcode-scanner-popover" stretch
+	@ui5-before-open={{_startReader}}
+	@ui5-after-close={{_resetReader}}>
+	<div slot="header" class="ui-barcode-scanner-popover-header">
+		<ui5-button design="Transparent" icon="decline"
+		@click={{_closeDialog}}></ui5-button>
+	</div>
+	<div class="ui-barcode-scanner-popover-content">
+		{{#if shouldRenderCamerasList}}
+			<ui5-select class="ui-barcode-scanner-popover-select"
+				@change={{_onCameraChange}}>
+				{{#each camerasList}}
+					<ui5-option value="{{this.deviceId}}">{{this.label}}</ui5-option>
+				{{/each}}
+			</ui5-select>
+		{{/if}}
+
+		<div class="ui-barcode-scanner-popover-video-wrapper">
+			<video class="ui-barcode-scanner-popover-video"></video>
+		</div>
+	</div>
+
+	
+</ui5-dialog>
