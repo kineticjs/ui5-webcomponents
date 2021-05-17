@@ -12,28 +12,27 @@
 	<script src="../../resources/bundle.esm.js" type="module"></script>
 	<script nomodule src="../../resources/bundle.es5.js"></script>
 
-
 </head>
 
 <body style="background-color: var(--sapBackgroundColor);">
 
-	<ui5-button
+	
+		<ui5-barcode-scanner id="scanner"></ui5-barcode-scanner>
+
+		<ui5-button
 		id="btnScan"
 		icon="camera"
 		title="Start Camera">Scan</ui5-button>
 
-	<ui5-barcode-scanner id="scanner"></ui5-barcode-scanner>
-
 	<ui5-label id="scanResult"></ui5-label>
-
 
 	<script>
 
 		btnScan.addEventListener("click", function(event) {
-			scanner.open();
+			scanner.open(document.getElementById("btnScan"));
 		})
 
-		scanner.addEventListener("scanSuccess", function(event) {
+		scanner.addEventListener("scan-success", function(event) {
 			scanResult.innerHTML = event.detail.text;
 			scanner.close();
 		})

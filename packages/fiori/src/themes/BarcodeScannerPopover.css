@@ -1,0 +1,22 @@
+.ui-barcode-scanner-popover-content {
+    height: calc(100% - 44px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ui-barcode-scanner-popover-video-wrapper {
+    position:relative;
+}
+
+.ui-barcode-scanner-popover-video-wrapper,
+.ui-barcode-scanner-video {
+    height:100%;
+    width: auto;
+}
+
+.ui-barcode-scanner-popover-content.horizontal .ui-barcode-scanner-popover-video-wrapper,
+.ui-barcode-scanner-popover-content.horizontal .ui-barcode-scanner-video {
+    height: auto;
+    width:100%
+}

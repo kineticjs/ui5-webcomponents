@@ -1,3 +1,20 @@
-<ui5-responsive-popover no-arrow>
-	<video class="ui-barcode-scanner-video" height="100%"></video>
+<ui5-responsive-popover class="ui-barcode-scanner-popover" 
+	@ui5-after-close={{_resetReader}}>
+	<!-- TODO header? -->
+	<div class="ui-barcode-scanner-popover-content">
+		{{#if showCamerasList}}
+			<ui5-select
+				@change={{_onCameraChange}}>
+				{{#each camerasList}}
+					<ui5-option value="{{this.deviceId}}">{{this.label}}</ui5-option>
+				{{/each}}
+			</ui5-select>
+		{{/if}}
+
+		<div class="ui-barcode-scanner-popover-video-wrapper">
+			<video class="ui-barcode-scanner-video"></video>
+		</div>
+	</div>
+
+	
 </ui5-responsive-popover>
