@@ -3,7 +3,8 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { isMobile } from "@ui5/webcomponents-base/dist/Device.js";
 import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
+import { BrowserMultiFormatReader, BrowserCodeReader } from "@zxing/browser";
+import { NotFoundException } from "@zxing/library";
 
 
 // Template
@@ -114,7 +115,7 @@ class BarcodeScannerV2 extends UI5Element {
 	 */
 
 	async _initCamerasList() {
-		this._cameras = await this._codeReader.listVideoInputDevices();
+		this._cameras = await BrowserCodeReader.listVideoInputDevices();
 		// TODO if no cameras.length
 		this._cameras.push({
 			label: "Mock second camera"
@@ -158,7 +159,8 @@ class BarcodeScannerV2 extends UI5Element {
 
 	_resetReader() {
 		//codeReader.stopAsyncDecode?
-		this._codeReader.reset();
+		//this._codeReader.reset();
+		this._cameraConnector && this._cameraConnector.stop();
 	}
 
 	_closeDialog() {
@@ -180,14 +182,14 @@ class BarcodeScannerV2 extends UI5Element {
 
 	_onCameraChange(event) {
 		this._selectedCameraId = event.detail.selectedOption.value;
-		this._codeReader.reset();
+		this._cameraConnector && this._cameraConnector.stop();//this._codeReader.reset();
 		this._decodeFromCamera(this._selectedCameraId);
 	}
 
 	async _decodeFromCamera(cameraId) {
 		const videoElement = await this._videoElement();
 		// TODO: It's possible for the returned promise to neither resolve nor reject, as the user is not required to make a choice at all and may ignore the request.
-		this._codeReader.decodeFromVideoDevice(cameraId, videoElement, (result, err) => {
+		this._cameraConnector = await this._codeReader.decodeFromVideoDevice(cameraId, videoElement, (result, err) => {
 			if (result) {
 				this.fireEvent("scan-success",
 					{
