@@ -30,7 +30,7 @@ const metadata = {
 		 "scan-success": {
 			detail: {
 				text: { type: String },
-				rawBytes: { type: Object }, // TODO Uint8Array
+				rawBytes: { type: Array },
 			},
 		},
 
@@ -59,7 +59,7 @@ class BarcodeScannerV2 extends UI5Element {
 		this._shouldMonitorOrientationChange = isMobile();
 		this._hasHorizontalLayout = false;
 		this._selectedCameraId = null;
-		this._cameras = null;
+		this._camerasList = null;
 
 		this._initCamerasList();
 	}
@@ -115,12 +115,12 @@ class BarcodeScannerV2 extends UI5Element {
 	 */
 
 	async _initCamerasList() {
-		this._cameras = await BrowserCodeReader.listVideoInputDevices();
+		this._camerasList = await BrowserCodeReader.listVideoInputDevices();
 		// TODO if no cameras.length
-		this._cameras.push({
+		this._camerasList.push({
 			label: "Mock second camera"
 		});
-		this._selectedCameraId = this._cameras[0].deviceId;
+		this._selectedCameraId = this._camerasList[0].deviceId;
 	}
 
 	async _respPopover() {
@@ -204,11 +204,11 @@ class BarcodeScannerV2 extends UI5Element {
 	}
 
 	get shouldRenderCamerasList() {
-		return this._cameras.length > 1;
+		return this._camerasList.length > 1;
 	}
 
 	get camerasList() {
-		return this._cameras;
+		return this._camerasList;
 	}
 
 }
