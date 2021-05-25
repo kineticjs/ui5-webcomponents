@@ -67,13 +67,13 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the <code>notificationCount</code>,
+		 * Defines the <code>notificationsCount</code>,
 		 * displayed in the notification icon top-right corner.
 		 * @type {string}
 		 * @defaultvalue ""
 		 * @public
 		 */
-		notificationCount: {
+		notificationsCount: {
 			type: String,
 		},
 
@@ -174,8 +174,8 @@ const metadata = {
 		 * <b>Note:</b>
 		 * You can use the &nbsp;&lt;ui5-shellbar-item>&lt;/ui5-shellbar-item>.
 		 *
-		 * @type {HTMLElement[]}
-		 * @slot
+		 * @type {sap.ui.webcomponents.fiori.IShellBarItem[]}
+		 * @slot items
 		 * @public
 		 */
 		"default": {
@@ -190,7 +190,7 @@ const metadata = {
 		 *
 		 * Note: We recommend not using the <code>size</code> attribute of <code>ui5-avatar</code> because
 		 * it should have specific size by design in the context of <code>ui5-shellbar</code> profile.
-		 * @type {HTMLElement}
+		 * @type {sap.ui.webcomponents.main.IAvatar}
 		 * @slot
 		 * @since 1.0.0-rc.6
 		 * @public
@@ -202,7 +202,7 @@ const metadata = {
 		/**
 		 * Defines the logo of the <code>ui5-shellbar</code>.
 		 * For example, you can use <code>ui5-avatar</code> or <code>img</code> elements as logo.
-		 * @type {HTMLElement}
+		 * @type {sap.ui.webcomponents.main.IAvatar}
 		 * @slot
 		 * @since 1.0.0-rc.8
 		 * @public
@@ -217,7 +217,7 @@ const metadata = {
 		 * <b>Note:</b>
 		 * You can use the &nbsp;&lt;ui5-li>&lt;/ui5-li> and its ancestors.
 		 *
-		 * @type {HTMLElement[]}
+		 * @type {sap.ui.webcomponents.main.IListItem[]}
 		 * @slot
 		 * @since 0.10
 		 * @public
@@ -229,7 +229,7 @@ const metadata = {
 		/**
 		 * Defines the <code>ui5-input</code>, that will be used as a search field.
 		 *
-		 * @type {HTMLElement[]}
+		 * @type {sap.ui.webcomponents.main.IInput}
 		 * @slot
 		 * @public
 		 */
@@ -242,7 +242,7 @@ const metadata = {
 		 * We encourage this slot to be used for a back or home button.
 		 * It gets overstyled to match ShellBar's styling.
 		 *
-		 * @type {HTMLElement[]}
+		 * @type {sap.ui.webcomponents.main.IButton}
 		 * @slot
 		 * @public
 		 */
@@ -257,6 +257,7 @@ const metadata = {
 		 *
 		 *
 		 * @event sap.ui.webcomponents.fiori.ShellBar#notifications-click
+		 * @allowPreventDefault
 		 * @param {HTMLElement} targetRef dom ref of the activated element
 		 * @public
 		 */
@@ -284,6 +285,7 @@ const metadata = {
 		 * <b>Note:</b> You can prevent closing of oveflow popover by calling <code>event.preventDefault()</code>.
 		 *
 		 * @event sap.ui.webcomponents.fiori.ShellBar#product-switch-click
+		 * @allowPreventDefault
 		 * @param {HTMLElement} targetRef dom ref of the activated element
 		 * @public
 		 */
@@ -326,7 +328,7 @@ const metadata = {
 		 * <b>Note:</b> You can prevent closing of oveflow popover by calling <code>event.preventDefault()</code>.
 		 *
 		 * @event sap.ui.webcomponents.fiori.ShellBar#menu-item-click
-		 * @param {HTMLElement} item dom ref of the activated list item
+		 * @param {HTMLElement} item DOM ref of the activated list item
 		 * @since 0.10
 		 * @public
 		 */
@@ -362,6 +364,15 @@ const metadata = {
  * <ul>
  * <li>Every <code>ui5-shellbar-item</code> that you provide.
  * Example: <code><ui5-shellbar-item stable-dom-ref="messages"></ui5-shellbar-item></code></li>
+ * </ul>
+ *
+ * <h3>CSS Shadow Parts</h3>
+ *
+ * <ui5-link target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</ui5-link> allow developers to style elements inside the Shadow DOM.
+ * <br>
+ * The <code>ui5-shellbar</code> exposes the following CSS Shadow Parts:
+ * <ul>
+ * <li>root - Used to style the outermost wrapper of the <code>ui5-shellbar</code></li>
  * </ul>
  *
  * <h3>ES6 Module Import</h3>
@@ -462,6 +473,7 @@ class ShellBar extends UI5Element {
 	}
 
 	_menuItemPress(event) {
+		this.menuPopover.close();
 		this.fireEvent("menu-item-click", {
 			item: event.detail.item,
 		}, true);
@@ -594,10 +606,11 @@ class ShellBar extends UI5Element {
 			const isImageIcon = info.classes.indexOf("ui5-shellbar-image-button") !== -1;
 			const shouldStayOnScreen = isOverflowIcon || (isImageIcon && this.hasProfile);
 
-			return Object.assign({}, info, {
+			return {
+				...info,
 				classes: `${info.classes} ${shouldStayOnScreen ? "" : "ui5-shellbar-hidden-button"} ui5-shellbar-button`,
 				style: `order: ${shouldStayOnScreen ? 1 : -1}`,
-			});
+			};
 		});
 
 		this._updateItemsInfo(newItems);
@@ -743,7 +756,7 @@ class ShellBar extends UI5Element {
 
 	/**
 	 * Returns all items that will be placed in the right of the bar as icons / dom elements.
-	 * @param {Boolean} showOverflowButton Determines if overflow button should be visible (not overflowing)
+	 * @param {boolean} showOverflowButton Determines if overflow button should be visible (not overflowing)
 	 */
 	_getAllItems(showOverflowButton) {
 		let domOrder = -1;
@@ -1005,7 +1018,7 @@ class ShellBar extends UI5Element {
 	}
 
 	get _notificationsText() {
-		return this.i18nBundle.getText(SHELLBAR_NOTIFICATIONS, this.notificationCount);
+		return this.i18nBundle.getText(SHELLBAR_NOTIFICATIONS, this.notificationsCount);
 	}
 
 	get _cancelBtnText() {

@@ -1,9 +1,21 @@
+import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+
+import {
+	isDown,
+	isUp,
+} from "@ui5/webcomponents-base/dist/Keys.js";
+
 import ProductSwitchTemplate from "./generated/templates/ProductSwitchTemplate.lit.js";
+
+import {
+	PRODUCT_SWITCH_CONTAINER_LABEL,
+} from "./generated/i18n/i18n-defaults.js";
 
 // Styles
 import ProductSwitchCss from "./generated/themes/ProductSwitch.css.js";
@@ -27,8 +39,8 @@ const metadata = {
 		/**
 		 * Defines the items of the <code>ui5-product-switch</code>.
 		 *
-		 * @type {HTMLElement[]}
-		 * @slot
+		 * @type {sap.ui.webcomponents.fiori.IProductSwitchItem[]}
+		 * @slot items
 		 * @public
 		 */
 		"default": {
@@ -45,6 +57,20 @@ const metadata = {
  * The <code>ui5-product-switch</code> is an SAP Fiori specific web component that is used in <code>ui5-shellbar</code>
  * and allows the user to easily switch between products.
  * <br><br>
+ *
+ * <h3>Keyboard Handling</h3>
+ * The <code>ui5-product-switch</code> provides advanced keyboard handling.
+ * When focused, the user can use the following keyboard
+ * shortcuts in order to perform a navigation:
+ * <br>
+ * <ul>
+ * <li>[TAB] - Move focus to the next interactive element after the <code>ui5-product-switch</code></li>
+ * <li>[UP/DOWN] - Navigates up and down the items </li>
+ * <li>[LEFT/RIGHT] - Navigates left and right the items</li>
+ * </ul>
+ * <br>
+ * <br>
+ *
  * <h3>ES6 Module Import</h3>
  * <code>import "@ui5/webcomponents-fiori/dist/ProductSwitch.js";</code>
  * <br>
@@ -62,10 +88,15 @@ class ProductSwitch extends UI5Element {
 	constructor() {
 		super();
 
+		this._currentIndex = 0;
+		this._rowSize = 4;
+
 		this._itemNavigation = new ItemNavigation(this, {
-			rowSize: 4,
+			rowSize: this._rowSize,
 			getItemsCallback: () => this.items,
 		});
+
+		this.i18nBundle = getI18nBundle("@ui5/webcomponents");
 	}
 
 	static get metadata() {
@@ -91,6 +122,14 @@ class ProductSwitch extends UI5Element {
 		};
 	}
 
+	static async onDefine() {
+		await fetchI18nBundle("@ui5/webcomponents");
+	}
+
+	get _ariaLabelText() {
+		return this.i18nBundle.getText(PRODUCT_SWITCH_CONTAINER_LABEL);
+	}
+
 	onEnterDOM() {
 		this._handleResizeBound = this._handleResize.bind(this);
 
@@ -109,18 +148,45 @@ class ProductSwitch extends UI5Element {
 		const documentWidth = document.body.clientWidth;
 
 		if (documentWidth <= this.constructor.ROW_MIN_WIDTH.ONE_COLUMN) {
-			this._itemNavigation.rowSize = 1;
+			this._setRowSize(1);
 		} else if (documentWidth <= this.constructor.ROW_MIN_WIDTH.THREE_COLUMN || this.items.length <= 6) {
-			this._itemNavigation.rowSize = 3;
+			this._setRowSize(3);
 		} else {
-			this._itemNavigation.rowSize = 4;
+			this._setRowSize(4);
 		}
 	}
 
 	_onfocusin(event) {
 		const target = event.target;
 
-		this._itemNavigation.update(target);
+		this._itemNavigation.setCurrentItem(target);
+		this._currentIndex = this.items.indexOf(target);
+	}
+
+	_setRowSize(size) {
+		this._rowSize = size;
+		this._itemNavigation.setRowSize(size);
+	}
+
+	_onkeydown(event) {
+		if (isDown(event)) {
+			this._handleDown(event);
+		} else if (isUp(event)) {
+			this._handleUp(event);
+		}
+	}
+
+	_handleDown(event) {
+		const itemsLength = this.items.length;
+		if (this._currentIndex + this._rowSize > itemsLength) { // border reached, do nothing
+			event.stopPropagation();
+		}
+	}
+
+	_handleUp(event) {
+		if (this._currentIndex - this._rowSize < 0) { // border reached, do nothing
+			event.stopPropagation();
+		}
 	}
 }
 

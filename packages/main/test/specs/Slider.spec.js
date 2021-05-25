@@ -1,9 +1,10 @@
 const assert = require("chai").assert;
+const PORT = require("./_port.js");
 
 describe("Slider basic interactions", () => {
 
 	it("Changing the current value is reflected", () => {
-		browser.url("http://localhost:8080/test-resources/pages/Slider.html");
+		browser.url(`http://localhost:${PORT}/test-resources/pages/Slider.html`);
 
 		const slider = browser.$("#basic-slider");
 		const sliderHandle = slider.shadow$(".ui5-slider-handle");
@@ -96,7 +97,7 @@ describe("Properties synchronization and normalization", () => {
 		slider.setProperty("step", 2);
 
 		assert.strictEqual(slider.getProperty("_labels").length, 11, "Labels must be 12 - 1 for every 2 tickmarks (and 4 current value points)");
-		
+
 		slider.setProperty("labelInterval", 4);
 
 		assert.strictEqual(slider.getProperty("_labels").length, 6, "Labels must be 6 - 1 for every 4 tickmarks (and 8 current value points)");
@@ -147,6 +148,59 @@ describe("Slider elements - tooltip, step, tickmarks, labels", () => {
 		assert.strictEqual(sliderTooltipValue.getText(), "2", "Slider tooltip should display value of 2");
 	});
 
+	it("Slider Tooltip should become visible when slider is focused", () => {
+		const slider = browser.$("#basic-slider-with-tooltip");
+		const sliderTooltip = slider.shadow$(".ui5-slider-tooltip");
+		const basicSlider = browser.$("#basic-slider");
+
+		basicSlider.click();
+
+		// initial state
+		assert.strictEqual(slider.getProperty("_tooltipVisibility"), "hidden", "Slider tooltip visibility property should be 'visible'");
+		assert.strictEqual(sliderTooltip.getAttribute("style"), "visibility: hidden;", "Slider tooltip should be shown");
+
+		slider.click();
+
+		// slider is focused
+		assert.strictEqual(slider.getProperty("_tooltipVisibility"), "visible", "Slider tooltip visibility property should be 'visible'");
+		assert.strictEqual(sliderTooltip.getAttribute("style"), "visibility: visible;", "Slider tooltip should be shown");
+	});
+
+	it("Slider Tooltip should stay visible when slider is focused and mouse moves away", () => {
+		const slider = browser.$("#basic-slider-with-tooltip");
+		const sliderTooltip = slider.shadow$(".ui5-slider-tooltip");
+
+		slider.click();
+
+		// slider is focused
+		assert.strictEqual(slider.getProperty("_tooltipVisibility"), "visible", "Slider tooltip visibility property should be 'visible'");
+		assert.strictEqual(sliderTooltip.getAttribute("style"), "visibility: visible;", "Slider tooltip should be shown");
+
+		// move mouse away - fires mouseout
+		slider.moveTo(0, -100);
+
+		assert.strictEqual(slider.getProperty("_tooltipVisibility"), "visible", "Slider tooltip visibility property should be 'visible'");
+		assert.strictEqual(sliderTooltip.getAttribute("style"), "visibility: visible;", "Slider tooltip should be shown");
+	});
+
+	it("Slider Tooltip should become hidden when slider is looses focus", () => {
+		const slider = browser.$("#basic-slider-with-tooltip");
+		const anotherSlider = browser.$("#basic-slider");
+		const sliderTooltip = slider.shadow$(".ui5-slider-tooltip");
+
+		slider.click();
+
+		// slider is focused
+		assert.strictEqual(slider.getProperty("_tooltipVisibility"), "visible", "Slider tooltip visibility property should be 'visible'");
+		assert.strictEqual(sliderTooltip.getAttribute("style"), "visibility: visible;", "Slider tooltip should be shown");
+
+		// move mouse away - fires mouseout
+		anotherSlider.click();
+
+		assert.strictEqual(slider.getProperty("_tooltipVisibility"), "hidden", "Slider tooltip visibility property should be 'visible'");
+		assert.strictEqual(sliderTooltip.getAttribute("style"), "visibility: hidden;", "Slider tooltip should be shown");
+	});
+
 	it("Slider have correct number of labels and tickmarks based on the defined step and labelInterval properties", () => {
 		const slider = browser.$("#slider-tickmarks-tooltips-labels");
 		const labelsContainer = slider.shadow$(".ui5-slider-labels");
@@ -185,9 +239,24 @@ describe("Testing events", () => {
 	});
 });
 
-describe("Accessibility: Testing focus", () => {
+describe("Accessibility", () => {
+	it("Aria attributes are set correctly", () => {
+		const slider = browser.$("#basic-slider");
+		const sliderHandle = slider.shadow$(".ui5-slider-handle");
+		const sliderId = slider.getProperty("_id");
+
+		assert.strictEqual(sliderHandle.getAttribute("aria-labelledby"),
+			`${sliderId}-sliderDesc`, "aria-labelledby is set correctly");
+		assert.strictEqual(sliderHandle.getAttribute("aria-valuemin"),
+			`${slider.getProperty("min")}`, "aria-valuemin is set correctly");
+		assert.strictEqual(sliderHandle.getAttribute("aria-valuemax"),
+			`${slider.getProperty("max")}`, "aria-valuemax is set correctly");
+		assert.strictEqual(sliderHandle.getAttribute("aria-valuenow"),
+			`${slider.getProperty("value")}`, "aria-valuenow is set correctly");
+	});
+
 	it("Click anywhere in the Slider should focus the Slider's handle", () => {
-		browser.url("http://localhost:8080/test-resources/pages/Slider.html");
+		browser.url(`http://localhost:${PORT}/test-resources/pages/Slider.html`);
 
 		const slider = browser.$("#basic-slider");
 		const sliderHandle = slider.shadow$(".ui5-slider-handle");
@@ -335,7 +404,7 @@ describe("Accessibility: Testing keyboard handling", () => {
 
 		browser.keys(numpadSubtract);
 		assert.strictEqual(slider.getProperty("value"), 0, "Value is decreased");
-	});	
+	});
 
 	it("An 'End' key press should increase the value of the slider to its max", () => {
 		const slider = browser.$("#basic-slider-with-tooltip");

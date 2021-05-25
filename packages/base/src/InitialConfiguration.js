@@ -12,7 +12,7 @@ let initialConfig = {
 	calendarType: null,
 	noConflict: false, // no URL
 	formatSettings: {},
-	useDefaultLanguage: false,
+	fetchDefaultLanguage: false,
 	assetsPath: "",
 };
 
@@ -38,13 +38,13 @@ const getLanguage = () => {
 };
 
 /**
- * Returns if the default language, that is inlined build time,
- * should be used, instead of trying fetching the language over the network.
+ * Returns if the default language, that is inlined at build time,
+ * should be fetched over the network instead.
  * @returns {Boolean}
  */
-const getUseDefaultLanguage = () => {
+const getFetchDefaultLanguage = () => {
 	initConfiguration();
-	return initialConfig.useDefaultLanguage;
+	return initialConfig.fetchDefaultLanguage;
 };
 
 const getNoConflict = () => {
@@ -92,21 +92,34 @@ const parseConfigurationScript = () => {
 const parseURLParameters = () => {
 	const params = new URLSearchParams(window.location.search);
 
+	// Process "sap-*" params first
+	params.forEach((value, key) => {
+		const parts = key.split("sap-").length;
+		if (parts === 0 || parts === key.split("sap-ui-").length) {
+			return;
+		}
+
+		applyURLParam(key, value, "sap");
+	});
+
+	// Process "sap-ui-*" params
 	params.forEach((value, key) => {
 		if (!key.startsWith("sap-ui")) {
 			return;
 		}
 
-		const lowerCaseValue = value.toLowerCase();
-
-		const param = key.split("sap-ui-")[1];
-
-		if (booleanMapping.has(value)) {
-			value = booleanMapping.get(lowerCaseValue);
-		}
-
-		initialConfig[param] = value;
+		applyURLParam(key, value, "sap-ui");
 	});
+};
+
+const applyURLParam = (key, value, paramType) => {
+	const lowerCaseValue = value.toLowerCase();
+	const param = key.split(`${paramType}-`)[1];
+
+	if (booleanMapping.has(value)) {
+		value = booleanMapping.get(lowerCaseValue);
+	}
+	initialConfig[param] = value;
 };
 
 const applyOpenUI5Configuration = () => {
@@ -118,7 +131,6 @@ const applyOpenUI5Configuration = () => {
 	const OpenUI5Config = OpenUI5Support.getConfigurationSettingsObject();
 	initialConfig = merge(initialConfig, OpenUI5Config);
 };
-
 
 const initConfiguration = () => {
 	if (initialized) {
@@ -142,7 +154,7 @@ export {
 	getTheme,
 	getRTL,
 	getLanguage,
-	getUseDefaultLanguage,
+	getFetchDefaultLanguage,
 	getNoConflict,
 	getCalendarType,
 	getFormatSettings,

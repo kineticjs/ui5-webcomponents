@@ -1,8 +1,9 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getIconData, getIconDataSync } from "@ui5/webcomponents-base/dist/SVGIconRegistry.js";
+import { getIconData, getIconDataSync } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 import createStyleInHead from "@ui5/webcomponents-base/dist/util/createStyleInHead.js";
-import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { getI18nBundleData, fetchI18nBundle } from "@ui5/webcomponents-base/dist/asset-registries/i18n.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import isLegacyBrowser from "@ui5/webcomponents-base/dist/isLegacyBrowser.js";
 import IconTemplate from "./generated/templates/IconTemplate.lit.js";
@@ -31,7 +32,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the unique identifier (icon name) of each <code>ui5-icon</code>.
+		 * Defines the unique identifier (icon name) of the component.
 		 * <br>
 		 *
 		 * To browse all available icons, see the
@@ -59,7 +60,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the text alternative of the <code>ui5-icon</code>.
+		 * Defines the text alternative of the component.
 		 * If not provided a default text alternative will be set, if present.
 		 * <br><br>
 		 * <b>Note:</b> Every icon should have a text alternative in order to
@@ -74,7 +75,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-icon</code> should have a tooltip.
+		 * Defines whether the component should have a tooltip.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -113,8 +114,16 @@ const metadata = {
 		invalid: {
 			type: Boolean,
 		},
+
+		/**
+		 * @private
+		 */
+		effectiveAccessibleName: {
+			type: String,
+			noAttribute: true,
+		},
 	},
-	events: {
+	events: /** @lends sap.ui.webcomponents.main.Icon.prototype */ {
 		/**
 		 * Fired on mouseup, space and enter if icon is interactive
 		 * @private
@@ -146,6 +155,15 @@ const metadata = {
  * <br>
  * <code>import "@ui5/webcomponents-icons-tnt/dist/antenna.js";</code>
  *
+ * <br><br>
+ * <h3>Keyboard Handling</h3>
+ *
+ * <ul>
+ * <li>[SPACE, ENTER, RETURN] - Fires the <code>click</code> event if the <code>interactive</code> property is set to true.</li>
+ * <li>[SHIFT] - If [SPACE] or [ENTER],[RETURN] is pressed, pressing [SHIFT] releases the ui5-icon without triggering the click event.</li>
+ * </ul>
+ * <br><br>
+ *
  * <h3>ES6 Module Import</h3>
  *
  * <code>import "@ui5/webcomponents/dist/Icon.js";</code>
@@ -155,14 +173,10 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.Icon
  * @extends sap.ui.webcomponents.base.UI5Element
  * @tagname ui5-icon
+ * @implements sap.ui.webcomponents.main.IIcon
  * @public
  */
 class Icon extends UI5Element {
-	constructor() {
-		super();
-		this.i18nBundle = getI18nBundle("@ui5/webcomponents");
-	}
-
 	static get metadata() {
 		return metadata;
 	}
@@ -181,7 +195,6 @@ class Icon extends UI5Element {
 
 	static async onDefine() {
 		this.createGlobalStyle(); // hide all icons until the first icon has rendered (and added the Icon.css)
-		await fetchI18nBundle("@ui5/webcomponents");
 	}
 
 	_onfocusin(event) {
@@ -195,8 +208,16 @@ class Icon extends UI5Element {
 	}
 
 	_onkeydown(event) {
-		if (this.interactive && isEnter(event)) {
+		if (!this.interactive) {
+			return;
+		}
+
+		if (isEnter(event)) {
 			this.fireEvent("click");
+		}
+
+		if (isSpace(event)) {
+			event.preventDefault(); // prevent scrolling
 		}
 	}
 
@@ -208,8 +229,8 @@ class Icon extends UI5Element {
 
 	_onclick(event) {
 		if (this.interactive) {
-			event.preventDefault();
-			// Prevent the native event and fire custom event because otherwise the noConfict event won't be thrown
+			// prevent the native event and fire custom event to ensure the noConfict "ui5-click" is fired
+			event.stopPropagation();
 			this.fireEvent("click");
 		}
 	}
@@ -235,7 +256,7 @@ class Icon extends UI5Element {
 			return "button";
 		}
 
-		return this.accessibleNameText ? "img" : "presentation";
+		return this.effectiveAccessibleName ? "img" : "presentation";
 	}
 
 	static createGlobalStyle() {
@@ -270,7 +291,7 @@ class Icon extends UI5Element {
 		if (iconData === ICON_NOT_FOUND) {
 			this.invalid = true;
 			/* eslint-disable-next-line */
-			return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/Assets.js".`);
+			return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/AllIcons.js".`);
 		}
 
 		if (!iconData) {
@@ -284,18 +305,21 @@ class Icon extends UI5Element {
 		this.pathData = iconData.pathData;
 		this.accData = iconData.accData;
 		this.ltr = iconData.ltr;
+		this.packageName = iconData.packageName;
+
+		if (this.accessibleName) {
+			this.effectiveAccessibleName = this.accessibleName;
+		} else if (this.accData) {
+			if (!getI18nBundleData(this.packageName)) {
+				await fetchI18nBundle(this.packageName);
+			}
+			const i18nBundle = getI18nBundle(this.packageName);
+			this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
+		}
 	}
 
 	get hasIconTooltip() {
-		return this.showTooltip && this.accessibleNameText;
-	}
-
-	get accessibleNameText() {
-		if (this.accessibleName) {
-			return this.accessibleName;
-		}
-
-		return this.i18nBundle.getText(this.accData) || undefined;
+		return this.showTooltip && this.effectiveAccessibleName;
 	}
 
 	async onEnterDOM() {

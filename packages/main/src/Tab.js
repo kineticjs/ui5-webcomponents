@@ -67,7 +67,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the icon source URI to be displayed as graphical element within the <code>ui5-tab</code>.
+		 * Defines the icon source URI to be displayed as graphical element within the component.
 		 * The SAP-icons font provides numerous built-in icons.
 		 * See all the available icons in the <ui5-link target="_blank" href="https://openui5.hana.ondemand.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html" class="api-table-content-cell-link">Icon Explorer</ui5-link>.
 		 *
@@ -80,12 +80,12 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the <code>ui5-tab</code> semantic color.
+		 * Defines the component semantic color.
 		 * <br><br>
 		 * The color is applied to:
 		 * <ul>
-		 * <li>the <code>ui5-tab</code> icon</li>
-		 * <li>the <code>text</code> when <code>ui5-tab</code> overflows</li>
+		 * <li>the component icon</li>
+		 * <li>the <code>text</code> when the component overflows</li>
 		 * <li>the tab selection line</li>
 		 * </ul>
 		 *
@@ -106,6 +106,7 @@ const metadata = {
 		/**
 		 * Defines the stable selector that you can use via getStableDomRef method.
 		 * @public
+		 * @type {string}
 		 * @since 1.0.0-rc.8
 		 */
 		stableDomRef: {
@@ -113,7 +114,7 @@ const metadata = {
 		},
 
 		/**
-		 * Specifies if the <code>ui5-tab</code> is selected.
+		 * Specifies if the component is selected.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -144,6 +145,7 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.Tab
  * @extends UI5Element
  * @tagname ui5-tab
+ * @implements sap.ui.webcomponents.main.ITab
  * @public
  */
 class Tab extends UI5Element {

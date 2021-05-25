@@ -12,7 +12,7 @@ const metadata = {
 	tag: "ui5-suggestion-item",
 	properties: /** @lends  sap.ui.webcomponents.main.SuggestionItem.prototype */ {
 		/**
-		 * Defines the text of the <code>ui5-suggestion-item</code>.
+		 * Defines the text of the component.
 		 *
 		 * @type {string}
 		 * @defaultvalue ""
@@ -124,9 +124,9 @@ const metadata = {
 			type: Boolean,
 		},
 	},
-	slots: {
+	slots: /** @lends  sap.ui.webcomponents.main.SuggestionItem.prototype */ {
 	},
-	events: {
+	events: /** @lends  sap.ui.webcomponents.main.SuggestionItem.prototype */ {
 	},
 };
 
@@ -139,6 +139,7 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.SuggestionItem
  * @extends UI5Element
  * @tagname ui5-suggestion-item
+ * @implements sap.ui.webcomponents.main.IInputSuggestionItem
  * @public
  */
 class SuggestionItem extends UI5Element {

@@ -1,3 +1,4 @@
+import { isTabNext, isTabPrevious } from "@ui5/webcomponents-base/dist/Keys.js";
 import ListItem from "./ListItem.js";
 import CustomListItemTemplate from "./generated/templates/CustomListItemTemplate.lit.js";
 
@@ -12,7 +13,7 @@ const metadata = {
 	slots: /** @lends sap.ui.webcomponents.main.CustomListItem.prototype */ {
 
 		/**
-		 * Defines the content of the <code>ui5-li-custom</code>.
+		 * Defines the content of the component.
 		 * @type {Node[]}
 		 * @slot
 		 * @public
@@ -31,13 +32,14 @@ const metadata = {
  * A component to be used as custom list item within the <code>ui5-list</code>
  * the same way as the standard <code>ui5-li</code>.
  *
- * The <code>ui5-li-custom</code> accepts arbitrary HTML content to allow full customization.
+ * The component accepts arbitrary HTML content to allow full customization.
  *
  * @constructor
  * @author SAP SE
  * @alias sap.ui.webcomponents.main.CustomListItem
  * @extends ListItem
  * @tagname ui5-li-custom
+ * @implements sap.ui.webcomponents.main.IListItem
  * @public
  */
 class CustomListItem extends ListItem {
@@ -54,7 +56,9 @@ class CustomListItem extends ListItem {
 	}
 
 	_onkeydown(event) {
-		if (!this.focused) {
+		const isTab = isTabNext(event) || isTabPrevious(event);
+
+		if (!isTab && !this.focused) {
 			return;
 		}
 
@@ -62,7 +66,9 @@ class CustomListItem extends ListItem {
 	}
 
 	_onkeyup(event) {
-		if (!this.focused) {
+		const isTab = isTabNext(event) || isTabPrevious(event);
+
+		if (!isTab && !this.focused) {
 			return;
 		}
 

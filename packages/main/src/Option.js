@@ -9,12 +9,25 @@ const metadata = {
 	properties: /** @lends  sap.ui.webcomponents.main.Option.prototype */ {
 
 		/**
-		 * Defines the selected state of the <code>ui5-option</code>.
+		 * Defines the selected state of the component.
 		 * @type {boolean}
 		 * @defaultvalue false
 		 * @public
 		 */
 		selected: {
+			type: Boolean,
+		},
+
+		/**
+		 * Defines whether the component is in disabled state.
+		 * <br><br>
+		 * <b>Note:</b> A disabled component is noninteractive.
+		 * @type {boolean}
+		 * @defaultvalue false
+		 * @public
+		 * @since 1.0.0-rc.12
+		 */
+		disabled: {
 			type: Boolean,
 		},
 
@@ -34,7 +47,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the value of the <code>ui5-select</code> inside an HTML Form element when this <code>ui5-option</code> is selected.
+		 * Defines the value of the <code>ui5-select</code> inside an HTML Form element when this component is selected.
 		 * For more information on HTML Form support, see the <code>name</code> property of <code>ui5-select</code>.
 		 *
 		 * @type {string}
@@ -47,13 +60,34 @@ const metadata = {
 		/**
 		 * Defines the stable selector that you can use via getStableDomRef method.
 		 * @public
+		 * @type {string}
 		 * @since 1.0.0-rc.11
 		 */
 		stableDomRef: {
 			type: String,
 		},
+
+		/**
+		 * Defines the focused state of the component.
+		 * @type {boolean}
+		 * @defaultvalue false
+		 * @since 1.0.0-rc.13
+		 * @private
+		 */
+		_focused: {
+			type: Boolean,
+		},
 	},
-	slots: {
+	slots: /** @lends sap.ui.webcomponents.main.Option.prototype */ {
+		/**
+		 * Defines the text of the component.
+		 * <br><br>
+		 * <b>Note:</b> Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
+		 *
+		 * @type {Node[]}
+		 * @slot
+		 * @public
+		 */
 		"default": {
 			type: Node,
 		},
@@ -73,6 +107,7 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.Option
  * @extends sap.ui.webcomponents.base.UI5Element
  * @tagname ui5-option
+ * @implements sap.ui.webcomponents.main.ISelectOption
  * @public
  */
 class Option extends UI5Element {

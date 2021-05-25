@@ -8,6 +8,13 @@ import {
 import SliderBase from "./SliderBase.js";
 import RangeSliderTemplate from "./generated/templates/RangeSliderTemplate.lit.js";
 
+// Texts
+import {
+	RANGE_SLIDER_ARIA_DESCRIPTION,
+	RANGE_SLIDER_START_HANDLE_DESCRIPTION,
+	RANGE_SLIDER_END_HANDLE_DESCRIPTION,
+} from "./generated/i18n/i18n-defaults.js";
+
 /**
  * @public
  */
@@ -62,7 +69,7 @@ const metadata = {
  * <li>showTickmarks - Displays a visual divider between the step values</li>
  * <li>labelInterval - Labels some or all of the tickmarks with their values.</li>
  * </ul>
- * <h4>Notes:<h4>
+ * <h4>Notes:</h4>
  * <ul>
  * <li>The right and left handle can be moved individually and their positions could therefore switch.</li>
  * <li>The entire range can be moved along the interval.</li>
@@ -117,6 +124,30 @@ class RangeSlider extends SliderBase {
 	get tooltipEndValue() {
 		const stepPrecision = this.constructor._getDecimalPrecisionOfNumber(this._effectiveStep);
 		return this.endValue.toFixed(stepPrecision);
+	}
+
+	get _ariaDisabled() {
+		return this.disabled || undefined;
+	}
+
+	get _ariaLabelledByText() {
+		return this.i18nBundle.getText(RANGE_SLIDER_ARIA_DESCRIPTION);
+	}
+
+	get _ariaHandlesText() {
+		const isRTL = this.effectiveDir === "rtl";
+		const isReversed = this._areValuesReversed();
+		const ariaHandlesText = {};
+
+		if ((isRTL && !isReversed) || (!isRTL && isReversed)) {
+			ariaHandlesText.startHandleText = this.i18nBundle.getText(RANGE_SLIDER_END_HANDLE_DESCRIPTION);
+			ariaHandlesText.endHandleText = this.i18nBundle.getText(RANGE_SLIDER_START_HANDLE_DESCRIPTION);
+		} else {
+			ariaHandlesText.startHandleText = this.i18nBundle.getText(RANGE_SLIDER_START_HANDLE_DESCRIPTION);
+			ariaHandlesText.endHandleText = this.i18nBundle.getText(RANGE_SLIDER_END_HANDLE_DESCRIPTION);
+		}
+
+		return ariaHandlesText;
 	}
 
 	/**
@@ -307,7 +338,6 @@ class RangeSlider extends SliderBase {
 		this.update(this._valueAffected, newValue, null);
 	}
 
-
 	/**
 	 * Determines and saves needed values from the start of the interaction:
 	 *
@@ -332,7 +362,6 @@ class RangeSlider extends SliderBase {
 		// Use the progress bar to save the initial coordinates of the start-handle when the interaction begins.
 		this._initialStartHandlePageX = this.directionStart === "left" ? progressBarDom.left : progressBarDom.right;
 	}
-
 
 	/**
 	 * Called when the user moves the slider
@@ -465,7 +494,7 @@ class RangeSlider extends SliderBase {
 	/**
 	 * Flag if press action is made on the currently selected range of values
 	 *
-	 * @param {Boolean} isPressInCurrentRange Did the current press action occur in the current range (between the two handles)
+	 * @param {boolean} isPressInCurrentRange Did the current press action occur in the current range (between the two handles)
 	 * @private
 	 */
 	_setIsPressInCurrentRange(isPressInCurrentRange) {
@@ -607,12 +636,12 @@ class RangeSlider extends SliderBase {
 			this._firstHandlePositionFromStart = ((newValue - min) / (max - min)) * 100;
 		} else if (affectedValue === RangeSlider.VALUES.end) {
 			this._selectedRange = ((newValue - prevStartValue)) / (max - min);
-			this._secondHandlePositionFromStart = (newValue - min) / (max - min) * 100;
+			this._secondHandlePositionFromStart = ((newValue - min) / (max - min)) * 100;
 		} else {
 			// When both values are changed - UI sync or moving the whole selected range:
 			this._selectedRange = ((this.endValue - this.startValue)) / (max - min);
 			this._firstHandlePositionFromStart = ((this.startValue - min) / (max - min)) * 100;
-			this._secondHandlePositionFromStart = (this.endValue - min) / (max - min) * 100;
+			this._secondHandlePositionFromStart = ((this.endValue - min) / (max - min)) * 100;
 		}
 	}
 
@@ -667,19 +696,15 @@ class RangeSlider extends SliderBase {
 	}
 
 	get _startHandle() {
-		return this.getDomRef().querySelector(".ui5-slider-handle--start");
+		return this.shadowRoot.querySelector(".ui5-slider-handle--start");
 	}
 
 	get _endHandle() {
-		return this.getDomRef().querySelector(".ui5-slider-handle--end");
+		return this.shadowRoot.querySelector(".ui5-slider-handle--end");
 	}
 
 	get _progressBar() {
-		return this.getDomRef().querySelector(".ui5-slider-progress");
-	}
-
-	get tabIndexProgress() {
-		return this.tabIndex;
+		return this.shadowRoot.querySelector(".ui5-slider-progress");
 	}
 
 	get styles() {

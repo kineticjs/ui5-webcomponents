@@ -8,7 +8,7 @@ const metadata = {
 	properties: /** @lends  sap.ui.webcomponents.main.CalendarDate.prototype */ {
 
 		/**
-		 * The date formatted according to the <code>formatPattern</code> property of the <code>ui5-calendar</code> that hosts the <code>ui5-date</code>
+		 * The date formatted according to the <code>formatPattern</code> property of the <code>ui5-calendar</code> that hosts the component
 		 *
 		 * @type {string}
 		 * @public
@@ -31,6 +31,7 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.CalendarDate
  * @extends sap.ui.webcomponents.base.UI5Element
  * @tagname ui5-date
+ * @implements sap.ui.webcomponents.main.ICalendarDate
  * @public
  */
 class CalendarDate extends UI5Element {

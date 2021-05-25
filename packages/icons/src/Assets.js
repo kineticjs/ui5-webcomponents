@@ -1,2 +1,1 @@
-import "./json-imports/i18n.js";
-import "./json-imports/Icons.js";
+import "./generated/json-imports/i18n.js";

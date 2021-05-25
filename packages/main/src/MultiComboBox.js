@@ -31,11 +31,8 @@ import {
 	VALUE_STATE_SUCCESS,
 	VALUE_STATE_ERROR,
 	VALUE_STATE_WARNING,
-	TOKENIZER_ARIA_CONTAIN_TOKEN,
-	TOKENIZER_ARIA_CONTAIN_ONE_TOKEN,
-	TOKENIZER_ARIA_CONTAIN_SEVERAL_TOKENS,
 	INPUT_SUGGESTIONS_TITLE,
-	ICON_ACCESSIBLE_NAME,
+	SELECT_OPTIONS,
 	MULTICOMBOBOX_DIALOG_OK_BUTTON,
 } from "./generated/i18n/i18n-defaults.js";
 
@@ -57,17 +54,10 @@ const metadata = {
 	managedSlots: true,
 	slots: /** @lends sap.ui.webcomponents.main.MultiComboBox.prototype */ {
 		/**
-		 * Defines the <code>ui5-multi-combobox</code> items.
-		 * <br><br>
-		 * Example: <br>
-		 * &lt;ui5-multi-combobox><br>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;ui5-li>Item #1&lt;/ui5-li><br>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;ui5-li>Item #2&lt;/ui5-li><br>
-		 * &lt;/ui5-multi-combobox>
-		 * <br> <br>
+		 * Defines the component items.
 		 *
-		 * @type {HTMLElement[]}
-		 * @slot
+		 * @type {sap.ui.webcomponents.main.IMultiComboBoxItem[]}
+		 * @slot items
 		 * @public
 		 */
 		"default": {
@@ -77,25 +67,25 @@ const metadata = {
 		},
 
 		/**
-		* Defines the icon to be displayed in the <code>ui5-multi-combobox</code>.
+		* Defines the icon to be displayed in the component.
 		*
-		* @type {HTMLElement[]}
+		* @type {sap.ui.webcomponents.main.IIcon}
 		* @slot
 		* @public
 		* @since 1.0.0-rc.9
 		*/
-	   icon: {
-		   type: HTMLElement,
-	   },
+		icon: {
+			type: HTMLElement,
+		},
 
 		/**
-		 * Defines the value state message that will be displayed as pop up under the <code>ui5-multi-combobox</code>.
+		 * Defines the value state message that will be displayed as pop up under the component.
 		 * <br><br>
 		 *
 		 * <b>Note:</b> If not specified, a default text (in the respective language) will be displayed.
 		 * <br>
 		 * <b>Note:</b> The <code>valueStateMessage</code> would be displayed,
-		 * when the <code>ui5-multi-combobox</code> is in <code>Information</code>, <code>Warning</code> or <code>Error</code> value state.
+		 * when the component is in <code>Information</code>, <code>Warning</code> or <code>Error</code> value state.
 		 * @type {HTMLElement[]}
 		 * @since 1.0.0-rc.9
 		 * @slot
@@ -107,7 +97,7 @@ const metadata = {
 	},
 	properties: /** @lends sap.ui.webcomponents.main.MultiComboBox.prototype */ {
 		/**
-		 * Defines the value of the <code>ui5-multi-combobox</code>.
+		 * Defines the value of the component.
 		 * <br><br>
 		 * <b>Note:</b> The property is updated upon typing.
 		 *
@@ -122,7 +112,7 @@ const metadata = {
 
 		/**
 		 * Defines a short hint intended to aid the user with data entry when the
-		 * <code>ui5-multi-combobox</code> has no value.
+		 * component has no value.
 		 * @type {string}
 		 * @defaultvalue ""
 		 * @public
@@ -144,9 +134,9 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether <code>ui5-multi-combobox</code> is in disabled state.
+		 * Defines whether the component is in disabled state.
 		 * <br><br>
-		 * <b>Note:</b> A disabled <code>ui5-multi-combobox</code> is completely noninteractive.
+		 * <b>Note:</b> A disabled component is completely noninteractive.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -157,7 +147,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the value state of the <code>ui5-multi-combobox</code>.
+		 * Defines the value state of the component.
 		 * <br><br>
 		 * Available options are:
 		 * <ul>
@@ -178,9 +168,9 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-multi-combobox</code> is read-only.
+		 * Defines whether the component is read-only.
 		 * <br><br>
-		 * <b>Note:</b> A read-only <code>ui5-multi-combobox</code> is not editable,
+		 * <b>Note:</b> A read-only component is not editable,
 		 * but still provides visual feedback upon user interaction.
 		 *
 		 * @type {boolean}
@@ -192,7 +182,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-multi-combobox</code> is required.
+		 * Defines whether the component is required.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -204,7 +194,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the filter type of the <code>ui5-multi-combobox</code>.
+		 * Defines the filter type of the component.
 		 * Available options are: <code>StartsWithPerTerm</code>, <code>StartsWith</code>, <code>Contains</code> and <code>None</code>.
 		 *
 		 * @type {string}
@@ -221,6 +211,7 @@ const metadata = {
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
+		 * @readonly
 		 * @since 1.0.0-rc.5
 		 * @public
 		 */
@@ -231,7 +222,6 @@ const metadata = {
 		_filteredItems: {
 			type: Object,
 		},
-
 
 		filterSelected: {
 			type: Boolean,
@@ -271,7 +261,7 @@ const metadata = {
 		change: {},
 
 		/**
-		 * Fired when the value of the <code>ui5-multi-combobox</code> changes at each keystroke.
+		 * Fired when the value of the component changes at each keystroke.
 		 *
 		 * @event
 		 * @public
@@ -344,6 +334,15 @@ const metadata = {
  * Example: <code><ui5-mcb-item stable-dom-ref="item1"></ui5-mcb-item></code></li>
  * </ul>
  *
+ * <h3>CSS Shadow Parts</h3>
+ *
+ * <ui5-link target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</ui5-link> allow developers to style elements inside the Shadow DOM.
+ * <br>
+ * The <code>ui5-multi-combobox</code> exposes the following CSS Shadow Parts:
+ * <ul>
+ * <li>token-{index} - Used to style each token(where <code>token-0</code> corresponds to the first item)</li>
+ * </ul>
+ *
  * <h3>ES6 Module Import</h3>
  *
  * <code>import "@ui5/webcomponents/dist/MultiComboBox";</code>
@@ -401,6 +400,7 @@ class MultiComboBox extends UI5Element {
 		super();
 
 		this._filteredItems = [];
+		this.selectedValues = [];
 		this._inputLastValue = "";
 		this._deleting = false;
 		this._validationTimeout = null;
@@ -430,11 +430,11 @@ class MultiComboBox extends UI5Element {
 	}
 
 	togglePopover() {
-		this._toggleRespPopover();
-
 		if (!isPhone()) {
 			this._inputDom.focus();
 		}
+
+		this._toggleRespPopover();
 	}
 
 	filterSelectedItems(event) {
@@ -493,7 +493,6 @@ class MultiComboBox extends UI5Element {
 			return;
 		}
 
-
 		this._inputLastValue = input.value;
 		this.value = input.value;
 		this._filteredItems = filteredItems;
@@ -519,30 +518,26 @@ class MultiComboBox extends UI5Element {
 		this.fireSelectionChange();
 	}
 
+	get _getPlaceholder() {
+		if (this._tokenizer && this._tokenizer.tokens.length) {
+			return "";
+		}
+
+		return this.placeholder;
+	}
+
 	_handleLeft() {
 		const cursorPosition = this.getDomRef().querySelector(`input`).selectionStart;
 
 		if (cursorPosition === 0) {
-			this._focusLastToken();
+			this._tokenizer._focusLastToken();
 		}
-	}
-
-	_focusLastToken() {
-		const lastTokenIndex = this._tokenizer.tokens.length - 1;
-
-		if (lastTokenIndex < 0) {
-			return;
-		}
-
-		this._tokenizer.tokens[lastTokenIndex].focus();
-		this._tokenizer._itemNav.currentIndex = lastTokenIndex;
 	}
 
 	_tokenizerFocusOut(event) {
 		this._tokenizerFocused = false;
 
-		const tokenizer = this.shadowRoot.querySelector("[ui5-tokenizer]");
-		const tokensCount = tokenizer.tokens.length - 1;
+		const tokensCount = this._tokenizer.tokens.length - 1;
 
 		if (!event.relatedTarget || event.relatedTarget.localName !== "ui5-token") {
 			this._tokenizer.tokens.forEach(token => { token.selected = false; });
@@ -582,14 +577,15 @@ class MultiComboBox extends UI5Element {
 		if (isDown(event) && this.allItemsPopover.opened && this.items.length) {
 			event.preventDefault();
 			await this._getList();
-			this.list._itemNavigation.current = 0;
-			this.list.items[0].focus();
+			const firstListItem = this.list.items[0];
+			this.list._itemNavigation.setCurrentItem(firstListItem);
+			firstListItem.focus();
 		}
 
 		if (isBackSpace(event) && event.target.value === "") {
 			event.preventDefault();
 
-			this._focusLastToken();
+			this._tokenizer._focusLastToken();
 		}
 
 		this._keyDown = true;
@@ -752,20 +748,6 @@ class MultiComboBox extends UI5Element {
 		return this.shadowRoot.querySelector("[ui5-tokenizer]");
 	}
 
-	get nMoreCountText() {
-		const iTokenCount = this._getSelectedItems().length;
-
-		if (iTokenCount === 0) {
-			return this.i18nBundle.getText(TOKENIZER_ARIA_CONTAIN_TOKEN);
-		}
-
-		if (iTokenCount === 1) {
-			return this.i18nBundle.getText(TOKENIZER_ARIA_CONTAIN_ONE_TOKEN);
-		}
-
-		return this.i18nBundle.getText(TOKENIZER_ARIA_CONTAIN_SEVERAL_TOKENS, iTokenCount);
-	}
-
 	inputFocusIn() {
 		if (!isPhone()) {
 			this.focused = true;
@@ -814,6 +796,21 @@ class MultiComboBox extends UI5Element {
 		return this.getSlottedNodes("valueStateMessage").map(el => el.cloneNode(true));
 	}
 
+	get _tokensCountText() {
+		if (!this._tokenizer) {
+			return;
+		}
+		return this._tokenizer._tokensCountText();
+	}
+
+	get _tokensCountTextId() {
+		return `${this._id}-hiddenText-nMore`;
+	}
+
+	get ariaDescribedByText() {
+		return this.valueStateTextId ? `${this._tokensCountTextId} ${this.valueStateTextId}` : `${this._tokensCountTextId}`;
+	}
+
 	get shouldDisplayDefaultValueStateMessage() {
 		return !this.valueStateMessage.length && this.hasValueStateMessage;
 	}
@@ -845,7 +842,7 @@ class MultiComboBox extends UI5Element {
 	}
 
 	get _iconAccessibleNameText() {
-		return this.i18nBundle.getText(ICON_ACCESSIBLE_NAME);
+		return this.i18nBundle.getText(SELECT_OPTIONS);
 	}
 
 	get _dialogOkButton() {
@@ -872,12 +869,11 @@ class MultiComboBox extends UI5Element {
 		return {
 			popoverValueStateMessage: {
 				"width": `${this._listWidth}px`,
-				"min-height": "2.5rem",
-				"padding": "0.5625rem 1rem",
 				"display": this._listWidth === 0 ? "none" : "inline-block",
+				"padding": "0.9125rem 1rem",
 			},
 			popoverHeader: {
-				"width": `${this._inputWidth}px`,
+				"max-width": `${this._inputWidth}px`,
 			},
 		};
 	}

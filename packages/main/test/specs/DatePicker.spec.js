@@ -1,5 +1,6 @@
 const datepicker = require("../pageobjects/DatePickerTestPage");
 const assert = require("chai").assert;
+const PORT = require("./_port.js");
 
 describe("Date Picker Tests", () => {
 	before(() => {
@@ -8,8 +9,10 @@ describe("Date Picker Tests", () => {
 
 	it("input renders", () => {
 		datepicker.id = "#dp";
+
 		assert.ok(datepicker.input.isDisplayedInViewport(), "input is rendered");
 		assert.ok(datepicker.innerInput.isDisplayedInViewport(), "inner input is rendered");
+		assert.strictEqual(datepicker.innerInput.getAttribute("aria-roledescription"), "Date Input", "aria-roledescription attribute is added.");
 	});
 
 	it("input receives value", () => {
@@ -23,7 +26,7 @@ describe("Date Picker Tests", () => {
 	});
 
 	it("input receives value in format pattern depending on the set language", () => {
-		browser.url("http://localhost:8080/test-resources/pages/DatePicker_test_page.html?sap-ui-language=bg");
+		browser.url(`http://localhost:${PORT}/test-resources/pages/DatePicker_test_page.html?sap-ui-language=bg`);
 		datepicker.id = "#dp16";
 
 		const setDateButton = browser.$("#b1");
@@ -200,7 +203,7 @@ describe("Date Picker Tests", () => {
 	});
 
 	it("respect first day of the week - monday", () => {
-		browser.url("http://localhost:8080/test-resources/pages/DatePicker_test_page.html?sap-ui-language=bg");
+		browser.url(`http://localhost:${PORT}/test-resources/pages/DatePicker_test_page.html?sap-ui-language=bg`);
 		datepicker.id = "#dp7_1";
 
 		datepicker.root.setProperty("value", "фев 6, 2019");
@@ -607,9 +610,9 @@ describe("Date Picker Tests", () => {
 	it("Going under the minimum date changes value state", () => {
 		datepicker.id = "#dp33";
 
-		datepicker.input.click();
-		datepicker.root.keys("Jan 1, 1999");
-		datepicker.root.keys("Enter");
+		datepicker.innerInput.click();
+		datepicker.innerInput.keys("Jan 1, 1999");
+		datepicker.innerInput.keys("Enter");
 
 		assert.equal(datepicker.input.getProperty("valueState"), "Error", "value state of the input is valid");
 
@@ -620,12 +623,12 @@ describe("Date Picker Tests", () => {
 	it("Going over the maximum date changes value state", () => {
 		datepicker.id = "#dp33";
 
-		datepicker.input.click();
-		while(datepicker.root.getValue() !== ""){
-			datepicker.root.keys("Backspace");
+		datepicker.innerInput.click();
+		while(datepicker.innerInput.getValue() !== ""){
+			datepicker.innerInput.keys("Backspace");
 		}
 
-		datepicker.root.keys("May 5, 2100");
+		datepicker.innerInput.keys("May 5, 2100");
 		datepicker.root.keys("Enter");
 
 		assert.equal(datepicker.input.getProperty("valueState"), "Error", "value state of the input is valid");
@@ -638,21 +641,17 @@ describe("Date Picker Tests", () => {
 		datepicker.id = "#dp33";
 
 		datepicker.input.click();
-		while(datepicker.root.getValue() !== ""){
-			datepicker.root.keys("Backspace");
+		while(datepicker.innerInput.getValue() !== ""){
+			datepicker.innerInput.keys("Backspace");
 		}
 
-		datepicker.root.keys("Jan 8, 2100");
+		datepicker.innerInput.keys("Jan 8, 2100");
 		datepicker.root.keys("Enter");
 
 		assert.equal(datepicker.input.getProperty("valueState"), "None", "value state of the input is valid");
 
 		datepicker.input.click();
-		while(datepicker.root.getValue() !== ""){
-			datepicker.root.keys("Backspace");
-		}
-
-		datepicker.root.keys("Jan 1, 2000");
+		datepicker.root.setProperty("value", "Jan 1, 2000");
 		datepicker.root.keys("Enter");
 
 		assert.equal(datepicker.input.getProperty("valueState"), "None", "value state of the input is valid");
@@ -665,10 +664,7 @@ describe("Date Picker Tests", () => {
 		datepicker.id = "#dp33";
 
 		datepicker.input.click();
-		while(datepicker.root.getValue() !== ""){
-			datepicker.root.keys("Backspace");
-		}
-		datepicker.root.keys("Jan 8, 2100");
+		datepicker.root.setProperty("value", "Jan 8, 2100");
 		datepicker.root.keys("Enter");
 
 		datepicker.openPicker();
@@ -768,7 +764,7 @@ describe("Date Picker Tests", () => {
 	});
 
 	it("DayPicker day name attribute", ()=>{
-		// browser.url("http://localhost:8080/test-resources/pages/DatePicker_test_page.html?sap-ui-language=en");
+		// browser.url(`http://localhost:${PORT}/test-resources/pages/DatePicker_test_page.html?sap-ui-language=en`);
 		// datepicker.root.setAttribute("primary-calendar-type", "Gregorian");
 		// datepicker.id = "#dp13";
 		// datepicker.openPicker();
@@ -784,7 +780,7 @@ describe("Date Picker Tests", () => {
 	});
 
 	it("DayPiker day number attribute", ()=>{
-		browser.url("http://localhost:8080/test-resources/pages/DatePicker_test_page.html?sap-ui-language=en");
+		browser.url(`http://localhost:${PORT}/test-resources/pages/DatePicker_test_page.html?sap-ui-language=en`);
 		datepicker.root.setAttribute("primary-calendar-type", "Gregorian");
 		datepicker.id = "#dp13";
 		datepicker.openPicker();
@@ -805,13 +801,14 @@ describe("Date Picker Tests", () => {
 	});
 
 	it("DatePicker dates and week number", () => {
-		browser.url("http://localhost:8080/test-resources/pages/DatePicker_test_page.html?sap-ui-language=en");
+		browser.url(`http://localhost:${PORT}/test-resources/pages/DatePicker_test_page.html?sap-ui-language=en`);
 		datepicker.root.setAttribute("primary-calendar-type", "Gregorian");
 		datepicker.id = "#dp13";
-		datepicker.openPicker();
 		datepicker.input.click();
 		browser.keys("May 3, 2100");
 		browser.keys("Enter");
+		// open picker after accepting the date
+		datepicker.openPicker();
 
 		const data = Array.from(datepicker.getDayPickerDatesRow(2));
 		assert.strictEqual(data[0].getAttribute("aria-label"), "Calendar Week 18", "First columnheader have Week number aria-label");
@@ -913,5 +910,18 @@ describe("Date Picker Tests", () => {
 		datepicker.innerInput.click();
 		browser.keys(["Control", "A"]);
 		browser.keys("Backspace");
+	});
+
+	it("Value state changes only on submit", () => {
+		browser.url(`http://localhost:${PORT}/test-resources/pages/DatePicker.html`);
+		datepicker.id = "#dp33";
+		datepicker.innerInput.click();
+		browser.keys("somereallylongtextthatshouldcheckifwevalidateoninput");
+
+		assert.equal(datepicker.input.getProperty("valueState"), "None", "value state of the input is valid");
+
+		browser.keys("Enter");
+
+		assert.equal(datepicker.input.getProperty("valueState"), "Error", "value state of the input is valid");
 	});
 });

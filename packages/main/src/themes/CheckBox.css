@@ -38,6 +38,7 @@
 
 :host([wrap][text]) .ui5-checkbox-root .ui5-checkbox-label {
 	word-break: break-all;
+	align-self: center;
 }
 
 :host([wrap]) .ui5-checkbox-root:focus::before {
@@ -64,6 +65,13 @@
 	background: var(--sapField_InformationBackground);
 	border: var(--_ui5_checkbox_inner_information_border);
 	color: var(--sapField_InformationColor);
+}
+
+:host([value-state="Success"]) .ui5-checkbox-inner,
+:host([value-state="Success"]) .ui5-checkbox--hoverable:hover .ui5-checkbox-inner {
+	background: var(--sapField_SuccessBackground);
+	border: var(--_ui5_checkbox_inner_success_border);
+	color: var(--sapField_SuccessColor);
 }
 
 :host([value-state="Warning"]) .ui5-checkbox-icon {

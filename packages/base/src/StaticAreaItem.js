@@ -1,6 +1,8 @@
+import "./StaticArea.js";
 import updateShadowRoot from "./updateShadowRoot.js";
-import RenderScheduler from "./RenderScheduler.js";
+import { renderFinished } from "./Render.js";
 import getEffectiveContentDensity from "./util/getEffectiveContentDensity.js";
+import { getEffectiveScopingSuffixForTag } from "./CustomElementsScope.js";
 
 /**
  *
@@ -59,7 +61,7 @@ class StaticAreaItem extends HTMLElement {
 			this._rendered = true;
 			updateShadowRoot(this.ownerElement, true);
 		}
-		await RenderScheduler.whenDOMUpdated(); // Wait for the content of the ui5-static-area-item to be rendered
+		await renderFinished(); // Wait for the content of the ui5-static-area-item to be rendered
 		return this.shadowRoot;
 	}
 
@@ -71,10 +73,24 @@ class StaticAreaItem extends HTMLElement {
 	getStableDomRef(refName) {
 		return this.shadowRoot.querySelector(`[data-ui5-stable=${refName}]`);
 	}
-}
 
-if (!customElements.get("ui5-static-area-item")) {
-	customElements.define("ui5-static-area-item", StaticAreaItem);
+	static getTag() {
+		const pureTag = "ui5-static-area-item";
+		const suffix = getEffectiveScopingSuffixForTag(pureTag);
+		if (!suffix) {
+			return pureTag;
+		}
+
+		return `${pureTag}-${suffix}`;
+	}
+
+	static createInstance() {
+		if (!customElements.get(StaticAreaItem.getTag())) {
+			customElements.define(StaticAreaItem.getTag(), StaticAreaItem);
+		}
+
+		return document.createElement(this.getTag());
+	}
 }
 
 export default StaticAreaItem;

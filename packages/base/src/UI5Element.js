@@ -3,9 +3,9 @@ import { boot } from "./Boot.js";
 import UI5ElementMetadata from "./UI5ElementMetadata.js";
 import EventProvider from "./EventProvider.js";
 import getSingletonElementInstance from "./util/getSingletonElementInstance.js";
-import "./StaticAreaItem.js";
+import StaticAreaItem from "./StaticAreaItem.js";
 import updateShadowRoot from "./updateShadowRoot.js";
-import RenderScheduler from "./RenderScheduler.js";
+import { renderDeferred, renderImmediately, cancelRender } from "./Render.js";
 import { registerTag, isTagRegistered, recordTagRegistrationFailure } from "./CustomElementsRegistry.js";
 import { observeDOMNode, unobserveDOMNode } from "./DOMObserver.js";
 import { skipOriginalEvent } from "./config/NoConflict.js";
@@ -16,7 +16,9 @@ import { kebabToCamelCase, camelToKebabCase } from "./util/StringHelper.js";
 import isValidPropertyName from "./util/isValidPropertyName.js";
 import { isSlot, getSlotName, getSlottedElementsList } from "./util/SlotsHelper.js";
 import arraysAreEqual from "./util/arraysAreEqual.js";
+import getClassCopy from "./util/getClassCopy.js";
 import { markAsRtlAware } from "./locale/RTLAwareRegistry.js";
+import isLegacyBrowser from "./isLegacyBrowser.js";
 
 let autoId = 0;
 
@@ -40,7 +42,7 @@ function _invalidate(changeInfo) {
 	this.onInvalidation(changeInfo);
 
 	this._changedState.push(changeInfo);
-	RenderScheduler.renderDeferred(this);
+	renderDeferred(this);
 	this._eventProvider.fireEvent("change", { ...changeInfo, target: this });
 }
 
@@ -119,8 +121,7 @@ class UI5Element extends HTMLElement {
 			return;
 		}
 
-		RenderScheduler.register(this);
-		RenderScheduler.renderImmediately(this);
+		renderImmediately(this);
 		this._domRefReadyPromise._deferredResolve();
 		this._fullyConnected = true;
 		if (typeof this.onEnterDOM === "function") {
@@ -143,7 +144,6 @@ class UI5Element extends HTMLElement {
 		}
 
 		if (needsShadowDOM) {
-			RenderScheduler.deregister(this);
 			if (this._fullyConnected) {
 				if (typeof this.onExitDOM === "function") {
 					this.onExitDOM();
@@ -156,7 +156,7 @@ class UI5Element extends HTMLElement {
 			this.staticAreaItem.parentElement.removeChild(this.staticAreaItem);
 		}
 
-		RenderScheduler.cancelRender(this);
+		cancelRender(this);
 	}
 
 	/**
@@ -443,7 +443,7 @@ class UI5Element extends HTMLElement {
 	 * @private
 	 */
 	_initializeState() {
-		this._state = Object.assign({}, this.constructor.getMetadata().getInitialState());
+		this._state = { ...this.constructor.getMetadata().getInitialState() };
 	}
 
 	/**
@@ -532,7 +532,7 @@ class UI5Element extends HTMLElement {
 	onInvalidation(changeInfo) {}
 
 	/**
-	 * Do not call this method directly, only intended to be called by RenderScheduler.js
+	 * Do not call this method directly, only intended to be called by js
 	 * @protected
 	 */
 	_render() {
@@ -625,8 +625,17 @@ class UI5Element extends HTMLElement {
 			return;
 		}
 
+		this._assertShadowRootStructure();
+
 		return this.shadowRoot.children.length === 1
 			? this.shadowRoot.children[0] : this.shadowRoot.children[1];
+	}
+
+	_assertShadowRootStructure() {
+		const expectedChildrenCount = document.adoptedStyleSheets || isLegacyBrowser() ? 1 : 2;
+		if (this.shadowRoot.children.length !== expectedChildrenCount) {
+			console.warn(`The shadow DOM for ${this.constructor.getMetadata().getTag()} does not have a top level element, the getDomRef() method might not work as expected`); // eslint-disable-line
+		}
 	}
 
 	/**
@@ -772,15 +781,22 @@ class UI5Element extends HTMLElement {
 	}
 
 	/**
+	 * @private
+	 */
+	static _needsStaticArea() {
+		return !!this.staticAreaTemplate;
+	}
+
+	/**
 	 * @public
 	 */
 	getStaticAreaItemDomRef() {
-		if (!this.constructor.staticAreaTemplate) {
+		if (!this.constructor._needsStaticArea()) {
 			throw new Error("This component does not use the static area");
 		}
 
 		if (!this.staticAreaItem) {
-			this.staticAreaItem = document.createElement("ui5-static-area-item");
+			this.staticAreaItem = StaticAreaItem.createInstance();
 			this.staticAreaItem.setOwnerElement(this);
 		}
 		if (!this.staticAreaItem.parentElement) {
@@ -982,9 +998,10 @@ class UI5Element extends HTMLElement {
 			window.customElements.define(tag, this);
 
 			if (altTag && !customElements.get(altTag)) {
-				class oldClassName extends this {}
 				registerTag(altTag);
-				window.customElements.define(altTag, oldClassName);
+				window.customElements.define(altTag, getClassCopy(this, () => {
+					console.log(`The ${altTag} tag is deprecated and will be removed in the next release, please use ${tag} instead.`); // eslint-disable-line
+				}));
 			}
 		}
 		return this;

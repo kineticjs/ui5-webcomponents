@@ -4,14 +4,9 @@ import slideDown from "@ui5/webcomponents-base/dist/animations/slideDown.js";
 import slideUp from "@ui5/webcomponents-base/dist/animations/slideUp.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import AnimationMode from "@ui5/webcomponents-base/dist/types/AnimationMode.js";
-import {
-	getEffectiveAriaLabelText,
-	getAriaLabelledByTexts,
-} from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import { getAnimationMode } from "@ui5/webcomponents-base/dist/config/AnimationMode.js";
 import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
-import findNodeOwner from "@ui5/webcomponents-base/dist/util/findNodeOwner.js";
 import Button from "./Button.js";
 import TitleLevel from "./types/TitleLevel.js";
 import PanelAccessibleRole from "./types/PanelAccessibleRole.js";
@@ -32,7 +27,7 @@ const metadata = {
 	slots: /** @lends sap.ui.webcomponents.main.Panel.prototype */ {
 
 		/**
-		 * Defines the <code>ui5-panel</code> header area.
+		 * Defines the component header area.
 		 * <br><br>
 		 * <b>Note:</b> When a header is provided, the <code>headerText</code> property is ignored.
 		 *
@@ -45,8 +40,8 @@ const metadata = {
 		},
 
 		/**
-		 * Determines the content of the <code>ui5-panel</code>.
-		 * The content is visible only when the <code>ui5-panel</code> is expanded.
+		 * Determines the content of the component.
+		 * The content is visible only when the component is expanded.
 		 *
 		 * @type {Node[]}
 		 * @slot
@@ -59,7 +54,7 @@ const metadata = {
 	properties: /** @lends sap.ui.webcomponents.main.Panel.prototype */ {
 
 		/**
-		 * This property is used to set the header text of the <code>ui5-panel</code>.
+		 * This property is used to set the header text of the component.
 		 * The text is visible in both expanded and collapsed states.
 		 * <br><br>
 		 * <b>Note:</b> This property is overridden by the <code>header</code> slot.
@@ -73,7 +68,7 @@ const metadata = {
 		},
 
 		/**
-		 * Determines whether the <code>ui5-panel</code> is in a fixed state that is not
+		 * Determines whether the component is in a fixed state that is not
 		 * expandable/collapsible by user interaction.
 		 *
 		 * @type {boolean}
@@ -85,7 +80,7 @@ const metadata = {
 		},
 
 		/**
-		 * Indicates whether the <code>ui5-panel</code> is collapsed and only the header is displayed.
+		 * Indicates whether the component is collapsed and only the header is displayed.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -96,7 +91,7 @@ const metadata = {
 		},
 
 		/**
-		 * Sets the accessible aria role of the <code>ui5-panel</code>.
+		 * Sets the accessible aria role of the component.
 		 * Depending on the usage, you can change the role from the default <code>Form</code>
 		 * to <code>Region</code> or <code>Complementary</code>.
 		 *
@@ -110,7 +105,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the "aria-level" of <code>ui5-panel</code> heading,
+		 * Defines the "aria-level" of component heading,
 		 * set by the <code>headerText</code>.
 		 * <br><br>
 		 * Available options are: <code>"H6"</code> to <code>"H1"</code>.
@@ -124,38 +119,25 @@ const metadata = {
 		},
 
 		/**
-		 * @type {String}
+		 * Sets the accessible aria name of the component.
+		 * @type {string}
 		 * @defaultvalue ""
-		 * @private
-		 * @since 1.0.0-rc.8
+		 * @public
 		 */
-		ariaLabel: {
+		accessibleName: {
 			type: String,
 		},
 
 		/**
-		 * Receives id(or many ids) of the elements that label the panel
-		 *
-		 * @type {String}
-		 * @defaultvalue ""
+		 * When set to <code>true</code>, the <code>accessibleName</code> property will be
+		 * applied not only on the panel root itself, but on its toggle button too.
+		 * <b>Note:</b> This property only has effect if <code>accessibleName</code> is set and a header slot is provided.
+		 * @type {boolean}
+		 * @defaultvalue false
 		 * @private
-		 * @since 1.0.0-rc.8
-		 */
-		ariaLabelledby: {
-			type: String,
-			defaultValue: "",
-		},
-
-		/**
-		 * Receives id(or many ids) of the elements that label the header of the panel
-		 *
-		 * @type {String}
-		 * @defaultvalue ""
-		 * @private
-		 * @since 1.0.0-rc.9
-		 */
-		headerAriaLabelledby: {
-			type: String,
+ 		 */
+		useAccessibleNameForToggleButton: {
+			type: Boolean,
 		},
 
 		/**
@@ -183,10 +165,10 @@ const metadata = {
 			type: Object,
 		},
 	},
-	events: {
+	events: /** @lends sap.ui.webcomponents.main.Panel.prototype */ {
 
 		/**
-		 * Fired when the ui5-panel is expanded/collapsed by user interaction.
+		 * Fired when the component is expanded/collapsed by user interaction.
 		 *
 		 * @event
 		 * @public
@@ -233,6 +215,15 @@ const metadata = {
  * close the content area.</li>
  * <li>When the panel expands/collapses, the arrow icon rotates 90 degrees
  * clockwise/counter-clockwise.</li>
+ * </ul>
+ *
+ * <h3>CSS Shadow Parts</h3>
+ *
+ * <ui5-link target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</ui5-link> allow developers to style elements inside the Shadow DOM.
+ * <br>
+ * The <code>ui5-panel</code> exposes the following CSS Shadow Parts:
+ * <ul>
+ * <li>content - Used to style the wrapper of the content</li>
  * </ul>
  *
  * <h3>ES6 Module Import</h3>
@@ -309,7 +300,6 @@ class Panel extends UI5Element {
 		if (!this.shouldToggle(event.target)) {
 			return;
 		}
-
 
 		if (isEnter(event)) {
 			this._toggleOpen();
@@ -390,33 +380,27 @@ class Panel extends UI5Element {
 		return this.accessibleRole.toLowerCase();
 	}
 
+	get effectiveAccessibleName() {
+		return typeof this.accessibleName === "string" && this.accessibleName.length ? this.accessibleName : undefined;
+	}
+
 	get accInfo() {
 		return {
 			"button": {
-				"ariaExpanded": this._hasHeader ? this.expanded : undefined,
-				"ariaControls": this._hasHeader ? `${this._id}-content` : undefined,
+				"ariaExpanded": this.expanded,
+				"ariaControls": `${this._id}-content`,
 				"title": this.toggleButtonTitle,
+				"ariaLabelButton": !this.nonFocusableButton && this.useAccessibleNameForToggleButton ? this.effectiveAccessibleName : undefined,
 			},
 			"ariaExpanded": this.nonFixedInternalHeader ? this.expanded : undefined,
 			"ariaControls": this.nonFixedInternalHeader ? `${this._id}-content` : undefined,
 			"ariaLabelledby": this.nonFocusableButton ? this.ariaLabelledbyReference : undefined,
-			"ariaLabel": this.nonFocusableButton ? this.ariaLabelTxt : undefined,
-			"ariaLabelledbyButton": this.nonFocusableButton ? undefined : this.ariaLabelledbyReference,
-			"ariaLabelButton": this.nonFocusableButton ? undefined : this.ariaLabelTxt,
 			"role": this.nonFixedInternalHeader ? "button" : undefined,
 		};
 	}
 
 	get ariaLabelledbyReference() {
-		if (this.ariaLabelledby || this.ariaLabel) {
-			return undefined;
-		}
-
 		return (this.nonFocusableButton && this.headerText) ? `${this._id}-header-title` : undefined;
-	}
-
-	get ariaLabelTxt() {
-		return getEffectiveAriaLabelText(this);
 	}
 
 	get header() {
@@ -429,13 +413,6 @@ class Panel extends UI5Element {
 
 	get headerTabIndex() {
 		return (this.header.length || this.fixed) ? "-1" : "0";
-	}
-
-	get headerAriaLabelledByText() {
-		if (!this.headerAriaLabelledby) {
-			return;
-		}
-		return getAriaLabelledByTexts(this.header, findNodeOwner(this), this.headerAriaLabelledby);
 	}
 
 	get nonFixedInternalHeader() {

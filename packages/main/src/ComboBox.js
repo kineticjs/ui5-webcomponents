@@ -23,7 +23,7 @@ import {
 	VALUE_STATE_WARNING,
 	VALUE_STATE_INFORMATION,
 	INPUT_SUGGESTIONS_TITLE,
-	ICON_ACCESSIBLE_NAME,
+	SELECT_OPTIONS,
 } from "./generated/i18n/i18n-defaults.js";
 
 // Templates
@@ -54,7 +54,7 @@ const metadata = {
 	defaultSlot: "items",
 	properties: /** @lends sap.ui.webcomponents.main.ComboBox.prototype */ {
 		/**
-		 * Defines the value of the <code>ui5-combobox</code>.
+		 * Defines the value of the component.
 		 *
 		 * @type {string}
 		 * @defaultvalue ""
@@ -66,7 +66,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the "live" value of the <code>ui5-combobox</code>.
+		 * Defines the "live" value of the component.
 		 * <br><br>
 		 * <b>Note:</b> The property is updated upon typing.
 		 *
@@ -84,7 +84,7 @@ const metadata = {
 
 		/**
 		 * Defines a short hint intended to aid the user with data entry when the
-		 * <code>ui5-combobox</code> has no value.
+		 * component has no value.
 		 * @type {string}
 		 * @defaultvalue ""
 		 * @public
@@ -95,9 +95,9 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether <code>ui5-combobox</code> is in disabled state.
+		 * Defines whether the component is in disabled state.
 		 * <br><br>
-		 * <b>Note:</b> A disabled <code>ui5-combobox</code> is completely uninteractive.
+		 * <b>Note:</b> A disabled component is completely uninteractive.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -108,7 +108,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the value state of the <code>ui5-combobox</code>.
+		 * Defines the value state of the component.
 		 * <br><br>
 		 * Available options are:
 		 * <ul>
@@ -129,9 +129,9 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-combobox</code> is readonly.
+		 * Defines whether the component is readonly.
 		 * <br><br>
-		 * <b>Note:</b> A read-only <code>ui5-combobox</code> is not editable,
+		 * <b>Note:</b> A read-only component is not editable,
 		 * but still provides visual feedback upon user interaction.
 		 *
 		 * @type {boolean}
@@ -143,7 +143,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-combobox</code> is required.
+		 * Defines whether the component is required.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -165,7 +165,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the filter type of the <code>ui5-combobox</code>.
+		 * Defines the filter type of the component.
 		 * Available options are: <code>StartsWithPerTerm</code>, <code>StartsWith</code> and <code>Contains</code>.
 		 *
 		 * @type {string}
@@ -232,17 +232,10 @@ const metadata = {
 	managedSlots: true,
 	slots: /** @lends sap.ui.webcomponents.main.ComboBox.prototype */ {
 		/**
-		 * Defines the <code>ui5-combobox</code> items.
-		 * <br><br>
-		 * Example: <br>
-		 * &lt;ui5-combobox><br>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;ui5-li>Item #1&lt;/ui5-li><br>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;ui5-li>Item #2&lt;/ui5-li><br>
-		 * &lt;/ui5-combobox>
-		 * <br> <br>
+		 * Defines the component items.
 		 *
-		 * @type {HTMLElement[]}
-		 * @slot
+		 * @type {sap.ui.webcomponents.main.IComboBoxItem[]}
+		 * @slot items
 		 * @public
 		 */
 		"default": {
@@ -252,7 +245,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the value state message that will be displayed as pop up under the <code>ui5-combobox</code>.
+		 * Defines the value state message that will be displayed as pop up under the component.
 		 * <br><br>
 		 *
 		 * <b>Note:</b> If not specified, a default text (in the respective language) will be displayed.
@@ -271,7 +264,7 @@ const metadata = {
 		/**
 		 * Defines the icon to be displayed in the input field.
 		 *
-		 * @type {HTMLElement[]}
+		 * @type {sap.ui.webcomponents.main.IIcon}
 		 * @slot
 		 * @public
 		 * @since 1.0.0-rc.9
@@ -301,7 +294,7 @@ const metadata = {
 		/**
 		 * Fired when selection is changed by user interaction
 		 *
-		 * @event sap.ui.webcomponents.main.Combobox#selection-change
+		 * @event sap.ui.webcomponents.main.ComboBox#selection-change
 		 * @param {HTMLElement} item item to be selected.
 		 * @public
 		 */
@@ -468,6 +461,11 @@ class ComboBox extends UI5Element {
 
 	_afterOpenPopover() {
 		this._iconPressed = true;
+
+		if (isPhone() && this.value) {
+			this.filterValue = this.value;
+		}
+
 		this._clearFocus();
 	}
 
@@ -631,7 +629,13 @@ class ComboBox extends UI5Element {
 		}
 	}
 
-	_closeRespPopover() {
+	_closeRespPopover(event) {
+		if (isPhone() && event && event.target.classList.contains("ui5-responsive-popover-close-btn") && this._selectedItemText) {
+			this.value = this._selectedItemText;
+			this.filterValue = this._selectedItemText;
+			this._tempValue = this._selectedItemText;
+		}
+
 		this.responsivePopover.close();
 	}
 
@@ -693,6 +697,7 @@ class ComboBox extends UI5Element {
 		const listItem = event.detail.item;
 
 		this._tempValue = listItem.mappedItem.text;
+		this._selectedItemText = listItem.mappedItem.text;
 		this.filterValue = this._tempValue;
 
 		if (!listItem.mappedItem.selected) {
@@ -722,7 +727,7 @@ class ComboBox extends UI5Element {
 	}
 
 	get _iconAccessibleNameText() {
-		return this.i18nBundle.getText(ICON_ACCESSIBLE_NAME);
+		return this.i18nBundle.getText(SELECT_OPTIONS);
 	}
 
 	get inner() {
@@ -814,7 +819,7 @@ class ComboBox extends UI5Element {
 			suggestionPopoverHeader: {
 				"display": this._listWidth === 0 ? "none" : "inline-block",
 				"width": `${this._listWidth}px`,
-				"padding": "0.5625rem 1rem",
+				"padding": "0.9125rem 1rem",
 			},
 		};
 	}

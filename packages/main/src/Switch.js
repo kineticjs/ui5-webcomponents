@@ -15,7 +15,6 @@ import {
 // Template
 import SwitchTemplate from "./generated/templates/SwitchTemplate.lit.js";
 
-
 // Styles
 import switchCss from "./generated/themes/Switch.css.js";
 
@@ -28,10 +27,10 @@ const metadata = {
 	properties: /** @lends sap.ui.webcomponents.main.Switch.prototype */ {
 
 		/**
-		 * Defines if the <code>ui5-switch</code> is checked.
+		 * Defines if the component is checked.
 		 * <br><br>
 		 * <b>Note:</b> The property can be changed with user interaction,
-		 * either by cliking/tapping on the <code>ui5-switch</code>, or by
+		 * either by cliking/tapping on the component, or by
 		 * pressing the <code>Enter</code> or <code>Space</code> key.
 		 *
 		 * @type {boolean}
@@ -43,9 +42,9 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-switch</code> is disabled.
+		 * Defines whether the component is disabled.
 		 * <br><br>
-		 * <b>Note:</b> A disabled <code>ui5-switch</code> is noninteractive.
+		 * <b>Note:</b> A disabled component is noninteractive.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -56,7 +55,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the text of the <code>ui5-switch</code> when switched on.
+		 * Defines the text of the component when switched on.
 		 *
 		 * <br><br>
 		 * <b>Note:</b> We recommend using short texts, up to 3 letters (larger texts would be cut off).
@@ -69,7 +68,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the text of the <code>ui5-switch</code> when switched off.
+		 * Defines the text of the component when switched off.
 		 * <br><br>
 		 * <b>Note:</b> We recommend using short texts, up to 3 letters (larger texts would be cut off).
 		 * @type {string}
@@ -81,7 +80,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the <code>ui5-switch</code> type.
+		 * Defines the component type.
 		 * <br><br>
 		 * <b>Note:</b> If <code>graphical</code> type is set,
 		 * positive and negative icons will replace the <code>textOn</code> and <code>textOff</code>.
@@ -96,7 +95,7 @@ const metadata = {
 	events: /** @lends sap.ui.webcomponents.main.Switch.prototype */ {
 
 		/**
-		 * Fired when the <code>ui5-switch</code> checked state changes.
+		 * Fired when the component checked state changes.
 		 *
 		 * @public
 		 * @event
@@ -114,12 +113,24 @@ const metadata = {
  * The component can display texts, that will be switched, based on the component state, via the <code>textOn</code> and <code>textOff</code> properties,
  * but texts longer than 3 letters will be cutted off.
  * <br>
- * However, users are able to customize the width of <code>ui5-switch</code> with pure CSS (&lt;ui5-switch style="width: 200px">), and set widths, depending on the texts they would use.
+ * However, users are able to customize the width of <code>ui5-switch</code> with pure CSS (<code>&lt;ui5-switch style="width: 200px"></code>), and set widths, depending on the texts they would use.
  * <br>
  * Note: the component would not automatically stretch to fit the whole text width.
  *
  * <h3>Keyboard Handling</h3>
  * The state can be changed by pressing the Space and Enter keys.
+ *
+ * <h3>CSS Shadow Parts</h3>
+ *
+ * <ui5-link target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</ui5-link> allow developers to style elements inside the Shadow DOM.
+ * <br>
+ * The <code>ui5-switch</code> exposes the following CSS Shadow Parts:
+ * <ul>
+ * <li>slider - Used to style the track, where the handle is being slid</li>
+ * <li>text-on - Used to style the onText</li>
+ * <li>text-off - Used to style the offText</li>
+ * <li>handle - Used to style the handle of the switch</li>
+ * </ul>
  *
  * <h3>ES6 Module Import</h3>
  *

@@ -1,5 +1,5 @@
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
-import RenderScheduler from "@ui5/webcomponents-base/dist/RenderScheduler.js";
+import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import {
 	isF4,
 	isF4Shift,
@@ -48,7 +48,7 @@ const metadata = {
 		 * Defines the visibility of the week numbers column.
 		 * <br><br>
 		 *
-		 * <b>Note:<b> For calendars other than Gregorian,
+		 * <b>Note:</b> For calendars other than Gregorian,
 		 * the week numbers are not displayed regardless of what is set.
 		 *
 		 * @type {boolean}
@@ -80,8 +80,8 @@ const metadata = {
 		/**
 		 * Defines the selected date or dates (depending on the <code>selectionMode</code> property) for this calendar as instances of <code>ui5-date</code>
 		 *
-		 * @type {HTMLElement[]}
-		 * @slot
+		 * @type {sap.ui.webcomponents.main.ICalendarDate[]}
+		 * @slot dates
 		 * @public
 		 */
 		"default": {
@@ -93,10 +93,11 @@ const metadata = {
 	events: /** @lends  sap.ui.webcomponents.main.Calendar.prototype */ {
 		/**
 		 * Fired when the selected dates change.
-		 * <b>Note:</b> If you call <code>preventDefault()</code> for this event, <code>ui5-calendar</code> will not
+		 * <b>Note:</b> If you call <code>preventDefault()</code> for this event, the component will not
 		 * create instances of <code>ui5-date</code> for the newly selected dates. In that case you should do this manually.
 		 *
 		 * @event sap.ui.webcomponents.main.Calendar#selected-dates-change
+		 * @allowPreventDefault
 		 * @param {Array} values The selected dates
 		 * @param {Array} dates The selected dates as UTC timestamps
 		 * @public
@@ -152,32 +153,58 @@ const metadata = {
  * <li>[SHIFT] + [PAGEDOWN] - Navigate to the next year</li>
  * <li>[CTRL] + [SHIFT] + [PAGEUP] - Navigate ten years backwards</li>
  * <li>[CTRL] + [SHIFT] + [PAGEDOWN] - Navigate ten years forwards</li>
- * <li>[HOME] - Navigate to the first day of the week
- * <li>[END] - Navigate to the last day of the week
- * <li>[CTRL] + [HOME] - Navigate to the first day of the month
- * <li>[CTRL] + [END] - Navigate to the last day of the month
+ * <li>[HOME] - Navigate to the first day of the week</li>
+ * <li>[END] - Navigate to the last day of the week</li>
+ * <li>[CTRL] + [HOME] - Navigate to the first day of the month</li>
+ * <li>[CTRL] + [END] - Navigate to the last day of the month</li>
  * </ul>
  * <br>
  * - Month picker: <br>
  * <ul>
  * <li>[PAGEUP] - Navigate to the previous month</li>
  * <li>[PAGEDOWN] - Navigate to the next month</li>
- * <li>[HOME] - Navigate to the first month of the current row
- * <li>[END] - Navigate to the last month of the current row
- * <li>[CTRL] + [HOME] - Navigate to the first month of the current year
- * <li>[CTRL] + [END] - Navigate to the last month of the year
+ * <li>[HOME] - Navigate to the first month of the current row</li>
+ * <li>[END] - Navigate to the last month of the current row</li>
+ * <li>[CTRL] + [HOME] - Navigate to the first month of the current year</li>
+ * <li>[CTRL] + [END] - Navigate to the last month of the year</li>
  * </ul>
  * <br>
  * - Year picker: <br>
  * <ul>
  * <li>[PAGEUP] - Navigate to the previous year range</li>
  * <li>[PAGEDOWN] - Navigate the next year range</li>
- * <li>[HOME] - Navigate to the first year of the current row
- * <li>[END] - Navigate to the last year of the current row
- * <li>[CTRL] + [HOME] - Navigate to the first year of the current year range
- * <li>[CTRL] + [END] - Navigate to the last year of the current year range
+ * <li>[HOME] - Navigate to the first year of the current row</li>
+ * <li>[END] - Navigate to the last year of the current row</li>
+ * <li>[CTRL] + [HOME] - Navigate to the first year of the current year range</li>
+ * <li>[CTRL] + [END] - Navigate to the last year of the current year range</li>
  * </ul>
  * <br>
+ *
+* <h3>Calendar types</h3>
+ * The component supports several calendar types - Gregorian, Buddhist, Islamic, Japanese and Persian.
+ * By default the Gregorian Calendar is used. In order to use the Buddhist, Islamic, Japanese or Persian calendar,
+ * you need to set the <code>primaryCalendarType</code> property and import one or more of the following modules:
+ * <br><br>
+ *
+ * <code>import "@ui5/webcomponents-localization/dist/features/calendar/Buddhist.js";</code>
+ * <br>
+ * <code>import "@ui5/webcomponents-localization/dist/features/calendar/Islamic.js";</code>
+ * <br>
+ * <code>import "@ui5/webcomponents-localization/dist/features/calendar/Japanese.js";</code>
+ * <br>
+ * <code>import "@ui5/webcomponents-localization/dist/features/calendar/Persian.js";</code>
+ * <br><br>
+ *
+ * Or, you can use the global configuration and set the <code>calendarType</code> key:
+ * <br>
+ * <code>
+ * &lt;script data-id="sap-ui-config" type="application/json"&gt;
+ * {
+ *	"calendarType": "Japanese"
+ * }
+ * &lt;/script&gt;
+ * </code>
+ *
  *
  * <h3>ES6 Module Import</h3>
  *
@@ -236,7 +263,7 @@ class Calendar extends CalendarPart {
 	}
 
 	async onAfterRendering() {
-		await RenderScheduler.whenFinished(); // Await for the current picker to render and then ask if it has previous/next pages
+		await renderFinished(); // Await for the current picker to render and then ask if it has previous/next pages
 		this._previousButtonDisabled = !this._currentPickerDOM._hasPreviousPage();
 		this._nextButtonDisabled = !this._currentPickerDOM._hasNextPage();
 	}

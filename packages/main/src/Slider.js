@@ -6,6 +6,11 @@ import SliderBase from "./SliderBase.js";
 // Template
 import SliderTemplate from "./generated/templates/SliderTemplate.lit.js";
 
+// Texts
+import {
+	SLIDER_ARIA_DESCRIPTION,
+} from "./generated/i18n/i18n-defaults.js";
+
 /**
  * @public
  */
@@ -57,6 +62,33 @@ const metadata = {
  * <ul>
  * <li>Drag and drop to the desired value</li>
  * <li>Click/tap on the range bar to move the handle to that location</li>
+ * </ul>
+ *
+ * <h3>CSS Shadow Parts</h3>
+ *
+ * <ui5-link target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</ui5-link> allow developers to style elements inside the Shadow DOM.
+ * <br>
+ * The <code>ui5-slider</code> exposes the following CSS Shadow Parts:
+ * <ul>
+ * <li>progress-container - Used to style the progress container(the thin line) of the <code>ui5-slider</code></li>
+ * <li>progress-bar - Used to style the progress bar, which shows the progress of the <code>ui5-slider</code></li>
+ * <li>handle - Used to style the handle of the <code>ui5-slider</code></li>
+ * </ul>
+ *
+ * <h3>Keyboard Handling</h3>
+ *
+ * <ul>
+ * <li><code>Left or Down Arrow</code> - Moves the <code>ui5-slider</code> handle one step to the left, effectively decreasing the <code>ui5-slider</code>'s value by <code>step</code> amount;</li>
+ * <li><code>Right or Up Arrow</code> - Moves the <code>ui5-slider</code> handle one step to the right, effectively increasing the <code>ui5-slider</code>'s value by <code>step</code> amount;</li>
+ * <li><code>Left or Down Arrow + Ctrl/Cmd</code> - Moves the <code>ui5-slider</code> handle to the left with step equal to 1/10th of the entire range, effectively decreasing the <code>ui5-slider</code>'s value by 1/10th of the range;</li>
+ * <li><code>Right or Up Arrow + Ctrl/Cmd</code> - Moves the <code>ui5-slider</code> handle to the right with step equal to 1/10th of the entire range, effectively increasing the <code>ui5-slider</code>'s value by 1/10th of the range;</li>
+ * <li><code>Plus</code> - Same as <code>Right or Up Arrow</code></li>
+ * <li><code>Minus</code> - Same as <code>Left or Down Arrow</code></li>
+ * <li><code>Home</code> - Moves the <code>ui5-slider</code> handle to the beginning of the range;</li>
+ * <li><code>End</code> - Moves the <code>ui5-slider</code> handle to the end of the range;</li>
+ * <li><code>Page Up</code> - Same as <code>Right or Up + Ctrl/Cmd</code></li>
+ * <li><code>Page Down</code> - Same as <code>Left or Down + Ctrl/Cmd</code></li>
+ * <li><code>Escape</code> - Resets the value after interaction, to the position prior the <ui5-slider> focusing;</li>
  * </ul>
  *
  * <h3>ES6 Module Import</h3>
@@ -142,6 +174,10 @@ class Slider extends SliderBase {
 		if (this._getInitialValue("value") === null) {
 			this._setInitialValue("value", this.value);
 		}
+
+		if (this.showTooltip) {
+			this._tooltipVisibility = this._constants().TOOLTIP_VISIBLE;
+		}
 	}
 
 	_onfocusout(event) {
@@ -155,8 +191,11 @@ class Slider extends SliderBase {
 		// Reset focus state and the stored Slider's initial
 		// value that was saved when it was first focused in
 		this._setInitialValue("value", null);
-	}
 
+		if (this.showTooltip) {
+			this._tooltipVisibility = this._constants().TOOLTIP_HIDDEN;
+		}
+	}
 
 	/**
 	 * Called when the user moves the slider
@@ -199,7 +238,6 @@ class Slider extends SliderBase {
 		const sliderHandleDomRect = this._sliderHandle.getBoundingClientRect();
 		return clientX >= sliderHandleDomRect.left && clientX <= sliderHandleDomRect.right;
 	}
-
 
 	/** Updates the UI representation of the progress bar and handle position
 	 *
@@ -265,8 +303,12 @@ class Slider extends SliderBase {
 		return this.value.toFixed(stepPrecision);
 	}
 
-	get tabIndexProgress() {
-		return "-1";
+	get _ariaDisabled() {
+		return this.disabled || undefined;
+	}
+
+	get _ariaLabelledByText() {
+		return this.i18nBundle.getText(SLIDER_ARIA_DESCRIPTION);
 	}
 
 	static async onDefine() {

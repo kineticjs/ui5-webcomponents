@@ -5,6 +5,7 @@ import {
 	isLeft,
 	isRight,
 } from "@ui5/webcomponents-base/dist/Keys.js";
+import { MULTIINPUT_ROLEDESCRIPTION_TEXT } from "./generated/i18n/i18n-defaults.js";
 import Input from "./Input.js";
 import MultiInputTemplate from "./generated/templates/MultiInputTemplate.lit.js";
 import styles from "./generated/themes/MultiInput.css.js";
@@ -40,16 +41,9 @@ const metadata = {
 	},
 	slots: /** @lends  sap.ui.webcomponents.main.MultiInput.prototype */ {
 		/**
-		 * Defines the <code>ui5-multi-input</code> tokens.
-		 * <br><br>
-		 * Example: <br>
-		 * &lt;ui5-multi-input><br>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;ui5-token slot="tokens" text="Token 1">&lt;/ui5-token><br>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;ui5-token slot="tokens" text="Token 2">&lt;/ui5-token><br>
-		 * &lt;/ui5-multi-input>
-		 * <br> <br>
+		 * Defines the component tokens.
 		 *
-		 * @type {HTMLElement[]}
+		 * @type {sap.ui.webcomponents.main.IToken[]}
 		 * @slot
 		 * @public
 		 */
@@ -187,7 +181,7 @@ class MultiInput extends Input {
 		if (isBackSpace(event) && event.target.value === "") {
 			event.preventDefault();
 
-			this._focusLastToken();
+			this.tokenizer._focusLastToken();
 		}
 
 		if (isShow(event)) {
@@ -211,19 +205,8 @@ class MultiInput extends Input {
 		const cursorPosition = this.getDomRef().querySelector(`input`).selectionStart;
 
 		if (cursorPosition === 0) {
-			this._focusLastToken();
+			this.tokenizer._focusLastToken();
 		}
-	}
-
-	_focusLastToken() {
-		const lastTokenIndex = this.tokenizer._tokens.length - 1;
-
-		if (lastTokenIndex < 0) {
-			return;
-		}
-
-		this.tokenizer._itemNav.currentIndex = lastTokenIndex;
-		this.tokenizer._tokens[lastTokenIndex].focus();
 	}
 
 	_onfocusout(event) {
@@ -264,6 +247,44 @@ class MultiInput extends Input {
 
 	get tokenizer() {
 		return this.shadowRoot.querySelector("[ui5-tokenizer]");
+	}
+
+	get _tokensCountText() {
+		if (!this.tokenizer) {
+			return;
+		}
+		return this.tokenizer._tokensCountText();
+	}
+
+	get _tokensCountTextId() {
+		return `${this._id}-hiddenText-nMore`;
+	}
+
+	/**
+	 * Returns the placeholder value when there are no tokens.
+	 * @protected
+	 */
+	get _placeholder() {
+		if (this.tokenizer && this.tokenizer._tokens.length) {
+			return "";
+		}
+
+		return this.placeholder;
+	}
+
+	get accInfo() {
+		const ariaDescribedBy = `${this._tokensCountTextId} ${this.suggestionsTextId} ${this.valueStateTextId}`.trim();
+		return {
+			"input": {
+				...super.accInfo.input,
+				"ariaRoledescription": this.ariaRoleDescription,
+				"ariaDescribedBy": ariaDescribedBy,
+			},
+		};
+	}
+
+	get ariaRoleDescription() {
+		return this.i18nBundle.getText(MULTIINPUT_ROLEDESCRIPTION_TEXT);
 	}
 
 	static get dependencies() {

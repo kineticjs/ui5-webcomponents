@@ -7,7 +7,7 @@ const metadata = {
 	tag: "ui5-mcb-item",
 	properties: /** @lends  sap.ui.webcomponents.main.MultiComboBoxItem.prototype */ {
 		/**
-		 * Defines the selected state of the <code>ui5-mcb-item</code>.
+		 * Defines the selected state of the component.
 		 * @type {boolean}
 		 * @defaultvalue false
 		 * @public
@@ -17,6 +17,7 @@ const metadata = {
 		/**
 		 * Defines the stable selector that you can use via getStableDomRef method.
 		 * @public
+		 * @type {string}
 		 * @since 1.0.0-rc.11
 		 */
 		stableDomRef: {
@@ -34,6 +35,7 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.MultiComboBoxItem
  * @extends ComboBoxItem
  * @tagname ui5-mcb-item
+ * @implements sap.ui.webcomponents.main.IMultiComboBoxItem
  * @public
  */
 class MultiComboBoxItem extends ComboBoxItem {

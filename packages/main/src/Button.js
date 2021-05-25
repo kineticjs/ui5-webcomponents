@@ -5,6 +5,7 @@ import { getFeature } from "@ui5/webcomponents-base/dist/FeaturesRegistry.js";
 import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import isLegacyBrowser from "@ui5/webcomponents-base/dist/isLegacyBrowser.js";
+import { isPhone, isTablet } from "@ui5/webcomponents-base/dist/Device.js";
 import ButtonDesign from "./types/ButtonDesign.js";
 import ButtonTemplate from "./generated/templates/ButtonTemplate.lit.js";
 import Icon from "./Icon.js";
@@ -27,10 +28,18 @@ const metadata = {
 	properties: /** @lends sap.ui.webcomponents.main.Button.prototype */ {
 
 		/**
-		 * Defines the <code>ui5-button</code> design.
+		 * Defines the component design.
+		 *
 		 * <br><br>
-		 * <b>Note:</b> Available options are "Default", "Emphasized", "Positive",
-		 * "Negative", and "Transparent".
+		 * <b>Note:</b>
+		 *
+		 * <ul>
+		 * <li><code>Default</code></li>
+		 * <li><code>Emphasized</code></li>
+		 * <li><code>Positive</code></li>
+		 * <li><code>Negative</code></li>
+		 * <li><code>Transparent</code></li>
+		 * </ul>
 		 *
 		 * @type {ButtonDesign}
 		 * @defaultvalue "Default"
@@ -42,9 +51,9 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the <code>ui5-button</code> is disabled
+		 * Defines whether the component is disabled
 		 * (default is set to <code>false</code>).
-		 * A disabled <code>ui5-button</code> can't be pressed or
+		 * A disabled component can't be pressed or
 		 * focused, and it is not in the tab chain.
 		 *
 		 * @type {boolean}
@@ -56,12 +65,10 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the icon to be displayed as graphical element within the <code>ui5-button</code>.
+		 * Defines the icon to be displayed as graphical element within the component.
 		 * The SAP-icons font provides numerous options.
 		 * <br><br>
 		 * Example:
-		 * <br>
-		 * <pre>ui5-button icon="palette"</pre>
 		 *
 		 * See all the available icons in the <ui5-link target="_blank" href="https://openui5.hana.ondemand.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html" class="api-table-content-cell-link">Icon Explorer</ui5-link>.
 		 *
@@ -74,7 +81,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines whether the icon should be displayed after the <code>ui5-button</code> text.
+		 * Defines whether the icon should be displayed after the component text.
 		 *
 		 * @type {boolean}
 		 * @defaultvalue false
@@ -85,20 +92,7 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the size of the icon inside the <code>ui5-button</code>.
-		 *
-		 * @type {string}
-		 * @defaultvalue undefined
-		 * @public
-		 * @since 1.0.0-rc.8
-		 */
-		iconSize: {
-			type: String,
-			defaultValue: undefined,
-		},
-
-		/**
-		 * When set to <code>true</code>, the <code>ui5-button</code> will
+		 * When set to <code>true</code>, the component will
 		 * automatically submit the nearest form element upon <code>press</code>.
 		 * <br><br>
 		 * <b>Important:</b> For the <code>submits</code> property to have effect, you must add the following import to your project:
@@ -126,7 +120,7 @@ const metadata = {
 		},
 
 		/**
-		 * Used to switch the active state (pressed or not) of the <code>ui5-button</code>.
+		 * Used to switch the active state (pressed or not) of the component.
 		 * @private
 		 */
 		active: {
@@ -195,7 +189,7 @@ const metadata = {
 		 * Indicates if the element if focusable
 		 * @private
 		 */
-		nonFocusable: {
+		nonInteractive: {
 			type: Boolean,
 		},
 
@@ -216,13 +210,21 @@ const metadata = {
 			defaultValue: "0",
 			noAttribute: true,
 		},
+
+		/**
+		 * @since 1.0.0-rc.13
+		 * @private
+		 */
+		_isTouch: {
+			type: Boolean,
+		},
 	},
 	managedSlots: true,
 	slots: /** @lends sap.ui.webcomponents.main.Button.prototype */ {
 		/**
-		 * Defines the text of the <code>ui5-button</code>.
+		 * Defines the text of the component.
 		 * <br><br>
-		 * <b>Note:</b> Аlthough this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
+		 * <b>Note:</b> Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
 		 *
 		 * @type {Node[]}
 		 * @slot
@@ -235,7 +237,7 @@ const metadata = {
 	events: /** @lends sap.ui.webcomponents.main.Button.prototype */ {
 
 		/**
-		 * Fired when the <code>ui5-button</code> is activated either with a
+		 * Fired when the component is activated either with a
 		 * mouse/tap or by using the Enter or Space key.
 		 * <br><br>
 		 * <b>Note:</b> The event will not be fired if the <code>disabled</code>
@@ -243,6 +245,7 @@ const metadata = {
 		 *
 		 * @event
 		 * @public
+		 * @native
 		 */
 		click: {},
 	},
@@ -271,6 +274,15 @@ const metadata = {
  * its style to provide visual feedback to the user that it is pressed or hovered over with
  * the mouse cursor. A disabled <code>ui5-button</code> appears inactive and cannot be pressed.
  *
+ * <h3>CSS Shadow Parts</h3>
+ *
+ * <ui5-link target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</ui5-link> allow developers to style elements inside the Shadow DOM.
+ * <br>
+ * The <code>ui5-button</code> exposes the following CSS Shadow Parts:
+ * <ul>
+ * <li>button - Used to style the native button element</li>
+ * </ul>
+ *
  * <h3>ES6 Module Import</h3>
  *
  * <code>import "@ui5/webcomponents/dist/Button";</code>
@@ -280,6 +292,7 @@ const metadata = {
  * @alias sap.ui.webcomponents.main.Button
  * @extends UI5Element
  * @tagname ui5-button
+ * @implements sap.ui.webcomponents.main.IButton
  * @public
  */
 class Button extends UI5Element {
@@ -321,6 +334,10 @@ class Button extends UI5Element {
 		this.i18nBundle = getI18nBundle("@ui5/webcomponents");
 	}
 
+	onEnterDOM() {
+		this._isTouch = isPhone() || isTablet();
+	}
+
 	onBeforeRendering() {
 		const FormSupport = getFeature("FormSupport");
 		if (this.submits && !FormSupport) {
@@ -332,6 +349,9 @@ class Button extends UI5Element {
 	}
 
 	_onclick(event) {
+		if (this.nonInteractive) {
+			return;
+		}
 		event.isMarked = "button";
 		const FormSupport = getFeature("FormSupport");
 		if (FormSupport) {
@@ -340,9 +360,30 @@ class Button extends UI5Element {
 	}
 
 	_onmousedown(event) {
+		if (this.nonInteractive || this._isTouch) {
+			return;
+		}
+
 		event.isMarked = "button";
 		this.active = true;
 		activeButton = this; // eslint-disable-line
+	}
+
+	_ontouchstart(event) {
+		event.isMarked = "button";
+		if (this.nonInteractive) {
+			return;
+		}
+
+		this.active = true;
+	}
+
+	_ontouchend(event) {
+		this.active = false;
+
+		if (activeButton) {
+			activeButton.active = false;
+		}
 	}
 
 	_onmouseup(event) {
@@ -364,11 +405,18 @@ class Button extends UI5Element {
 	}
 
 	_onfocusout(_event) {
+		if (this.nonInteractive) {
+			return;
+		}
 		this.active = false;
 		this.focused = false;
 	}
 
 	_onfocusin(event) {
+		if (this.nonInteractive) {
+			return;
+		}
+
 		event.isMarked = "button";
 		this.focused = true;
 	}
@@ -378,7 +426,10 @@ class Button extends UI5Element {
 	}
 
 	get isIconOnly() {
-		return !Array.from(this.childNodes).filter(node => node.nodeType !== Node.COMMENT_NODE).length;
+		return !Array.from(this.childNodes).filter(node => {
+			return node.nodeType !== Node.COMMENT_NODE
+			&& (node.nodeType !== Node.TEXT_NODE || node.nodeValue.trim().length !== 0);
+		}).length;
 	}
 
 	get accInfo() {
@@ -413,20 +464,11 @@ class Button extends UI5Element {
 			return tabindex;
 		}
 
-		return this.nonFocusable ? "-1" : this._tabIndex;
+		return this.nonInteractive ? "-1" : this._tabIndex;
 	}
 
 	get showIconTooltip() {
 		return this.iconOnly && !this.title;
-	}
-
-	get styles() {
-		return {
-			icon: {
-				width: this.iconSize,
-				height: this.iconSize,
-			},
-		};
 	}
 
 	static async onDefine() {

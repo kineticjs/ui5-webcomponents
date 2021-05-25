@@ -16,7 +16,7 @@ import Icon from "./Icon.js";
 import AvatarSize from "./types/AvatarSize.js";
 import AvatarShape from "./types/AvatarShape.js";
 import AvatarFitType from "./types/AvatarFitType.js";
-import AvatarBackgroundColor from "./types/AvatarBackgroundColor.js";
+import AvatarColorScheme from "./types/AvatarColorScheme.js";
 
 /**
  * @public
@@ -63,7 +63,7 @@ const metadata = {
 		 * <br><br>
 		 * import "@ui5/webcomponents-icons/dist/{icon_name}.js"
 		 * <br>
-		 * <pre>&lt;ui5-avatar icon-src="employee"></pre>
+		 * <pre>&lt;ui5-avatar icon="employee"></pre>
 		 *
 		 * See all the available icons in the <ui5-link target="_blank" href="https://openui5.hana.ondemand.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html" class="api-table-content-cell-link">Icon Explorer</ui5-link>.
 		 * @type {string}
@@ -77,7 +77,7 @@ const metadata = {
 		/**
 		 * Defines the displayed initials.
 		 * <br>
-		 * Up to two Latin letters can be displayed as initials in a <code>ui5-avatar</code>.
+		 * Up to two Latin letters can be displayed as initials.
 		 *
 		 * @type {string}
 		 * @defaultvalue ""
@@ -88,24 +88,24 @@ const metadata = {
 		},
 
 		/**
-		 * Defines the shape of the <code>ui5-avatar</code>.
+		 * Defines the shape of the component.
 		 * <br><br>
 		 * Available options are:
 		 * <ul>
 		 * <li><code>Circle</code></li>
 		 * <li><code>Square</code></li>
-		 * <ul>
+		 * </ul>
 		 * @type {AvatarShape}
 		 * @defaultvalue "Circle"
 		 * @public
 		 */
 		shape: {
-			type: String,
+			type: AvatarShape,
 			defaultValue: AvatarShape.Circle,
 		},
 
 		/**
-		 * Defines predefined size of the <code>ui5-avatar</code>.
+		 * Defines predefined size of the component.
 		 * <br><br>
 		 * Available options are:
 		 * <ul>
@@ -114,13 +114,13 @@ const metadata = {
 		 * <li><code>M</code></li>
 		 * <li><code>L</code></li>
 		 * <li><code>XL</code></li>
-		 * <ul>
+		 * </ul>
 		 * @type {AvatarSize}
 		 * @defaultvalue "S"
 		 * @public
 		 */
 		size: {
-			type: String,
+			type: AvatarSize,
 			defaultValue: AvatarSize.S,
 		},
 
@@ -139,18 +139,18 @@ const metadata = {
 		 * <ul>
 		 * <li><code>Cover</code></li>
 		 * <li><code>Contain</code></li>
-		 * <ul>
+		 * </ul>
 		 * @type {AvatarFitType}
 		 * @defaultvalue "Cover"
 		 * @public
 		 */
 		imageFitType: {
-			type: String,
+			type: AvatarFitType,
 			defaultValue: AvatarFitType.Cover,
 		},
 
 		/**
-		 * Defines the background color of the desired image.
+		 * Defines the background color of the content.
 		 * <br><br>
 		 * Available options are:
 		 * <ul>
@@ -165,26 +165,26 @@ const metadata = {
 		 * <li><code>Accent9</code></li>
 		 * <li><code>Accent10</code></li>
 		 * <li><code>Placeholder</code></li>
-		 * <ul>
-		 * @type {AvatarBackgroundColor}
+		 * </ul>
+		 * @type {AvatarColorScheme}
 		 * @defaultvalue "Accent6"
 		 * @public
 		 */
-		backgroundColor: {
-			type: String,
-			defaultValue: AvatarBackgroundColor.Accent6,
+		colorScheme: {
+			type: AvatarColorScheme,
+			defaultValue: AvatarColorScheme.Accent6,
 		},
 
 		/**
 		 * @private
 		 */
-		_backgroundColor: {
+		_colorScheme: {
 			type: String,
-			defaultValue: AvatarBackgroundColor.Accent6,
+			defaultValue: AvatarColorScheme.Accent6,
 		},
 
 		/**
-		 * Defines the text alternative of the <code>ui5-avatar</code>.
+		 * Defines the text alternative of the component.
 		 * If not provided a default text alternative will be set, if present.
 		 *
 		 * @type {string}
@@ -193,6 +193,17 @@ const metadata = {
 		 * @since 1.0.0-rc.7
 		 */
 		accessibleName: {
+			type: String,
+		},
+
+		/**
+		 * Defines the aria-haspopup value of the component when <code>interactive</code> property is <code>true</code>.
+		 * <br><br>
+		 * @type String
+		 * @since 1.0.0-rc.15
+		 * @protected
+		 */
+		ariaHaspopup: {
 			type: String,
 		},
 
@@ -226,6 +237,15 @@ const metadata = {
  * The shape can be circular or square. There are several predefined sizes, as well as an option to
  * set a custom size.
  *
+ * <br><br>
+ * <h3>Keyboard Handling</h3>
+ *
+ * <ul>
+ * <li>[SPACE, ENTER, RETURN] - Fires the <code>click</code> event if the <code>interactive</code> property is set to true.</li>
+ * <li>[SHIFT] - If [SPACE] or [ENTER],[RETURN] is pressed, pressing [SHIFT] releases the component without triggering the click event.</li>
+ * </ul>
+ * <br><br>
+ *
  * <h3>ES6 Module Import</h3>
  *
  * <code>import "@ui5/webcomponents/dist/Avatar.js";</code>
@@ -236,6 +256,7 @@ const metadata = {
  * @extends UI5Element
  * @tagname ui5-avatar
  * @since 1.0.0-rc.6
+ * @implements sap.ui.webcomponents.main.IAvatar
  * @public
  */
 class Avatar extends UI5Element {
@@ -293,7 +314,15 @@ class Avatar extends UI5Element {
 	 */
 	get _effectiveBackgroundColor() {
 		// we read the attribute, because the "background-color" property will always have a default value
-		return this.getAttribute("background-color") || this._backgroundColor;
+		return this.getAttribute("_color-scheme") || this._colorScheme;
+	}
+
+	get _role() {
+		return this.interactive ? "button" : undefined;
+	}
+
+	get _ariaHasPopup() {
+		return this._getAriaHasPopup();
 	}
 
 	get validInitials() {
@@ -323,17 +352,24 @@ class Avatar extends UI5Element {
 	}
 
 	_onclick(event) {
-		event.isMarked = "avatar";
 		if (this.interactive) {
-			event.preventDefault();
-			// Prevent the native event and fire custom event because otherwise the noConfict event won't be thrown
+			// prevent the native event and fire custom event to ensure the noConfict "ui5-click" is fired
+			event.stopPropagation();
 			this.fireEvent("click");
 		}
 	}
 
 	_onkeydown(event) {
-		if (this.interactive && isEnter(event)) {
+		if (!this.interactive) {
+			return;
+		}
+
+		if (isEnter(event)) {
 			this.fireEvent("click");
+		}
+
+		if (isSpace(event)) {
+			event.preventDefault(); // prevent scrolling
 		}
 	}
 
@@ -351,6 +387,14 @@ class Avatar extends UI5Element {
 		if (this.interactive) {
 			this.focused = true;
 		}
+	}
+
+	_getAriaHasPopup() {
+		if (!this.interactive || this.ariaHaspopup === "") {
+			return;
+		}
+
+		return this.ariaHaspopup;
 	}
 }
 
