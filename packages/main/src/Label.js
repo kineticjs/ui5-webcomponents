@@ -66,6 +66,11 @@ const metadata = {
 		"for": {
 			type: String,
 		},
+
+		_tabIndex: {
+			type: String,
+			noAttribute: true,
+		},
 	},
 	slots: /** @lends sap.ui.webcomponents.main.Label.prototype */ {
 		/**
@@ -132,6 +137,13 @@ class Label extends UI5Element {
 				"ui5-label-text-wrapper-safari": isSafari(),
 			},
 		};
+	}
+
+	get tabIndex() {
+		if (this._tabIndex.length) {
+			return this._tabIndex;
+		}
+		return undefined;
 	}
 
 	_onclick() {
