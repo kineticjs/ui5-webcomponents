@@ -3,7 +3,7 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { fetchI18nBundle, getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { BrowserMultiFormatReader } from "@zxing/library";
 
-// Templates
+// Template
 import BarcodeScannerTemplate from "./generated/templates/BarcodeScannerTemplate.lit.js";
 import BarcodeScannerPopoverTemplate from "./generated/templates/BarcodeScannerPopoverTemplate.lit.js";
 
