@@ -7,6 +7,8 @@ import { BrowserMultiFormatReader } from "@zxing/library";
 import BarcodeScannerTemplate from "./generated/templates/BarcodeScannerTemplate.lit.js";
 import BarcodeScannerPopoverTemplate from "./generated/templates/BarcodeScannerPopoverTemplate.lit.js";
 
+
+
 const metadata = {
 	tag: "ui5-barcode-scanner",
 	properties: {
