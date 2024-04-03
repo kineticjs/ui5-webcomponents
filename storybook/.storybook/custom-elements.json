@@ -6220,7 +6220,7 @@
                         },
                         {
                             "name": "valueStateMessage",
-                            "description": "Defines the value state message that will be displayed as pop up under the component.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the `ui5-combobox` is in `Information`, `Warning` or `Error` value state.",
+                            "description": "Defines the value state message that will be displayed as pop up under the component.\nThe value state message slot should contain only one root element.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the `ui5-combobox` is in `Information`, `Warning` or `Error` value state.",
                             "_ui5since": "1.0.0-rc.9",
                             "_ui5type": {
                                 "text": "Array<HTMLElement>"
@@ -9476,7 +9476,7 @@
                         },
                         {
                             "name": "valueStateMessage",
-                            "description": "Defines the value state message that will be displayed as pop up under the component.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the component is in `Information`, `Warning` or `Error` value state.\n\n**Note:** If the component has `suggestionItems`,\nthe `valueStateMessage` would be displayed as part of the same popover, if used on desktop, or dialog - on phone.",
+                            "description": "Defines the value state message that will be displayed as pop up under the component.\nThe value state message slot should contain only one root element.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the component is in `Information`, `Warning` or `Error` value state.\n\n**Note:** If the component has `suggestionItems`,\nthe `valueStateMessage` would be displayed as part of the same popover, if used on desktop, or dialog - on phone.",
                             "_ui5since": "1.0.0-rc.6",
                             "_ui5type": {
                                 "text": "Array<HTMLElement>"
@@ -11387,7 +11387,7 @@
                         },
                         {
                             "name": "valueStateMessage",
-                            "description": "Defines the value state message that will be displayed as pop up under the component.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the component is in `Information`, `Warning` or `Error` value state.",
+                            "description": "Defines the value state message that will be displayed as pop up under the component.\nThe value state message slot should contain only one root element.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the component is in `Information`, `Warning` or `Error` value state.",
                             "_ui5since": "1.0.0-rc.9",
                             "_ui5type": {
                                 "text": "Array<HTMLElement>"
@@ -11870,7 +11870,7 @@
                         },
                         {
                             "name": "valueStateMessage",
-                            "description": "Defines the value state message that will be displayed as pop up under the component.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the component is in `Information`, `Warning` or `Error` value state.\n\n**Note:** If the component has `suggestionItems`,\nthe `valueStateMessage` would be displayed as part of the same popover, if used on desktop, or dialog - on phone.",
+                            "description": "Defines the value state message that will be displayed as pop up under the component.\nThe value state message slot should contain only one root element.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed,\nwhen the component is in `Information`, `Warning` or `Error` value state.\n\n**Note:** If the component has `suggestionItems`,\nthe `valueStateMessage` would be displayed as part of the same popover, if used on desktop, or dialog - on phone.",
                             "_ui5since": "1.0.0-rc.6",
                             "_ui5type": {
                                 "text": "Array<HTMLElement>"
@@ -13319,6 +13319,10 @@
                     "description": "### Overview\nShows the progress of a process in a graphical way. To indicate the progress,\nthe inside of the component is filled with a color.\n\n### Responsive Behavior\nYou can change the size of the Progress Indicator by changing its `width` or `height` CSS properties.\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/ProgressIndicator.js\";`",
                     "name": "ProgressIndicator",
                     "cssParts": [
+                        {
+                            "description": "Used to style the main bar of the `ui5-progress-indicator`",
+                            "name": "_ui5bar"
+                        },
                         {
                             "description": "Used to style the remaining bar of the `ui5-progress-indicator`",
                             "name": "_ui5remaining-bar"
@@ -18399,7 +18403,7 @@
                     "slots": [
                         {
                             "name": "valueStateMessage",
-                            "description": "Defines the value state message that will be displayed as pop up under the component.\n\n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed if the component has\n`valueState` of type `Information`, `Warning` or `Error`.",
+                            "description": "Defines the value state message that will be displayed as pop up under the component.\nThe value state message slot should contain only one root element.\n \n**Note:** If not specified, a default text (in the respective language) will be displayed.\n\n**Note:** The `valueStateMessage` would be displayed if the component has\n`valueState` of type `Information`, `Warning` or `Error`.",
                             "_ui5since": "1.0.0-rc.7",
                             "_ui5type": {
                                 "text": "Array<HTMLElement>"
