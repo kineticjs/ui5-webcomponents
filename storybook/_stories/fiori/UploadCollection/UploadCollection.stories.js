@@ -3,7 +3,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import argTypes from "./argTypes.js";
 import UploadState from "@ui5/webcomponents-fiori/dist/types/UploadState.js";
-import ListMode from "@ui5/webcomponents/dist/types/ListMode.js";
+import UploadCollectionSelectionMode from "@ui5/webcomponents-fiori/dist/types/UploadCollectionSelectionMode.js";
 import ListItemType from "@ui5/webcomponents/dist/types/ListItemType.js";
 export default {
     title: "Fiori/Upload Collection",
@@ -20,7 +20,7 @@ const Template = (args) => {
     return html `
 <ui5-upload-collection
 	id="${ifDefined(args.id)}"
-	mode="${ifDefined(args.mode)}"
+	selection-mode="${ifDefined(args.selectionMode)}"
 	no-data-description="${ifDefined(args.noDataDescription)}"
 	no-data-text="${ifDefined(args.noDataText)}"
 	?hide-drag-overlay="${ifDefined(args.hideDragOverlay)}"
@@ -111,7 +111,7 @@ const handleFileUpload = (story) => {
 };
 export const Basic = Template.bind({});
 Basic.args = {
-    mode: ListMode.Delete,
+    selectionMode: UploadCollectionSelectionMode.None,
     id: "uploadCollection",
     accessibleName: "Uploaded (2)",
     header: `<div slot="header" class="header">

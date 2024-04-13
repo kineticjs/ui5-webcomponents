@@ -6,7 +6,7 @@ export default {
             "NoCurrentPage"
         ]
     },
-    "separatorStyle": {
+    "separators": {
         "control": "select",
         "options": [
             "Slash",

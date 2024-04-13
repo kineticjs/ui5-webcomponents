@@ -1,5 +1,5 @@
 export default {
-    "size": {
+    "design": {
         "control": "select",
         "options": [
             "Auto",

@@ -11,7 +11,6 @@ const Template = (args) => {
     return html `<ui5-select>
    <ui5-option
    additional-text="${ifDefined(args.additionalText)}"
-   ?disabled="${ifDefined(args.disabled)}"
    icon="${ifDefined(args.icon)}"
    ?selected="${ifDefined(args.selected)}"
    value="${ifDefined(args.value)}"

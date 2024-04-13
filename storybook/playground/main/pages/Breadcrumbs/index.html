@@ -22,7 +22,7 @@
 
 	
 
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-e5e24f7f.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-23a22502.js"></script>
   <link rel="stylesheet" href="../../../../assets/Breadcrumbs-84456832.css">
 </head>
 
@@ -81,7 +81,7 @@
 		<ui5-breadcrumbs-item href="#">Link7</ui5-breadcrumbs-item>
 	</ui5-breadcrumbs>
 
-	<h2>Breadcrumbs with specific separator style</h2>
+	<h2>Breadcrumbs with specific separators</h2>
 	<ui5-select id="selectSeparator">
 		<ui5-option>Slash</ui5-option>
 		<ui5-option>BackSlash</ui5-option>
@@ -236,7 +236,7 @@
 
 		selectSeparator.addEventListener("ui5-change", function(e) {
 			let separator = e.detail.selectedOption.textContent;
-			breadcrumbs4.setAttribute("separator-style", separator);
+			breadcrumbs4.setAttribute("separators", separator);
 		});
 
 	</script>

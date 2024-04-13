@@ -1,5 +1,5 @@
 declare const _default: {
-    placementType: {
+    placement: {
         control: string;
         options: string[];
     };

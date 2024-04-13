@@ -9,52 +9,6 @@ export default {
             }
         }
     },
-    "showAt": {
-        "description": "Shows the ColorPalettePopover.",
-        "table": {
-            "category": "methods"
-        },
-        "UI5CustomData": {
-            "parameters": [
-                {
-                    "name": "opener",
-                    "type": {
-                        "text": "HTMLElement"
-                    },
-                    "description": "the element that the popover is shown at",
-                    "_ui5privacy": "public"
-                }
-            ],
-            "returnValue": {
-                "type": {
-                    "text": "void"
-                }
-            }
-        }
-    },
-    "openPopover": {
-        "description": "Shows the ColorPalettePopover.",
-        "table": {
-            "category": "methods"
-        },
-        "UI5CustomData": {
-            "parameters": [
-                {
-                    "name": "opener",
-                    "type": {
-                        "text": "HTMLElement"
-                    },
-                    "description": "the element that the popover is shown at",
-                    "_ui5privacy": "public"
-                }
-            ],
-            "returnValue": {
-                "type": {
-                    "text": "void"
-                }
-            }
-        }
-    },
     "item-click": {
         "description": "Fired when the user selects a color.",
         "control": {

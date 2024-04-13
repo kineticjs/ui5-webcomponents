@@ -1,7 +1,7 @@
 import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import ListMode from "@ui5/webcomponents/dist/types/ListMode.js";
+import ListSelectionMode from "@ui5/webcomponents/dist/types/ListSelectionMode.js";
 import argTypes from "./argTypes.js";
 export default {
     title: "Main/List",
@@ -10,12 +10,12 @@ export default {
 };
 const Template = (args) => {
     return html ` <ui5-list
-    mode="${ifDefined(args.mode)}"
-    ?busy="${ifDefined(args.busy)}"
+    selection-mode="${ifDefined(args.selectionMode)}"
+    ?loading="${ifDefined(args.loading)}"
     ?indent="${ifDefined(args.indent)}"
     ?growing="${ifDefined(args.growing)}"
     growing-button-text="${ifDefined(args.growingButtonText)}"
-    busy-delay="${ifDefined(args.busyDelay)}"
+    loading-delay="${ifDefined(args.loadingDelay)}"
     separators="${ifDefined(args.separators)}"
     header-text="${ifDefined(args.headerText)}"
     footer-text="${ifDefined(args.footerText)}"
@@ -94,10 +94,10 @@ export const Growing = () => html `<ui5-list id="infiniteScrollEx" style="height
       }
       infiniteScrollEx.addEventListener("load-more", (e) => {
         var el = infiniteScrollEx;
-        el.busy = true;
+        el.loading = true;
         setTimeout(() => {
           insertItems(el, 5);
-          el.busy = false;
+          el.loading = false;
         }, 200);
       });
     </script>`;
@@ -110,8 +110,8 @@ Growing.parameters = {
         },
     },
 };
-export const Modes = () => html `
-<ui5-list mode="SingleSelect" header-text="Single Select Mode:">
+export const SelectionModes = () => html `
+<ui5-list selection-mode="Single" header-text="Single Selection Mode:">
 <ui5-li selected icon="map" icon-end>Argentina</ui5-li>
 	<ui5-li icon="map" icon-end>Bulgaria</ui5-li>
 	<ui5-li icon="map" icon-end>China</ui5-li>
@@ -120,7 +120,7 @@ export const Modes = () => html `
 
 </br>
 
-<ui5-list mode="MultiSelect" header-text="Multi Select Mode:">
+<ui5-list selection-mode="Multiple" header-text="Multiple Selection Mode:">
 <ui5-li>Pineapple</ui5-li>
 <ui5-li selected="">Orange</ui5-li>
 <ui5-li>Banana</ui5-li>
@@ -129,7 +129,7 @@ export const Modes = () => html `
 
 </br>
 
-<ui5-list mode="Delete" header-text="Delete Mode:">
+<ui5-list selection-mode="Delete" header-text="Delete Mode:">
 <ui5-li>Argentina</ui5-li>
 <ui5-li>Bulgaria</ui5-li>
 <ui5-li>China</ui5-li>
@@ -137,13 +137,13 @@ export const Modes = () => html `
 
 </br>
 
-<ui5-list mode="NoData" header-text="No Data Mode:" no-data-text="No Data Available">
+<ui5-list selection-mode="None" header-text="None Selection Mode:" no-data-text="No Data Available">
 </ui5-list>
 `;
 export const GroupHeaders = Template.bind({});
 GroupHeaders.storyName = "Group Headers";
 GroupHeaders.args = {
-    mode: ListMode.MultiSelect,
+    selectionMode: ListSelectionMode.Multiple,
     default: `<ui5-li-groupheader
 	>Front End Developers</ui5-li-groupheader
 	>

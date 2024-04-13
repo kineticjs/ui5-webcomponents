@@ -7,7 +7,6 @@ export default {
     argTypes,
 };
 const Template = (args) => html `<ui5-progress-indicator
-        ?disabled="${ifDefined(args.disabled)}"
         ?hide-value="${ifDefined(args.hideValue)}"
         value="${ifDefined(args.value)}"
         display-value="${ifDefined(args.displayValue)}"

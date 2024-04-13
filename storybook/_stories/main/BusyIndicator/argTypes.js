@@ -2,9 +2,9 @@ export default {
     "size": {
         "control": "select",
         "options": [
-            "Small",
-            "Medium",
-            "Large"
+            "S",
+            "M",
+            "L"
         ]
     },
     "textPlacement": {

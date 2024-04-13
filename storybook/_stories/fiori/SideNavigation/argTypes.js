@@ -5,7 +5,7 @@ export default {
         },
         "table": {
             "type": {
-                "summary": "Array<SideNavigationItem | SideNavigationGroup>"
+                "summary": "Array<SideNavigationItemBase>"
             }
         }
     },
@@ -15,7 +15,7 @@ export default {
         },
         "table": {
             "type": {
-                "summary": "Array<SideNavigationItem | SideNavigationGroup>"
+                "summary": "Array<SideNavigationItemBase>"
             }
         }
     },

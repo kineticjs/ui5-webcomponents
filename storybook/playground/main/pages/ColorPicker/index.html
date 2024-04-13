@@ -21,7 +21,7 @@
 
 
 
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-e5e24f7f.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-23a22502.js"></script>
   <link rel="stylesheet" href="../../../../assets/ColorPicker-7cec8ee6.css">
 </head>
 <body class="colorpicker1auto">
@@ -53,8 +53,8 @@
 			colorPicker1 = document.getElementById("cp1"),
 			stepInput = document.getElementById("changeEventCounter");
 
-		colorPicker.addEventListener("ui5-change", function(event) {
-			colorLabel.value = event.target.color;
+		colorPicker.addEventListener("ui5-change", () => {
+			colorLabel.value = event.target.value;
 		});
 
 		colorPicker1.addEventListener("ui5-change", function(event) {

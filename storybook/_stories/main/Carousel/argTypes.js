@@ -1,5 +1,5 @@
 export default {
-    "pageIndicatorStyle": {
+    "pageIndicatorType": {
         "control": "select",
         "options": [
             "Default",

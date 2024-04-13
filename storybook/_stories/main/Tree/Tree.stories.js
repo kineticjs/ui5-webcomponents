@@ -8,7 +8,7 @@ export default {
     argTypes,
 };
 const Template = (args) => html `<ui5-tree
-    mode="${ifDefined(args.mode)}"
+	selection-mode="${ifDefined(args.selectionMode)}"
     no-data-text="${ifDefined(args.noDataText)}"
     header-text="${ifDefined(args.headerText)}"
     footer-text="${ifDefined(args.footerText)}"
@@ -42,7 +42,7 @@ Basic.args = {
 };
 export const DynamicContent = () => html `
     <ui5-busy-indicator id="busy" class="full-width">
-        <ui5-tree id="treeDynamic" mode="None" class="full-width">
+        <ui5-tree id="treeDynamic" selection-mode="None" class="full-width">
             <ui5-tree-item text="Has pre-loaded children">
                 <ui5-tree-item text="Child 1"></ui5-tree-item>
                 <ui5-tree-item text="Child 2"></ui5-tree-item>

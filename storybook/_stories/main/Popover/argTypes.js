@@ -1,9 +1,9 @@
 export default {
-    "placementType": {
+    "placement": {
         "control": "select",
         "options": [
-            "Left",
-            "Right",
+            "Start",
+            "End",
             "Top",
             "Bottom"
         ]
@@ -12,8 +12,8 @@ export default {
         "control": "select",
         "options": [
             "Center",
-            "Left",
-            "Right",
+            "Start",
+            "End",
             "Stretch"
         ]
     },

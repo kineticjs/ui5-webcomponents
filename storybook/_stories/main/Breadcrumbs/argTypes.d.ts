@@ -3,7 +3,7 @@ declare const _default: {
         control: string;
         options: string[];
     };
-    separatorStyle: {
+    separators: {
         control: string;
         options: string[];
     };

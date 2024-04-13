@@ -1,14 +1,13 @@
 export default {
-    "mode": {
+    "selectionMode": {
         "control": "select",
         "options": [
             "None",
-            "SingleSelect",
-            "SingleSelectBegin",
-            "SingleSelectEnd",
-            "SingleSelectAuto",
-            "MultiSelect",
-            "Delete"
+            "Single",
+            "SingleStart",
+            "SingleEnd",
+            "SingleAuto",
+            "Multiple"
         ]
     },
     "default": {
@@ -17,7 +16,7 @@ export default {
         },
         "table": {
             "type": {
-                "summary": "Array<IUploadCollectionItem>"
+                "summary": "Array<UploadCollectionItem>"
             }
         }
     },
@@ -53,7 +52,7 @@ export default {
         }
     },
     "selection-change": {
-        "description": "Fired when selection is changed by user interaction\nin `SingleSelect` and `MultiSelect` modes.",
+        "description": "Fired when selection is changed by user interaction\nin `Single` and `Multiple` modes.",
         "control": {
             "type": false
         },

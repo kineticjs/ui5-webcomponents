@@ -1,5 +1,5 @@
 declare const _default: {
-    size: {
+    design: {
         control: string;
         options: string[];
     };

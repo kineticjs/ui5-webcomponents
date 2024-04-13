@@ -1,5 +1,5 @@
 declare const _default: {
-    getTabInStripDomRef: {
+    getDomRefInStrip: {
         description: string;
         table: {
             category: string;
@@ -8,11 +8,6 @@ declare const _default: {
             returnValue: {
                 type: {
                     text: string;
-                    references: {
-                        name: string;
-                        package: string;
-                        module: string;
-                    }[];
                 };
             };
         };

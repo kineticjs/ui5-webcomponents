@@ -61,10 +61,6 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/docs/docs-advanced-csp--docs</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
     <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/docs/docs-advanced-scrollbars-customization--docs</loc>
     <changefreq>monthly</changefreq>
   </url>
@@ -237,6 +233,10 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/docs/docs-migrating-to-version-2-0-guide--docs</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/docs/docs-release-management--docs</loc>
     <changefreq>monthly</changefreq>
   </url>
@@ -254,6 +254,10 @@
   </url>
   <url>
     <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-badge--badge-overview</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-bar--bar-overview</loc>
     <changefreq>monthly</changefreq>
   </url>
   <url>
@@ -458,6 +462,10 @@
   </url>
   <url>
     <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-badge--basic</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-bar--basic</loc>
     <changefreq>monthly</changefreq>
   </url>
   <url>
@@ -689,7 +697,7 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-breadcrumbs--separator-style</loc>
+    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-breadcrumbs--separators</loc>
     <changefreq>monthly</changefreq>
   </url>
   <url>
@@ -909,7 +917,7 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-list--modes</loc>
+    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/main/main-list--selection-modes</loc>
     <changefreq>monthly</changefreq>
   </url>
   <url>
@@ -1373,10 +1381,6 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/fiori/fiori-bar--bar-overview</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
     <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/fiori/fiori-barcode-scanner-dialog--barcode-scanner-dialog-overview</loc>
     <changefreq>monthly</changefreq>
   </url>
@@ -1434,10 +1438,6 @@
   </url>
   <url>
     <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/fiori/fiori-wizard--wizard-overview</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://sap.github.io/ui5-webcomponents/playground/?path=/fiori/fiori-bar--basic</loc>
     <changefreq>monthly</changefreq>
   </url>
   <url>

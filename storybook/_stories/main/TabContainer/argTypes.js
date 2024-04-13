@@ -6,7 +6,7 @@ export default {
             "Standard"
         ]
     },
-    "tabsOverflowMode": {
+    "overflowMode": {
         "control": "select",
         "options": [
             "End",
@@ -76,12 +76,12 @@ export default {
             "parameters": [
                 {
                     "type": {
-                        "text": "ITab",
+                        "text": "Tab",
                         "references": [
                             {
-                                "name": "ITab",
+                                "name": "Tab",
                                 "package": "@ui5/webcomponents",
-                                "module": "dist/TabContainer.js"
+                                "module": "dist/Tab.js"
                             }
                         ]
                     },
@@ -103,6 +103,64 @@ export default {
                     "name": "tabIndex",
                     "_ui5privacy": "public",
                     "description": "The selected `tab` index in the flattened array of all tabs and their subTabs, provided by the `allItems` getter."
+                }
+            ]
+        }
+    },
+    "move-over": {
+        "description": "Fired when element is being moved over the tab container.\n\nIf the new position is valid, prevent the default action of the event using `preventDefault()`.",
+        "control": {
+            "type": false
+        },
+        "table": {
+            "category": "events"
+        },
+        "UI5CustomData": {
+            "parameters": [
+                {
+                    "type": {
+                        "text": "object"
+                    },
+                    "name": "source",
+                    "_ui5privacy": "public",
+                    "description": "Contains information about the moved element under `element` property."
+                },
+                {
+                    "type": {
+                        "text": "object"
+                    },
+                    "name": "destination",
+                    "_ui5privacy": "public",
+                    "description": "Contains information about the destination of the moved element. Has `element` and `placement` properties."
+                }
+            ]
+        }
+    },
+    "move": {
+        "description": "Fired when element is moved to the tab container.\n\n**Note:** `move` event is fired only if there was a preceding `move-over` with prevented default action.",
+        "control": {
+            "type": false
+        },
+        "table": {
+            "category": "events"
+        },
+        "UI5CustomData": {
+            "parameters": [
+                {
+                    "type": {
+                        "text": "object"
+                    },
+                    "name": "source",
+                    "_ui5privacy": "public",
+                    "description": "Contains information about the moved element under `element` property."
+                },
+                {
+                    "type": {
+                        "text": "object"
+                    },
+                    "name": "destination",
+                    "_ui5privacy": "public",
+                    "description": "Contains information about the destination of the moved element. Has `element` and `placement` properties."
                 }
             ]
         }

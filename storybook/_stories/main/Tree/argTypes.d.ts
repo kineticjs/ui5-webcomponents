@@ -1,5 +1,5 @@
 declare const _default: {
-    mode: {
+    selectionMode: {
         control: string;
         options: string[];
     };

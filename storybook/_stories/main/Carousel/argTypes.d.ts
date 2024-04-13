@@ -1,5 +1,5 @@
 declare const _default: {
-    pageIndicatorStyle: {
+    pageIndicatorType: {
         control: string;
         options: string[];
     };

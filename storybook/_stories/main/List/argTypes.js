@@ -1,13 +1,13 @@
 export default {
-    "mode": {
+    "selectionMode": {
         "control": "select",
         "options": [
             "None",
-            "SingleSelect",
-            "SingleSelectBegin",
-            "SingleSelectEnd",
-            "SingleSelectAuto",
-            "MultiSelect",
+            "Single",
+            "SingleStart",
+            "SingleEnd",
+            "SingleAuto",
+            "Multiple",
             "Delete"
         ]
     },
@@ -111,7 +111,7 @@ export default {
         }
     },
     "item-delete": {
-        "description": "Fired when the Delete button of any item is pressed.\n\n**Note:** A Delete button is displayed on each item,\nwhen the component `mode` property is set to `Delete`.",
+        "description": "Fired when the Delete button of any item is pressed.\n\n**Note:** A Delete button is displayed on each item,\nwhen the component `selectionMode` property is set to `Delete`.",
         "control": {
             "type": false
         },
@@ -132,7 +132,7 @@ export default {
         }
     },
     "selection-change": {
-        "description": "Fired when selection is changed by user interaction\nin `SingleSelect`, `SingleSelectBegin`, `SingleSelectEnd` and `MultiSelect` modes.",
+        "description": "Fired when selection is changed by user interaction\nin `Single`, `SingleStart`, `SingleEnd` and `Multiple` selection modes.",
         "control": {
             "type": false
         },

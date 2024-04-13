@@ -21,11 +21,11 @@ const Template = (args) => {
 export const Basic = Template.bind({});
 Basic.args = {
     active: true,
-    size: BusyIndicatorSize.Medium,
+    size: BusyIndicatorSize.M,
 };
 export const UsageWithComponents = Template.bind({});
 UsageWithComponents.args = {
-    size: BusyIndicatorSize.Medium,
+    size: BusyIndicatorSize.M,
     default: `<ui5-list
 	no-data-text="No Data"
 	header-text="Available Items"

@@ -6,7 +6,7 @@ declare const _default: Meta<List>;
 export default _default;
 export declare const Basic: UI5StoryArgs<List, StoryArgsSlots>;
 export declare const Growing: StoryFn;
-export declare const Modes: StoryFn;
+export declare const SelectionModes: StoryFn;
 export declare const GroupHeaders: UI5StoryArgs<List, StoryArgsSlots>;
 export declare const SeparationTypes: StoryFn;
 export declare const HighlightTypes: StoryFn;

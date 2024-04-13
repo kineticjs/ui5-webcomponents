@@ -13,7 +13,7 @@ declare const _default: {
             };
         };
     };
-    subTabs: {
+    items: {
         control: {
             type: string;
         };
@@ -23,7 +23,7 @@ declare const _default: {
             };
         };
     };
-    getTabInStripDomRef: {
+    getDomRefInStrip: {
         description: string;
         table: {
             category: string;
@@ -32,11 +32,6 @@ declare const _default: {
             returnValue: {
                 type: {
                     text: string;
-                    references: {
-                        name: string;
-                        package: string;
-                        module: string;
-                    }[];
                 };
             };
         };
@@ -50,5 +45,5 @@ export declare const componentInfo: {
 };
 export type StoryArgsSlots = {
     default: string;
-    subTabs: string;
+    items: string;
 };

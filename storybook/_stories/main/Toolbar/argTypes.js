@@ -24,7 +24,7 @@ export default {
         "UI5CustomData": {
             "returnValue": {
                 "type": {
-                    "text": "Promise<boolean>"
+                    "text": "boolean"
                 }
             }
         }

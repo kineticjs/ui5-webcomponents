@@ -15,7 +15,7 @@ export default {
         },
         "table": {
             "type": {
-                "summary": "Array<ICardHeader>"
+                "summary": "Array<CardHeader>"
             }
         }
     }

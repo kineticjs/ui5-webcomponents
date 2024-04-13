@@ -26,12 +26,12 @@ const Template = (args) => {
 </ui5-card>
 	`;
 };
-const header = (titleText, subtitleText, status, actions, avatar, interactive) => {
+const header = (titleText, subtitleText, additionalText, actions, avatar, interactive) => {
     return `<ui5-card-header
 	slot="header"
 	title-text="${titleText}"
 	subtitle-text="${subtitleText}"
-	${status ? `status="${status}"` : ""}
+	${additionalText ? `additional-text="${additionalText}"` : ""}
 	${interactive ? "interactive" : ""}
 >
 	${avatar ? avatar : ""}

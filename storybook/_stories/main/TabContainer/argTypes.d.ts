@@ -3,7 +3,7 @@ declare const _default: {
         control: string;
         options: string[];
     };
-    tabsOverflowMode: {
+    overflowMode: {
         control: string;
         options: string[];
     };
@@ -67,6 +67,44 @@ declare const _default: {
                         package: string;
                         module: string;
                     }[];
+                };
+                name: string;
+                _ui5privacy: string;
+                description: string;
+            }[];
+        };
+    };
+    "move-over": {
+        description: string;
+        control: {
+            type: boolean;
+        };
+        table: {
+            category: string;
+        };
+        UI5CustomData: {
+            parameters: {
+                type: {
+                    text: string;
+                };
+                name: string;
+                _ui5privacy: string;
+                description: string;
+            }[];
+        };
+    };
+    move: {
+        description: string;
+        control: {
+            type: boolean;
+        };
+        table: {
+            category: string;
+        };
+        UI5CustomData: {
+            parameters: {
+                type: {
+                    text: string;
                 };
                 name: string;
                 _ui5privacy: string;

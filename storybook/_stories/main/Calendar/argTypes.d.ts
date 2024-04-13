@@ -41,7 +41,7 @@ declare const _default: {
             };
         };
     };
-    "selected-dates-change": {
+    "selection-change": {
         description: string;
         control: {
             type: boolean;
