@@ -21,8 +21,8 @@
 	
 
 
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-685997e5.js"></script>
-  <link rel="stylesheet" href="../../../../assets/Dialog-be6e9063.css">
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-1337f7fc.js"></script>
+  <link rel="stylesheet" href="../../../../assets/Dialog-bde1b464.css">
 </head>
 
 <body>
@@ -595,6 +595,13 @@
 		</div>
 	</ui5-dialog>
 	<br>
+	<br>
+	<ui5-button id="btnDialogBackground">Dialog Custom Background</ui5-button>
+	<ui5-dialog class="dialogCustomBackground" id="dialogBackground">
+		Some Dialog
+	</ui5-dialog>
+	<br>
+	<br>
 	<div>
 		<ui5-title level="H3">Open Dialog from list</ui5-title>
 		<ui5-list id="listContainerId" selection-mode="Single">
@@ -820,6 +827,10 @@
 
 		window["dialogFocus"].addEventListener("click", function () {
 			window["dialogFocus1"].open = true;
+		});
+
+		window["btnDialogBackground"].addEventListener("click", function () {
+			window["dialogBackground"].open = true;
 		});
 
 		window["closeDialogFocusButton"].addEventListener("click", function () {
