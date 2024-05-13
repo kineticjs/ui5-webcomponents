@@ -22,19 +22,6 @@ export default {
                 "summary": "Array<Node>"
             }
         }
-    },
-    "show": {
-        "description": "Shows the component.",
-        "table": {
-            "category": "methods"
-        },
-        "UI5CustomData": {
-            "returnValue": {
-                "type": {
-                    "text": "void"
-                }
-            }
-        }
     }
 };
 export const componentInfo = {

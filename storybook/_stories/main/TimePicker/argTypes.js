@@ -1,18 +1,18 @@
 export default {
-    "dateValue": {
-        "control": {
-            "type": false
-        }
-    },
     "valueState": {
         "control": "select",
         "options": [
             "None",
-            "Success",
-            "Warning",
-            "Error",
+            "Positive",
+            "Critical",
+            "Negative",
             "Information"
         ]
+    },
+    "dateValue": {
+        "control": {
+            "type": false
+        }
     },
     "valueStateMessage": {
         "control": {

@@ -29,12 +29,12 @@ Basic.args = {
 	<ui5-option icon="ipad">Tablet</ui5-option>
 	<ui5-option icon="laptop" selected="">Desktop</ui5-option>`,
 };
-export const ValueStateAndValueStateMessage = () => html `<ui5-select value-state="Success" class="select">
+export const ValueStateAndValueStateMessage = () => html `<ui5-select value-state="Positive" class="select">
       <ui5-option icon="meal" selected="">Apple</ui5-option>
       <ui5-option icon="meal">Avocado</ui5-option>
       <ui5-option icon="meal">Mango</ui5-option>
     </ui5-select>
-    <ui5-select value-state="Warning" class="select">
+    <ui5-select value-state="Critical" class="select">
       <ui5-option icon="meal">Orange</ui5-option>
       <ui5-option icon="meal" selected="">Pumpkin</ui5-option>
       <ui5-option icon="meal">Carrot</ui5-option>
@@ -49,7 +49,7 @@ export const ValueStateAndValueStateMessage = () => html `<ui5-select value-stat
         message - 2. Extra long text used as an information message - 3.
       </div>
     </ui5-select>
-    <ui5-select value-state="Error" class="select">
+    <ui5-select value-state="Negative" class="select">
       <ui5-option icon="meal">Strawberry</ui5-option>
       <ui5-option icon="meal">Tomato</ui5-option>
       <ui5-option icon="meal" selected="">Red Chili Pepper</ui5-option>

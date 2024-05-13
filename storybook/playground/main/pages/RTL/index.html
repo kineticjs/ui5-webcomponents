@@ -6,14 +6,14 @@
 	<title>RTL and Language</title>
 	
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-70af079e.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
   <link rel="stylesheet" href="../../../../assets/RTL-63030fdf.css">
 </head>
 
 <body class="rtl1auto">
 	<div class="rtl2auto">
 		<ui5-segmented-button id="tb">
-			<ui5-segmented-button-item pressed>EN</ui5-segmented-button-item>
+			<ui5-segmented-button-item selected>EN</ui5-segmented-button-item>
 			<ui5-segmented-button-item>DE</ui5-segmented-button-item>
 			<ui5-segmented-button-item>BG</ui5-segmented-button-item>
 			<ui5-segmented-button-item>ES</ui5-segmented-button-item>
@@ -90,7 +90,7 @@
 		});
 
 		tb.addEventListener("ui5-selection-change", function(e) {
-			var lang = e.detail.selectedItem.textContent.toLowerCase();
+			var lang = e.detail.selectedItems[0].textContent.toLowerCase();
 
 			setLanguage(lang).then(function() {
 				const rtlLang = lang === "he" || lang === "ar";

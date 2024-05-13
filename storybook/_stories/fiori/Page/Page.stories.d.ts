@@ -5,4 +5,4 @@ import type Page from "@ui5/webcomponents-fiori/dist/Page.js";
 declare const _default: Meta<Page>;
 export default _default;
 export declare const Basic: UI5StoryArgs<Page, StoryArgsSlots>;
-export declare const FloatingFooter: UI5StoryArgs<Page, StoryArgsSlots>;
+export declare const FixedFooter: UI5StoryArgs<Page, StoryArgsSlots>;

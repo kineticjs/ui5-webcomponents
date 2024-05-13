@@ -11,6 +11,15 @@ declare const _default: {
         control: string;
         options: string[];
     };
+    accessibleRole: {
+        control: string;
+        options: string[];
+    };
+    listItems: {
+        control: {
+            type: boolean;
+        };
+    };
     default: {
         control: {
             type: string;

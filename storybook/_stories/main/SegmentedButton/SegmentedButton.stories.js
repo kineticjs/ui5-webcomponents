@@ -9,20 +9,20 @@ export default {
 };
 const Template = (args) => html `<ui5-segmented-button
 	accessible-name="${ifDefined(args.accessibleName)}"
-	mode="${ifDefined(args.mode)}"
+	selection-mode="${ifDefined(args.selectionMode)}"
 >
 	${unsafeHTML(args.default)}
 </ui5-segmented-button>`;
 export const Basic = Template.bind({});
 Basic.args = {
     default: `<ui5-segmented-button-item>Map</ui5-segmented-button-item>
-<ui5-segmented-button-item pressed="">Satellite</ui5-segmented-button-item>
+<ui5-segmented-button-item selected="">Satellite</ui5-segmented-button-item>
 <ui5-segmented-button-item>Terrain</ui5-segmented-button-item>`,
     accessibleName: "Geographic location",
 };
 export const WithIcons = Template.bind({});
 WithIcons.args = {
-    default: `<ui5-segmented-button-item icon="bold-text" pressed=""></ui5-segmented-button-item>
+    default: `<ui5-segmented-button-item icon="bold-text" selected=""></ui5-segmented-button-item>
 <ui5-segmented-button-item icon="underline-text"></ui5-segmented-button-item>
 <ui5-segmented-button-item icon="italic-text"></ui5-segmented-button-item>`,
 };

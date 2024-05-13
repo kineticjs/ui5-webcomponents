@@ -1,30 +1,4 @@
 export default {
-    "design": {
-        "control": "select",
-        "options": [
-            "Default",
-            "Positive",
-            "Negative",
-            "Transparent",
-            "Emphasized",
-            "Attention"
-        ]
-    },
-    "type": {
-        "control": "select",
-        "options": [
-            "Button",
-            "Submit",
-            "Reset"
-        ]
-    },
-    "accessibleRole": {
-        "control": "select",
-        "options": [
-            "Button",
-            "Link"
-        ]
-    },
     "default": {
         "control": {
             "type": "text"

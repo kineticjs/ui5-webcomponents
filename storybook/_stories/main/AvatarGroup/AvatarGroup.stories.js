@@ -12,7 +12,6 @@ export default {
 };
 const Template = (args) => html `<ui5-avatar-group
     .type="${ifDefined(args.type)}"
-    .aria-haspopup="${ifDefined(args.ariaHaspopup)}"
   >
     ${unsafeHTML(args.default)}
     ${unsafeHTML(args.overflowButton)}

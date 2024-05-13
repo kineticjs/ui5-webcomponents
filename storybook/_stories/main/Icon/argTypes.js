@@ -11,6 +11,14 @@ export default {
             "NonInteractive",
             "Positive"
         ]
+    },
+    "mode": {
+        "control": "select",
+        "options": [
+            "Image",
+            "Decorative",
+            "Interactive"
+        ]
     }
 };
 export const componentInfo = {

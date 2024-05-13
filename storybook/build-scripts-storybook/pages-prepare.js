@@ -50,7 +50,8 @@ const parsers = [
 const pagesPrepare = new PagesPrepare(parsers, directoryUtils);
 const packages = [
     "main",
-    "fiori"
+    "fiori",
+    "compat",
 ];
 for (const packageName of packages) {
     console.log(`Preparing pages for ${packageName}`);

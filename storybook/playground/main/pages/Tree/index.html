@@ -21,7 +21,7 @@
 
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-70af079e.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
   <link rel="stylesheet" href="../../../../assets/Tree-e496f991.css">
 </head>
 
@@ -58,9 +58,9 @@
 				<ui5-label>Tree 1</ui5-label>
 			</ui5-title>
 
-			<ui5-tree-item expanded text="Tree 1.1" additional-text="Re-stock" additional-text-state="Error" indeterminate selected>
-				<ui5-tree-item text="Tree 1.1.1" additional-text="Required" additional-text-state="Warning" selected></ui5-tree-item>
-				<ui5-tree-item text="Tree 1.1.2" additional-text="Available" additional-text-state="Success"></ui5-tree-item>
+			<ui5-tree-item expanded text="Tree 1.1" additional-text="Re-stock" additional-text-state="Negative" indeterminate selected>
+				<ui5-tree-item text="Tree 1.1.1" additional-text="Required" additional-text-state="Critical" selected></ui5-tree-item>
+				<ui5-tree-item text="Tree 1.1.2" additional-text="Available" additional-text-state="Positive"></ui5-tree-item>
 			</ui5-tree-item>
 		</ui5-tree-item>
 
@@ -188,8 +188,9 @@
 					hide-selection-element
 					type="Active"
 					level="3"
+					class="item"
 				>
-					<ui5-button slot="content">Level 3</ui5-button>
+					<ui5-button slot="content" class="itemBtn">Level 3</ui5-button>
 				</ui5-tree-item-custom>
 			</ui5-tree-item-custom>
 		</ui5-tree-item-custom>

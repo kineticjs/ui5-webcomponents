@@ -14,7 +14,6 @@ const Template = (args) => html ` <ui5-illustrated-message
     subtitle-text="${ifDefined(args.subtitleText)}"
     title-text="${ifDefined(args.titleText)}"
     accessible-name-ref="${ifDefined(args.accessibleNameRef)}"
-    title-level="${ifDefined(args.titleLevel)}"
 >
     ${unsafeHTML(args.title)}
 	${unsafeHTML(args.subtitle)}
@@ -67,8 +66,5 @@ CustomTitle.args = {
 	`,
     default: `
 	<ui5-button icon="refresh">Try again</ui5-button>`,
-};
-CustomTitle.parameters = {
-    controls: { exclude: ['titleLevel'] },
 };
 //# sourceMappingURL=IllustratedMessage.stories.js.map

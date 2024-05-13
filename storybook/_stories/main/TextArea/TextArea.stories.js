@@ -21,7 +21,7 @@ const Template = (args) => html `
 	maxlength="${ifDefined(args.maxlength)}"
 	?show-exceeded-text="${ifDefined(args.showExceededText)}"
 	?growing="${ifDefined(args.growing)}"
-	growing-max-lines="${ifDefined(args.growingMaxLines)}"
+	growing-max-rows="${ifDefined(args.growingMaxRows)}"
 	name="${ifDefined(args.name)}"
 	accessible-name="${ifDefined(args.accessibleName)}"
 	accessible-name-ref="${ifDefined(args.accessibleNameRef)}"

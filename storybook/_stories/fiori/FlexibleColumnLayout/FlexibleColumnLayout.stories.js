@@ -38,8 +38,7 @@ const Template = (args) => {
       style="height: 600px;"
       layout=${ifDefined(args.layout)}
       ?hide-arrows=${ifDefined(args.hideArrows)}
-      .accessibility-texts=${ifDefined(args.accessibilityTexts)}
-      .accessibility-roles=${ifDefined(args.accessibilityRoles)}
+      .accessibilityAttributes=${ifDefined(args.accessibilityAttributes)}
     >
       ${unsafeHTML(args.startColumn)} ${unsafeHTML(args.midColumn)}
       ${unsafeHTML(args.endColumn)}
@@ -464,7 +463,7 @@ Basic.args = {
           style="padding: 1rem 1rem; background: var(--sapList_Background);"
         >
           <p>
-            <ui5-title level="H5" wrapping-type="Normal"
+            <ui5-title level="H5"
               >"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -475,7 +474,7 @@ Basic.args = {
             </ui5-title>
           </p>
           <p>
-            <ui5-title level="H5" wrapping-type="Normal"
+            <ui5-title level="H5"
               >"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -486,7 +485,7 @@ Basic.args = {
             </ui5-title>
           </p>
           <p>
-            <ui5-title level="H5" wrapping-type="Normal"
+            <ui5-title level="H5"
               >"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam, quis nostrud exercitation ullamco laboris

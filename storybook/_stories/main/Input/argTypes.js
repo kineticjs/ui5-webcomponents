@@ -14,16 +14,11 @@ export default {
         "control": "select",
         "options": [
             "None",
-            "Success",
-            "Warning",
-            "Error",
+            "Positive",
+            "Critical",
+            "Negative",
             "Information"
         ]
-    },
-    "previewItem": {
-        "control": {
-            "type": false
-        }
     },
     "default": {
         "control": {
@@ -68,28 +63,7 @@ export default {
             }
         }
     },
-    "suggestion-item-select": {
-        "description": "Fired when a suggestion item, that is displayed in the suggestion popup, is selected.",
-        "control": {
-            "type": false
-        },
-        "table": {
-            "category": "events"
-        },
-        "UI5CustomData": {
-            "parameters": [
-                {
-                    "type": {
-                        "text": "HTMLElement"
-                    },
-                    "name": "item",
-                    "_ui5privacy": "public",
-                    "description": "The selected item."
-                }
-            ]
-        }
-    },
-    "suggestion-item-preview": {
+    "selection-change": {
         "description": "Fired when the user navigates to a suggestion item via the ARROW keys,\nas a preview, before the final selection.",
         "control": {
             "type": false

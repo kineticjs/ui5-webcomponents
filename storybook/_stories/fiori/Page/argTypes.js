@@ -23,7 +23,7 @@ export default {
         },
         "table": {
             "type": {
-                "summary": "Array<HTMLElement>"
+                "summary": "Array<Node>"
             }
         }
     },

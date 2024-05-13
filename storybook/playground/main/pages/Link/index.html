@@ -21,13 +21,13 @@
 
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-70af079e.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
   <link rel="stylesheet" href="../../../../assets/Link-0f05a18d.css">
 </head>
 
 <body class="link1auto">
 	<div class="group">
-		<ui5-link id="target-blank-link" title="Link with standard design" class="samples-big-margin-right" href="https://www.sap.com" target="_blank">Standard Link</ui5-link>
+		<ui5-link id="target-blank-link" tooltip="Link with standard design" class="samples-big-margin-right" href="https://www.sap.com" target="_blank">Standard Link</ui5-link>
 		<ui5-link class="samples-big-margin-right" href="https://www.sap.com" target="_blank" design="Subtle">Subtle link</ui5-link>
 		<ui5-link class="samples-big-margin-right" href="https://www.sap.com" target="_blank" disabled>Disabled</ui5-link>
 		<ui5-link class="samples-big-margin-right" href="https://www.sap.com" target="_blank" design="Emphasized">Emphasized</ui5-link>
@@ -41,7 +41,7 @@
 	<section class="group">
 		<h2>cross-origin</h2>
 		<ui5-link href="https://www.google.com" target="_blank" id="link">link</ui5-link><span>native span</span>
-		<ui5-link href="https://www.google.com" target="_blank" id="linkAccName" accessible-name="more info">link with accessible-name</ui5-link><span>native span</span>
+		<ui5-link href="https://www.google.com" target="_blank" id="linkAccName" accessible-name="more info" tooltip="more info">link with accessible-name</ui5-link><span>native span</span>
 	</section>
 
 	<section class="group">
@@ -151,7 +151,7 @@
 		});
 
 		signInLink.accessibilityAttributes = {
-			hasPopup: "Dialog"
+			hasPopup: "dialog"
 		};
 
 		closeSignInDialogButton.addEventListener("ui5-click", function(event) {

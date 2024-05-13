@@ -23,9 +23,9 @@ export default {
         "control": "select",
         "options": [
             "None",
-            "Success",
-            "Warning",
-            "Error",
+            "Positive",
+            "Critical",
+            "Negative",
             "Information"
         ]
     },
@@ -126,47 +126,6 @@ export default {
                     "text": "string"
                 },
                 "description": "The date as string"
-            }
-        }
-    },
-    "closePicker": {
-        "description": "Closes the picker.",
-        "table": {
-            "category": "methods"
-        },
-        "UI5CustomData": {
-            "returnValue": {
-                "type": {
-                    "text": "void"
-                }
-            }
-        }
-    },
-    "openPicker": {
-        "description": "Opens the picker.",
-        "table": {
-            "category": "methods"
-        },
-        "UI5CustomData": {
-            "returnValue": {
-                "type": {
-                    "text": "Promise<void>"
-                },
-                "description": "Resolves when the picker is open"
-            }
-        }
-    },
-    "isOpen": {
-        "description": "Checks if the picker is open.",
-        "table": {
-            "category": "methods"
-        },
-        "UI5CustomData": {
-            "returnValue": {
-                "type": {
-                    "text": "boolean"
-                },
-                "description": "true if the picker is open, false otherwise"
             }
         }
     },

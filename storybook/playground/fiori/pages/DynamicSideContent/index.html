@@ -14,13 +14,13 @@
 
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-435a8dbc.js"></script>
-  <link rel="stylesheet" href="../../../../assets/DynamicSideContent-ff5d0f73.css">
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-fb4c9db2.js"></script>
+  <link rel="stylesheet" href="../../../../assets/DynamicSideContent-85d5302a.css">
 </head>
 
 <body class="page1auto">
 
-	<ui5-page id="page" floating-footer show-footer>
+	<ui5-page id="page" show-footer>
 		<ui5-dynamic-side-content
 			id="dynamicSideContent"
 			class="content-padding">
@@ -40,10 +40,10 @@
 
 		<div slot="footer">
 			<ui5-bar design="FloatingFooter">
-				<ui5-badge class="breakpointBadge" id="breakpointS" color-scheme="5" slot="startContent">S</ui5-badge>
-				<ui5-badge class="breakpointBadge" id="breakpointM" color-scheme="6" slot="startContent">M</ui5-badge>
-				<ui5-badge class="breakpointBadge" id="breakpointL" color-scheme="7" slot="startContent">L</ui5-badge>
-				<ui5-badge class="breakpointBadge" id="breakpointXL" color-scheme="8" slot="startContent">XL</ui5-badge>
+				<ui5-tag class="breakpointTag" id="breakpointS" color-scheme="5" slot="startContent">S</ui5-tag>
+				<ui5-tag class="breakpointTag" id="breakpointM" color-scheme="6" slot="startContent">M</ui5-tag>
+				<ui5-tag class="breakpointTag" id="breakpointL" color-scheme="7" slot="startContent">L</ui5-tag>
+				<ui5-tag class="breakpointTag" id="breakpointXL" color-scheme="8" slot="startContent">XL</ui5-tag>
 				<ui5-switch id="hideMainContent" class="hide-on-S" text-on="M +" text-off="M -" title="MainContent" checked></ui5-switch>
 				<ui5-switch id="hideSideContent" class="hide-on-S" text-on="S +" text-off="S -" title="SideContent" checked></ui5-switch>
 				<ui5-switch id="equalSplit" class="hide-on-S" text-on="EQ" text-off="! EQ" title="equalSplit"></ui5-switch>
@@ -115,7 +115,7 @@
 			var breakpoint = event.detail.currentBreakpoint,
 				disp = breakpoint === "S" ? "none" : "block";
 
-			document.querySelectorAll('.breakpointBadge').forEach(function(elem) { elem.style.display = "none"; });
+			document.querySelectorAll('.breakpointTag').forEach(function(elem) { elem.style.display = "none"; });
 			document.querySelector("#breakpoint" + breakpoint).style.display="block";
 			document.querySelectorAll('.hide-on-S').forEach(function(elem) { elem.style.display = disp; });
 			toggleButton.style.display = breakpoint !== "S" || dynamicSideContent.sideContentVisibility === "AlwaysShow" ? "none" : "block";

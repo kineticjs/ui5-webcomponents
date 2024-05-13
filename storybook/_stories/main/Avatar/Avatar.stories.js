@@ -19,7 +19,6 @@ const Template = (args) => html `<ui5-avatar
     color-scheme="${ifDefined(args.colorScheme)}"
     ?interactive="${ifDefined(args.interactive)}"
     ?disabled="${ifDefined(args.disabled)}"
-    aria-haspopup="${ifDefined(args.ariaHaspopup)}"
     accessible-name="${ifDefined(args.accessibleName)}"
     fallback-icon="${ifDefined(args.fallbackIcon)}"
   >

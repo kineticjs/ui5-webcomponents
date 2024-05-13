@@ -60,9 +60,9 @@ export default {
                     "type": {
                         "text": "boolean"
                     },
-                    "name": "changeWithClick",
+                    "name": "withScroll",
                     "_ui5privacy": "public",
-                    "description": "The step change occurs due to user's click or 'Enter'/'Space' key press on step within the navigation."
+                    "description": "true when the event occurs due to user scrolling."
                 }
             ]
         }

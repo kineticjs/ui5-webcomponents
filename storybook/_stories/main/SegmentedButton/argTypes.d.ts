@@ -1,12 +1,7 @@
 declare const _default: {
-    mode: {
+    selectionMode: {
         control: string;
         options: string[];
-    };
-    selectedItem: {
-        control: {
-            type: boolean;
-        };
     };
     selectedItems: {
         control: {
@@ -32,21 +27,7 @@ declare const _default: {
             category: string;
         };
         UI5CustomData: {
-            parameters: ({
-                type: {
-                    text: string;
-                    references: {
-                        name: string;
-                        package: string;
-                        module: string;
-                    }[];
-                };
-                name: string;
-                _ui5privacy: string;
-                description: string;
-                deprecated: string;
-                _ui5since?: undefined;
-            } | {
+            parameters: {
                 type: {
                     text: string;
                     references: {
@@ -59,8 +40,7 @@ declare const _default: {
                 _ui5privacy: string;
                 description: string;
                 _ui5since: string;
-                deprecated?: undefined;
-            })[];
+            }[];
         };
     };
 };

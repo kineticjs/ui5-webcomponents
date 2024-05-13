@@ -7,11 +7,6 @@ declare const _default: {
         control: string;
         options: string[];
     };
-    previewItem: {
-        control: {
-            type: boolean;
-        };
-    };
     tokens: {
         control: {
             type: string;
@@ -84,26 +79,7 @@ declare const _default: {
             }[];
         };
     };
-    "suggestion-item-select": {
-        description: string;
-        control: {
-            type: boolean;
-        };
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            parameters: {
-                type: {
-                    text: string;
-                };
-                name: string;
-                _ui5privacy: string;
-                description: string;
-            }[];
-        };
-    };
-    "suggestion-item-preview": {
+    "selection-change": {
         description: string;
         control: {
             type: boolean;

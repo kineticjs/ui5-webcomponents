@@ -13,8 +13,8 @@ const Template = (args) => {
 <ui5-page
     style="height: 500px"
     background-design="${ifDefined(args.backgroundDesign)}"
-	?disable-scrolling="${ifDefined(args.disableScrolling)}"
-	?floating-footer="${ifDefined(args.floatingFooter)}"
+	?no-scrolling="${ifDefined(args.noScrolling)}"
+	?fixed-footer="${ifDefined(args.fixedFooter)}"
 	?hide-footer="${ifDefined(args.hideFooter)}">
 	${unsafeHTML(args.header)}
 	${unsafeHTML(args.default)}
@@ -51,10 +51,10 @@ Basic.args = {
         </ui5-bar>
     </div>`,
 };
-export const FloatingFooter = Template.bind({});
-FloatingFooter.args = {
+export const FixedFooter = Template.bind({});
+FixedFooter.args = {
     backgroundDesign: PageBackgroundDesign.Transparent,
-    floatingFooter: true,
+    fixedFooter: true,
     default: `
     <div>
         <p class="content-paragraph">
@@ -84,7 +84,7 @@ FloatingFooter.args = {
     </ui5-bar>`,
     footer: `
     <div slot="footer">
-        <ui5-bar design="FloatingFooter">
+        <ui5-bar design="Footer">
             <ui5-button design="Positive" slot="endContent">Agree</ui5-button>
             <ui5-button design="Negative" slot="endContent">Decline</ui5-button>
             <ui5-button design="Transparent" slot="endContent">Cancel</ui5-button>

@@ -1,16 +1,4 @@
 declare const _default: {
-    design: {
-        control: string;
-        options: string[];
-    };
-    type: {
-        control: string;
-        options: string[];
-    };
-    accessibleRole: {
-        control: string;
-        options: string[];
-    };
     default: {
         control: {
             type: string;

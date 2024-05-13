@@ -90,47 +90,6 @@ declare const _default: {
             };
         };
     };
-    closePicker: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
-            };
-        };
-    };
-    openPicker: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
-                description: string;
-            };
-        };
-    };
-    isOpen: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
-                description: string;
-            };
-        };
-    };
     change: {
         description: string;
         control: {

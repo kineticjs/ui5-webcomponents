@@ -36,6 +36,6 @@ Basic.args = {
     icon: "nutrition-activity",
     description: "Tropical plant with an edible fruit",
     additionalText: "In-stock",
-    additionalTextState: "Success"
+    additionalTextState: "Positive"
 };
 //# sourceMappingURL=StandardListItem.stories.js.map

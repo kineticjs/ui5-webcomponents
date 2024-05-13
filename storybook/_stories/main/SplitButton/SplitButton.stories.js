@@ -12,7 +12,6 @@ const Template = (args) => html `<ui5-split-button
 	?disabled="${ifDefined(args.disabled)}"
 	design="${ifDefined(args.design)}"
 	icon="${ifDefined(args.icon)}"
-	active-icon="${ifDefined(args.activeIcon)}"
 	accessible-name="${ifDefined(args.accessibleName)}"
 >
 	${unsafeHTML(args.default)}

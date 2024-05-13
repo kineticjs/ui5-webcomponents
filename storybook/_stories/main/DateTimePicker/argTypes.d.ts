@@ -26,19 +26,6 @@ declare const _default: {
             };
         };
     };
-    openPicker: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
-            };
-        };
-    };
     isValid: {
         description: string;
         table: {
@@ -95,33 +82,6 @@ declare const _default: {
                 description: string;
                 _ui5privacy: string;
             }[];
-            returnValue: {
-                type: {
-                    text: string;
-                };
-                description: string;
-            };
-        };
-    };
-    closePicker: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
-            };
-        };
-    };
-    isOpen: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
             returnValue: {
                 type: {
                     text: string;

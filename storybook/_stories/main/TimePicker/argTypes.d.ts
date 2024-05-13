@@ -1,12 +1,12 @@
 declare const _default: {
+    valueState: {
+        control: string;
+        options: string[];
+    };
     dateValue: {
         control: {
             type: boolean;
         };
-    };
-    valueState: {
-        control: string;
-        options: string[];
     };
     valueStateMessage: {
         control: {

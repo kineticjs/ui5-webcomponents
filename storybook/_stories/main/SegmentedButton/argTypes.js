@@ -1,15 +1,10 @@
 export default {
-    "mode": {
+    "selectionMode": {
         "control": "select",
         "options": [
-            "SingleSelect",
-            "MultiSelect"
+            "Single",
+            "Multiple"
         ]
-    },
-    "selectedItem": {
-        "control": {
-            "type": false
-        }
     },
     "selectedItems": {
         "control": {
@@ -36,22 +31,6 @@ export default {
         },
         "UI5CustomData": {
             "parameters": [
-                {
-                    "type": {
-                        "text": "ISegmentedButtonItem",
-                        "references": [
-                            {
-                                "name": "ISegmentedButtonItem",
-                                "package": "@ui5/webcomponents",
-                                "module": "dist/SegmentedButton.js"
-                            }
-                        ]
-                    },
-                    "name": "selectedItem",
-                    "_ui5privacy": "public",
-                    "description": "the pressed item.",
-                    "deprecated": "deprecated since 1.14.0 and will be removed in the next major release, use the `selectedItems` parameter instead."
-                },
                 {
                     "type": {
                         "text": "Array<ISegmentedButtonItem>",

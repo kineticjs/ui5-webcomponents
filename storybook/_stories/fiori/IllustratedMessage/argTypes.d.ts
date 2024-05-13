@@ -3,10 +3,6 @@ declare const _default: {
         control: string;
         options: string[];
     };
-    titleLevel: {
-        control: string;
-        options: string[];
-    };
     title: {
         control: {
             type: string;

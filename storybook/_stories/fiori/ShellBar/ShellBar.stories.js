@@ -14,8 +14,6 @@ const Template = (args) => html `<ui5-shellbar
     ?show-notifications="${ifDefined(args.showNotifications)}"
     ?show-co-pilot="${ifDefined(args.showCoPilot)}"
     ?show-search-field="${ifDefined(args.showSearchField)}"
-    .accessibilityRoles="${ifDefined(args.accessibilityRoles)}"
-    .accessibilityTexts="${ifDefined(args.accessibilityTexts)}"
     .accessibilityAttributes="${ifDefined(args.accessibilityAttributes)}"
 >
     ${unsafeHTML(args.default)} 

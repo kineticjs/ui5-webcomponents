@@ -34,9 +34,9 @@ Basic.args = {
     value: 5,
 };
 export const DifferentValueStates = () => html `
-	<div style="max-width: 13rem"> <ui5-step-input value-state="Success" value="5"></ui5-step-input> </div> <br>
-	<div style="max-width: 13rem"> <ui5-step-input value-state="Warning" value="5"></ui5-step-input> </div> <br>
-	<div style="max-width: 13rem"> <ui5-step-input value-state="Error" value="5"></ui5-step-input> </div> <br>
+	<div style="max-width: 13rem"> <ui5-step-input value-state="Positive" value="5"></ui5-step-input> </div> <br>
+	<div style="max-width: 13rem"> <ui5-step-input value-state="Critical" value="5"></ui5-step-input> </div> <br>
+	<div style="max-width: 13rem"> <ui5-step-input value-state="Negative" value="5"></ui5-step-input> </div> <br>
 	<div style="max-width: 13rem"> <ui5-step-input value-state="Information" value="5"></ui5-step-input> </div> <br>
 `;
 export const MinMax = Template.bind({});
