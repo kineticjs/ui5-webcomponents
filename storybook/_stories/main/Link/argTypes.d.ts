@@ -7,6 +7,10 @@ declare const _default: {
         control: string;
         options: string[];
     };
+    accessibleRole: {
+        control: string;
+        options: string[];
+    };
     default: {
         control: {
             type: string;

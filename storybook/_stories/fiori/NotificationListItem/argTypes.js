@@ -6,16 +6,34 @@ export default {
             "Normal"
         ]
     },
-    "priority": {
+    "state": {
         "control": "select",
         "options": [
-            "High",
-            "Medium",
-            "Low",
-            "None"
+            "None",
+            "Positive",
+            "Critical",
+            "Negative",
+            "Information"
+        ]
+    },
+    "importance": {
+        "control": "select",
+        "options": [
+            "Standard",
+            "Important"
         ]
     },
     "avatar": {
+        "control": {
+            "type": "text"
+        },
+        "table": {
+            "type": {
+                "summary": "Array<HTMLElement>"
+            }
+        }
+    },
+    "menu": {
         "control": {
             "type": "text"
         },
@@ -42,16 +60,6 @@ export default {
         "table": {
             "type": {
                 "summary": "Array<Node>"
-            }
-        }
-    },
-    "actions": {
-        "control": {
-            "type": "text"
-        },
-        "table": {
-            "type": {
-                "summary": "Array<NotificationAction>"
             }
         }
     },

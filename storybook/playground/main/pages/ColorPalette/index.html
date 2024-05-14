@@ -16,7 +16,7 @@
 
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-ff683f96.js"></script>
   <link rel="stylesheet" href="../../../../assets/ColorPalette-63fbe3b6.css">
 </head>
 
@@ -115,11 +115,12 @@
 		});
 
 		colorPaletteBtn.addEventListener("click", function(event) {
-			respPopover.showAt(colorPaletteBtn);
+			respPopover.opener = colorPaletteBtn;
+			respPopover.open = true;
 		});
 
 		btnClose.addEventListener("click", function(event) {
-			respPopover.close();
+			respPopover.open = false;
 		});
 	</script>
 </html>

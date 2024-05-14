@@ -9,7 +9,7 @@
 
 	<script>// delete Document.prototype.adoptedStyleSheets;</script>
 
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-ff683f96.js"></script>
   <link rel="stylesheet" href="../../../../assets/Input_quickview-fa68e418.css">
 </head>
 
@@ -35,7 +35,9 @@
 		<ui5-suggestion-item class="suggestionItem" text="IPad Air"></ui5-suggestion-item>
 	</ui5-input>
 
-	<ui5-popover id="quickViewCard" hide-arrow placement="Right" height="500px" prevent-focus-restore>
+	<ui5-popover id="quickViewCard"
+				 prevent-initial-focus
+				 hide-arrow placement="Right" height="500px" prevent-focus-restore>
 		<button>hello</button>
 		<ui5-input id="searchInput" class="input_quickview4auto">
 			<ui5-icon id="searchIcon" slot="icon" name="search"></ui5-icon>
@@ -82,7 +84,9 @@
 	<div class="input_quickview6auto">Test mouseover on item</div>
 	<ui5-input id="mouseoverResult" class="input_quickview7auto"></ui5-input>
 
-	<ui5-popover id="quickViewCard2" hide-arrow placement="End" height="500px">
+	<ui5-popover id="quickViewCard2"
+				 prevent-initial-focus
+				 hide-arrow placement="End" height="500px">
 		<ui5-input id="searchInput2" class="input_quickview4auto">
 			<ui5-icon id="searchIcon" slot="icon" name="search"></ui5-icon>
 		</ui5-input>
@@ -112,8 +116,9 @@
 		inputPreview.addEventListener("ui5-selection-change", function (event) {
 			const targetRef = event.detail.targetRef;
 
-			quickViewCard.close();
-			quickViewCard.showAt(targetRef, true /* preventInitialFocus */);
+			quickViewCard.open = false;
+			quickViewCard.opener = targetRef;
+			quickViewCard.open = true;
 		});
 
 		/*
@@ -123,8 +128,9 @@
 			el.addEventListener("ui5-mouseover", function (event) {
 				const targetRef = event.detail.targetRef;
 
-				quickViewCard.close();
-				quickViewCard.showAt(targetRef, true /* preventInitialFocus */);
+				quickViewCard.open = false;
+				quickViewCard.opener = targetRef;
+				quickViewCard.open = true;
 			});
 
 			el.addEventListener("ui5-mouseout", function (event) {
@@ -163,8 +169,9 @@
 
 		inputPreview2.addEventListener("ui5-selection-change", function (event) {
 			var item = event.detail.targetRef;
-			quickViewCard2.close();
-			quickViewCard2.showAt(item, true /* preventInitialFocus */);
+			quickViewCard2.open = false;
+			quickViewCard2.opener = item;
+			quickViewCard2.open = true;
 
 			// log info
 			selectionChangeRes.value = item.textContent;
@@ -186,8 +193,9 @@
 		[].slice.call(document.querySelectorAll("#inputPreview2 .suggestionItem")).forEach(function(el) {
 			el.addEventListener("mouseover", function (event) {
 				const targetRef = event.detail.targetRef;
-				quickViewCard2.close();
-				quickViewCard2.showAt(targetRef, true /* preventInitialFocus */);
+				quickViewCard2.open = false;
+				quickViewCard2.opener = targetRef;
+				quickViewCard2.open = true;
 
 				// log info
 				mouseoverResult.value = targetRef.textContent;

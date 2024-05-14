@@ -14,6 +14,13 @@ export default {
             "Normal"
         ]
     },
+    "accessibleRole": {
+        "control": "select",
+        "options": [
+            "Link",
+            "Button"
+        ]
+    },
     "default": {
         "control": {
             "type": "text"

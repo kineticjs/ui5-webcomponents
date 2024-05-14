@@ -43,7 +43,7 @@ export default {
         },
         "table": {
             "type": {
-                "summary": "Array<CalendarDate>"
+                "summary": "Array<ICalendarSelectedDates>"
             }
         }
     },

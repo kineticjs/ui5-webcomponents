@@ -22,7 +22,7 @@
 
 
 
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-ff683f96.js"></script>
   <link rel="stylesheet" href="../../../../assets/BusyIndicator-26348187.css">
   <link rel="stylesheet" href="../../../../assets/Dialog-bde1b464.css">
 </head>
@@ -273,20 +273,20 @@
 		});
 
 		document.getElementById("open-dialog-inactive-indicator").addEventListener("click", function () {
-			document.getElementById("dialog-inactive-indicator").show();
+			document.getElementById("dialog-inactive-indicator").open = true;
 		});
 
 		document.getElementById("open-dialog-active-indicator").addEventListener("click", function () {
-			document.getElementById("dialog-active-indicator").show();
+			document.getElementById("dialog-active-indicator").open = true;
 		});
 
 		document.getElementById("open-dialog-delayed-indicator").addEventListener("click", function () {
 			document.getElementById("dialog-delayed-indicator-indicator").active = true;
-			document.getElementById("dialog-delayed-indicator").show();
+			document.getElementById("dialog-delayed-indicator").open = true;
 		});
 
 		document.getElementById("open-dialog-loading-text").addEventListener("click", function () {
-			document.getElementById("dialog-loading-text").show();
+			document.getElementById("dialog-loading-text").open = true;
 		});
 
 	</script>

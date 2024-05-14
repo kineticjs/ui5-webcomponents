@@ -20,7 +20,7 @@
 
     
 
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-ff683f96.js"></script>
   <link rel="stylesheet" href="../../../../assets/AvatarGroup-dfa05e72.css">
 </head>
 
@@ -299,8 +299,9 @@
 		}
 		placeholder.innerHTML = html;
 
-		groupPop.close();
-		groupPop.showAt(event.detail.targetRef);
+		groupPop.open = false;
+		groupPop.opener = event.detail.targetRef;
+		groupPop.open = true;
 	}
 
 	function onAvatarClicked(avatarGroup, avatarRef) {
@@ -314,8 +315,9 @@
 		popAvatar.initials = avatarRef.initials;
 		popAvatar.colorScheme = avatarGroup.colorScheme[avatarGroup.items.indexOf(avatarRef)];
 
-		individualPop.close();
-		individualPop.showAt(avatarRef);
+		individualPop.open = false;
+		individualPop.opener = avatarRef;
+		individualPop.open = true;
 	}
 
 	avatarGroupGroupEvents.addEventListener("ui5-click", function (event) {

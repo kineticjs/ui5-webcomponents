@@ -15,7 +15,7 @@
 	
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-ff683f96.js"></script>
   <link rel="stylesheet" href="../../../../assets/PopoverArrowBounds-32856f40.css">
 </head>
 
@@ -38,7 +38,8 @@
 			btn.addEventListener("click", function() {
 				myPopover.placement = btn.dataset.placement;
 				myPopover.verticalAlign = btn.dataset.verticalAlign;
-				myPopover.showAt(btn);
+				myPopover.opener = btn;
+				myPopover.open = true;
 			});
 		});
 

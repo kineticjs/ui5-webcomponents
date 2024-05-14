@@ -11,7 +11,7 @@
 	</script>
 	
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-fb4c9db2.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-01eab9f1.js"></script>
   <link rel="stylesheet" href="../../../../assets/SideNavigation-ffae42e2.css">
 </head>
 
@@ -56,6 +56,7 @@
 				<ui5-side-navigation-sub-item text="Others"></ui5-side-navigation-sub-item>
 			</ui5-side-navigation-item>
 			<ui5-side-navigation-item disabled id="item1" text="Home" icon="home" tooltip="Home tooltip"></ui5-side-navigation-item>
+			<ui5-side-navigation-item id="toggle" text="Toggle" icon="menu"></ui5-side-navigation-item>
 
 			<!-- Fixed Items -->
 			<ui5-side-navigation-item id="fixedItem1" slot="fixedItems" text="Useful Links" icon="chain-link" tooltip="Useful links tooltip">
@@ -98,8 +99,12 @@
 			sideNavigation.collapsed = !sideNavigation.collapsed;
 		});
 
+		document.getElementById("toggle").addEventListener("click", () => {
+			sideNavigation.collapsed = !sideNavigation.collapsed;
+		});
+
 		document.querySelectorAll("ui5-side-navigation-item").forEach(function (item) {
-			item.addEventListener("ui5-click", function (event) {
+			item.addEventListener("click", function (event) {
 				clickInput.value = ++clickCounter;
 			});
 		});

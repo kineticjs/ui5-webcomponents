@@ -37,30 +37,6 @@ declare const _default: {
             };
         };
     };
-    show: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            parameters: {
-                name: string;
-                default: string;
-                description: string;
-                optional: boolean;
-                _ui5privacy: string;
-                type: {
-                    text: string;
-                };
-            }[];
-            returnValue: {
-                type: {
-                    text: string;
-                };
-                description: string;
-            };
-        };
-    };
     applyFocus: {
         description: string;
         table: {
@@ -72,32 +48,6 @@ declare const _default: {
                     text: string;
                 };
                 description: string;
-            };
-        };
-    };
-    isOpen: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
-            };
-        };
-    };
-    close: {
-        description: string;
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            returnValue: {
-                type: {
-                    text: string;
-                };
             };
         };
     };

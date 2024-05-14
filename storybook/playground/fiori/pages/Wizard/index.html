@@ -20,7 +20,7 @@
 	<script>// delete Document.prototype.adoptedStyleSheets;</script>
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-fb4c9db2.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-01eab9f1.js"></script>
   <link rel="stylesheet" href="../../../../assets/Wizard-dcc2dbcb.css">
 </head>
 
@@ -716,7 +716,7 @@
 		var wiz2 = document.getElementById("wiz2");
 
 		btnOpenDialog.addEventListener("click", function () {
-			dialog.show();
+			dialog.open = true;
 		});
 
 		wiz2.addEventListener("ui5-step-change", function () {
@@ -751,7 +751,7 @@
 
 		finalize2.addEventListener("click", function () {
 			alert("Finalize");
-			dialog.close();
+			dialog.open = false;
 		});
 
 		function deselectAll(wizard) {

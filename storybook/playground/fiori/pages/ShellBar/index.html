@@ -16,7 +16,7 @@
 
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-fb4c9db2.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-01eab9f1.js"></script>
   <link rel="stylesheet" href="../../../../assets/ShellBar-fb23ecc4.css">
 </head>
 
@@ -247,14 +247,16 @@
 		});
 
 		shellbar.addEventListener("ui5-profile-click", function(event) {
-			popover.showAt(event.detail.targetRef);
+			popover.opener = event.detail.targetRef;
+			popover.open = true;
 			window["press-input"].value = "Profile";
 		});
 
 		shellbar.addEventListener("ui5-notifications-click", function(event) {
 			window["press-input"].value = "Notifications";
 			event.preventDefault();
-			popover.showAt(event.detail.targetRef);
+			popover.opener = event.detail.targetRef;
+			popover.open = true;
 		});
 
 		shellbar.addEventListener("ui5-product-switch-click", function(event) {
@@ -289,12 +291,14 @@
 
 		shelbarCompact.addEventListener("ui5-notifications-click", function(event) {
 			event.preventDefault();
-			popover.showAt(event.detail.targetRef);
+			popover.opener = event.detail.targetRef;
+			popover.open = true;
 		});
 
 		shelbarCompact.addEventListener("ui5-product-switch-click", function(event) {
 			event.preventDefault();
-			popover.showAt(event.detail.targetRef);
+			popover.opener = event.detail.targetRef;
+			popover.open = true;
 		});
 
 		menuItemsSB.addEventListener("ui5-menu-item-click", function(event) {
@@ -314,7 +318,8 @@
 			currenItem.addEventListener("ui5-click", function(event) {
 				event.preventDefault();
 				window["press-input"].value = event.target.id;
-				window["custom-item-popover"].showAt(event.detail.targetRef);
+				window["custom-item-popover"].opener = event.detail.targetRef;
+				window["custom-item-popover"].open = true;
 			});
 		});
 

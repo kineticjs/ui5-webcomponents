@@ -16,11 +16,11 @@ const Template = (args) => html `<ui5-shellbar
     ?show-search-field="${ifDefined(args.showSearchField)}"
     .accessibilityAttributes="${ifDefined(args.accessibilityAttributes)}"
 >
-    ${unsafeHTML(args.default)} 
+    ${unsafeHTML(args.default)}
 	${unsafeHTML(args.profile)}
-    ${unsafeHTML(args.logo)} 
+    ${unsafeHTML(args.logo)}
 	${unsafeHTML(args.menuItems)}
-    ${unsafeHTML(args.searchField)} 
+    ${unsafeHTML(args.searchField)}
 	${unsafeHTML(args.startButton)}
 </ui5-shellbar>`;
 export const Basic = Template.bind({});
@@ -105,7 +105,8 @@ export const Advanced = () => {
                 shellbar.addEventListener(
                     "ui5-profile-click",
                     function (event) {
-                        actionPopover.showAt(event.detail.targetRef);
+                        actionPopover.opener = event.detail.targetRef;
+						actionPopover.open = true;
                     }
                 );
             })();

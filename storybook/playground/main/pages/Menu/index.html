@@ -10,7 +10,7 @@
 
 
 	
-  <script type="module" crossorigin src="../../../../assets/bundle.esm-d7d4132c.js"></script>
+  <script type="module" crossorigin src="../../../../assets/bundle.esm-ff683f96.js"></script>
   <link rel="stylesheet" href="../../../../assets/Menu-00d26ad0.css">
 </head>
 
@@ -72,7 +72,7 @@
 		<ui5-menu-item text="Exit" icon="journey-arrive"></ui5-menu-item>
 	</ui5-menu>
 
-	<ui5-popover id="detailsPopover">
+	<ui5-popover id="detailsPopover" prevent-initial-focus>
 			<div>
 				<ui5-label for="detailsLink">For more information:</ui5-label>
 			</div>
@@ -185,15 +185,17 @@
 		menu2.addEventListener("ui5-item-focus", function(event) {
 			const item = event.detail.item;
 			const opener = event.detail.ref;
-			
-			if (detailsPopover.isOpen()) {
-				detailsPopover.close(false, false, true);
+
+			if (detailsPopover.open) {
+				detailsPopover.preventFocusRestore = true;
+				detailsPopover.open = false;
 			}
-			
+
 			if (item.disabled && shouldOpenDetailsPopover) {
 				const link = detailsPopover.querySelector("#detailsLink");
 				link.textContent = item.text;
-				detailsPopover.showAt(opener, true)
+				detailsPopover.opener = opener;
+				detailsPopover.open = true;
 				link.focus();
 			}
 		});

@@ -3,11 +3,25 @@ declare const _default: {
         control: string;
         options: string[];
     };
-    priority: {
+    state: {
+        control: string;
+        options: string[];
+    };
+    importance: {
         control: string;
         options: string[];
     };
     avatar: {
+        control: {
+            type: string;
+        };
+        table: {
+            type: {
+                summary: string;
+            };
+        };
+    };
+    menu: {
         control: {
             type: string;
         };
@@ -28,16 +42,6 @@ declare const _default: {
         };
     };
     default: {
-        control: {
-            type: string;
-        };
-        table: {
-            type: {
-                summary: string;
-            };
-        };
-    };
-    actions: {
         control: {
             type: string;
         };
@@ -75,7 +79,7 @@ export declare const componentInfo: {
 };
 export type StoryArgsSlots = {
     avatar: string;
+    menu: string;
     footnotes: string;
     default: string;
-    actions: string;
 };

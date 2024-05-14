@@ -19,21 +19,6 @@
         },
         {
             "kind": "javascript-module",
-            "path": "dist/features/InputElementsFormSupport.js",
-            "declarations": [],
-            "exports": [
-                {
-                    "kind": "js",
-                    "name": "default",
-                    "declaration": {
-                        "name": "FormSupport",
-                        "module": "dist/features/InputElementsFormSupport.js"
-                    }
-                }
-            ]
-        },
-        {
-            "kind": "javascript-module",
             "path": "dist/features/InputSuggestions.js",
             "declarations": [],
             "exports": [
@@ -1642,6 +1627,51 @@
                     "declaration": {
                         "name": "InputType",
                         "module": "dist/types/InputType.js"
+                    }
+                }
+            ]
+        },
+        {
+            "kind": "javascript-module",
+            "path": "dist/types/LinkAccessibleRole.js",
+            "declarations": [
+                {
+                    "kind": "enum",
+                    "name": "LinkAccessibleRole",
+                    "description": "Link accessible roles.",
+                    "_ui5privacy": "public",
+                    "_ui5since": "2.0.0",
+                    "members": [
+                        {
+                            "kind": "field",
+                            "static": true,
+                            "privacy": "public",
+                            "description": "Represents Default (link) ARIA role.",
+                            "default": "Link",
+                            "name": "Link",
+                            "readonly": true
+                        },
+                        {
+                            "kind": "field",
+                            "static": true,
+                            "privacy": "public",
+                            "description": "Represents the ARIA role \"button\".",
+                            "default": "Button",
+                            "name": "Button",
+                            "readonly": true
+                        }
+                    ],
+                    "_ui5package": "@ui5/webcomponents",
+                    "tagName": "LinkAccessibleRole"
+                }
+            ],
+            "exports": [
+                {
+                    "kind": "js",
+                    "name": "default",
+                    "declaration": {
+                        "name": "LinkAccessibleRole",
+                        "module": "dist/types/LinkAccessibleRole.js"
                     }
                 }
             ]
@@ -4217,7 +4247,7 @@
                             "type": {
                                 "text": "boolean"
                             },
-                            "description": "When set to `true`, the component will\nautomatically submit the nearest HTML form element on `press`.\n\n**Note:** For the `submits` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`",
+                            "description": "When set to `true`, the component will\nautomatically submit the nearest HTML form element on `press`.\n\n**Note:** This property is only applicable within the context of an HTML Form element.`",
                             "default": "false",
                             "privacy": "public",
                             "deprecated": "Set the \"type\" property to \"Submit\" to achieve the same result. The \"submits\" property is ignored if \"type\" is set to any value other than \"Button\".",
@@ -4291,7 +4321,7 @@
                                     }
                                 ]
                             },
-                            "description": "Defines whether the button has special form-related functionality.\n\n**Note:** For the `type` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`",
+                            "description": "Defines whether the button has special form-related functionality.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"Button\"",
                             "privacy": "public",
                             "_ui5since": "1.15.0",
@@ -4310,7 +4340,7 @@
                                     }
                                 ]
                             },
-                            "description": "Describes the accessibility role of the button.\n\n**Note:** Use link role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.",
+                            "description": "Describes the accessibility role of the button.\n\n**Note:** Use <code>ButtonAccessibleRole.Link</code> role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.",
                             "default": "\"Button\"",
                             "privacy": "public",
                             "_ui5since": "1.23",
@@ -4394,12 +4424,12 @@
                             "description": "Defines the selected date or dates (depending on the `selectionMode` property)\nfor this calendar as instances of `ui5-date`.",
                             "_ui5propertyName": "dates",
                             "_ui5type": {
-                                "text": "Array<CalendarDate>",
+                                "text": "Array<ICalendarSelectedDates>",
                                 "references": [
                                     {
-                                        "name": "CalendarDate",
+                                        "name": "ICalendarSelectedDates",
                                         "package": "@ui5/webcomponents",
-                                        "module": "dist/CalendarDate.js"
+                                        "module": "dist/Calendar.js"
                                     }
                                 ]
                             },
@@ -4660,6 +4690,70 @@
                     "declaration": {
                         "name": "CalendarDate",
                         "module": "dist/CalendarDate.js"
+                    }
+                }
+            ]
+        },
+        {
+            "kind": "javascript-module",
+            "path": "dist/CalendarDateRange.js",
+            "declarations": [
+                {
+                    "kind": "class",
+                    "description": "### Overview\n\nThe `ui5-date-range` component defines a range of dates to be used inside `ui5-calendar`",
+                    "name": "CalendarDateRange",
+                    "members": [
+                        {
+                            "kind": "field",
+                            "name": "startValue",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Start of date range formatted according to the `formatPattern` property\nof the `ui5-calendar` that hosts the component.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5validator": "String"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "endValue",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "End of date range formatted according to the `formatPattern` property\nof the `ui5-calendar` that hosts the component.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5validator": "String"
+                        }
+                    ],
+                    "superclass": {
+                        "name": "UI5Element",
+                        "package": "@ui5/webcomponents-base",
+                        "module": "dist/UI5Element.js"
+                    },
+                    "tagName": "CalendarDateRange",
+                    "customElement": true,
+                    "_ui5since": "2.0",
+                    "_ui5privacy": "public",
+                    "_ui5abstract": true,
+                    "_ui5package": "@ui5/webcomponents"
+                }
+            ],
+            "exports": [
+                {
+                    "kind": "js",
+                    "name": "default",
+                    "declaration": {
+                        "name": "CalendarDateRange",
+                        "module": "dist/CalendarDateRange.js"
+                    }
+                },
+                {
+                    "kind": "custom-element-definition",
+                    "name": "ui5-date-range",
+                    "declaration": {
+                        "name": "CalendarDateRange",
+                        "module": "dist/CalendarDateRange.js"
                     }
                 }
             ]
@@ -5670,7 +5764,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -6051,6 +6145,18 @@
                             "default": "\"rgba(255, 255, 255, 1)\"",
                             "privacy": "public",
                             "_ui5validator": "CSSColor"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String"
                         }
                     ],
                     "events": [
@@ -6166,6 +6272,18 @@
                             "_ui5validator": "String",
                             "_ui5formProperty": true,
                             "_ui5formEvents": "change,input"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String"
                         },
                         {
                             "kind": "field",
@@ -6959,7 +7077,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -7488,7 +7606,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String",
@@ -8012,7 +8130,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String",
@@ -8549,30 +8667,6 @@
                             "_ui5validator": "ValueState"
                         },
                         {
-                            "kind": "method",
-                            "name": "show",
-                            "return": {
-                                "type": {
-                                    "text": "Promise<void>"
-                                },
-                                "description": "Resolves when the dialog is open"
-                            },
-                            "parameters": [
-                                {
-                                    "name": "preventInitialFocus",
-                                    "default": "false",
-                                    "description": "Prevents applying the focus inside the popup",
-                                    "optional": true,
-                                    "_ui5privacy": "public",
-                                    "type": {
-                                        "text": "boolean"
-                                    }
-                                }
-                            ],
-                            "description": "Shows the dialog.",
-                            "privacy": "public"
-                        },
-                        {
                             "kind": "field",
                             "name": "initialFocus",
                             "type": {
@@ -8660,6 +8754,22 @@
                         },
                         {
                             "kind": "field",
+                            "name": "preventInitialFocus",
+                            "type": {
+                                "text": "boolean"
+                            },
+                            "description": "Indicates whether initial focus should be prevented.",
+                            "privacy": "public",
+                            "default": "false",
+                            "_ui5since": "2.0",
+                            "_ui5validator": "Boolean",
+                            "inheritedFrom": {
+                                "name": "Popup",
+                                "module": "dist/Popup.js"
+                            }
+                        },
+                        {
+                            "kind": "field",
                             "name": "open",
                             "description": "Indicates if the element is open",
                             "privacy": "public",
@@ -8684,36 +8794,6 @@
                                 "description": "Promise that resolves when the focus is applied"
                             },
                             "description": "Focuses the element denoted by `initialFocus`, if provided,\nor the first focusable element otherwise.",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popup",
-                                "module": "dist/Popup.js"
-                            }
-                        },
-                        {
-                            "kind": "method",
-                            "name": "isOpen",
-                            "return": {
-                                "type": {
-                                    "text": "boolean"
-                                }
-                            },
-                            "description": "Tells if the component is opened",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popup",
-                                "module": "dist/Popup.js"
-                            }
-                        },
-                        {
-                            "kind": "method",
-                            "name": "close",
-                            "return": {
-                                "type": {
-                                    "text": "void"
-                                }
-                            },
-                            "description": "Closes the popup.",
                             "privacy": "public",
                             "inheritedFrom": {
                                 "name": "Popup",
@@ -8744,7 +8824,7 @@
                             }
                         },
                         {
-                            "name": "after-open",
+                            "name": "open",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -8786,7 +8866,7 @@
                             }
                         },
                         {
-                            "name": "after-close",
+                            "name": "close",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -8914,7 +8994,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -9340,7 +9420,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -9728,13 +9808,20 @@
                             "kind": "field",
                             "name": "accessibleRole",
                             "type": {
-                                "text": "string"
+                                "text": "LinkAccessibleRole",
+                                "references": [
+                                    {
+                                        "name": "LinkAccessibleRole",
+                                        "package": "@ui5/webcomponents",
+                                        "module": "dist/types/LinkAccessibleRole.js"
+                                    }
+                                ]
                             },
-                            "description": "Defines the ARIA role of the component.\n\n**Note:** Use the \"button\" role in cases when navigation is not expected to occur and the href property is not defined.",
+                            "description": "Defines the ARIA role of the component.\n\n**Note:** Use the <code>LinkAccessibleRole.Button</code> role in cases when navigation is not expected to occur and the href property is not defined.",
                             "default": "\"link\"",
                             "privacy": "public",
                             "_ui5since": "1.9.0",
-                            "_ui5validator": "String"
+                            "_ui5validator": "LinkAccessibleRole"
                         },
                         {
                             "kind": "field",
@@ -11270,6 +11357,18 @@
                         },
                         {
                             "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.\n**Note:** When the component is used inside a form element,\nthe value is sent as the first element in the form data, even if it's empty.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String"
+                        },
+                        {
+                            "kind": "field",
                             "name": "noTypeahead",
                             "type": {
                                 "text": "boolean"
@@ -11751,6 +11850,21 @@
                         },
                         {
                             "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.\n**Note:** When the component is used inside a form element,\nthe value is sent as the first element in the form data, even if it's empty.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5validator": "String",
+                            "inheritedFrom": {
+                                "name": "Input",
+                                "module": "dist/Input.js"
+                            }
+                        },
+                        {
+                            "kind": "field",
                             "name": "disabled",
                             "type": {
                                 "text": "boolean"
@@ -11882,21 +11996,6 @@
                             "default": "\"None\"",
                             "privacy": "public",
                             "_ui5validator": "ValueState",
-                            "inheritedFrom": {
-                                "name": "Input",
-                                "module": "dist/Input.js"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "name",
-                            "type": {
-                                "text": "string"
-                            },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
-                            "default": "\"\"",
-                            "privacy": "public",
-                            "_ui5validator": "String",
                             "inheritedFrom": {
                                 "name": "Input",
                                 "module": "dist/Input.js"
@@ -12583,18 +12682,6 @@
                         },
                         {
                             "kind": "field",
-                            "name": "hideBackdrop",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines whether the block layer will be shown if modal property is set to true.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5since": "1.0.0-rc.10",
-                            "_ui5validator": "Boolean"
-                        },
-                        {
-                            "kind": "field",
                             "name": "hideArrow",
                             "type": {
                                 "text": "boolean"
@@ -12627,38 +12714,6 @@
                             },
                             "_ui5since": "1.2.0",
                             "_ui5validator": "DOMReference"
-                        },
-                        {
-                            "kind": "method",
-                            "name": "showAt",
-                            "return": {
-                                "type": {
-                                    "text": "Promise<void>"
-                                },
-                                "description": "Resolved when the popover is open"
-                            },
-                            "parameters": [
-                                {
-                                    "name": "opener",
-                                    "type": {
-                                        "text": "HTMLElement"
-                                    },
-                                    "description": "the element that the popover is shown at",
-                                    "_ui5privacy": "public"
-                                },
-                                {
-                                    "name": "preventInitialFocus",
-                                    "default": "false",
-                                    "description": "prevents applying the focus inside the popover",
-                                    "optional": true,
-                                    "_ui5privacy": "public",
-                                    "type": {
-                                        "text": "boolean"
-                                    }
-                                }
-                            ],
-                            "description": "Shows the popover.",
-                            "privacy": "public"
                         },
                         {
                             "kind": "field",
@@ -12748,6 +12803,22 @@
                         },
                         {
                             "kind": "field",
+                            "name": "preventInitialFocus",
+                            "type": {
+                                "text": "boolean"
+                            },
+                            "description": "Indicates whether initial focus should be prevented.",
+                            "privacy": "public",
+                            "default": "false",
+                            "_ui5since": "2.0",
+                            "_ui5validator": "Boolean",
+                            "inheritedFrom": {
+                                "name": "Popup",
+                                "module": "dist/Popup.js"
+                            }
+                        },
+                        {
+                            "kind": "field",
                             "name": "open",
                             "description": "Indicates if the element is open",
                             "privacy": "public",
@@ -12772,36 +12843,6 @@
                                 "description": "Promise that resolves when the focus is applied"
                             },
                             "description": "Focuses the element denoted by `initialFocus`, if provided,\nor the first focusable element otherwise.",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popup",
-                                "module": "dist/Popup.js"
-                            }
-                        },
-                        {
-                            "kind": "method",
-                            "name": "isOpen",
-                            "return": {
-                                "type": {
-                                    "text": "boolean"
-                                }
-                            },
-                            "description": "Tells if the component is opened",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popup",
-                                "module": "dist/Popup.js"
-                            }
-                        },
-                        {
-                            "kind": "method",
-                            "name": "close",
-                            "return": {
-                                "type": {
-                                    "text": "void"
-                                }
-                            },
-                            "description": "Closes the popup.",
                             "privacy": "public",
                             "inheritedFrom": {
                                 "name": "Popup",
@@ -12833,7 +12874,7 @@
                             }
                         },
                         {
-                            "name": "after-open",
+                            "name": "open",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -12875,7 +12916,7 @@
                             }
                         },
                         {
-                            "name": "after-close",
+                            "name": "close",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -12915,7 +12956,7 @@
             "declarations": [
                 {
                     "kind": "class",
-                    "description": "### Overview\nBase class for all popup Web Components.\n\nIf you need to create your own popup-like custom UI5 Web Components, it is highly recommended that you extend\nat least Popup in order to have consistency with other popups in terms of modal behavior and z-index management.\n\n1. The Popup class handles modality:\n - The \"isModal\" getter can be overridden by derivatives to provide their own conditions when they are modal or not\n - Derivatives may call the \"blockPageScrolling\" and \"unblockPageScrolling\" static methods to temporarily remove scrollbars on the html element\n - Derivatives may call the \"open\" and \"close\" methods which handle focus, manage the popup registry and for modal popups, manage the blocking layer\n\n 2. Provides blocking layer (relevant for modal popups only):\n  - It is in the static area\n  - Controlled by the \"open\" and \"close\" methods\n\n3. The Popup class \"traps\" focus:\n - Derivatives may call the \"applyInitialFocus\" method (usually when opening, to transfer focus inside the popup)\n\n4. The Popup class automatically assigns \"z-index\"\n - Each time a popup is opened, it gets a higher than the previously opened popup z-index\n\n5. The template of this component exposes two inline partials you can override in derivatives:\n - beforeContent (upper part of the box, useful for header/title/close button)\n - afterContent (lower part, useful for footer/action buttons)",
+                    "description": "### Overview\nBase class for all popup Web Components.\n\nIf you need to create your own popup-like custom UI5 Web Components, it is highly recommended that you extend\nat least Popup in order to have consistency with other popups in terms of modal behavior and z-index management.\n\n1. The Popup class handles modality:\n - The \"isModal\" getter can be overridden by derivatives to provide their own conditions when they are modal or not\n - Derivatives may call the \"blockPageScrolling\" and \"unblockPageScrolling\" static methods to temporarily remove scrollbars on the html element\n - Derivatives may call the \"openPopup\" and \"closePopup\" methods which handle focus, manage the popup registry and for modal popups, manage the blocking layer\n\n 2. Provides blocking layer (relevant for modal popups only):\n  - It is in the static area\n  - Controlled by the \"open\" and \"close\" methods\n\n3. The Popup class \"traps\" focus:\n - Derivatives may call the \"applyInitialFocus\" method (usually when opening, to transfer focus inside the popup)\n\n4. The Popup class automatically assigns \"z-index\"\n - Each time a popup is opened, it gets a higher than the previously opened popup z-index\n\n5. The template of this component exposes two inline partials you can override in derivatives:\n - beforeContent (upper part of the box, useful for header/title/close button)\n - afterContent (lower part, useful for footer/action buttons)",
                     "name": "Popup",
                     "slots": [
                         {
@@ -12997,6 +13038,18 @@
                         },
                         {
                             "kind": "field",
+                            "name": "preventInitialFocus",
+                            "type": {
+                                "text": "boolean"
+                            },
+                            "description": "Indicates whether initial focus should be prevented.",
+                            "privacy": "public",
+                            "default": "false",
+                            "_ui5since": "2.0",
+                            "_ui5validator": "Boolean"
+                        },
+                        {
+                            "kind": "field",
                             "name": "open",
                             "description": "Indicates if the element is open",
                             "privacy": "public",
@@ -13018,28 +13071,6 @@
                             },
                             "description": "Focuses the element denoted by `initialFocus`, if provided,\nor the first focusable element otherwise.",
                             "privacy": "public"
-                        },
-                        {
-                            "kind": "method",
-                            "name": "isOpen",
-                            "return": {
-                                "type": {
-                                    "text": "boolean"
-                                }
-                            },
-                            "description": "Tells if the component is opened",
-                            "privacy": "public"
-                        },
-                        {
-                            "kind": "method",
-                            "name": "close",
-                            "return": {
-                                "type": {
-                                    "text": "void"
-                                }
-                            },
-                            "description": "Closes the popup.",
-                            "privacy": "public"
                         }
                     ],
                     "events": [
@@ -13053,7 +13084,7 @@
                             "_ui5allowPreventDefault": true
                         },
                         {
-                            "name": "after-open",
+                            "name": "open",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -13087,7 +13118,7 @@
                             ]
                         },
                         {
-                            "name": "after-close",
+                            "name": "close",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -13333,7 +13364,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Defines the name of the component.\nRadio buttons with the same `name` will form a radio button group.\n\n**Note:**\nThe selection can be changed with `ARROW_UP/DOWN` and `ARROW_LEFT/RIGHT` keys between radio buttons in same group.\n\n**Note:**\nOnly one radio button can be selected per group.\n\n**Important:** For the `name` property to have effect when submitting forms, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\nRadio buttons with the same `name` will form a radio button group.\n\n**Note:** By this name the component will be identified upon submission in an HTML form.\n\n**Note:** The selection can be changed with `ARROW_UP/DOWN` and `ARROW_LEFT/RIGHT` keys between radio buttons in same group.\n\n**Note:** Only one radio button can be selected per group.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -13344,7 +13375,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Defines the form value of the component.\nWhen a form with a radio button group is submitted, the group's value\nwill be the value of the currently selected radio button.\n\n**Important:** For the `value` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`",
+                            "description": "Defines the form value of the component.\nWhen a form with a radio button group is submitted, the group's value\nwill be the value of the currently selected radio button.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -13522,6 +13553,22 @@
                             "default": "100",
                             "privacy": "public",
                             "_ui5validator": "Float",
+                            "inheritedFrom": {
+                                "name": "SliderBase",
+                                "module": "dist/SliderBase.js"
+                            }
+                        },
+                        {
+                            "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String",
                             "inheritedFrom": {
                                 "name": "SliderBase",
                                 "module": "dist/SliderBase.js"
@@ -13842,73 +13889,16 @@
                             "name": "_ui5footer"
                         }
                     ],
+                    "superclass": {
+                        "name": "Popover",
+                        "package": "@ui5/webcomponents",
+                        "module": "dist/Popover.js"
+                    },
+                    "tagName": "ResponsivePopover",
+                    "customElement": true,
+                    "_ui5since": "1.0.0-rc.6",
+                    "_ui5privacy": "public",
                     "members": [
-                        {
-                            "kind": "method",
-                            "name": "showAt",
-                            "return": {
-                                "type": {
-                                    "text": "Promise<void>"
-                                },
-                                "description": "Resolves when the responsive popover is open"
-                            },
-                            "parameters": [
-                                {
-                                    "name": "opener",
-                                    "type": {
-                                        "text": "HTMLElement"
-                                    },
-                                    "description": "the element that the popover is shown at",
-                                    "_ui5privacy": "public"
-                                },
-                                {
-                                    "name": "preventInitialFocus",
-                                    "default": "false",
-                                    "description": "Prevents applying the focus inside the popup",
-                                    "optional": true,
-                                    "_ui5privacy": "public",
-                                    "type": {
-                                        "text": "boolean"
-                                    }
-                                }
-                            ],
-                            "description": "Shows popover on desktop and dialog on mobile.",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popover",
-                                "module": "dist/Popover.js"
-                            }
-                        },
-                        {
-                            "kind": "method",
-                            "name": "close",
-                            "return": {
-                                "type": {
-                                    "text": "void"
-                                }
-                            },
-                            "description": "Closes the popover/dialog.",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popup",
-                                "module": "dist/Popup.js"
-                            }
-                        },
-                        {
-                            "kind": "method",
-                            "name": "isOpen",
-                            "return": {
-                                "type": {
-                                    "text": "boolean"
-                                }
-                            },
-                            "description": "Tells if the responsive popover is open.",
-                            "privacy": "public",
-                            "inheritedFrom": {
-                                "name": "Popup",
-                                "module": "dist/Popup.js"
-                            }
-                        },
                         {
                             "kind": "field",
                             "name": "headerText",
@@ -13999,22 +13989,6 @@
                             "description": "Defines whether the component should close when\nclicking/tapping outside of the popover.\nIf enabled, it blocks any interaction with the background.",
                             "default": "false",
                             "privacy": "public",
-                            "_ui5validator": "Boolean",
-                            "inheritedFrom": {
-                                "name": "Popover",
-                                "module": "dist/Popover.js"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "hideBackdrop",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines whether the block layer will be shown if modal property is set to true.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5since": "1.0.0-rc.10",
                             "_ui5validator": "Boolean",
                             "inheritedFrom": {
                                 "name": "Popover",
@@ -14156,6 +14130,22 @@
                         },
                         {
                             "kind": "field",
+                            "name": "preventInitialFocus",
+                            "type": {
+                                "text": "boolean"
+                            },
+                            "description": "Indicates whether initial focus should be prevented.",
+                            "privacy": "public",
+                            "default": "false",
+                            "_ui5since": "2.0",
+                            "_ui5validator": "Boolean",
+                            "inheritedFrom": {
+                                "name": "Popup",
+                                "module": "dist/Popup.js"
+                            }
+                        },
+                        {
+                            "kind": "field",
                             "name": "open",
                             "description": "Indicates if the element is open",
                             "privacy": "public",
@@ -14187,15 +14177,6 @@
                             }
                         }
                     ],
-                    "superclass": {
-                        "name": "Popover",
-                        "package": "@ui5/webcomponents",
-                        "module": "dist/Popover.js"
-                    },
-                    "tagName": "ResponsivePopover",
-                    "customElement": true,
-                    "_ui5since": "1.0.0-rc.6",
-                    "_ui5privacy": "public",
                     "events": [
                         {
                             "name": "before-open",
@@ -14211,7 +14192,7 @@
                             }
                         },
                         {
-                            "name": "after-open",
+                            "name": "open",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -14253,7 +14234,7 @@
                             }
                         },
                         {
-                            "name": "after-close",
+                            "name": "close",
                             "_ui5privacy": "public",
                             "type": {
                                 "text": "CustomEvent"
@@ -14667,7 +14648,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\nThe value of the component will be the value of the currently selected `ui5-option`.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the `ui5-select` so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -15289,6 +15270,22 @@
                         },
                         {
                             "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String",
+                            "inheritedFrom": {
+                                "name": "SliderBase",
+                                "module": "dist/SliderBase.js"
+                            }
+                        },
+                        {
+                            "kind": "field",
                             "name": "step",
                             "type": {
                                 "text": "number"
@@ -15466,6 +15463,18 @@
                             "default": "100",
                             "privacy": "public",
                             "_ui5validator": "Float"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String"
                         },
                         {
                             "kind": "field",
@@ -16248,7 +16257,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -16738,7 +16747,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5since": "1.16.0",
@@ -17733,7 +17742,7 @@
                             "type": {
                                 "text": "string"
                             },
-                            "description": "Determines the name with which the component will be submitted in an HTML form.\n\n**Important:** For the `name` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`\n\n**Note:** When set, a native `input` HTML element\nwill be created inside the component so that it can be submitted as\npart of an HTML form. Do not use this property unless you need to submit a form.",
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String"
@@ -17862,6 +17871,18 @@
                             "_ui5validator": "String",
                             "_ui5formProperty": true,
                             "_ui5formEvents": "change,input"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "name",
+                            "type": {
+                                "text": "string"
+                            },
+                            "description": "Determines the name by which the component will be identified upon submission in an HTML form.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
+                            "default": "\"\"",
+                            "privacy": "public",
+                            "_ui5since": "2.0.0",
+                            "_ui5validator": "String"
                         },
                         {
                             "kind": "field",
@@ -18456,7 +18477,7 @@
                             "type": {
                                 "text": "boolean"
                             },
-                            "description": "When set to `true`, the component will\nautomatically submit the nearest HTML form element on `press`.\n\n**Note:** For the `submits` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`",
+                            "description": "When set to `true`, the component will\nautomatically submit the nearest HTML form element on `press`.\n\n**Note:** This property is only applicable within the context of an HTML Form element.`",
                             "default": "false",
                             "privacy": "public",
                             "deprecated": "Set the \"type\" property to \"Submit\" to achieve the same result. The \"submits\" property is ignored if \"type\" is set to any value other than \"Button\".",
@@ -18550,7 +18571,7 @@
                                     }
                                 ]
                             },
-                            "description": "Defines whether the button has special form-related functionality.\n\n**Note:** For the `type` property to have effect, you must add the following import to your project:\n`import \"@ui5/webcomponents/dist/features/InputElementsFormSupport.js\";`",
+                            "description": "Defines whether the button has special form-related functionality.\n\n**Note:** This property is only applicable within the context of an HTML Form element.",
                             "default": "\"Button\"",
                             "privacy": "public",
                             "_ui5since": "1.15.0",
@@ -18573,7 +18594,7 @@
                                     }
                                 ]
                             },
-                            "description": "Describes the accessibility role of the button.\n\n**Note:** Use link role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.",
+                            "description": "Describes the accessibility role of the button.\n\n**Note:** Use <code>ButtonAccessibleRole.Link</code> role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.",
                             "default": "\"Button\"",
                             "privacy": "public",
                             "_ui5since": "1.23",
@@ -22438,6 +22459,48 @@
         },
         {
             "kind": "javascript-module",
+            "path": "dist/types/NotificationListItemImportance.js",
+            "declarations": [
+                {
+                    "kind": "enum",
+                    "name": "NotificationListItemImportance",
+                    "description": "Different types of NotificationListItemImportance.",
+                    "_ui5privacy": "public",
+                    "members": [
+                        {
+                            "kind": "field",
+                            "static": true,
+                            "privacy": "public",
+                            "default": "Standard",
+                            "name": "Standard",
+                            "readonly": true
+                        },
+                        {
+                            "kind": "field",
+                            "static": true,
+                            "privacy": "public",
+                            "default": "Important",
+                            "name": "Important",
+                            "readonly": true
+                        }
+                    ],
+                    "_ui5package": "@ui5/webcomponents-fiori",
+                    "tagName": "NotificationListItemImportance"
+                }
+            ],
+            "exports": [
+                {
+                    "kind": "js",
+                    "name": "default",
+                    "declaration": {
+                        "name": "NotificationListItemImportance",
+                        "module": "dist/types/NotificationListItemImportance.js"
+                    }
+                }
+            ]
+        },
+        {
+            "kind": "javascript-module",
             "path": "dist/types/PageBackgroundDesign.js",
             "declarations": [
                 {
@@ -24145,120 +24208,11 @@
         },
         {
             "kind": "javascript-module",
-            "path": "dist/NotificationAction.js",
-            "declarations": [
-                {
-                    "kind": "class",
-                    "description": "The `ui5-notification-action` represents an abstract action,\nused in the `ui5-li-notification` and the `ui5-li-notification-group` items.",
-                    "name": "NotificationAction",
-                    "members": [
-                        {
-                            "kind": "field",
-                            "name": "text",
-                            "type": {
-                                "text": "string"
-                            },
-                            "description": "Defines the text of the `ui5-notification-action`.",
-                            "default": "\"\"",
-                            "privacy": "public",
-                            "_ui5validator": "String"
-                        },
-                        {
-                            "kind": "field",
-                            "name": "disabled",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines if the action is disabled.\n\n**Note:** a disabled action can't be pressed or focused, and it is not in the tab chain.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5validator": "Boolean"
-                        },
-                        {
-                            "kind": "field",
-                            "name": "design",
-                            "type": {
-                                "text": "ButtonDesign",
-                                "references": [
-                                    {
-                                        "name": "ButtonDesign",
-                                        "package": "@ui5/webcomponents",
-                                        "module": "dist/types/ButtonDesign.js"
-                                    }
-                                ]
-                            },
-                            "description": "Defines the action design.",
-                            "default": "\"Transparent\"",
-                            "privacy": "public",
-                            "_ui5validator": "ButtonDesign"
-                        },
-                        {
-                            "kind": "field",
-                            "name": "icon",
-                            "type": {
-                                "text": "string"
-                            },
-                            "description": "Defines the `icon` source URI.\n\n**Note:**\nSAP-icons font provides numerous built-in icons. To find all the available icons, see the\n[Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).",
-                            "default": "\"\"",
-                            "privacy": "public",
-                            "_ui5validator": "String"
-                        }
-                    ],
-                    "events": [
-                        {
-                            "name": "click",
-                            "_ui5privacy": "public",
-                            "type": {
-                                "text": "CustomEvent<NotificationActionClickEventDetail>",
-                                "references": [
-                                    {
-                                        "name": "NotificationActionClickEventDetail",
-                                        "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationAction.js"
-                                    }
-                                ]
-                            },
-                            "description": "Fired, when the action is pressed."
-                        }
-                    ],
-                    "superclass": {
-                        "name": "UI5Element",
-                        "package": "@ui5/webcomponents-base",
-                        "module": "dist/UI5Element.js"
-                    },
-                    "tagName": "NotificationAction",
-                    "customElement": true,
-                    "_ui5privacy": "public",
-                    "_ui5abstract": true,
-                    "_ui5package": "@ui5/webcomponents-fiori"
-                }
-            ],
-            "exports": [
-                {
-                    "kind": "js",
-                    "name": "default",
-                    "declaration": {
-                        "name": "NotificationAction",
-                        "module": "dist/NotificationAction.js"
-                    }
-                },
-                {
-                    "kind": "custom-element-definition",
-                    "name": "ui5-notification-action",
-                    "declaration": {
-                        "name": "NotificationAction",
-                        "module": "dist/NotificationAction.js"
-                    }
-                }
-            ]
-        },
-        {
-            "kind": "javascript-module",
             "path": "dist/NotificationListGroupItem.js",
             "declarations": [
                 {
                     "kind": "class",
-                    "description": "### Overview\nThe `ui5-li-notification-group` is a special type of list item,\nthat unlike others can group items within self, usually `ui5-li-notification` items.\n\nThe component consists of:\n\n- `Toggle` button to expand and collapse the group\n- `Priority` icon to display the priority of the group\n- `TitleText` to entitle the group\n- Custom actions - with the use of `ui5-notification-action`\n- Items of the group\n\n### Usage\nThe component can be used in a standard `ui5-list`.\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/NotificationListGroupItem.js\";`\n\n`import \"@ui5/webcomponents/dist/NotificationAction.js\";` (optional)",
+                    "description": "### Overview\nThe `ui5-li-notification-group` is a special type of list item,\nthat unlike others can group items within self, usually `ui5-li-notification` items.\n\nThe component consists of:\n\n- `Toggle` button to expand and collapse the group\n- `TitleText` to entitle the group\n- Items of the group\n\n### Usage\nThe component can be used in a standard `ui5-list`.\n\n### Keyboard Handling\nThe `ui5-li-notification-group` provides advanced keyboard handling.\n\n#### Basic Navigation\nWhen a list is focused, the user can use the following keyboard shortcuts in order to navigate:\n\n- [Up] or [Down] - navigates up or down the items\n- [Home] - navigates to the first item\n- [End] - navigates to the last item\n\n#### Fast Navigation\nThis component provides fast navigation when the header is focused using the following keyboard shortcuts:\n\n- [Space] - toggles expand / collapse of the group\n- [Plus] - expands the group\n- [Minus] - collapses the group\n- [Right] - expands the group\n- [Left] - collapses the group\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/NotificationListGroupItem.js\";`",
                     "name": "NotificationListGroupItem",
                     "slots": [
                         {
@@ -24272,21 +24226,6 @@
                                         "name": "NotificationListItemBase",
                                         "package": "@ui5/webcomponents-fiori",
                                         "module": "dist/NotificationListItemBase.js"
-                                    }
-                                ]
-                            },
-                            "_ui5privacy": "public"
-                        },
-                        {
-                            "name": "actions",
-                            "description": "Defines the actions, displayed in the top-right area.\n\n**Note:** use the `ui5-notification-action` component.",
-                            "_ui5type": {
-                                "text": "Array<NotificationAction>",
-                                "references": [
-                                    {
-                                        "name": "NotificationAction",
-                                        "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationAction.js"
                                     }
                                 ]
                             },
@@ -24307,17 +24246,6 @@
                         },
                         {
                             "kind": "field",
-                            "name": "showCounter",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines if the items `counter` would be displayed.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5validator": "Boolean"
-                        },
-                        {
-                            "kind": "field",
                             "name": "titleText",
                             "type": {
                                 "text": "string"
@@ -24326,43 +24254,6 @@
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String",
-                            "inheritedFrom": {
-                                "name": "NotificationListItemBase",
-                                "module": "dist/NotificationListItemBase.js"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "priority",
-                            "type": {
-                                "text": "Priority",
-                                "references": [
-                                    {
-                                        "name": "Priority",
-                                        "package": "@ui5/webcomponents",
-                                        "module": "dist/types/Priority.js"
-                                    }
-                                ]
-                            },
-                            "description": "Defines the `priority` of the item.",
-                            "default": "\"None\"",
-                            "privacy": "public",
-                            "_ui5validator": "Priority",
-                            "inheritedFrom": {
-                                "name": "NotificationListItemBase",
-                                "module": "dist/NotificationListItemBase.js"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "showClose",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines if the `close` button would be displayed.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5validator": "Boolean",
                             "inheritedFrom": {
                                 "name": "NotificationListItemBase",
                                 "module": "dist/NotificationListItemBase.js"
@@ -24385,7 +24276,7 @@
                         },
                         {
                             "kind": "field",
-                            "name": "busy",
+                            "name": "loading",
                             "type": {
                                 "text": "boolean"
                             },
@@ -24401,7 +24292,7 @@
                         },
                         {
                             "kind": "field",
-                            "name": "busyDelay",
+                            "name": "loadingDelay",
                             "type": {
                                 "text": "number"
                             },
@@ -24434,35 +24325,6 @@
                                 "text": "CustomEvent"
                             },
                             "description": "Fired when the `ui5-li-notification-group` is expanded/collapsed by user interaction."
-                        },
-                        {
-                            "name": "close",
-                            "_ui5privacy": "public",
-                            "type": {
-                                "text": "CustomEvent<NotificationListItemBaseCloseEventDetail>",
-                                "references": [
-                                    {
-                                        "name": "NotificationListItemBaseCloseEventDetail",
-                                        "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationListItemBase.js"
-                                    }
-                                ]
-                            },
-                            "description": "Fired when the `Close` button is pressed.",
-                            "_ui5parameters": [
-                                {
-                                    "type": {
-                                        "text": "HTMLElement"
-                                    },
-                                    "name": "item",
-                                    "_ui5privacy": "public",
-                                    "description": "the closed item."
-                                }
-                            ],
-                            "inheritedFrom": {
-                                "name": "NotificationListItemBase",
-                                "module": "dist/NotificationListItemBase.js"
-                            }
                         }
                     ],
                     "superclass": {
@@ -24502,7 +24364,7 @@
             "declarations": [
                 {
                     "kind": "class",
-                    "description": "### Overview\nThe `ui5-li-notification` is a type of list item, meant to display notifications.\n\nThe component has a rich set of various properties that allows the user to set `avatar`, `titleText`, descriptive `content`\nand `footnotes` to fully describe a notification.\n\nThe user can:\n\n- display a `Close` button\n- can control whether the `titleText` and `description` should wrap or truncate\nand display a `ShowMore` button to switch between less and more information\n- add custom actions by using the `ui5-notification-action` component\n\n### Usage\nThe component can be used in a standard `ui5-list`.\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/NotificationListItem.js\";`\n\n`import \"@ui5/webcomponents/dist/NotificationAction.js\";` (optional)",
+                    "description": "### Overview\nThe `ui5-li-notification` is a type of list item, meant to display notifications.\n\nThe component has a rich set of various properties that allows the user to set `avatar`, `menu`, `titleText`, descriptive `content`\nand `footnotes` to fully describe a notification.\n\nThe user can:\n\n- display a `Close` button\n- can control whether the `titleText` and `description` should wrap or truncate\nand display a `ShowMore` button to switch between less and more information\n- add actions by using the `ui5-menu` component\n\n**Note:** Adding custom actions by using the `ui5-notification-action` component is deprecated as of version 2.0!\n\n### Usage\nThe component can be used in a standard `ui5-list`.\n\n### Keyboard Handling\n\n#### Basic Navigation\nThe user can use the following keyboard shortcuts to perform actions (such as select, delete):\n\n- [Enter] - select an item (trigger \"item-click\" event)\n- [Delete] - close an item (trigger \"item-close\" event)\n\n#### Fast Navigation\nThis component provides a fast navigation using the the following keyboard shortcuts:\n\n- [Shift] + [Enter] - 'More'/'Less' link will be triggered\n- [Shift] + [F10] - 'Menu' (Actions) button will be triggered (clicked)\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/NotificationListItem.js\";`",
                     "name": "NotificationListItem",
                     "cssParts": [
                         {
@@ -24514,6 +24376,14 @@
                         {
                             "name": "avatar",
                             "description": "Defines the avatar, displayed in the `ui5-li-notification`.\n\n**Note:** Consider using the `ui5-avatar` to display icons, initials or images.\n\n**Note:** In order to be complaint with the UX guidlines and for best experience,\nwe recommend using avatars with 2rem X 2rem in size (32px X 32px). In case you are using the `ui5-avatar`\nyou can set its `size` property to `XS` to get the required size - `<ui5-avatar size=\"XS\"></ui5-avatar>`.",
+                            "_ui5type": {
+                                "text": "Array<HTMLElement>"
+                            },
+                            "_ui5privacy": "public"
+                        },
+                        {
+                            "name": "menu",
+                            "description": "Defines the menu, displayed in the `ui5-li-notification`.\n\n**Note:** Use this for implementing actions.\n\n**Note:** Should be used instead `u5-notification-action`, which is deprecated as of version 2.0.",
                             "_ui5type": {
                                 "text": "Array<HTMLElement>"
                             },
@@ -24533,21 +24403,6 @@
                             "_ui5propertyName": "description",
                             "_ui5type": {
                                 "text": "Array<Node>"
-                            },
-                            "_ui5privacy": "public"
-                        },
-                        {
-                            "name": "actions",
-                            "description": "Defines the actions, displayed in the top-right area.\n\n**Note:** use the `ui5-notification-action` component.",
-                            "_ui5type": {
-                                "text": "Array<NotificationAction>",
-                                "references": [
-                                    {
-                                        "name": "NotificationAction",
-                                        "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationAction.js"
-                                    }
-                                ]
                             },
                             "_ui5privacy": "public"
                         }
@@ -24574,6 +24429,53 @@
                         },
                         {
                             "kind": "field",
+                            "name": "state",
+                            "type": {
+                                "text": "ValueState",
+                                "references": [
+                                    {
+                                        "name": "ValueState",
+                                        "package": "@ui5/webcomponents-base",
+                                        "module": "dist/types/ValueState.js"
+                                    }
+                                ]
+                            },
+                            "description": "Defines the status indicator of the item.",
+                            "default": "\"None\"",
+                            "privacy": "public",
+                            "_ui5validator": "ValueState"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "showClose",
+                            "type": {
+                                "text": "boolean"
+                            },
+                            "description": "Defines if the `Close` button would be displayed.",
+                            "default": "false",
+                            "privacy": "public",
+                            "_ui5validator": "Boolean"
+                        },
+                        {
+                            "kind": "field",
+                            "name": "importance",
+                            "type": {
+                                "text": "NotificationListItemImportance",
+                                "references": [
+                                    {
+                                        "name": "NotificationListItemImportance",
+                                        "package": "@ui5/webcomponents-fiori",
+                                        "module": "dist/types/NotificationListItemImportance.js"
+                                    }
+                                ]
+                            },
+                            "description": "Defines the `Important` label of the item.",
+                            "default": "\"Standard\"",
+                            "privacy": "public",
+                            "_ui5validator": "NotificationListItemImportance"
+                        },
+                        {
+                            "kind": "field",
                             "name": "titleText",
                             "type": {
                                 "text": "string"
@@ -24582,43 +24484,6 @@
                             "default": "\"\"",
                             "privacy": "public",
                             "_ui5validator": "String",
-                            "inheritedFrom": {
-                                "name": "NotificationListItemBase",
-                                "module": "dist/NotificationListItemBase.js"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "priority",
-                            "type": {
-                                "text": "Priority",
-                                "references": [
-                                    {
-                                        "name": "Priority",
-                                        "package": "@ui5/webcomponents",
-                                        "module": "dist/types/Priority.js"
-                                    }
-                                ]
-                            },
-                            "description": "Defines the `priority` of the item.",
-                            "default": "\"None\"",
-                            "privacy": "public",
-                            "_ui5validator": "Priority",
-                            "inheritedFrom": {
-                                "name": "NotificationListItemBase",
-                                "module": "dist/NotificationListItemBase.js"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "showClose",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines if the `close` button would be displayed.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5validator": "Boolean",
                             "inheritedFrom": {
                                 "name": "NotificationListItemBase",
                                 "module": "dist/NotificationListItemBase.js"
@@ -24641,7 +24506,7 @@
                         },
                         {
                             "kind": "field",
-                            "name": "busy",
+                            "name": "loading",
                             "type": {
                                 "text": "boolean"
                             },
@@ -24657,7 +24522,7 @@
                         },
                         {
                             "kind": "field",
-                            "name": "busyDelay",
+                            "name": "loadingDelay",
                             "type": {
                                 "text": "number"
                             },
@@ -24682,26 +24547,17 @@
                             "_ui5validator": "Boolean"
                         }
                     ],
-                    "superclass": {
-                        "name": "NotificationListItemBase",
-                        "package": "@ui5/webcomponents-fiori",
-                        "module": "dist/NotificationListItemBase.js"
-                    },
-                    "tagName": "NotificationListItem",
-                    "customElement": true,
-                    "_ui5since": "1.0.0-rc.8",
-                    "_ui5privacy": "public",
                     "events": [
                         {
                             "name": "close",
                             "_ui5privacy": "public",
                             "type": {
-                                "text": "CustomEvent<NotificationListItemBaseCloseEventDetail>",
+                                "text": "CustomEvent<NotificationListItemCloseEventDetail>",
                                 "references": [
                                     {
-                                        "name": "NotificationListItemBaseCloseEventDetail",
+                                        "name": "NotificationListItemCloseEventDetail",
                                         "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationListItemBase.js"
+                                        "module": "dist/NotificationListItem.js"
                                     }
                                 ]
                             },
@@ -24715,13 +24571,18 @@
                                     "_ui5privacy": "public",
                                     "description": "the closed item."
                                 }
-                            ],
-                            "inheritedFrom": {
-                                "name": "NotificationListItemBase",
-                                "module": "dist/NotificationListItemBase.js"
-                            }
+                            ]
                         }
                     ],
+                    "superclass": {
+                        "name": "NotificationListItemBase",
+                        "package": "@ui5/webcomponents-fiori",
+                        "module": "dist/NotificationListItemBase.js"
+                    },
+                    "tagName": "NotificationListItem",
+                    "customElement": true,
+                    "_ui5since": "1.0.0-rc.8",
+                    "_ui5privacy": "public",
                     "_ui5package": "@ui5/webcomponents-fiori"
                 }
             ],
@@ -24752,23 +24613,6 @@
                     "kind": "class",
                     "description": "The base class of the `NotificationListItem` and `NotificationListGroupItem`.",
                     "name": "NotificationListItemBase",
-                    "slots": [
-                        {
-                            "name": "actions",
-                            "description": "Defines the actions, displayed in the top-right area.\n\n**Note:** use the `ui5-notification-action` component.",
-                            "_ui5type": {
-                                "text": "Array<NotificationAction>",
-                                "references": [
-                                    {
-                                        "name": "NotificationAction",
-                                        "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationAction.js"
-                                    }
-                                ]
-                            },
-                            "_ui5privacy": "public"
-                        }
-                    ],
                     "members": [
                         {
                             "kind": "field",
@@ -24783,35 +24627,6 @@
                         },
                         {
                             "kind": "field",
-                            "name": "priority",
-                            "type": {
-                                "text": "Priority",
-                                "references": [
-                                    {
-                                        "name": "Priority",
-                                        "package": "@ui5/webcomponents",
-                                        "module": "dist/types/Priority.js"
-                                    }
-                                ]
-                            },
-                            "description": "Defines the `priority` of the item.",
-                            "default": "\"None\"",
-                            "privacy": "public",
-                            "_ui5validator": "Priority"
-                        },
-                        {
-                            "kind": "field",
-                            "name": "showClose",
-                            "type": {
-                                "text": "boolean"
-                            },
-                            "description": "Defines if the `close` button would be displayed.",
-                            "default": "false",
-                            "privacy": "public",
-                            "_ui5validator": "Boolean"
-                        },
-                        {
-                            "kind": "field",
                             "name": "read",
                             "type": {
                                 "text": "boolean"
@@ -24823,7 +24638,7 @@
                         },
                         {
                             "kind": "field",
-                            "name": "busy",
+                            "name": "loading",
                             "type": {
                                 "text": "boolean"
                             },
@@ -24835,7 +24650,7 @@
                         },
                         {
                             "kind": "field",
-                            "name": "busyDelay",
+                            "name": "loadingDelay",
                             "type": {
                                 "text": "number"
                             },
@@ -24856,39 +24671,11 @@
                             "_ui5validator": "Boolean"
                         }
                     ],
-                    "events": [
-                        {
-                            "name": "close",
-                            "_ui5privacy": "public",
-                            "type": {
-                                "text": "CustomEvent<NotificationListItemBaseCloseEventDetail>",
-                                "references": [
-                                    {
-                                        "name": "NotificationListItemBaseCloseEventDetail",
-                                        "package": "@ui5/webcomponents-fiori",
-                                        "module": "dist/NotificationListItemBase.js"
-                                    }
-                                ]
-                            },
-                            "description": "Fired when the `Close` button is pressed.",
-                            "_ui5parameters": [
-                                {
-                                    "type": {
-                                        "text": "HTMLElement"
-                                    },
-                                    "name": "item",
-                                    "_ui5privacy": "public",
-                                    "description": "the closed item."
-                                }
-                            ]
-                        }
-                    ],
                     "superclass": {
                         "name": "ListItemBase",
                         "package": "@ui5/webcomponents",
                         "module": "dist/ListItemBase.js"
                     },
-                    "customElement": true,
                     "_ui5since": "1.0.0-rc.8",
                     "_ui5privacy": "public",
                     "_ui5package": "@ui5/webcomponents-fiori",
@@ -28203,6 +27990,12 @@
                     }
                 }
             ]
+        },
+        {
+            "kind": "javascript-module",
+            "path": "dist/features/InputElementsFormSupport.js",
+            "declarations": [],
+            "exports": []
         },
         {
             "kind": "javascript-module",

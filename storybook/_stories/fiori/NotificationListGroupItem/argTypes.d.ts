@@ -1,8 +1,4 @@
 declare const _default: {
-    priority: {
-        control: string;
-        options: string[];
-    };
     default: {
         control: {
             type: string;
@@ -11,35 +7,6 @@ declare const _default: {
             type: {
                 summary: string;
             };
-        };
-    };
-    actions: {
-        control: {
-            type: string;
-        };
-        table: {
-            type: {
-                summary: string;
-            };
-        };
-    };
-    close: {
-        description: string;
-        control: {
-            type: boolean;
-        };
-        table: {
-            category: string;
-        };
-        UI5CustomData: {
-            parameters: {
-                type: {
-                    text: string;
-                };
-                name: string;
-                _ui5privacy: string;
-                description: string;
-            }[];
         };
     };
 };
@@ -51,5 +18,4 @@ export declare const componentInfo: {
 };
 export type StoryArgsSlots = {
     default: string;
-    actions: string;
 };

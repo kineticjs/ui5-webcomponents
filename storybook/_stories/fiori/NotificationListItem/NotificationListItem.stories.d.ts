@@ -5,5 +5,4 @@ import type NotificationListItem from "@ui5/webcomponents-fiori/dist/Notificatio
 declare const _default: Meta<NotificationListItem>;
 export default _default;
 export declare const Basic: UI5StoryArgs<NotificationListItem, StoryArgsSlots>;
-export declare const Actions: UI5StoryArgs<NotificationListItem, StoryArgsSlots>;
 export declare const InShellBar: UI5StoryArgs<NotificationListItem, StoryArgsSlots>;
