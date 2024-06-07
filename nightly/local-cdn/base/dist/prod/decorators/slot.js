@@ -1,0 +1,2 @@
+"use strict";const f=e=>(l,n)=>{const r=l.constructor;Object.prototype.hasOwnProperty.call(r,"metadata")||(r.metadata={});const o=r.metadata;o.slots||(o.slots={});const t=o.slots;if(e&&e.default&&t.default)throw new Error("Only one slot can be the default slot.");const a=e&&e.default?"default":n;e=e||{type:HTMLElement},e.type||(e.type=HTMLElement),t[a]||(t[a]=e),e.default&&(delete t.default.default,t.default.propertyName=n),r.metadata.managedSlots=!0};export default f;
+//# sourceMappingURL=slot.js.map
