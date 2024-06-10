@@ -1,5 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import { ICalendarSelectedDates } from "./Calendar.js";
+import type { ICalendarSelectedDates } from "./Calendar.js";
 /**
  * @class
  *

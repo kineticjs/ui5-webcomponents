@@ -80,6 +80,7 @@ import SelectPopoverCss from "./generated/themes/SelectPopover.css.js";
  * @constructor
  * @extends UI5Element
  * @public
+ * @csspart popover - Used to style the popover element
  * @since 0.8.0
  */
 let Select = Select_1 = class Select extends UI5Element {

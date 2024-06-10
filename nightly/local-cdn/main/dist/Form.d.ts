@@ -103,6 +103,7 @@ type ItemsInfo = {
  *
  * @public
  * @since 2.0.0
+ * @extends UI5Element
  */
 declare class Form extends UI5Element {
     /**

@@ -124,8 +124,13 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         this.deactivate();
     }
     _ondragstart(e) {
+        if (!e.dataTransfer) {
+            return;
+        }
         if (e.target === this._listItem) {
             this.setAttribute("data-moving", "");
+            e.dataTransfer.dropEffect = "move";
+            e.dataTransfer.effectAllowed = "move";
         }
     }
     _ondragend(e) {

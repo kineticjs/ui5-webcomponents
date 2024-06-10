@@ -24,6 +24,7 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  * @constructor
  * @public
  * @since 2.0.0
+ * @extends UI5Element
  */
 declare class FormItem extends UI5Element implements IFormItem {
     /**

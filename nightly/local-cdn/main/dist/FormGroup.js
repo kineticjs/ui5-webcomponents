@@ -33,6 +33,7 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  *
  * @public
  * @since 2.0.0
+ * @extends UI5Element
  */
 let FormGroup = class FormGroup extends UI5Element {
     onBeforeRendering() {

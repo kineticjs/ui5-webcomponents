@@ -16,6 +16,8 @@ import "./NotificationListItemBase.js";
 import NotificationListInternal from "./NotificationListInternal.js";
 // Template
 import NotificationListTemplate from "./generated/templates/NotificationListTemplate.lit.js";
+// Styles
+import NotificationListCss from "./generated/themes/NotificationList.css.js";
 // Texts
 import { NOTIFICATION_LIST_ACCESSIBLE_NAME, } from "./generated/i18n/i18n-defaults.js";
 /**
@@ -78,7 +80,7 @@ NotificationList = NotificationList_1 = __decorate([
         tag: "ui5-notification-list",
         renderer: litRender,
         languageAware: true,
-        styles: [],
+        styles: [NotificationListCss],
         template: NotificationListTemplate,
         dependencies: [
             NotificationListInternal,

@@ -38,6 +38,7 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  * @constructor
  * @public
  * @since 2.0.0
+ * @extends UI5Element
  */
 let FormItem = class FormItem extends UI5Element {
     get isGroup() {

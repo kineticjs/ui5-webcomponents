@@ -202,6 +202,8 @@ let TabContainer = TabContainer_1 = class TabContainer extends UI5Element {
         if (!e.dataTransfer || !(e.target instanceof HTMLElement)) {
             return;
         }
+        e.dataTransfer.dropEffect = "move";
+        e.dataTransfer.effectAllowed = "move";
         this._setDraggedElement(e.target.realTabReference);
     }
     _onHeaderDragEnter(e) {

@@ -107,6 +107,7 @@ const StepColumn = {
  *
  * @public
  * @since 2.0.0
+ * @extends UI5Element
  */
 let Form = class Form extends UI5Element {
     onBeforeRendering() {

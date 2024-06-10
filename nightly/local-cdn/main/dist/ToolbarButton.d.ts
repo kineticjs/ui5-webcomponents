@@ -1,9 +1,10 @@
-import type { ButtonAccessibilityAttributes as ToolbarAccessibilityAttributes } from "./Button.js";
+import type { ButtonAccessibilityAttributes } from "./Button.js";
 import ButtonDesign from "./types/ButtonDesign.js";
 import ToolbarItem from "./ToolbarItem.js";
 import type { IEventOptions } from "./ToolbarItem.js";
 import ToolbarButtonTemplate from "./generated/templates/ToolbarButtonTemplate.lit.js";
 import ToolbarPopoverButtonTemplate from "./generated/templates/ToolbarPopoverButtonTemplate.lit.js";
+type ToolbarButtonAccessibilityAttributes = ButtonAccessibilityAttributes;
 /**
  * @class
  *
@@ -94,7 +95,7 @@ declare class ToolbarButton extends ToolbarItem {
      * @default {}
      * @public
      */
-    accessibilityAttributes: ToolbarAccessibilityAttributes;
+    accessibilityAttributes: ToolbarButtonAccessibilityAttributes;
     /**
      * Button text
      * @public
@@ -119,4 +120,4 @@ declare class ToolbarButton extends ToolbarItem {
     get subscribedEvents(): Map<string, IEventOptions>;
 }
 export default ToolbarButton;
-export type { ToolbarAccessibilityAttributes, };
+export type { ToolbarButtonAccessibilityAttributes, };

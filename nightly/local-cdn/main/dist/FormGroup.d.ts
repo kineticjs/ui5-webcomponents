@@ -25,6 +25,7 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  *
  * @public
  * @since 2.0.0
+ * @extends UI5Element
  */
 declare class FormGroup extends UI5Element implements IFormItem {
     /**

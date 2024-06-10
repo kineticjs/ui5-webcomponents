@@ -19,7 +19,8 @@ import { IButton } from "./Button.js";
  * `import "@ui5/webcomponents/dist/SegmentedButtonItem.js";`
  * @constructor
  * @extends UI5Element
- * @implements { ISegmentedButtonItem, IButton }
+ * @implements { ISegmentedButtonItem }
+ * @implements { IButton }
  * @public
  */
 declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmentedButtonItem {

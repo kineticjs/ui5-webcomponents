@@ -38,7 +38,8 @@ import segmentedButtonItemCss from "./generated/themes/SegmentedButtonItem.css.j
  * `import "@ui5/webcomponents/dist/SegmentedButtonItem.js";`
  * @constructor
  * @extends UI5Element
- * @implements { ISegmentedButtonItem, IButton }
+ * @implements { ISegmentedButtonItem }
+ * @implements { IButton }
  * @public
  */
 let SegmentedButtonItem = SegmentedButtonItem_1 = class SegmentedButtonItem extends UI5Element {
