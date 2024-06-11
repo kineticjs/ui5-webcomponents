@@ -19,7 +19,7 @@ import InputType from "./types/InputType.js";
 import Popover from "./Popover.js";
 import type { IIcon } from "./Icon.js";
 import type ListItemType from "./types/ListItemType.js";
-import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
+import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from "./List.js";
 /**
  * Interface for components that represent a suggestion item, usable in `ui5-input`

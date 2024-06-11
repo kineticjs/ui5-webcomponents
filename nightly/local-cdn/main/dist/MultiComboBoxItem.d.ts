@@ -16,6 +16,11 @@ declare class MultiComboBoxItem extends ComboBoxItem implements IMultiComboBoxIt
      * @public
      */
     selected: boolean;
+    /**
+     * Defines whether the item is filtered
+     * @private
+     */
+    _isVisible: boolean;
     get isMultiComboBoxItem(): boolean;
 }
 declare const isInstanceOfMultiComboBoxItem: (object: any) => object is MultiComboBoxItem;

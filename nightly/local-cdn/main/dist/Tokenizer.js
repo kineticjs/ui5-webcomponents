@@ -29,8 +29,7 @@ import ListSelectionMode from "./types/ListSelectionMode.js";
 import Title from "./Title.js";
 import Button from "./Button.js";
 import Icon from "./Icon.js";
-import StandardListItem from "./StandardListItem.js";
-import "./Token.js";
+import ListItemStandard from "./ListItemStandard.js";
 import TokenizerTemplate from "./generated/templates/TokenizerTemplate.lit.js";
 import { MULTIINPUT_SHOW_MORE_TOKENS, TOKENIZER_ARIA_LABEL, TOKENIZER_POPOVER_REMOVE, TOKENIZER_ARIA_CONTAIN_TOKEN, TOKENIZER_ARIA_CONTAIN_ONE_TOKEN, TOKENIZER_ARIA_CONTAIN_SEVERAL_TOKENS, TOKENIZER_SHOW_ALL_ITEMS, } from "./generated/i18n/i18n-defaults.js";
 // Styles
@@ -39,7 +38,6 @@ import TokenizerPopoverCss from "./generated/themes/TokenizerPopover.css.js";
 import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverCommon.css.js";
 // reuse suggestions focus styling for NMore popup
 import SuggestionsCss from "./generated/themes/Suggestions.css.js";
-import "./ListItem.js";
 var ClipboardDataOperation;
 (function (ClipboardDataOperation) {
     ClipboardDataOperation["cut"] = "cut";
@@ -769,7 +767,7 @@ Tokenizer = Tokenizer_1 = __decorate([
         dependencies: [
             ResponsivePopover,
             List,
-            StandardListItem,
+            ListItemStandard,
             Title,
             Button,
             Icon,

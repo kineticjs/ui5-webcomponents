@@ -2,11 +2,11 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { TabContainerStripInfo, TabContainerOverflowInfo, ITab } from "./TabContainer.js";
 import TabSeparatorInStripTemplate from "./generated/templates/TabSeparatorInStripTemplate.lit.js";
 import TabSeparatorInOverflowTemplate from "./generated/templates/TabSeparatorInOverflowTemplate.lit.js";
-import type CustomListItem from "./CustomListItem.js";
+import type ListItemCustom from "./ListItemCustom.js";
 interface TabSeparatorInStrip extends HTMLElement {
     realTabReference: TabSeparator;
 }
-interface TabSeparatorInOverflow extends CustomListItem {
+interface TabSeparatorInOverflow extends ListItemCustom {
     realTabReference: TabSeparator;
 }
 /**

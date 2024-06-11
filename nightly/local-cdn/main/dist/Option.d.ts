@@ -1,4 +1,4 @@
-import { IOption } from "./Select.js";
+import type { IOption } from "./Select.js";
 import ListItemBase from "./ListItemBase.js";
 /**
  * @class

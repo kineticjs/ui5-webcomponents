@@ -23,7 +23,7 @@ import ListItemType from "./types/ListItemType.js";
 import TabContainer from "./TabContainer.js";
 import Icon from "./Icon.js";
 import Button from "./Button.js";
-import CustomListItem from "./CustomListItem.js";
+import ListItemCustom from "./ListItemCustom.js";
 // Templates
 import TabTemplate from "./generated/templates/TabTemplate.lit.js";
 import TabInStripTemplate from "./generated/templates/TabInStripTemplate.lit.js";
@@ -349,7 +349,7 @@ Tab = Tab_1 = __decorate([
         dependencies: [
             Icon,
             Button,
-            CustomListItem,
+            ListItemCustom,
         ],
     })
 ], Tab);

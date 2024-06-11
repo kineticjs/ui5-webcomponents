@@ -1,2 +1,2 @@
-"use strict";let e=null;const u=(o,t)=>{e&&clearTimeout(e),e=setTimeout(()=>{e=null,o()},t)};export default u;
+"use strict";let e=null;const u=(t,o)=>{e&&clearTimeout(e),e=setTimeout(()=>{e=null,t()},o)};export default u;
 //# sourceMappingURL=debounce.js.map

@@ -18,7 +18,6 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { SEGMENTEDBUTTONITEM_ARIA_DESCRIPTION } from "./generated/i18n/i18n-defaults.js";
 import SegmentedButtonItemTemplate from "./generated/templates/SegmentedButtonItemTemplate.lit.js";
-import "./Button.js";
 import Icon from "./Icon.js";
 import segmentedButtonItemCss from "./generated/themes/SegmentedButtonItem.css.js";
 /**

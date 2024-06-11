@@ -32,7 +32,6 @@ import "@ui5/webcomponents-icons/dist/information.js";
 import InputType from "./types/InputType.js";
 import Popover from "./Popover.js";
 import Icon from "./Icon.js";
-import "./types/PopoverHorizontalAlign.js";
 // Templates
 import InputTemplate from "./generated/templates/InputTemplate.lit.js";
 import { StartsWith } from "./Filters.js";

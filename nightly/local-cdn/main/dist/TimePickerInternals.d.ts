@@ -4,7 +4,7 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
 import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
-import SegmentedButton from "./SegmentedButton.js";
+import type SegmentedButton from "./SegmentedButton.js";
 type TimePickerComponentIndexMap = {
     hours: number;
     minutes: number;

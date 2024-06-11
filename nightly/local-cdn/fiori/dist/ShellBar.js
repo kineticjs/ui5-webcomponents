@@ -13,10 +13,9 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import "@ui5/webcomponents-base/dist/types/AriaRole.js";
 import AriaHasPopup from "@ui5/webcomponents-base/dist/types/AriaHasPopup.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
-import StandardListItem from "@ui5/webcomponents/dist/StandardListItem.js";
+import ListItemStandard from "@ui5/webcomponents/dist/ListItemStandard.js";
 import List from "@ui5/webcomponents/dist/List.js";
 import Popover from "@ui5/webcomponents/dist/Popover.js";
 import Button from "@ui5/webcomponents/dist/Button.js";
@@ -27,7 +26,6 @@ import "@ui5/webcomponents-icons/dist/search.js";
 import "@ui5/webcomponents-icons/dist/bell.js";
 import "@ui5/webcomponents-icons/dist/overflow.js";
 import "@ui5/webcomponents-icons/dist/grid.js";
-import "@ui5/webcomponents/dist/types/PopoverHorizontalAlign.js";
 // Templates
 import ShellBarTemplate from "./generated/templates/ShellBarTemplate.lit.js";
 // Styles
@@ -778,7 +776,7 @@ ShellBar = ShellBar_1 = __decorate([
             Icon,
             List,
             Popover,
-            StandardListItem,
+            ListItemStandard,
         ],
     })
     /**

@@ -1,5 +1,6 @@
 import "@ui5/webcomponents-base/dist/ssr-dom.js";
-import UI5ElementMetadata, { Slot, SlotValue, State, PropertyValue, Metadata } from "./UI5ElementMetadata.js";
+import UI5ElementMetadata from "./UI5ElementMetadata.js";
+import type { Slot, SlotValue, State, PropertyValue, Metadata } from "./UI5ElementMetadata.js";
 import EventProvider from "./EventProvider.js";
 import type { TemplateFunction, TemplateFunctionResult } from "./renderer/executeTemplate.js";
 import type { AccessibilityInfo, PromiseResolve, ComponentStylesData, ClassMap } from "./types.js";

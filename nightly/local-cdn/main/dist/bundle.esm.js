@@ -154,8 +154,8 @@ import "./TreeItem.js";
 import "./TreeItemCustom.js";
 import "./List.js";
 // console.log({List})
-import "./StandardListItem.js";
-import "./CustomListItem.js";
+import "./ListItemStandard.js";
+import "./ListItemCustom.js";
 import "./ListItemGroupHeader.js";
 import "./ListItemGroup.js";
 // Features

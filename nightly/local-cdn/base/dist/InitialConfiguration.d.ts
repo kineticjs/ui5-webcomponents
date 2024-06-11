@@ -1,6 +1,6 @@
 import type { FormatSettings } from "./config/FormatSettings.js";
 import AnimationMode from "./types/AnimationMode.js";
-import CalendarType from "./types/CalendarType.js";
+import type CalendarType from "./types/CalendarType.js";
 declare const getAnimationMode: () => AnimationMode;
 declare const getTheme: () => string;
 declare const getThemeRoot: () => string | undefined;

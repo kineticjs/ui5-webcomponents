@@ -9,12 +9,11 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import "./ListItemBase.js";
 // Template
 import ListItemGroupTemplate from "./generated/templates/ListItemGroupTemplate.lit.js";
 // Styles
 import ListItemGroupCss from "./generated/themes/ListItemGroup.css.js";
-import StandardListItem from "./StandardListItem.js";
+import ListItemStandard from "./ListItemStandard.js";
 import ListItemGroupHeader from "./ListItemGroupHeader.js";
 /**
  * @class
@@ -71,7 +70,7 @@ ListItemGroup = __decorate([
         languageAware: true,
         template: ListItemGroupTemplate,
         styles: [ListItemGroupCss],
-        dependencies: [StandardListItem, ListItemGroupHeader],
+        dependencies: [ListItemStandard, ListItemGroupHeader],
     })
 ], ListItemGroup);
 ListItemGroup.define();

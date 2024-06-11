@@ -4,7 +4,7 @@ import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delega
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import Popover from "./Popover.js";
-import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
+import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";

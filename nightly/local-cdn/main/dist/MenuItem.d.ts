@@ -1,6 +1,6 @@
 import ListItem from "./ListItem.js";
 import ResponsivePopover from "./ResponsivePopover.js";
-import PopoverPlacement from "./types/PopoverPlacement.js";
+import type PopoverPlacement from "./types/PopoverPlacement.js";
 import type { ResponsivePopoverBeforeCloseEventDetail } from "./ResponsivePopover.js";
 type MenuBeforeOpenEventDetail = {
     item?: MenuItem;
@@ -156,18 +156,6 @@ declare class MenuItem extends ListItem {
         ariaLevel?: number | undefined;
         ariaLabel: string;
         ariaLabelRadioButton: string;
-        /**
-         * Defines the `additionalText`, displayed in the end of the menu item.
-         *
-         * **Note:** The additional text will not be displayed if there are items added in `items` slot or there are
-         * components added to `endContent` slot.
-         *
-         * The priority of what will be displayed at the end of the menu item is as follows:
-         * sub-menu arrow (if there are items added in `items` slot) -> components added in `endContent` -> text set to `additionalText`.
-         * @default ""
-         * @public
-         * @since 1.8.0
-         */
         ariaSelectedText?: string | undefined;
         posinset?: number | undefined;
         setsize?: number | undefined;

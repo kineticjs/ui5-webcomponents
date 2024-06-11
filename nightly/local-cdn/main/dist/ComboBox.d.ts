@@ -16,7 +16,7 @@ import ResponsivePopover from "./ResponsivePopover.js";
 import type { ListItemClickEventDetail } from "./List.js";
 import ComboBoxFilter from "./types/ComboBoxFilter.js";
 import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
-import { InputEventDetail } from "./Input.js";
+import type { InputEventDetail } from "./Input.js";
 /**
  * Interface for components that may be slotted inside a `ui5-combobox`
  * @public

@@ -6,19 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import StandardListItem from "./StandardListItem.js";
+import ListItemStandard from "./ListItemStandard.js";
 import SuggestionListItemTemplate from "./generated/templates/SuggestionListItemTemplate.lit.js";
 /**
  * @class
  * The `ui5-li-suggestion-item` represents the suggestion item in the `ui5-input`
  * suggestion popover.
  * @constructor
- * @extends StandardListItem
+ * @extends ListItemStandard
  * @csspart title - Used to style the title of the suggestion list item
  * @csspart description - Used to style the description of the suggestion list item
  * @csspart info - Used to style the info of the suggestion list item
  */
-let SuggestionListItem = class SuggestionListItem extends StandardListItem {
+let SuggestionListItem = class SuggestionListItem extends ListItemStandard {
     onBeforeRendering() {
         super.onBeforeRendering();
         this.hasTitle = !!this.titleText.length;

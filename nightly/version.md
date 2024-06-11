@@ -1,15 +1,21 @@
-commit 77696d76d0e8788bee065c8b48ba9e2ebec1ad76
-Author: Nayden Naydenov <31909318+nnaydenow@users.noreply.github.com>
-Date:   Sun Jun 9 11:36:10 2024 +0300
+commit 8f5b67901a429196252f52980c10a04f7d43fe0b
+Author: ilhan orhan <ilhan.orhan007@gmail.com>
+Date:   Mon Jun 10 12:32:03 2024 +0300
 
-    chore(tools): add more validation in cem generation (#9145)
+    refactor(ui5-li, ui5-li-custom): rename classes (#9158)
     
-    Add validation that checks correct usage of `@extends` and `@implements` JSDoc tags. Validations also check whether the tag has same value in heritage clause.
+    Rename classes for better consistency - `StandardListItem` has been renamed to `ListItemStandard`, and `CustomListItem` has been renamed to `ListItemCustom.
     
-    Example:
+    BREAKING CHANGE: `StandardListItem` has been renamed to `ListItemStandard`, and `CustomListItem` has been renamed to `ListItemCustom`.
+    If you previously imported the classes as follows:
+    ```ts
+    import StandardListItem from "@ui5/webcomponents/StandardListItem.js";
+    import CustomListItem from "@ui5/webcomponents/CustomListItem.js";
     ```
-     | === ERROR: Problem found in file: src/SuggestionItem.ts:
-     |      - @interface { IInputSuggestionItem } tag is used, but the class doesn't implement the corresponding interface
-     | === ERROR: Problem found in file: src/Tokenizer.ts:
-     |      - @extends sap.ui.webc.base.UI5Element is used, but the class doesn't extend the corresponding superclass
+    now you must change imports to:
+    ```ts
+    import ListItemStandard from "@ui5/webcomponents/ListItemStandard.js";
+    import ListItemCustom from "@ui5/webcomponents/ListItemCustom.js";
     ```
+    
+    Related to: https://github.com/SAP/ui5-webcomponents/issues/8461

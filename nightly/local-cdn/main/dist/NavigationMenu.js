@@ -10,8 +10,6 @@ import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
 import Menu from "./Menu.js";
-import "./MenuItem.js";
-import "./NavigationMenuItem.js";
 import menuTemplate from "./generated/templates/NavigationMenuTemplate.lit.js";
 // Styles
 import navigationMenuCss from "./generated/themes/NavigationMenu.css.js";

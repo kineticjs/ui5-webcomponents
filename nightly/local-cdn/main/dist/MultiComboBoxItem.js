@@ -24,6 +24,9 @@ let MultiComboBoxItem = class MultiComboBoxItem extends ComboBoxItem {
 __decorate([
     property({ type: Boolean })
 ], MultiComboBoxItem.prototype, "selected", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], MultiComboBoxItem.prototype, "_isVisible", void 0);
 MultiComboBoxItem = __decorate([
     customElement("ui5-mcb-item")
 ], MultiComboBoxItem);

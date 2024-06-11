@@ -10,7 +10,6 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 import { CAL_LEGEND_TODAY_TEXT, CAL_LEGEND_SELECTED_TEXT, CAL_LEGEND_WORKING_DAY_TEXT, CAL_LEGEND_NON_WORKING_DAY_TEXT, } from "./generated/i18n/i18n-defaults.js";
 import CalendarLegendItemTemplate from "./generated/templates/CalendarLegendItemTemplate.lit.js";

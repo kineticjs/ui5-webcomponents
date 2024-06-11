@@ -30,7 +30,6 @@ import MovePlacement from "@ui5/webcomponents-base/dist/types/MovePlacement.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
 import ListGrowingMode from "./types/ListGrowingMode.js";
 import ListAccessibleRole from "./types/ListAccessibleRole.js";
-import "./ListItemBase.js";
 import DropIndicator from "./DropIndicator.js";
 import ListSeparators from "./types/ListSeparators.js";
 import BusyIndicator from "./BusyIndicator.js";
@@ -41,8 +40,6 @@ import listCss from "./generated/themes/List.css.js";
 import browserScrollbarCSS from "./generated/themes/BrowserScrollbar.css.js";
 // Texts
 import { LOAD_MORE_TEXT, ARIA_LABEL_LIST_SELECTABLE, ARIA_LABEL_LIST_MULTISELECTABLE, ARIA_LABEL_LIST_DELETABLE, } from "./generated/i18n/i18n-defaults.js";
-import "./CheckBox.js";
-import "./RadioButton.js";
 import ListItemGroup, { isInstanceOfListItemGroup } from "./ListItemGroup.js";
 const INFINITE_SCROLL_DEBOUNCE_RATE = 250; // ms
 const PAGE_UP_DOWN_SIZE = 10;
@@ -92,9 +89,9 @@ const PAGE_UP_DOWN_SIZE = 10;
  *
  * `import "@ui5/webcomponents/dist/List.js";`
  *
- * `import "@ui5/webcomponents/dist/StandardListItem.js";` (for `ui5-li`)
+ * `import "@ui5/webcomponents/dist/ListItemStandard.js";` (for `ui5-li`)
  *
- * `import "@ui5/webcomponents/dist/CustomListItem.js";` (for `ui5-li-custom`)
+ * `import "@ui5/webcomponents/dist/ListItemCustom.js";` (for `ui5-li-custom`)
  *
  * `import "@ui5/webcomponents/dist/ListItemGroup.js";` (for `ui5-li-group`)
  * @constructor

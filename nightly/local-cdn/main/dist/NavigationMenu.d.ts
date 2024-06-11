@@ -1,5 +1,5 @@
 import Menu from "./Menu.js";
-import NavigationMenuItem from "./NavigationMenuItem.js";
+import type NavigationMenuItem from "./NavigationMenuItem.js";
 /**
  * @class
  *

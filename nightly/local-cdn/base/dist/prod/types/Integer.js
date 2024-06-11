@@ -1,2 +1,2 @@
-"use strict";import e from"./DataType.js";class t extends e{static isValid(r){return Number.isInteger(r)}static attributeToProperty(r){return parseInt(r)}}export default t;
+"use strict";import t from"./DataType.js";class r extends t{static isValid(e){return Number.isInteger(e)}static attributeToProperty(e){return parseInt(e)}}export default r;
 //# sourceMappingURL=Integer.js.map

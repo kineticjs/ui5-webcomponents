@@ -1,6 +1,5 @@
 import getSharedResource from "@ui5/webcomponents-base/dist/getSharedResource.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
-import "../Popup.js";
 const OpenedPopupsRegistry = getSharedResource("OpenedPopupsRegistry", { openedRegistry: [] });
 const addOpenedPopup = (instance, parentPopovers = []) => {
     if (!OpenedPopupsRegistry.openedRegistry.some(popup => popup.instance === instance)) {

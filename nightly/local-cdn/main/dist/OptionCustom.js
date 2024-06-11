@@ -8,7 +8,6 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
-import "./Select.js";
 import ListItemBase from "./ListItemBase.js";
 // Template
 import OptionCustomTemplate from "./generated/templates/OptionCustomTemplate.lit.js";

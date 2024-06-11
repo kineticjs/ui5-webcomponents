@@ -35,7 +35,7 @@ import Button from "./Button.js";
 import Icon from "./Icon.js";
 import List from "./List.js";
 import DropIndicator from "./DropIndicator.js";
-import CustomListItem from "./CustomListItem.js";
+import ListItemCustom from "./ListItemCustom.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import TabContainerTabsPlacement from "./types/TabContainerTabsPlacement.js";
 import SemanticColor from "./types/SemanticColor.js";
@@ -1024,7 +1024,7 @@ TabContainer = TabContainer_1 = __decorate([
             List,
             ResponsivePopover,
             DropIndicator,
-            CustomListItem,
+            ListItemCustom,
         ],
     })
     /**

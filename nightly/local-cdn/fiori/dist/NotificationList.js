@@ -12,7 +12,6 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "./NotificationListItemBase.js";
 import NotificationListInternal from "./NotificationListInternal.js";
 // Template
 import NotificationListTemplate from "./generated/templates/NotificationListTemplate.lit.js";

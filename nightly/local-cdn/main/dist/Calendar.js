@@ -5,7 +5,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import "@ui5/webcomponents-base/dist/UI5Element.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
@@ -28,7 +27,7 @@ import YearPicker from "./YearPicker.js";
 import CalendarSelectionMode from "./types/CalendarSelectionMode.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import CalendarLegend from "./CalendarLegend.js";
-import "./SpecialCalendarDate.js";
+import SpecialCalendarDate from "./SpecialCalendarDate.js";
 import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 // Default calendar for bundling
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
@@ -500,6 +499,7 @@ Calendar = __decorate([
         template: CalendarTemplate,
         styles: calendarCSS,
         dependencies: [
+            SpecialCalendarDate,
             CalendarDate,
             CalendarDateRange,
             CalendarHeader,

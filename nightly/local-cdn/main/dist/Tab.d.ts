@@ -8,13 +8,13 @@ import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import SemanticColor from "./types/SemanticColor.js";
 import ListItemType from "./types/ListItemType.js";
 import type { TabContainerStripInfo, TabContainerOverflowInfo, ITab } from "./TabContainer.js";
-import CustomListItem from "./CustomListItem.js";
+import ListItemCustom from "./ListItemCustom.js";
 import TabInStripTemplate from "./generated/templates/TabInStripTemplate.lit.js";
 import TabInOverflowTemplate from "./generated/templates/TabInOverflowTemplate.lit.js";
 interface TabInStrip extends HTMLElement {
     realTabReference: Tab;
 }
-interface TabInOverflow extends CustomListItem {
+interface TabInOverflow extends ListItemCustom {
     realTabReference: Tab;
 }
 /**

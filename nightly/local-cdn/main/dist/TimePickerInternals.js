@@ -19,8 +19,7 @@ import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
 import { fetchCldr } from "@ui5/webcomponents-base/dist/asset-registries/LocaleData.js";
 import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
-import "./SegmentedButton.js";
-import { getHoursConfigByFormat, getTimeControlsByFormat, } from "./timepicker-utils/TimeSlider.js";
+import { getHoursConfigByFormat, getTimeControlsByFormat } from "./timepicker-utils/TimeSlider.js";
 import { TIMEPICKER_HOURS_LABEL, TIMEPICKER_MINUTES_LABEL, TIMEPICKER_SECONDS_LABEL, TIMEPICKER_CLOCK_DIAL_LABEL, } from "./generated/i18n/i18n-defaults.js";
 const TYPE_COOLDOWN_DELAY = 1000; // Cooldown delay; 0 = disabled cooldown
 /**

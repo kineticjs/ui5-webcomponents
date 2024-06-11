@@ -1,4 +1,4 @@
-import { TemplateResult } from "lit-html";
+import type { TemplateResult } from "lit-html";
 import type UI5Element from "../UI5Element.js";
 import type OpenUI5Element from "./OpenUI5Element.js";
 declare class OpenUI5Enablement {

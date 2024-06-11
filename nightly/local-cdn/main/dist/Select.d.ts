@@ -12,7 +12,7 @@ import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/In
 import type { ListItemClickEventDetail } from "./List.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import Popover from "./Popover.js";
-import ListItemBase from "./ListItemBase.js";
+import type ListItemBase from "./ListItemBase.js";
 /**
  * Interface for components that may be slotted inside `ui5-select` as options
  * @public

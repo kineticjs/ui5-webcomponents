@@ -1,4 +1,4 @@
-import DataType from "./types/DataType.js";
+import type DataType from "./types/DataType.js";
 type SlotInvalidation = {
     properties: boolean | Array<string>;
     slots: boolean | Array<string>;

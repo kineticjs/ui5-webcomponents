@@ -46,7 +46,7 @@ import ResponsivePopover from "./ResponsivePopover.js";
 import List from "./List.js";
 import BusyIndicator from "./BusyIndicator.js";
 import Button from "./Button.js";
-import StandardListItem from "./StandardListItem.js";
+import ListItemStandard from "./ListItemStandard.js";
 import ComboBoxItemGroup, { isInstanceOfComboBoxItemGroup } from "./ComboBoxItemGroup.js";
 import ListItemGroup from "./ListItemGroup.js";
 import ListItemGroupHeader from "./ListItemGroupHeader.js";
@@ -979,7 +979,7 @@ ComboBox = ComboBox_1 = __decorate([
             List,
             BusyIndicator,
             Button,
-            StandardListItem,
+            ListItemStandard,
             ListItemGroup,
             ListItemGroupHeader,
             Popover,

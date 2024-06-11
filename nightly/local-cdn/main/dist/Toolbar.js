@@ -25,7 +25,6 @@ import ToolbarCss from "./generated/themes/Toolbar.css.js";
 import ToolbarPopoverCss from "./generated/themes/ToolbarPopover.css.js";
 import ToolbarAlign from "./types/ToolbarAlign.js";
 import ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js";
-import "./ToolbarItem.js";
 import { getRegisteredToolbarItem, getRegisteredStyles, getRegisteredDependencies, } from "./ToolbarRegistry.js";
 import Button from "./Button.js";
 import Popover from "./Popover.js";

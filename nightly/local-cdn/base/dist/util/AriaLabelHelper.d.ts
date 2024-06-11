@@ -1,4 +1,4 @@
-import UI5Element from "../UI5Element.js";
+import type UI5Element from "../UI5Element.js";
 type MutationCallback = () => void;
 declare const getEffectiveAriaLabelText: (el: HTMLElement) => string | undefined;
 /**

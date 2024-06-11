@@ -1,4 +1,4 @@
-import { StyleData, StyleDataCSP } from "./types.js";
+import type { StyleData, StyleDataCSP } from "./types.js";
 declare const createStyle: (data: StyleData, name: string, value?: string, theme?: string) => void;
 declare const updateStyle: (data: StyleData, name: string, value?: string, theme?: string) => void;
 declare const hasStyle: (name: string, value?: string) => boolean;

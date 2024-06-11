@@ -1,7 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ListItemClickEventDetail, ListItemToggleEventDetail, ListItemCloseEventDetail } from "@ui5/webcomponents/dist/List.js";
-import NotificationListItemBase from "./NotificationListItemBase.js";
+import type NotificationListItemBase from "./NotificationListItemBase.js";
 import NotificationListInternal from "./NotificationListInternal.js";
 type NotificationItemEventDetail = {
     item: NotificationListItemBase;

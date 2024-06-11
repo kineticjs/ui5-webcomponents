@@ -22,8 +22,8 @@ import List from "./List.js";
 import type { ListSelectionChangeEventDetail } from "./List.js";
 import ComboBoxFilter from "./types/ComboBoxFilter.js";
 import type ListItemBase from "./ListItemBase.js";
-import { InputEventDetail } from "./Input.js";
-import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
+import type { InputEventDetail } from "./Input.js";
+import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 /**
  * Interface for components that may be slotted inside a `ui5-multi-combobox` as items
  * @public
@@ -33,6 +33,8 @@ interface IMultiComboBoxItem extends UI5Element {
     selected: boolean;
     isGroupItem?: boolean;
     stableDomRef: string;
+    _isVisible?: boolean;
+    items?: Array<IMultiComboBoxItem>;
 }
 type ValueStateAnnouncement = Record<Exclude<ValueState, ValueState.None>, string>;
 type ValueStateTypeAnnouncement = Record<Exclude<ValueState, ValueState.None>, string>;
@@ -322,6 +324,12 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     static _groupItemFilter(item: IMultiComboBoxItem, idx: number, allItems: Array<IMultiComboBoxItem>, filteredItems: Array<IMultiComboBoxItem>): boolean | undefined;
     _afterOpenPicker(): void;
     _toggle(): void;
+    /**
+     * Retrieves a flat structure of all MultiComboBox items from the slotted nodes.
+     *
+     * @private
+     */
+    _getItems(): Array<IMultiComboBoxItem>;
     _getSelectedItems(): Array<MultiComboBoxItem>;
     _listSelectionChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
     syncItems(listItems: Array<ListItemBase>): void;

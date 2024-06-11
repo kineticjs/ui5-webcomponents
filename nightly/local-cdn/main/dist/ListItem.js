@@ -34,7 +34,7 @@ import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
 /**
  * @class
  * A class to serve as a base
- * for the `StandardListItem` and `CustomListItem` classes.
+ * for the `ListItemStandard` and `ListItemCustom` classes.
  * @constructor
  * @abstract
  * @extends ListItemBase

@@ -33,7 +33,6 @@ import ResponsivePopover from "./ResponsivePopover.js";
 import Popover from "./Popover.js";
 import Icon from "./Icon.js";
 import Button from "./Button.js";
-import "./ListItemBase.js";
 // Templates
 import SelectTemplate from "./generated/templates/SelectTemplate.lit.js";
 // Styles

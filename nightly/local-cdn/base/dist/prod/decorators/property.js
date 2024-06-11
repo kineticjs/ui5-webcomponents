@@ -1,2 +1,2 @@
-"use strict";const s=a=>(p,e)=>{const t=p.constructor;Object.prototype.hasOwnProperty.call(t,"metadata")||(t.metadata={});const r=t.metadata;r.properties||(r.properties={});const o=r.properties;o[e]||(o[e]=a||{type:String})};export default s;
+"use strict";const s=o=>(p,r)=>{const t=p.constructor;Object.prototype.hasOwnProperty.call(t,"metadata")||(t.metadata={});const e=t.metadata;e.properties||(e.properties={});const a=e.properties;a[r]||(a[r]=o||{type:String})};export default s;
 //# sourceMappingURL=property.js.map

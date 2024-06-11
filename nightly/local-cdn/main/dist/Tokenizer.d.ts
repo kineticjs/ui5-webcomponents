@@ -6,7 +6,7 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import List from "./List.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
-import Token from "./Token.js";
+import type Token from "./Token.js";
 import type { IToken } from "./MultiInput.js";
 import type { TokenDeleteEventDetail } from "./Token.js";
 type TokenizerTokenDeleteEventDetail = {
