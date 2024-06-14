@@ -61,14 +61,6 @@ let SideNavigationItem = class SideNavigationItem extends SideNavigationSelectab
             super._onfocusin(e);
         };
         this._onclick = (e) => {
-            if (!this.sideNavCollapsed
-                && this.wholeItemToggleable
-                && e.pointerType === "mouse") {
-                e.preventDefault();
-                e.stopPropagation();
-                this.expanded = !this.expanded;
-                return;
-            }
             super._onclick(e);
         };
         this._onfocusout = () => {
@@ -164,9 +156,6 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true, "default": true })
 ], SideNavigationItem.prototype, "items", void 0);
-__decorate([
-    property({ type: Boolean })
-], SideNavigationItem.prototype, "wholeItemToggleable", void 0);
 SideNavigationItem = __decorate([
     customElement({
         tag: "ui5-side-navigation-item",

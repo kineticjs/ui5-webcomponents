@@ -106,6 +106,9 @@ let BarcodeScannerDialog = BarcodeScannerDialog_1 = class BarcodeScannerDialog e
     }
     _closeDialog() {
         this.open = false;
+    }
+    _fireCloseEvent() {
+        this.open = false;
         this.fireEvent("close");
     }
     _startReader() {

@@ -22,7 +22,7 @@ import Calendar from "./Calendar.js";
 import DatePicker from "./DatePicker.js";
 import TimeSelectionClocks from "./TimeSelectionClocks.js";
 // i18n texts
-import { TIMEPICKER_SUBMIT_BUTTON, TIMEPICKER_CANCEL_BUTTON, DATETIME_DESCRIPTION, DATETIME_PICKER_DATE_BUTTON, DATETIME_PICKER_TIME_BUTTON, } from "./generated/i18n/i18n-defaults.js";
+import { TIMEPICKER_SUBMIT_BUTTON, TIMEPICKER_CANCEL_BUTTON, DATETIME_DESCRIPTION, DATETIME_PICKER_DATE_BUTTON, DATETIME_PICKER_TIME_BUTTON, DATETIMEPICKER_POPOVER_ACCESSIBLE_NAME, } from "./generated/i18n/i18n-defaults.js";
 // Template
 import DateTimePickerTemplate from "./generated/templates/DateTimePickerTemplate.lit.js";
 // Styles
@@ -186,8 +186,17 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
     get phone() {
         return super.phone || this._phoneMode;
     }
+    /**
+     * @override
+     */
     get dateAriaDescription() {
         return DateTimePicker_1.i18nBundle.getText(DATETIME_DESCRIPTION);
+    }
+    /**
+     * @override
+     */
+    get pickerAccessibleName() {
+        return DateTimePicker_1.i18nBundle.getText(DATETIMEPICKER_POPOVER_ACCESSIBLE_NAME);
     }
     /**
      * Defines whether the dialog on mobile should have header

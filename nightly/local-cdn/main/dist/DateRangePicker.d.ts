@@ -99,7 +99,14 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
      * @override
      */
     get _placeholder(): string;
+    /**
+     * @override
+     */
     get dateAriaDescription(): string;
+    /**
+     * @override
+     */
+    get pickerAccessibleName(): string;
     /**
      * @override
      */

@@ -45,16 +45,6 @@ declare class SideNavigationItem extends SideNavigationSelectableItemBase {
      * @public
      */
     items: Array<SideNavigationSubItem>;
-    /**
-     * Defines whether clicking the whole item or only pressing the icon will show/hide the sub items (if present).
-     * If set to true, clicking the whole item will toggle the sub items, and it won't fire the `click` event.
-     * By default, only clicking the arrow icon will toggle the sub items.
-     *
-     * @public
-     * @default false
-     * @since 1.0.0-rc.11
-     */
-    wholeItemToggleable: boolean;
     get overflowItems(): Array<HTMLElement>;
     get selectableItems(): Array<SideNavigationSelectableItemBase>;
     get focusableItems(): Array<SideNavigationItemBase>;

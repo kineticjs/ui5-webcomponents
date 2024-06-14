@@ -298,6 +298,7 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
     get openIconTitle(): string;
     get openIconName(): string;
     get dateAriaDescription(): string;
+    get pickerAccessibleName(): string;
     /**
      * Defines whether the dialog on mobile should have header
      * @private

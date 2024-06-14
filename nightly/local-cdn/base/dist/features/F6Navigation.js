@@ -131,7 +131,7 @@ class F6Navigation {
         this.selectedGroup = element;
     }
     deepActive(root) {
-        if (root.activeElement && root.activeElement.shadowRoot) {
+        if (root?.activeElement?.shadowRoot?.activeElement) {
             return this.deepActive(root.activeElement.shadowRoot);
         }
         return root.activeElement;

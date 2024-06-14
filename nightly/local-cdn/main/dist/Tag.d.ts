@@ -57,8 +57,6 @@ declare class Tag extends UI5Element {
     /**
      * Defines if the component is interactive (focusable and pressable).
      *
-     * **Note:** The tag cannot be `interactive`
-     * when `design` property is `TagDesign.Set3`
      * @default false
      * @public
      * @since 1.22.0
@@ -69,7 +67,7 @@ declare class Tag extends UI5Element {
      *
      * **Note:** For option "Normal" the text will wrap and the
      * words will not be broken based on hyphenation.
-     * @default "None"
+     * @default "Normal"
      * @public
      * @since 1.22.0
      */
@@ -91,11 +89,6 @@ declare class Tag extends UI5Element {
      * @private
      */
     _iconOnly: boolean;
-    /**
-     * Defines if the tag has "Tag" design type.
-     * @private
-     */
-    _isTagDesign: boolean;
     /**
      * Defines the text of the component.
      *

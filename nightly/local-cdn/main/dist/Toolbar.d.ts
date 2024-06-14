@@ -4,6 +4,7 @@ import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delega
 import "@ui5/webcomponents-icons/dist/overflow.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ToolbarAlign from "./types/ToolbarAlign.js";
+import ToolbarDesign from "./types/ToolbarDesign.js";
 import type ToolbarItem from "./ToolbarItem.js";
 import Button from "./Button.js";
 import Popover from "./Popover.js";
@@ -68,6 +69,13 @@ declare class Toolbar extends UI5Element {
      * @public
      */
     accessibleNameRef: string;
+    /**
+     * Defines the toolbar design.
+     * @public
+     * @default "Solid"
+     * @since 2.0.0
+     */
+    design: `${ToolbarDesign}`;
     /**
      * Defines the items of the component.
      *

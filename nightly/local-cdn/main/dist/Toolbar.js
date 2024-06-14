@@ -24,6 +24,7 @@ import ToolbarTemplate from "./generated/templates/ToolbarTemplate.lit.js";
 import ToolbarCss from "./generated/themes/Toolbar.css.js";
 import ToolbarPopoverCss from "./generated/themes/ToolbarPopover.css.js";
 import ToolbarAlign from "./types/ToolbarAlign.js";
+import ToolbarDesign from "./types/ToolbarDesign.js";
 import ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js";
 import { getRegisteredToolbarItem, getRegisteredStyles, getRegisteredDependencies, } from "./ToolbarRegistry.js";
 import Button from "./Button.js";
@@ -446,6 +447,9 @@ __decorate([
 __decorate([
     property({ defaultValue: "" })
 ], Toolbar.prototype, "accessibleNameRef", void 0);
+__decorate([
+    property({ type: ToolbarDesign, defaultValue: ToolbarDesign.Solid })
+], Toolbar.prototype, "design", void 0);
 __decorate([
     slot({ "default": true, type: HTMLElement, invalidateOnChildChange: true })
 ], Toolbar.prototype, "items", void 0);

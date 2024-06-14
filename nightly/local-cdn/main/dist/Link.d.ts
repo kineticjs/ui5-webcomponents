@@ -47,6 +47,8 @@ type LinkAccessibilityAttributes = Pick<AccessibilityAttributes, "expanded" | "h
  * @constructor
  * @extends UI5Element
  * @public
+ * @csspart icon - Used to style the provided icon within the link
+ * @csspart endIcon - Used to style the provided endIcon within the link
  * @slot {Array<Node>} default - Defines the text of the component.
  *
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
@@ -145,6 +147,34 @@ declare class Link extends UI5Element implements ITabbable {
      * @default {}
      */
     accessibilityAttributes: LinkAccessibilityAttributes;
+    /**
+     * Defines the icon, displayed as graphical element within the component before the link's text.
+     * The SAP-icons font provides numerous options.
+     *
+     * **Note:** Usage of icon-only link is not supported, the link must always have a text.
+     *
+     * **Note:** We recommend using аn icon in the beginning or the end only, and with text.
+     *
+     * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
+     * @default ""
+     * @since 2.0.0
+     * @public
+     */
+    icon: string;
+    /**
+     * Defines the icon, displayed as graphical element within the component after the link's text.
+     * The SAP-icons font provides numerous options.
+     *
+     * **Note:** Usage of icon-only link is not supported, the link must always have a text.
+     *
+     * **Note:** We recommend using аn icon in the beginning or the end only, and with text.
+     *
+     * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
+     * @default ""
+     * @since 2.0.0
+     * @public
+     */
+    endIcon: string;
     _rel: string | undefined;
     forcedTabIndex: string;
     /**

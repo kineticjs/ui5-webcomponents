@@ -42,15 +42,6 @@ import NotificationListGroupItemCss from "./generated/themes/NotificationListGro
  *
  * ### Keyboard Handling
  * The `ui5-li-notification-group` provides advanced keyboard handling.
- *
- * #### Basic Navigation
- * When a list is focused, the user can use the following keyboard shortcuts in order to navigate:
- *
- * - [Up] or [Down] - navigates up or down the items
- * - [Home] - navigates to the first item
- * - [End] - navigates to the last item
- *
- * #### Fast Navigation
  * This component provides fast navigation when the header is focused using the following keyboard shortcuts:
  *
  * - [Space] - toggles expand / collapse of the group
@@ -61,7 +52,7 @@ import NotificationListGroupItemCss from "./generated/themes/NotificationListGro
  *
  * ### ES6 Module Import
  *
- * `import "@ui5/webcomponents/dist/NotificationListGroupItem.js";`
+ * `import "@ui5/webcomponents-fiori/dist/NotificationListGroupItem.js";`
  * @constructor
  * @extends NotificationListItemBase
  * @since 1.0.0-rc.8

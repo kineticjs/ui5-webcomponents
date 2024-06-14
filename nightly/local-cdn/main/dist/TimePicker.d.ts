@@ -160,6 +160,7 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
     get formFormattedValue(): FormData | string | null;
     onBeforeRendering(): void;
     get dateAriaDescription(): string;
+    get pickerAccessibleName(): string;
     get accInfo(): {
         ariaRoledescription: string;
         ariaHasPopup: string;

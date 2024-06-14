@@ -143,7 +143,14 @@ declare class DateTimePicker extends DatePicker implements IFormInputElement {
     get showDateView(): boolean;
     get showTimeView(): boolean;
     get phone(): boolean;
+    /**
+     * @override
+     */
     get dateAriaDescription(): string;
+    /**
+     * @override
+     */
+    get pickerAccessibleName(): string;
     /**
      * Defines whether the dialog on mobile should have header
      * @private

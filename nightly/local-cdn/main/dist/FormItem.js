@@ -36,6 +36,7 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  * @csspart content - Used to style the content part of the form item.
  *
  * @constructor
+ * @implements {IFormItem}
  * @public
  * @since 2.0.0
  * @extends UI5Element

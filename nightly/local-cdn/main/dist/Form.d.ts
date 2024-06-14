@@ -1,5 +1,10 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import FormItemSpacing from "./types/FormItemSpacing.js";
+/**
+ * Interface for components that can be slotted inside `ui5-form` as items.
+ * @public
+ * @since 2.0.0
+ */
 interface IFormItem extends HTMLElement {
     labelSpan: string;
     itemSpacing: `${FormItemSpacing}`;

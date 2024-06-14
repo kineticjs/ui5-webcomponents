@@ -22,6 +22,7 @@ import LinkTemplate from "./generated/templates/LinkTemplate.lit.js";
 import { LINK_SUBTLE, LINK_EMPHASIZED } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import linkCss from "./generated/themes/Link.css.js";
+import Icon from "./Icon.js";
 /**
  * @class
  *
@@ -56,6 +57,8 @@ import linkCss from "./generated/themes/Link.css.js";
  * @constructor
  * @extends UI5Element
  * @public
+ * @csspart icon - Used to style the provided icon within the link
+ * @csspart endIcon - Used to style the provided endIcon within the link
  * @slot {Array<Node>} default - Defines the text of the component.
  *
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
@@ -185,6 +188,12 @@ __decorate([
     property({ type: Object })
 ], Link.prototype, "accessibilityAttributes", void 0);
 __decorate([
+    property()
+], Link.prototype, "icon", void 0);
+__decorate([
+    property()
+], Link.prototype, "endIcon", void 0);
+__decorate([
     property({ noAttribute: true })
 ], Link.prototype, "_rel", void 0);
 __decorate([
@@ -200,6 +209,7 @@ Link = Link_1 = __decorate([
         renderer: litRender,
         template: LinkTemplate,
         styles: linkCss,
+        dependencies: [Icon],
     })
     /**
      * Fired when the component is triggered either with a mouse/tap

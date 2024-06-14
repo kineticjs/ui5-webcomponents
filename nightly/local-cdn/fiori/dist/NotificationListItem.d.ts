@@ -47,14 +47,14 @@ type NotificationListItemPressEventDetail = {
  * - [Delete] - close an item (trigger "item-close" event)
  *
  * #### Fast Navigation
- * This component provides a fast navigation using the the following keyboard shortcuts:
+ * This component provides a fast navigation using the following keyboard shortcuts:
  *
  * - [Shift] + [Enter] - 'More'/'Less' link will be triggered
  * - [Shift] + [F10] - 'Menu' (Actions) button will be triggered (clicked)
  *
  * ### ES6 Module Import
  *
- * `import "@ui5/webcomponents/dist/NotificationListItem.js";`
+ * `import "@ui5/webcomponents-fiori/dist/NotificationListItem.js";`
  *
  * @constructor
  * @extends NotificationListItemBase

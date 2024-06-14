@@ -25,7 +25,7 @@ import TagDesign from "./types/TagDesign.js";
 import TagSize from "./types/TagSize.js";
 // Template
 import TagTemplate from "./generated/templates/TagTemplate.lit.js";
-import { TAG_DESCRIPTION_BADGE, TAG_DESCRIPTION_TAG, TAG_ROLE_DESCRIPTION, TAG_ERROR, TAG_WARNING, TAG_SUCCESS, TAG_INFORMATION, } from "./generated/i18n/i18n-defaults.js";
+import { TAG_DESCRIPTION_TAG, TAG_ROLE_DESCRIPTION, TAG_ERROR, TAG_WARNING, TAG_SUCCESS, TAG_INFORMATION, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import tagCss from "./generated/themes/Tag.css.js";
 /**
@@ -62,7 +62,6 @@ let Tag = Tag_1 = class Tag extends UI5Element {
     onBeforeRendering() {
         this._hasIcon = this.hasIcon || !!this._semanticIconName;
         this._iconOnly = this.iconOnly;
-        this._isTagDesign = this.design !== TagDesign.Set3;
     }
     get _roleDescription() {
         return Tag_1.i18nBundle.getText(TAG_ROLE_DESCRIPTION);
@@ -95,9 +94,6 @@ let Tag = Tag_1 = class Tag extends UI5Element {
     get tagDescription() {
         if (this.interactive) {
             return undefined;
-        }
-        if (this.design === TagDesign.Set3) {
-            return Tag_1.i18nBundle.getText(TAG_DESCRIPTION_BADGE);
         }
         const valueState = this._valueState;
         let description = Tag_1.i18nBundle.getText(TAG_DESCRIPTION_TAG);
@@ -142,7 +138,7 @@ __decorate([
     property({ type: Boolean })
 ], Tag.prototype, "interactive", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.None })
+    property({ type: WrappingType, defaultValue: WrappingType.Normal })
 ], Tag.prototype, "wrappingType", void 0);
 __decorate([
     property({ type: TagSize, defaultValue: TagSize.S })
@@ -153,9 +149,6 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Tag.prototype, "_iconOnly", void 0);
-__decorate([
-    property({ type: Boolean })
-], Tag.prototype, "_isTagDesign", void 0);
 __decorate([
     slot({ type: Node, "default": true })
 ], Tag.prototype, "text", void 0);
