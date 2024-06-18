@@ -25,6 +25,5 @@ declare class ListItemGroupHeader extends ListItemBase {
     get groupHeaderText(): string;
     get ariaLabelText(): string;
     static onDefine(): Promise<void>;
-    onEnterDOM(): void;
 }
 export default ListItemGroupHeader;

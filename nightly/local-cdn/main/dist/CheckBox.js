@@ -47,7 +47,7 @@ let activeCb;
  * ### Usage
  *
  * You can define the checkbox text with via the `text` property. If the text exceeds the available width, it is truncated by default.
- * In case you prefer text to wrap, set the `wrappingType` property to "Normal".
+ * In case you prefer text to truncate, set the `wrappingType` property to "None".
  * The touchable area for toggling the `ui5-checkbox` ends where the text ends.
  *
  * You can disable the `ui5-checkbox` by setting the `disabled` property to
@@ -258,7 +258,7 @@ __decorate([
     property({ type: ValueState, defaultValue: ValueState.None })
 ], CheckBox.prototype, "valueState", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.None })
+    property({ type: WrappingType, defaultValue: WrappingType.Normal })
 ], CheckBox.prototype, "wrappingType", void 0);
 __decorate([
     property()

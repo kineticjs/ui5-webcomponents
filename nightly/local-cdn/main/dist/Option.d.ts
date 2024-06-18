@@ -54,7 +54,6 @@ declare class Option extends ListItemBase implements IOption {
      * @since 1.23.0
      */
     tooltip: string;
-    onEnterDOM(): void;
     get displayIconBegin(): boolean;
     get effectiveDisplayText(): string;
 }

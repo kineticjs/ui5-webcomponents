@@ -25,7 +25,7 @@ import WrappingType from "./types/WrappingType.js";
  * ### Usage
  *
  * You can define the checkbox text with via the `text` property. If the text exceeds the available width, it is truncated by default.
- * In case you prefer text to wrap, set the `wrappingType` property to "Normal".
+ * In case you prefer text to truncate, set the `wrappingType` property to "None".
  * The touchable area for toggling the `ui5-checkbox` ends where the text ends.
  *
  * You can disable the `ui5-checkbox` by setting the `disabled` property to
@@ -143,7 +143,8 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
      * Defines whether the component text wraps when there is not enough space.
      *
      * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
-     * @default "None"
+     * **Note:** for option "None" the text will be truncated with an ellipsis.
+     * @default "Normal"
      * @public
      */
     wrappingType: `${WrappingType}`;

@@ -4,7 +4,7 @@
         <title>UI5 Web Components Blog</title>
         <link>https://sap.github.io/ui5-webcomponents/nightly/blog</link>
         <description>UI5 Web Components Blog</description>
-        <lastBuildDate>Wed, 12 Jun 2024 14:19:36 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 17 Jun 2024 10:59:04 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
@@ -12,7 +12,7 @@
             <title><![CDATA[UI5 Web Components 2.0 Release Candidate is out!]]></title>
             <link>https://sap.github.io/ui5-webcomponents/nightly/blog/releases/announcing-rc-v2</link>
             <guid>https://sap.github.io/ui5-webcomponents/nightly/blog/releases/announcing-rc-v2</guid>
-            <pubDate>Wed, 12 Jun 2024 14:19:36 GMT</pubDate>
+            <pubDate>Mon, 17 Jun 2024 10:59:04 GMT</pubDate>
             <description><![CDATA[U5 Web Components project has reached a pivotal stage in its evolution, geared to embrace new standards, eliminate legacy code, and integrate consumer feedback to enhance our APIs, culminating in the highly anticipated major release, version 2.0.]]></description>
             <content:encoded><![CDATA[<p>U5 Web Components project has reached a pivotal stage in its evolution, geared to embrace new standards, eliminate legacy code, and integrate consumer feedback to enhance our APIs, culminating in the highly anticipated major release, version 2.0.</p>
 <p>Today we are extremely happy to announce <strong>UI5 Web Components 2.0 Release Candidate</strong>! 🥳️
@@ -121,7 +121,7 @@ The following <code>2.0</code> RC versions have been released:</p>
             <title><![CDATA[Popover API in UI5 Web Components 2.0]]></title>
             <link>https://sap.github.io/ui5-webcomponents/nightly/blog/releases/popover-api-in-v2</link>
             <guid>https://sap.github.io/ui5-webcomponents/nightly/blog/releases/popover-api-in-v2</guid>
-            <pubDate>Wed, 12 Jun 2024 14:19:36 GMT</pubDate>
+            <pubDate>Mon, 17 Jun 2024 10:59:04 GMT</pubDate>
             <description><![CDATA[UI5 Web Components 2.0 will provide greatly improved popups by taking advantage of the native browser popover API.]]></description>
             <content:encoded><![CDATA[<p>UI5 Web Components 2.0 will provide greatly improved popups by taking advantage of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank" rel="noopener noreferrer">native browser popover API</a>.</p>
 <h2 class="anchor anchorWithStickyNavbar_fF9Z" id="what-is-the-popover-api">What is the popover API?<a href="https://sap.github.io/ui5-webcomponents/nightly/blog/releases/popover-api-in-v2#what-is-the-popover-api" class="hash-link" aria-label="Direct link to What is the popover API?" title="Direct link to What is the popover API?">​</a></h2>
@@ -195,7 +195,7 @@ Instead, we can only provide <strong>logical</strong> <code>ui5-option</code> co
             <title><![CDATA[Preparing for UI5 Web Components 2.0]]></title>
             <link>https://sap.github.io/ui5-webcomponents/nightly/blog/releases/preparing-for-v2</link>
             <guid>https://sap.github.io/ui5-webcomponents/nightly/blog/releases/preparing-for-v2</guid>
-            <pubDate>Wed, 12 Jun 2024 14:19:36 GMT</pubDate>
+            <pubDate>Mon, 17 Jun 2024 10:59:04 GMT</pubDate>
             <description><![CDATA[UI5 Web Components 2.0 version is on the horizon.]]></description>
             <content:encoded><![CDATA[<p>UI5 Web Components 2.0 version is on the horizon.
 Here's a summary of everything you need to know (release information, key features and breaking changes)

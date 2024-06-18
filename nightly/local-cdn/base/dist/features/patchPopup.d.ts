@@ -7,6 +7,7 @@ type OpenUI5Popup = {
         _closed: (...args: any[]) => void;
         getOpenState: () => "CLOSED" | "CLOSING" | "OPEN" | "OPENING";
         getContent: () => Element;
+        onFocusEvent: (e: FocusEvent) => void;
     };
 };
 declare const patchPopup: (Popup: OpenUI5Popup) => void;

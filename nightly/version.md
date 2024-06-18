@@ -1,7 +1,7 @@
-commit a3fd2414b26497b010accd18a0805c2aec163338
-Author: Tsanislav Gatev <tsanislav.gatev@sap.com>
-Date:   Wed Jun 12 17:19:36 2024 +0300
+commit 4f18dfdf844dee248744692913284304641e83cb
+Author: GerganaKremenska <gergana.georgieva01@sap.com>
+Date:   Mon Jun 17 13:59:04 2024 +0300
 
-    fix(ui5-segmented-button-item): add padding to icon when item is not in icon-only mode (#9180)
+    fix(ui5-side-navigation): group name is announced one time by screen … (#9207)
     
-    fixes: #9172
+    fix(ui5-side-navigation): group name is announced one time by screen readers

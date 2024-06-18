@@ -36,6 +36,16 @@ const patchClosed = (Popup) => {
         }
     };
 };
+const patchFocusEvent = (Popup) => {
+    const origFocusEvent = Popup.prototype.onFocusEvent;
+    Popup.prototype.onFocusEvent = function onFocusEvent(e) {
+        const isTypeFocus = e.type === "focus" || e.type === "activate";
+        const target = e.target;
+        if (!isTypeFocus || !target.closest("[ui5-popover],[ui5-responsive-popover],[ui5-dialog]")) {
+            origFocusEvent.call(this, e);
+        }
+    };
+};
 const createGlobalStyles = () => {
     const stylesheet = new CSSStyleSheet();
     stylesheet.replaceSync(`.sapMPopup-CTX:popover-open { inset: unset; }`);
@@ -45,6 +55,7 @@ const patchPopup = (Popup) => {
     patchOpen(Popup); // Popup.prototype.open
     patchClosed(Popup); // Popup.prototype._closed
     createGlobalStyles(); // Ensures correct popover positioning by OpenUI5 (otherwise 0,0 is the center of the screen)
+    patchFocusEvent(Popup); // Popup.prototype.onFocusEvent
 };
 export default patchPopup;
 //# sourceMappingURL=patchPopup.js.map

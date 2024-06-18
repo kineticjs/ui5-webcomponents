@@ -10,6 +10,7 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
+import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import { isEnter, isSpace, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
@@ -26,6 +27,11 @@ import draggableElementStyles from "./generated/themes/DraggableElement.css.js";
  * @public
  */
 let ListItemBase = class ListItemBase extends UI5Element {
+    onEnterDOM() {
+        if (isDesktop()) {
+            this.setAttribute("desktop", "");
+        }
+    }
     onBeforeRendering() {
         this.actionable = true;
     }

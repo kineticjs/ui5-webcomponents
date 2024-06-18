@@ -17,6 +17,6 @@ function block13(context, tags, suffix) { return suffix ? html `<div class="ui5-
 function block14(context, tags, suffix) { return suffix ? html `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-sn-item-icon" name="${ifDefined(this.icon)}"></${scopeTag("ui5-icon", tags, suffix)}>` : html `<ui5-icon class="ui5-sn-item-icon" name="${ifDefined(this.icon)}"></ui5-icon>`; }
 function block15(context, tags, suffix) { return suffix ? html `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-sn-item-external-link-icon" name="arrow-right"></${scopeTag("ui5-icon", tags, suffix)}>` : html `<ui5-icon class="ui5-sn-item-external-link-icon" name="arrow-right"></ui5-icon>`; }
 function block16(context, tags, suffix) { return suffix ? html `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-sn-item-toggle-icon" name="${ifDefined(this._toggleIconName)}" @click="${this._onToggleClick}"></${scopeTag("ui5-icon", tags, suffix)}>` : html `<ui5-icon class="ui5-sn-item-toggle-icon" name="${ifDefined(this._toggleIconName)}" @click="${this._onToggleClick}"></ui5-icon>`; }
-function block17(context, tags, suffix) { return html `<ul id="${ifDefined(this._groupId)}" class="ui5-sn-item-ul" aria-label="${ifDefined(this.text)}" role="group"><slot></slot></ul>`; }
+function block17(context, tags, suffix) { return html `<ul id="${ifDefined(this._groupId)}" class="ui5-sn-item-ul" role="group"><slot></slot></ul>`; }
 export default block0;
 //# sourceMappingURL=SideNavigationItemTemplate.lit.js.map

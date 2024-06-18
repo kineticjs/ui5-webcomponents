@@ -42,7 +42,6 @@ declare class NotificationListItemBase extends ListItemBase {
     get hasTitleText(): boolean;
     get loadingText(): string;
     get isLoading(): boolean;
-    onEnterDOM(): void;
     /**
      * Event handlers
      */

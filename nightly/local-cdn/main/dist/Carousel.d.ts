@@ -229,6 +229,7 @@ declare class Carousel extends UI5Element {
             width: string;
         };
         classes: string;
+        selected: boolean;
     }[];
     get effectiveItemsPerPage(): number;
     isItemInViewport(index: number): boolean;

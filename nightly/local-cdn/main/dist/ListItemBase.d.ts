@@ -54,6 +54,7 @@ declare class ListItemBase extends UI5Element implements ITabbable {
      * @private
      */
     actionable: boolean;
+    onEnterDOM(): void;
     onBeforeRendering(): void;
     _onfocusin(e: FocusEvent): void;
     _onkeydown(e: KeyboardEvent): void;

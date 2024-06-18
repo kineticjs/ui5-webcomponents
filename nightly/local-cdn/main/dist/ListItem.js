@@ -9,7 +9,6 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import { isSpace, isEnter, isDelete, isF2, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import { getFirstFocusableElement } from "@ui5/webcomponents-base/dist/util/FocusableElements.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
@@ -66,12 +65,10 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         this.actionable = (this.type === ListItemType.Active || this.type === ListItemType.Navigation) && (this._selectionMode !== ListSelectionMode.Delete);
     }
     onEnterDOM() {
+        super.onEnterDOM();
         document.addEventListener("mouseup", this.deactivate);
         document.addEventListener("touchend", this.deactivate);
         document.addEventListener("keyup", this.deactivateByKey);
-        if (isDesktop()) {
-            this.setAttribute("desktop", "");
-        }
     }
     onExitDOM() {
         document.removeEventListener("mouseup", this.deactivate);

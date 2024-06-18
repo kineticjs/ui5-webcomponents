@@ -204,7 +204,7 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
             ids.push(`${id}-description`);
         }
         if (this.hasFootNotes) {
-            ids.push(`${id}-footer`);
+            ids.push(`${id}-footnotes`);
         }
         return ids.join(" ");
     }

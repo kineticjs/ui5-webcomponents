@@ -111,7 +111,7 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
         if ((this.value === 0) || (Number.isInteger(this.value))) {
             return this.value.toFixed(this.valuePrecision);
         }
-        if (this.value === Number(this.input.value)) { // For the cases where the number is fractional and is ending with 0s.
+        if (this.input && this.value === Number(this.input.value)) { // For the cases where the number is fractional and is ending with 0s.
             return this.input.value;
         }
         return this.value.toString();
