@@ -231,7 +231,7 @@ let Calendar = class Calendar extends CalendarPart {
         const uniqueDates = new Set();
         const uniqueSpecialDates = [];
         validSpecialDates.forEach(date => {
-            const dateFromValue = UI5Date.getInstance(date.value);
+            const dateFromValue = this.getFormat().parse(date.value);
             const timestamp = dateFromValue.getTime();
             if (!uniqueDates.has(timestamp)) {
                 uniqueDates.add(timestamp);

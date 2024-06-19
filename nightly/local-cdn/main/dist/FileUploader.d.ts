@@ -114,6 +114,10 @@ declare class FileUploader extends UI5Element implements IFormInputElement {
     static emptyInput: HTMLInputElement;
     static i18nBundle: I18nBundle;
     formElementAnchor(): Promise<HTMLElement | undefined>;
+    /**
+     * @override
+     */
+    getFocusDomRef(): HTMLElement | undefined;
     get formFormattedValue(): FormData | null;
     _onmouseover(): void;
     _onmouseout(): void;

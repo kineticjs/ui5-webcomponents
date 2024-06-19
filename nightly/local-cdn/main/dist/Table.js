@@ -299,6 +299,9 @@ let Table = Table_1 = class Table extends UI5Element {
     get _tableElement() {
         return this.shadowRoot.getElementById("table");
     }
+    get _loadingElement() {
+        return this.shadowRoot.getElementById("loading");
+    }
     get _effectiveNoDataText() {
         return this.noDataText || Table_1.i18nBundle.getText(TABLE_NO_DATA);
     }
@@ -358,6 +361,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Table.prototype, "loading", void 0);
+__decorate([
+    property({ validator: Integer, defaultValue: 1000 })
+], Table.prototype, "loadingDelay", void 0);
 __decorate([
     property({ type: String, defaultValue: "0" })
 ], Table.prototype, "stickyTop", void 0);

@@ -53,6 +53,12 @@ let FileUploader = FileUploader_1 = class FileUploader extends UI5Element {
     async formElementAnchor() {
         return this.getFocusDomRefAsync();
     }
+    /**
+     * @override
+     */
+    getFocusDomRef() {
+        return this.content[0];
+    }
     get formFormattedValue() {
         if (this.files) {
             const formData = new FormData();

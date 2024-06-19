@@ -15,6 +15,7 @@ declare class TableNavigation extends TableExtension {
     _tabPosition: number;
     _ignoreFocusIn?: boolean;
     _lastFocusedItem?: HTMLElement;
+    _onKeyDownCaptureBound: (e: KeyboardEvent) => void;
     constructor(table: Table);
     _getNavigationItemsOfRow(row: TableRowBase): HTMLElement[];
     _getNavigationItemsOfGrid(): (HTMLElement | undefined)[][];
@@ -32,5 +33,6 @@ declare class TableNavigation extends TableExtension {
     _onkeydown(e: KeyboardEvent, eventOrigin: HTMLElement): void;
     _onclick(e: PointerEvent): void;
     _onfocusin(e: FocusEvent, eventOrigin: HTMLElement): void;
+    _onKeyDownCapture(e: KeyboardEvent): void;
 }
 export default TableNavigation;

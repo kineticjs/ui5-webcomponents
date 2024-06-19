@@ -193,6 +193,12 @@ declare class Table extends UI5Element {
      */
     loading: boolean;
     /**
+     * Defines the delay in milliseconds, after which the loading indicator will show up for this component.
+     * @default 1000
+     * @public
+     */
+    loadingDelay: number;
+    /**
      * Defines the sticky top offset of the table, if other sticky elements outside of the table exist.
      */
     stickyTop: string;
@@ -243,6 +249,7 @@ declare class Table extends UI5Element {
     get _beforeElement(): HTMLElement;
     get _afterElement(): HTMLElement;
     get _tableElement(): HTMLElement;
+    get _loadingElement(): HTMLElement;
     get _effectiveNoDataText(): string;
     get _ariaLabel(): string | undefined;
     get _ariaMultiSelectable(): boolean | undefined;
