@@ -188,6 +188,7 @@ declare class Calendar extends CalendarPart {
      */
     _selectedItemType: `${CalendarLegendItemType}`;
     constructor();
+    static onDefine(): Promise<void>;
     /**
      * @private
      */
@@ -210,10 +211,12 @@ declare class Calendar extends CalendarPart {
      * The user clicked the "month" button in the header
      */
     onHeaderShowMonthPress(e: CustomEvent): void;
+    showMonth(): void;
     /**
      * The user clicked the "year" button in the header
      */
     onHeaderShowYearPress(e: CustomEvent): void;
+    showYear(): void;
     get _currentPickerDOM(): ICalendarPicker;
     /**
      * The year clicked the "Previous" button in the header
@@ -245,6 +248,28 @@ declare class Calendar extends CalendarPart {
     _onkeydown(e: KeyboardEvent): void;
     _onLegendFocusOut(): void;
     get _specialDates(): SpecialCalendarDate[];
+    get classes(): {
+        prevButton: {
+            "ui5-calheader-arrowbtn": boolean;
+            "ui5-calheader-arrowbtn-disabled": boolean;
+        };
+        nextButton: {
+            "ui5-calheader-arrowbtn": boolean;
+            "ui5-calheader-arrowbtn-disabled": boolean;
+        };
+    };
+    get accInfo(): {
+        ariaLabelMonthButton: string;
+    };
+    get headerPreviousButtonText(): string | undefined;
+    get headerNextButtonText(): string | undefined;
+    get secondMonthButtonText(): string;
+    onMonthButtonKeyDown(e: KeyboardEvent): void;
+    onMonthButtonKeyUp(e: KeyboardEvent): void;
+    onYearButtonKeyDown(e: KeyboardEvent): void;
+    onYearButtonKeyUp(e: KeyboardEvent): void;
+    onPrevButtonClick(e: MouseEvent): void;
+    onNextButtonClick(e: MouseEvent): void;
     /**
      * Returns an array of UTC timestamps, representing the selected dates.
      * @protected

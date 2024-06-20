@@ -1,13 +1,7 @@
-commit fabc911e6138cd2f7b01d22443d559114595e3a1
-Author: Cahit Gürgüc <cahit.guerguec@sap.com>
-Date:   Tue Jun 18 10:00:49 2024 +0200
+commit 94b6b47aaadcbef9439c0f6b632d52c686e5ede0
+Author: Tsanislav Gatev <tsanislav.gatev@sap.com>
+Date:   Wed Jun 19 11:50:25 2024 +0300
 
-    feat(ui5-table): table loading indicator (#9214)
+    refactor(ui5-calendar): remove calendar header component (#9203)
     
-    * feat(ui5-table): table loading indicator
-    
-    * feat(ui5-table): table loading indicator
-    
-    * feat(ui5-table): table loading indicator
-    
-    The loading/loadingDelay properties are added to show a busy indicator component on the table which blocks the interaction while it is shown.
+    fixes: #9062
