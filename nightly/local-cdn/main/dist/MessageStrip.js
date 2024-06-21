@@ -90,6 +90,12 @@ let MessageStrip = MessageStrip_1 = class MessageStrip extends UI5Element {
     get hiddenText() {
         return `${MessageStrip_1.designAnnouncementMappings()[this.design]} ${this.hideCloseButton ? "" : this._closableText}`;
     }
+    get shouldHideIcon() {
+        if (this.designClasses === DesignClassesMapping.ColorSet1 || this.designClasses === DesignClassesMapping.ColorSet2) {
+            return this.hideIcon || this.icon.length === 0;
+        }
+        return this.hideIcon;
+    }
     get _closeButtonText() {
         return MessageStrip_1.i18nBundle.getText(MESSAGE_STRIP_CLOSE_BUTTON);
     }
@@ -100,7 +106,7 @@ let MessageStrip = MessageStrip_1 = class MessageStrip extends UI5Element {
         return {
             root: {
                 "ui5-message-strip-root": true,
-                "ui5-message-strip-root-hide-icon": this.hideIcon,
+                "ui5-message-strip-root-hide-icon": this.shouldHideIcon,
                 "ui5-message-strip-root-hide-close-button": this.hideCloseButton,
                 [this.designClasses]: true,
             },

@@ -333,6 +333,9 @@ let Table = Table_1 = class Table extends UI5Element {
     get _stickyElements() {
         return [this.headerRow[0]].filter(row => row.sticky);
     }
+    get isTable() {
+        return true;
+    }
 };
 __decorate([
     slot({ type: HTMLElement, "default": true })

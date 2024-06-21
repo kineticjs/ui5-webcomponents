@@ -13,15 +13,15 @@ var IconMode;
     IconMode["Image"] = "Image";
     /**
      * Decorative mode.
-     * Configures the component to internally render role="button".
-     * This mode also supports focus and press handling to enhance interactivity.
+     * Configures the component to internally render role="presentation" and aria-hidden="true",
+     * making it purely decorative without semantic content or interactivity.
      * @public
      */
     IconMode["Decorative"] = "Decorative";
     /**
      * Interactive mode.
-     * Configures the component to internally render role="presentation" and aria-hidden="true",
-     * making it purely decorative without semantic content or interactivity.
+     * Configures the component to internally render role="button".
+     * This mode also supports focus and press handling to enhance interactivity.
      * @public
     */
     IconMode["Interactive"] = "Interactive";

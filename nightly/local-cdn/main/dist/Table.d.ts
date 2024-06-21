@@ -257,6 +257,7 @@ declare class Table extends UI5Element {
     get _growing(): ITableGrowing;
     get _scrollContainer(): HTMLElement;
     get _stickyElements(): TableHeaderRow[];
+    get isTable(): boolean;
 }
 export default Table;
 export type { ITableFeature, ITableGrowing, TableRowClickEventDetail, };

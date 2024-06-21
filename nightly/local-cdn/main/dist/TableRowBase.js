@@ -13,8 +13,8 @@ import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
 import TableRowBaseCss from "./generated/themes/TableRowBase.css.js";
-import Table from "./Table.js";
 import CheckBox from "./CheckBox.js";
+import { isInstanceOfTable } from "./TableUtils.js";
 import { TABLE_ROW_SELECTOR, } from "./generated/i18n/i18n-defaults.js";
 /**
  * @class
@@ -56,8 +56,8 @@ let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
         }
     }
     get _table() {
-        const table = this.parentElement;
-        return table instanceof Table ? table : undefined;
+        const element = this.parentElement;
+        return isInstanceOfTable(element) ? element : undefined;
     }
     get _tableId() {
         return this._table?._id;
@@ -88,6 +88,9 @@ let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
     }
     get _i18nRowSelector() {
         return TableRowBase_1.i18nBundle.getText(TABLE_ROW_SELECTOR);
+    }
+    get isTableRowBase() {
+        return true;
     }
 };
 __decorate([

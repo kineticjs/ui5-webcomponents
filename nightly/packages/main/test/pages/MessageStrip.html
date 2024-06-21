@@ -15,7 +15,7 @@
 
 
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-449a0c01.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/MessageStrip-c081bc94.css">
 </head>
 
@@ -61,10 +61,23 @@
 	<ui5-message-strip design="ColorSet2" color-scheme="9" class="top"><ui5-icon name="palette" slot="icon"></ui5-icon>Color Set 2 - color-scheme 9</ui5-message-strip>
 	<ui5-message-strip design="ColorSet2" color-scheme="10" class="top"><ui5-icon name="palette" slot="icon"></ui5-icon>Color Set 2 - color-scheme 10</ui5-message-strip>
 
+	<br />
+	<br />
+	<ui5-button id="btn" /> Change design</ui5-button>
+	<br />
+	<br />
+	<ui5-message-strip id="ms">MessageStrip w/ default properties</ui5-message-strip>
+
 	<script>
 		var counter = 0;
 		messageStrip.addEventListener("ui5-close", function() {
 			inputField.value = ++counter;
+		});
+
+		const mStrip = document.getElementById('ms');
+		document.getElementById('btn').addEventListener('click', () => {
+			mStrip.design = 'ColorSet1';
+			mStrip.colorScheme = '1';
 		});
 	</script>
 </body>

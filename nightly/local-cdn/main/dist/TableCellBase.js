@@ -40,6 +40,9 @@ let TableCellBase = TableCellBase_1 = class TableCellBase extends UI5Element {
     getFocusDomRef() {
         return this;
     }
+    isTableCellBase() {
+        return true;
+    }
 };
 __decorate([
     slot({ type: Node, "default": true })

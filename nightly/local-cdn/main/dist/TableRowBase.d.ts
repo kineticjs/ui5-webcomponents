@@ -1,7 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type TableCellBase from "./TableCellBase.js";
-import Table from "./Table.js";
+import type Table from "./Table.js";
 /**
  * @class
  * A class to serve as a foundation for the `TableRow` and `TableHeaderRow` classes.
@@ -33,5 +33,6 @@ declare abstract class TableRowBase extends UI5Element {
     get _visibleCells(): TableCellBase[];
     get _popinCells(): TableCellBase[];
     get _i18nRowSelector(): string;
+    get isTableRowBase(): boolean;
 }
 export default TableRowBase;

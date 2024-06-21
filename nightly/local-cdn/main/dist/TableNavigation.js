@@ -3,10 +3,9 @@ import isElementClickable from "@ui5/webcomponents-base/dist/util/isElementClick
 import isElementHidden from "@ui5/webcomponents-base/dist/util/isElementHidden.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
-import TableRowBase from "./TableRowBase.js";
-import TableCellBase from "./TableCellBase.js";
 import TableExtension from "./TableExtension.js";
 import GridWalker from "./GridWalker.js";
+import { isInstanceOfTableCellBase, isInstanceOfTableRowBase } from "./TableUtils.js";
 /**
  * Handles the keyboard navigation for the ui5-table.
  *
@@ -95,7 +94,7 @@ class TableNavigation extends TableExtension {
         this._focusElement(this._gridWalker.getCurrent());
     }
     _handleEnter(e, eventOrigin) {
-        if (eventOrigin instanceof TableCellBase) {
+        if (isInstanceOfTableCellBase(eventOrigin)) {
             this._handleF2(e, eventOrigin);
         }
     }
@@ -110,7 +109,7 @@ class TableNavigation extends TableExtension {
         e.preventDefault();
     }
     _handleF7(e, eventOrigin) {
-        if (eventOrigin instanceof TableRowBase) {
+        if (isInstanceOfTableRowBase(eventOrigin)) {
             this._gridWalker.setColPos(this._colPosition);
             let elementToFocus = this._gridWalker.getCurrent();
             if (this._tabPosition > -1) {

@@ -1,5 +1,5 @@
 import type Table from "./Table.js";
-import TableRowBase from "./TableRowBase.js";
+import type TableRowBase from "./TableRowBase.js";
 import TableExtension from "./TableExtension.js";
 import GridWalker from "./GridWalker.js";
 /**

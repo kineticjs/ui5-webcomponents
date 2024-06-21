@@ -1,7 +1,9 @@
-commit 94b6b47aaadcbef9439c0f6b632d52c686e5ede0
-Author: Tsanislav Gatev <tsanislav.gatev@sap.com>
-Date:   Wed Jun 19 11:50:25 2024 +0300
+commit 4f110d20e47e3a5c7557c0de355620d80a0d30af
+Author: Nikoleta Ivanova <31706628+nikoletavnv@users.noreply.github.com>
+Date:   Thu Jun 20 12:52:53 2024 +0300
 
-    refactor(ui5-calendar): remove calendar header component (#9203)
+    fix(ui5-message-strip): Remove icon when design changes to a color set (#9229)
     
-    fixes: #9062
+    * fix(ui5-message-strip): changing design from value-states to color-set does remove the initial icon
+    
+    Fixes #9181

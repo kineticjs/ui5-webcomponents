@@ -101,6 +101,7 @@ declare class MessageStrip extends UI5Element {
     static onDefine(): Promise<void>;
     static designAnnouncementMappings(): DesignTypeAnnouncemnt;
     get hiddenText(): string;
+    get shouldHideIcon(): boolean;
     get _closeButtonText(): string;
     get _closableText(): string;
     get classes(): ClassMap;

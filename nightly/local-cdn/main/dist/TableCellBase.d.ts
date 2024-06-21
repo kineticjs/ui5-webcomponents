@@ -21,5 +21,6 @@ declare abstract class TableCellBase extends UI5Element {
     static onDefine(): Promise<void>;
     onBeforeRendering(): void;
     getFocusDomRef(): this;
+    isTableCellBase(): boolean;
 }
 export default TableCellBase;
