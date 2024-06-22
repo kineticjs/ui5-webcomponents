@@ -89,56 +89,56 @@ declare class IllustratedMessage extends UI5Element {
     * **Note:** Using this property, the default subtitle text of illustration will be overwritten.
     *
     * **Note:** Using `subtitle` slot, the default of this property will be overwritten.
-    * @default ""
+    * @default undefined
     * @public
     */
-    subtitleText: string;
+    subtitleText?: string;
     /**
     * Defines the title of the component.
     *
     * **Note:** Using this property, the default title text of illustration will be overwritten.
-    * @default ""
+    * @default undefined
     * @public
     */
-    titleText: string;
+    titleText?: string;
     /**
     * Receives id(or many ids) of the elements that label the component.
-    * @default ""
+    * @default undefined
     * @public
     * @since 1.7.0
     */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
     * Illustration breakpoint variant for the <code>Dot</code> design.
     *
     * @private
     * @since 1.24.0
     */
-    dotSvg: string;
+    dotSvg?: string;
     /**
     * Illustration breakpoint variant for the <code>Spot</code> design.
     *
     * @private
     * @since 1.9.0
     */
-    spotSvg: string;
+    spotSvg?: string;
     /**
     * Illustration breakpoint variant for the `Scene` design.
     * @private
     * @since 1.9.0
     */
-    sceneSvg: string;
+    sceneSvg?: string;
     /**
     * Illustration breakpoint variant for the `Dialog` design.
     * @private
     * @since 1.9.0
     */
-    dialogSvg: string;
+    dialogSvg?: string;
     /**
     * Determinates what is the current media of the component based on its width.
     * @private
     */
-    media: string;
+    media?: string;
     /**
     * Defines the title of the component.
     *
@@ -204,7 +204,7 @@ declare class IllustratedMessage extends UI5Element {
      */
     _handleCustomSize(): void;
     get ariaLabelText(): string | undefined;
-    get effectiveIllustration(): string;
+    get effectiveIllustration(): string | undefined;
     get hasFormattedSubtitle(): boolean;
     get hasFormattedTitle(): boolean;
     get effectiveTitleText(): string | undefined;

@@ -51,7 +51,7 @@ __decorate([
     property()
 ], Option.prototype, "additionalText", void 0);
 __decorate([
-    property({ type: String, defaultValue: "" })
+    property()
 ], Option.prototype, "tooltip", void 0);
 Option = __decorate([
     customElement({

@@ -1,5 +1,5 @@
 import type { ButtonAccessibilityAttributes } from "./Button.js";
-import ButtonDesign from "./types/ButtonDesign.js";
+import type ButtonDesign from "./types/ButtonDesign.js";
 import ToolbarItem from "./ToolbarItem.js";
 import type { IEventOptions } from "./ToolbarItem.js";
 import ToolbarButtonTemplate from "./generated/templates/ToolbarButtonTemplate.lit.js";
@@ -40,10 +40,10 @@ declare class ToolbarButton extends ToolbarItem {
      *
      * **Note:** SAP-icons font provides numerous buil-in icons. To find all the available icons, see the
      * [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the icon, displayed as graphical element within the component after the button text.
      *
@@ -54,18 +54,18 @@ declare class ToolbarButton extends ToolbarItem {
      *
      * Example:
      * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    endIcon: string;
+    endIcon?: string;
     /**
      * Defines the tooltip of the component.
      *
      * **Note:** A tooltip attribute should be provided for icon-only buttons, in order to represent their exact meaning/function.
-     * @default ""
+     * @default undefined
      * @public
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * Defines the accessible ARIA name of the component.
      * @default undefined
@@ -77,7 +77,7 @@ declare class ToolbarButton extends ToolbarItem {
      * @default ""
      * @public
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the additional accessibility attributes that will be applied to the component.
      *

@@ -15,7 +15,7 @@
 
 
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/DateTimePicker-81c1bacc.css">
 </head>
 
@@ -175,7 +175,7 @@
 	<script>
 		var counter = 0;
 		dt1.addEventListener("ui5-change", function(event) {
-			input1.value = ++counter;
+			input1.value = `${++counter}`;
 			input2.value = "{ value: " + event.detail.value + " , valid: " + event.detail.valid + " }";
 		});
 
@@ -185,7 +185,7 @@
 
 		var counter2 = 0;
 		dt2.addEventListener("ui5-change", function(event) {
-			input3.value = ++counter2;
+			input3.value = `${++counter2}`;
 			input4.value = "{ value: " + dt2.value + " , valid: " + event.detail.valid + " }";
 		});
 

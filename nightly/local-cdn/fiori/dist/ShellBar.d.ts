@@ -51,7 +51,7 @@ type ShellBarSearchButtonEventDetail = {
 interface IShelBarItemInfo {
     id: string;
     icon?: string;
-    text: string;
+    text?: string;
     priority: number;
     show: boolean;
     count?: string;
@@ -103,25 +103,25 @@ declare class ShellBar extends UI5Element {
      * Defines the `primaryTitle`.
      *
      * **Note:** The `primaryTitle` would be hidden on S screen size (less than approx. 700px).
-     * @default ""
+     * @default undefined
      * @public
      */
-    primaryTitle: string;
+    primaryTitle?: string;
     /**
      * Defines the `secondaryTitle`.
      *
      * **Note:** The `secondaryTitle` would be hidden on S and M screen sizes (less than approx. 1300px).
-     * @default ""
+     * @default undefined
      * @public
      */
-    secondaryTitle: string;
+    secondaryTitle?: string;
     /**
      * Defines the `notificationsCount`,
      * displayed in the notification icon top-right corner.
-     * @default ""
+     * @default undefined
      * @public
      */
-    notificationsCount: string;
+    notificationsCount?: string;
     /**
      * Defines, if the notification icon would be displayed.
      * @default false
@@ -179,7 +179,7 @@ declare class ShellBar extends UI5Element {
     /**
      * @private
      */
-    breakpointSize: string;
+    breakpointSize?: string;
     /**
      * @private
      */
@@ -364,7 +364,7 @@ declare class ShellBar extends UI5Element {
     get customItemsInfo(): IShelBarItemInfo[];
     get hasLogo(): boolean;
     get showLogoInMenuButton(): boolean;
-    get showTitleInMenuButton(): boolean | "";
+    get showTitleInMenuButton(): boolean | "" | undefined;
     get showMenuButton(): string | boolean;
     get popoverHorizontalAlign(): `${PopoverHorizontalAlign}`;
     get hasAssistant(): boolean;

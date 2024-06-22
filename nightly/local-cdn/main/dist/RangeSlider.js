@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var RangeSlider_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isEscape, isHome, isEnd, } from "@ui5/webcomponents-base/dist/Keys.js";
 import SliderBase from "./SliderBase.js";
@@ -80,6 +79,23 @@ let RangeSlider = RangeSlider_1 = class RangeSlider extends SliderBase {
     }
     constructor() {
         super();
+        /**
+         * Defines start point of a selection - position of a first handle on the slider.
+         * @default 0
+         * @formEvents change input
+         * @formProperty
+         * @public
+         */
+        this.startValue = 0;
+        /**
+         * Defines end point of a selection - position of a second handle on the slider.
+         * @default 100
+         * @formEvents change input
+         * @formProperty
+         * @public
+         */
+        this.endValue = 100;
+        this.rangePressed = false;
         this._isPressInCurrentRange = false;
         this._handeIsPressed = false;
         this._reversedValues = false;
@@ -706,10 +722,10 @@ let RangeSlider = RangeSlider_1 = class RangeSlider extends SliderBase {
     }
 };
 __decorate([
-    property({ validator: Float, defaultValue: 0 })
+    property({ type: Number })
 ], RangeSlider.prototype, "startValue", void 0);
 __decorate([
-    property({ validator: Float, defaultValue: 100 })
+    property({ type: Number })
 ], RangeSlider.prototype, "endValue", void 0);
 __decorate([
     property({ type: Boolean })

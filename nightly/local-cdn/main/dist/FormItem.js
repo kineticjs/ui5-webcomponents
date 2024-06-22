@@ -9,12 +9,10 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 // Template
 import FormItemTemplate from "./generated/templates/FormItemTemplate.lit.js";
 // Styles
 import FormItemCss from "./generated/themes/FormItem.css.js";
-import FormItemSpacing from "./types/FormItemSpacing.js";
 /**
  * @class
  *
@@ -39,15 +37,27 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  * @implements {IFormItem}
  * @public
  * @since 2.0.0
+ * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 let FormItem = class FormItem extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * @private
+         */
+        this.labelSpan = "S12 M4 L4 XL4";
+        /**
+         * @private
+         */
+        this.itemSpacing = "Normal";
+    }
     get isGroup() {
         return false;
     }
 };
 __decorate([
-    property({ validator: Integer, defaultValue: undefined })
+    property({ type: Number })
 ], FormItem.prototype, "columnSpan", void 0);
 __decorate([
     slot()
@@ -60,10 +70,10 @@ __decorate([
     })
 ], FormItem.prototype, "content", void 0);
 __decorate([
-    property({ type: String, defaultValue: "S12 M4 L4 XL4" })
+    property()
 ], FormItem.prototype, "labelSpan", void 0);
 __decorate([
-    property({ type: FormItemSpacing, defaultValue: FormItemSpacing.Normal })
+    property()
 ], FormItem.prototype, "itemSpacing", void 0);
 FormItem = __decorate([
     customElement({

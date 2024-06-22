@@ -68,6 +68,43 @@ var DesignClassesMapping;
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  */
 let MessageStrip = MessageStrip_1 = class MessageStrip extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the component type.
+         * @default "Information"
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.design = "Information";
+        /**
+         * Defines the color scheme of the component.
+         * There are 10 predefined schemes.
+         * To use one you can set a number from `"1"` to `"10"`. The `colorScheme` `"1"` will be set by default.
+         *
+         * @default "1"
+         * @public
+         * @since 2.0.0
+         */
+        this.colorScheme = "1";
+        /**
+         * Defines whether the MessageStrip will show an icon in the beginning.
+         * You can directly provide an icon with the `icon` slot. Otherwise, the default icon for the type will be used.
+         *
+         *  * **Note:** If <code>MessageStripDesign.ColorSet1</code> or <code>MessageStripDesign.ColorSet2</code> value is set to the <code>design</code> property, default icon will not be presented.
+         *
+         * @default false
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.hideIcon = false;
+        /**
+         * Defines whether the MessageStrip renders close button.
+         * @default false
+         * @public
+         */
+        this.hideCloseButton = false;
+    }
     _closeClick() {
         this.fireEvent("close");
     }
@@ -134,13 +171,10 @@ let MessageStrip = MessageStrip_1 = class MessageStrip extends UI5Element {
     }
 };
 __decorate([
-    property({
-        type: MessageStripDesign,
-        defaultValue: MessageStripDesign.Information,
-    })
+    property()
 ], MessageStrip.prototype, "design", void 0);
 __decorate([
-    property({ defaultValue: "1" })
+    property()
 ], MessageStrip.prototype, "colorScheme", void 0);
 __decorate([
     property({ type: Boolean })

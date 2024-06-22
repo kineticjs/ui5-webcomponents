@@ -76,7 +76,12 @@ declare class ViewSettingsDialog extends UI5Element {
      * Keeps recently focused list in order to focus it on next dialog open.
      * @private
      */
-    _recentlyFocused: List;
+    _recentlyFocused?: List;
+    /**
+     * Stores current settings of the dialog.
+     * @private
+     */
+    _currentSettings: VSDInternalSettings;
     /**
      * Stores settings of the dialog before the initial open.
      * @private
@@ -88,16 +93,11 @@ declare class ViewSettingsDialog extends UI5Element {
      */
     _confirmedSettings: VSDInternalSettings;
     /**
-     * Stores current settings of the dialog.
-     * @private
-     */
-    _currentSettings: VSDInternalSettings;
-    /**
      * Defnies the current mode of the component.
      * @since 1.0.0-rc.16
      * @private
      */
-    _currentMode: ViewSettingsDialogMode;
+    _currentMode: `${ViewSettingsDialogMode}`;
     /**
      * When in Filter By mode, defines whether we need to show the list of keys, or the list with values.
      * @since 1.0.0-rc.16
@@ -122,7 +122,6 @@ declare class ViewSettingsDialog extends UI5Element {
     _sortOrder?: List;
     _sortBy?: List;
     static i18nBundle: I18nBundle;
-    constructor();
     onBeforeRendering(): void;
     onInvalidation(changeInfo: ChangeInfo): void;
     _setAdditionalTexts(): void;

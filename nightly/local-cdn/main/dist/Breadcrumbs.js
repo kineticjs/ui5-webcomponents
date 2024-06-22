@@ -14,12 +14,10 @@ import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import { isSpace, isShow, } from "@ui5/webcomponents-base/dist/Keys.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import NavigationMode from "@ui5/webcomponents-base/dist/types/NavigationMode.js";
 import BreadcrumbsDesign from "./types/BreadcrumbsDesign.js";
-import BreadcrumbsSeparator from "./types/BreadcrumbsSeparator.js";
 import BreadcrumbsItem from "./BreadcrumbsItem.js";
 import { BREADCRUMB_ITEM_POS, BREADCRUMBS_ARIA_LABEL, BREADCRUMBS_OVERFLOW_ARIA_LABEL, BREADCRUMBS_CANCEL_BUTTON, } from "./generated/i18n/i18n-defaults.js";
 import Link from "./Link.js";
@@ -66,6 +64,28 @@ import breadcrumbsPopoverCss from "./generated/themes/BreadcrumbsPopover.css.js"
 let Breadcrumbs = Breadcrumbs_1 = class Breadcrumbs extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the visual appearance of the last BreadcrumbsItem.
+         *
+         * The Breadcrumbs supports two visual appearances for the last BreadcrumbsItem:
+         * - "Standard" - displaying the last item as "current page" (bold and without separator)
+         * - "NoCurrentPage" - displaying the last item as a regular BreadcrumbsItem, followed by separator
+         * @default "Standard"
+         * @public
+        */
+        this.design = "Standard";
+        /**
+         * Determines the visual style of the separator between the breadcrumb items.
+         * @default "Slash"
+         * @public
+         */
+        this.separators = "Slash";
+        /**
+         * Holds the number of items in the overflow.
+         * @default 0
+         * @private
+         */
+        this._overflowSize = 0;
         // maps items to their widths
         this._breadcrumbItemWidths = new WeakMap();
         // the width of the interactive element that opens the overflow
@@ -351,13 +371,13 @@ let Breadcrumbs = Breadcrumbs_1 = class Breadcrumbs extends UI5Element {
     }
 };
 __decorate([
-    property({ type: BreadcrumbsDesign, defaultValue: BreadcrumbsDesign.Standard })
+    property()
 ], Breadcrumbs.prototype, "design", void 0);
 __decorate([
-    property({ type: BreadcrumbsSeparator, defaultValue: BreadcrumbsSeparator.Slash })
+    property()
 ], Breadcrumbs.prototype, "separators", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true, defaultValue: 0 })
+    property({ type: Number, noAttribute: true })
 ], Breadcrumbs.prototype, "_overflowSize", void 0);
 __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true, "default": true })

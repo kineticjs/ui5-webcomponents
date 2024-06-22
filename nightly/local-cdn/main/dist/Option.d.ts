@@ -26,34 +26,34 @@ declare class Option extends ListItemBase implements IOption {
     /**
      * Defines the value of the `ui5-select` inside an HTML Form element when this component is selected.
      * For more information on HTML Form support, see the `name` property of `ui5-select`.
-     * @default ""
+     * @default undefined
      * @public
      */
-    value: string;
+    value?: string;
     /**
      * Defines the `icon` source URI.
      *
      * **Note:**
      * SAP-icons font provides numerous built-in icons. To find all the available icons, see the
      * [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the `additionalText`, displayed in the end of the list item.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    additionalText: string;
+    additionalText?: string;
     /**
      * Defines the text of the tooltip that would be displayed for the list item.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.23.0
      */
-    tooltip: string;
+    tooltip?: string;
     get displayIconBegin(): boolean;
     get effectiveDisplayText(): string;
 }

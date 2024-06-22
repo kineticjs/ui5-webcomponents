@@ -1,9 +1,11 @@
-commit 4f110d20e47e3a5c7557c0de355620d80a0d30af
-Author: Nikoleta Ivanova <31706628+nikoletavnv@users.noreply.github.com>
-Date:   Thu Jun 20 12:52:53 2024 +0300
+commit eef0cc9b663fda6268b98e516ed46439435fa2b0
+Author: Peter Skelin <petar.skelin@sap.com>
+Date:   Fri Jun 21 10:19:12 2024 +0300
 
-    fix(ui5-message-strip): Remove icon when design changes to a color set (#9229)
+    feat: add property initializers (#8846)
     
-    * fix(ui5-message-strip): changing design from value-states to color-set does remove the initial icon
+    Initial values are only set by property initializers and there are no longer any defaults per type from the framework
+    Remove the defaultValue and related fields from the @property decorator
+    Remove all runtime checks and validations
     
-    Fixes #9181
+    BREAKING CHANGE: @property decorator must be adapted according to new type parameter

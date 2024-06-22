@@ -14,7 +14,6 @@ import transformDateToSecondaryType from "@ui5/webcomponents-localization/dist/d
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
 import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
 import { isEnter, isSpace, isDown, isUp, isLeft, isRight, isHome, isEnd, isHomeCtrl, isEndCtrl, isPageUp, isPageDown, } from "@ui5/webcomponents-base/dist/Keys.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import getLocale from "@ui5/webcomponents-base/dist/locale/getLocale.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { MONTH_PICKER_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
@@ -34,6 +33,18 @@ const PAGE_SIZE = 12; // total months on a single page
  * @private
  */
 let MonthPicker = MonthPicker_1 = class MonthPicker extends CalendarPart {
+    constructor() {
+        super(...arguments);
+        /**
+         * An array of UTC timestamps representing the selected date
+         * or dates depending on the capabilities of the picker component.
+         * @public
+         * @default []
+         */
+        this.selectedDates = [];
+        this._months = [];
+        this._hidden = false;
+    }
     static async onDefine() {
         MonthPicker_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -239,14 +250,10 @@ let MonthPicker = MonthPicker_1 = class MonthPicker extends CalendarPart {
     }
 };
 __decorate([
-    property({
-        validator: Integer,
-        multiple: true,
-        compareValues: true,
-    })
+    property({ type: Array })
 ], MonthPicker.prototype, "selectedDates", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], MonthPicker.prototype, "_months", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

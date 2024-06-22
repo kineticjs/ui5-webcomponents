@@ -129,10 +129,10 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     /**
      * Defines a short hint intended to aid the user with data entry when the
      * component has no value.
-     * @default ""
+     * @default undefined
      * @public
      */
-    placeholder: string;
+    placeholder?: string;
     /**
      * Defines whether the component is read-only.
      *
@@ -200,7 +200,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * @default ""
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines whether the component should show suggestions, if such are present.
      *
@@ -221,18 +221,18 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     maxlength?: number;
     /**
      * Defines the accessible ARIA name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the input.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines whether the clear icon of the input will be shown.
      * @default false
@@ -496,7 +496,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * Returns the placeholder value.
      * @protected
      */
-    get _placeholder(): string;
+    get _placeholder(): string | undefined;
     /**
      * This method is relevant for sap_horizon theme only
      */

@@ -23,6 +23,10 @@ import ToolbarItem from "./ToolbarItem.js";
  * @public
  */
 let ToolbarSeparator = class ToolbarSeparator extends ToolbarItem {
+    constructor() {
+        super(...arguments);
+        this.visible = false;
+    }
     static get toolbarTemplate() {
         return ToolbarSeparatorTemplate;
     }

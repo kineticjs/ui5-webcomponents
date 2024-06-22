@@ -106,7 +106,7 @@ declare class AvatarGroup extends UI5Element {
     /**
      * @private
      */
-    _overflowButtonText: string;
+    _overflowButtonText?: string;
     /**
      * Defines the items of the component. Use the `ui5-avatar` component as an item.
      *

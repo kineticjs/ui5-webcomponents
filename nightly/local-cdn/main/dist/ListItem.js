@@ -24,7 +24,6 @@ import RadioButton from "./RadioButton.js";
 import CheckBox from "./CheckBox.js";
 import Button from "./Button.js";
 import { DELETE, ARIA_LABEL_LIST_ITEM_CHECKBOX, ARIA_LABEL_LIST_ITEM_RADIO_BUTTON, LIST_ITEM_SELECTED, LIST_ITEM_NOT_SELECTED, } from "./generated/i18n/i18n-defaults.js";
-import ListItemAccessibleRole from "./types/ListItemAccessibleRole.js";
 // Styles
 import styles from "./generated/themes/ListItem.css.js";
 import listItemAdditionalTextCss from "./generated/themes/ListItemAdditionalText.css.js";
@@ -42,6 +41,61 @@ import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
 let ListItem = ListItem_1 = class ListItem extends ListItemBase {
     constructor() {
         super();
+        /**
+         * Defines the visual indication and behavior of the list items.
+         * Available options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.
+         *
+         * **Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,
+         * while with type `Inactive` and `Detail` - will not.
+         * @default "Active"
+         * @public
+        */
+        this.type = "Active";
+        /**
+         * Defines the additional accessibility attributes that will be applied to the component.
+         * The following fields are supported:
+         *
+         * - **ariaSetsize**: Defines the number of items in the current set  when not all items in the set are present in the DOM.
+         * **Note:** The value is an integer reflecting the number of items in the complete set. If the size of the entire set is unknown, set `-1`.
+         *
+         * 	- **ariaPosinset**: Defines an element's number or position in the current set when not all items are present in the DOM.
+         * 	**Note:** The value is an integer greater than or equal to 1, and less than or equal to the size of the set when that size is known.
+         *
+         * @default {}
+         * @public
+         * @since 1.15.0
+         */
+        this.accessibilityAttributes = {};
+        /**
+         * The navigated state of the list item.
+         * If set to `true`, a navigation indicator is displayed at the end of the list item.
+         * @default false
+         * @public
+         * @since 1.10.0
+         */
+        this.navigated = false;
+        /**
+         * Indicates if the list item is active, e.g pressed down with the mouse or the keyboard keys.
+         * @private
+        */
+        this.active = false;
+        /**
+         * Defines the highlight state of the list items.
+         * Available options are: `"None"` (by default), `"Positive"`, `"Critical"`, `"Information"` and `"Negative"`.
+         * @default "None"
+         * @public
+         * @since 1.24
+         */
+        this.highlight = "None";
+        /**
+         * Used to define the role of the list item.
+         * @private
+         * @default "ListItem"
+         * @since 1.3.0
+         *
+         */
+        this.accessibleRole = "ListItem";
+        this._selectionMode = "None";
         this.deactivateByKey = (e) => {
             if (isEnter(e)) {
                 this.deactivate();
@@ -272,7 +326,7 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
     }
 };
 __decorate([
-    property({ type: ListItemType, defaultValue: ListItemType.Active })
+    property()
 ], ListItem.prototype, "type", void 0);
 __decorate([
     property({ type: Object })
@@ -281,19 +335,19 @@ __decorate([
     property({ type: Boolean })
 ], ListItem.prototype, "navigated", void 0);
 __decorate([
-    property({ type: String, defaultValue: "" })
+    property()
 ], ListItem.prototype, "tooltip", void 0);
 __decorate([
     property({ type: Boolean })
 ], ListItem.prototype, "active", void 0);
 __decorate([
-    property({ type: Highlight, defaultValue: Highlight.None })
+    property()
 ], ListItem.prototype, "highlight", void 0);
 __decorate([
-    property({ type: ListItemAccessibleRole, defaultValue: ListItemAccessibleRole.ListItem })
+    property()
 ], ListItem.prototype, "accessibleRole", void 0);
 __decorate([
-    property({ type: ListSelectionMode, defaultValue: ListSelectionMode.None })
+    property()
 ], ListItem.prototype, "_selectionMode", void 0);
 __decorate([
     slot()

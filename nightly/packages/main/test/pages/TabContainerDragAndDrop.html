@@ -8,7 +8,7 @@
 
 	
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TabContainer-a79dd530.css">
 </head>
 
@@ -74,7 +74,7 @@
 		const tc = document.getElementById("tabContainerDnd");
 		const maxNestingLevelInput = document.getElementById("maxNestingLevelInput");
 		let maxNestingLevel = 2;
-		maxNestingLevelInput.value = maxNestingLevel;
+		maxNestingLevelInput.value = `${maxNestingLevel}`;
 
 		const getTabLevel = (element) => {
 			if (element.hasAttribute("ui5-tabcontainer")) {

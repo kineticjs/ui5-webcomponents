@@ -47,7 +47,7 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
     * The first date in the range during selection (this is a temporary value, not the first date in the value range)
     * @private
     */
-    _tempValue: string;
+    _tempValue?: string;
     private _prevDelimiter;
     get formFormattedValue(): string | FormData;
     constructor();
@@ -65,7 +65,7 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
     get dateValueUTC(): Date | null;
     get _startDateTimestamp(): number | undefined;
     get _endDateTimestamp(): number | undefined;
-    get _tempTimestamp(): number | "";
+    get _tempTimestamp(): number | "" | undefined;
     /**
      * Required by DatePicker.js
      * @override

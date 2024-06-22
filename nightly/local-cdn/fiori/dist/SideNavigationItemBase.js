@@ -18,6 +18,21 @@ import { isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
  * @since 1.19.0
  */
 class SideNavigationItemBase extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the component is disabled.
+         * A disabled component can't be pressed or
+         * focused, and it is not in the tab chain.
+         *
+         * @default false
+         * @public
+         * @since 1.19.0
+         */
+        this.disabled = false;
+        this.sideNavCollapsed = false;
+        this.inPopover = false;
+    }
     onEnterDOM() {
         if (isDesktop()) {
             this.setAttribute("desktop", "");
@@ -74,7 +89,7 @@ __decorate([
     property()
 ], SideNavigationItemBase.prototype, "tooltip", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property({ noAttribute: true })
 ], SideNavigationItemBase.prototype, "forcedTabIndex", void 0);
 __decorate([
     property({ type: Boolean })

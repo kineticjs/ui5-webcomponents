@@ -16,7 +16,7 @@
 
 
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-b9b0d81b.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-1ceb75ae.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TableSelection-de375a7c.css">
 </head>
 
@@ -390,7 +390,7 @@
 
 		singleModeTable.addEventListener("ui5-selection-change", function(event) {
 			selectionChangeCounter += 1;
-			selectionChangeSSCountField.value = selectionChangeCounter;
+			selectionChangeSSCountField.value = selectionChangeCounter?.toString();
 
 			selectionChangeSSSelectedValueField.value = event.detail.selectedRows[0].id;
 
@@ -401,12 +401,12 @@
 
 		singleModeTable.addEventListener("ui5-row-click", function(event) {
 			rowClickCounter += 1;
-			rowClickSSCountField.value = rowClickCounter;
+			rowClickSSCountField.value = rowClickCounter?.toString();
 		});
 
 		multiSelectMode.addEventListener("ui5-selection-change", function(event) {
 			selectionChangeCounter1 += 1;
-			selectionChangeMSCountField.value = selectionChangeCounter1;
+			selectionChangeMSCountField.value = selectionChangeCounter1?.toString();
 			const lastSelectedRow = event.detail.selectedRows.length - 1;
 			const previousSelectedRow = event.detail.previouslySelectedRows.length - 1;
 
@@ -421,17 +421,17 @@
 
 		multiSelectMode.addEventListener("ui5-row-click", function(event) {
 			rowClickCounter1 += 1;
-			rowClickMSCountField.value = rowClickCounter1;
+			rowClickMSCountField.value = rowClickCounter1?.toString();
 		});
 
 		defaultMode.addEventListener("ui5-selection-change", function(event) {
 			selectionChangeCounter2 += 1;
-			selectionChangeDefaultCountField.value = selectionChangeCounter2;
+			selectionChangeDefaultCountField.value = selectionChangeCounter2.toString();
 		});
 
 		defaultMode.addEventListener("ui5-row-click", function(event) {
 			rowClickCounter2 += 1;
-			rowClickDefaultCountField.value = rowClickCounter2;
+			rowClickDefaultCountField.value = rowClickCounter2.toString();
 		});
 
 		document.getElementById("size-btn-500").addEventListener("click", function(event) {

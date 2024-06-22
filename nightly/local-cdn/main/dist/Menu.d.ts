@@ -6,6 +6,15 @@ import ResponsivePopover from "./ResponsivePopover.js";
 import type { ResponsivePopoverBeforeCloseEventDetail } from "./ResponsivePopover.js";
 import MenuItem from "./MenuItem.js";
 import type { ListItemClickEventDetail } from "./List.js";
+/**
+ * Interface for components that may be slotted inside a `ui5-menu`.
+ *
+ * **Note:** Use with `ui5-menu-item` or `ui5-menu-separator`. Implementing the interface does not guarantee that any other classes can work with the `ui5-menu`.
+ * @public
+ */
+interface IMenuItem extends UI5Element {
+    isSeparator: boolean;
+}
 type MenuItemClickEventDetail = {
     item: MenuItem;
     text: string;
@@ -23,9 +32,13 @@ type MenuBeforeCloseEventDetail = {
  *
  * `ui5-menu` component represents a hierarchical menu structure.
  *
- * ### Usage
+ * ### Structure
  *
- * `ui5-menu` contains `ui5-menu-item` components.
+ * The `ui5-menu` can hold two types of entities:
+ *
+ * - `ui5-menu-item` components
+ * - `ui5-menu-separator` - used to separate menu items with a line
+ *
  * An arbitrary hierarchy structure can be represented by recursively nesting menu items.
  *
  * ### Keyboard Handling
@@ -51,10 +64,10 @@ type MenuBeforeCloseEventDetail = {
 declare class Menu extends UI5Element {
     /**
      * Defines the header text of the menu (displayed on mobile).
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Indicates if the menu is open
      * @public
@@ -84,14 +97,14 @@ declare class Menu extends UI5Element {
      * @default ""
      * @since 1.10.0
      */
-    opener: HTMLElement | string;
+    opener?: HTMLElement | string;
     /**
      * Defines the items of this component.
      *
-     * **Note:** Use `ui5-menu-item` for the intended design.
+     * **Note:** Use `ui5-menu-item` and `ui5-menu-separator` for their intended design.
      * @public
      */
-    items: Array<MenuItem>;
+    items: Array<IMenuItem>;
     static i18nBundle: I18nBundle;
     _timeout?: Timeout;
     static onDefine(): Promise<void>;
@@ -99,6 +112,7 @@ declare class Menu extends UI5Element {
     get labelClose(): string;
     get isPhone(): boolean;
     get _popover(): ResponsivePopover;
+    get _menuItems(): MenuItem[];
     onBeforeRendering(): void;
     _close(): void;
     _openItemSubMenu(item: MenuItem): void;
@@ -113,4 +127,4 @@ declare class Menu extends UI5Element {
     _afterPopoverClose(): void;
 }
 export default Menu;
-export type { MenuItemClickEventDetail, MenuBeforeCloseEventDetail, MenuBeforeOpenEventDetail, };
+export type { MenuItemClickEventDetail, MenuBeforeCloseEventDetail, MenuBeforeOpenEventDetail, IMenuItem, };

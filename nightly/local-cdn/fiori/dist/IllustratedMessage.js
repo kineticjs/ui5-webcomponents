@@ -76,6 +76,42 @@ const getEffectiveIllustrationName = (name) => {
 let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends UI5Element {
     constructor() {
         super();
+        /**
+        * Defines the illustration name that will be displayed in the component.
+        *
+        * Example:
+        *
+        * `name='BeforeSearch'`, `name='UnableToUpload'`, etc..
+        *
+        * **Note:** To use the TNT illustrations,
+        * you need to set the `tnt` or `Tnt` prefix in front of the icon's name.
+        *
+        * Example:
+        *
+        * `name='tnt/Avatar'` or `name='TntAvatar'`.
+        *
+        * **Note:** By default the `BeforeSearch` illustration is loaded.
+        * When using an illustration type, other than the default, it should be loaded in addition:
+        *
+        * `import "@ui5/webcomponents-fiori/dist/illustrations/NoData.js";`
+        *
+        * For TNT illustrations:
+        *
+        * `import "@ui5/webcomponents-fiori/dist/illustrations/tnt/SessionExpired.js";`
+        * @default "BeforeSearch"
+        * @public
+        */
+        this.name = "BeforeSearch";
+        /**
+        * Determines which illustration breakpoint variant is used.
+        *
+        * As `IllustratedMessage` adapts itself around the `Illustration`, the other
+        * elements of the component are displayed differently on the different breakpoints/illustration designs.
+        * @default "Auto"
+        * @public
+        * @since 1.5.0
+        */
+        this.design = "Auto";
         this._handleResize = this.handleResize.bind(this);
         // this will store the last known offsetWidth of the IllustratedMessage DOM node for a given media (e.g. "Spot")
         this._lastKnownOffsetWidthForMedia = {};
@@ -271,10 +307,10 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
     }
 };
 __decorate([
-    property({ type: String, defaultValue: IllustrationMessageType.BeforeSearch })
+    property()
 ], IllustratedMessage.prototype, "name", void 0);
 __decorate([
-    property({ type: IllustrationMessageSize, defaultValue: IllustrationMessageSize.Auto })
+    property()
 ], IllustratedMessage.prototype, "design", void 0);
 __decorate([
     property()
@@ -283,7 +319,7 @@ __decorate([
     property()
 ], IllustratedMessage.prototype, "titleText", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], IllustratedMessage.prototype, "accessibleNameRef", void 0);
 __decorate([
     property({ noAttribute: true })

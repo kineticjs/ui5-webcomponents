@@ -45,7 +45,7 @@ __decorate([
     slot({ type: Node, "default": true, invalidateOnChildChange: true })
 ], OptionCustom.prototype, "content", void 0);
 __decorate([
-    property({ type: String })
+    property()
 ], OptionCustom.prototype, "tooltip", void 0);
 OptionCustom = __decorate([
     customElement({

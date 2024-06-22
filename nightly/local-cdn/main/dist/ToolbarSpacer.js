@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import CSSSize from "@ui5/webcomponents-base/dist/types/CSSSize.js";
 import ToolbarSpacerTemplate from "./generated/templates/ToolbarSpacerTemplate.lit.js";
 import ToolbarItem from "./ToolbarItem.js";
 import { registerToolbarItem } from "./ToolbarRegistry.js";
@@ -43,7 +42,7 @@ let ToolbarSpacer = class ToolbarSpacer extends ToolbarItem {
     }
 };
 __decorate([
-    property({ validator: CSSSize })
+    property()
 ], ToolbarSpacer.prototype, "width", void 0);
 ToolbarSpacer = __decorate([
     customElement({

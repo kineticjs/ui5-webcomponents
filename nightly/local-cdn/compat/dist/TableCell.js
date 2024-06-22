@@ -28,6 +28,21 @@ import { ARIA_LABEL_EMPTY_CELL, } from "./generated/i18n/i18n-defaults.js";
  * @csspart cell - Used to style the native `td` element
  */
 let TableCell = TableCell_1 = class TableCell extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * @private
+         */
+        this.lastInRow = false;
+        /**
+         * @private
+         */
+        this.popined = false;
+        /**
+         * @private
+         */
+        this._popinedInline = false;
+    }
     static async onDefine() {
         TableCell_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }

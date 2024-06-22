@@ -10,7 +10,7 @@
 	
 
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-b9b0d81b.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-1ceb75ae.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TableGrowingWithScroll-5514d54d.css">
 </head>
 
@@ -787,7 +787,7 @@
 			table.busy = true;
 
 			++loadMoreTracker;
-			inputLoadMoreCounter.value = loadMoreTracker - 1;
+			inputLoadMoreCounter.value = `${loadMoreTracker - 1}`;
 
 			if (timeoutTracker) {
 				clearTimeout(timeoutTracker);
@@ -802,7 +802,7 @@
 		table.addEventListener("ui5-load-more", loadMore);
 		tableInitialScroll.addEventListener("ui5-load-more", () => {
 			++loadMoreInitialTracker;
-			document.getElementById("inputLoadMoreInitialCounter").value = loadMoreInitialTracker - 1;
+			document.getElementById("inputLoadMoreInitialCounter").value = `${loadMoreInitialTracker - 1}`;
 		});
 
 		btnScroll.addEventListener("click", function() {

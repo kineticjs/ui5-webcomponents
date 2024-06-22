@@ -18,6 +18,7 @@ import DateRangePickerCss from "./generated/themes/DateRangePicker.css.js";
 import DatePicker from "./DatePicker.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import CalendarDateRange from "./CalendarDateRange.js";
+const DEFAULT_DELIMITER = "-";
 /**
  * @class
  *
@@ -53,7 +54,7 @@ import CalendarDateRange from "./CalendarDateRange.js";
 let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePicker {
     get formFormattedValue() {
         const values = this._splitValueByDelimiter(this.value || "").filter(Boolean);
-        if (values.length) {
+        if (values.length && this.name) {
             const formData = new FormData();
             for (let i = 0; i < values.length; i++) {
                 formData.append(this.name, values[i]);
@@ -64,6 +65,13 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
     }
     constructor() {
         super();
+        /**
+        * Determines the symbol which separates the dates.
+        * If not supplied, the default time interval delimiter for the current locale will be used.
+        * @default "-"
+        * @public
+        */
+        this.delimiter = DEFAULT_DELIMITER;
         this._prevDelimiter = null;
     }
     /**
@@ -247,8 +255,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         input.setCaretPosition(caretPos); // Return the caret to the previous (or the adjusted, if dates flipped) position after rendering
     }
     get _effectiveDelimiter() {
-        const ctor = this.constructor;
-        return this.delimiter || (ctor.getMetadata().getProperties().delimiter.defaultValue);
+        return this.delimiter || DEFAULT_DELIMITER;
     }
     _splitValueByDelimiter(value) {
         const valuesArray = [];
@@ -315,7 +322,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
     }
 };
 __decorate([
-    property({ defaultValue: "-" })
+    property()
 ], DateRangePicker.prototype, "delimiter", void 0);
 __decorate([
     property()

@@ -10,7 +10,6 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import BarDesign from "./types/BarDesign.js";
 // Template
 import BarTemplate from "./generated/templates/BarTemplate.lit.js";
 // Styles
@@ -57,6 +56,12 @@ let Bar = class Bar extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the component's design.
+         * @default "Header"
+         * @public
+         */
+        this.design = "Header";
         this._handleResizeBound = this.handleResize.bind(this);
     }
     handleResize() {
@@ -88,7 +93,7 @@ let Bar = class Bar extends UI5Element {
     }
 };
 __decorate([
-    property({ type: BarDesign, defaultValue: BarDesign.Header })
+    property()
 ], Bar.prototype, "design", void 0);
 __decorate([
     slot({ type: HTMLElement })

@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import TitleLevel from "./types/TitleLevel.js";
-import WrappingType from "./types/WrappingType.js";
+import type WrappingType from "./types/WrappingType.js";
 /**
  * @class
  *

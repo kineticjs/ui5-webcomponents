@@ -59,6 +59,26 @@ const defaultMediaConstraints = {
 let BarcodeScannerDialog = BarcodeScannerDialog_1 = class BarcodeScannerDialog extends UI5Element {
     constructor() {
         super();
+        /**
+         * Indicates whether the dialog is open.
+         *
+         * @public
+         * @default false
+         * @since 1.24.0
+        */
+        this.open = false;
+        /**
+         * Indicates whether a loading indicator should be displayed in the dialog.
+         * @default false
+         * @private
+         */
+        this.loading = false;
+        /**
+         * Indicates whether the user has granted permissions to use the camera.
+         * @default false
+         * @private
+         */
+        this.permissionsGranted = false;
         this._codeReader = new BrowserMultiFormatReader();
     }
     static async onDefine() {

@@ -31,7 +31,7 @@ import treeItemCss from "./generated/themes/TreeItem.css.js";
  */
 let TreeItem = class TreeItem extends TreeItemBase {
     get _showTitle() {
-        return this.text.length;
+        return this.text?.length;
     }
 };
 __decorate([

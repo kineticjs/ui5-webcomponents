@@ -23,7 +23,7 @@
 
 
 	
-		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
 		<link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TextArea-76f953a2.css">
 	</head>
 
@@ -209,12 +209,12 @@
 
 		document.getElementById('textarea-change').addEventListener("ui5-change", function (event) {
 			changeCounter += 1;
-			document.getElementById('changeResult').value = changeCounter;
+			document.getElementById('changeResult').value = `${changeCounter}`;
 		});
 
 		document.getElementById('textarea-input').addEventListener("ui5-input", function (event) {
 			inputCounter += 1;
-			document.getElementById('inputResult').value = inputCounter;
+			document.getElementById('inputResult').value = `${inputCounter}`;
 		});
 	</script>
 

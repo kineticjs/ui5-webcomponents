@@ -2,6 +2,7 @@ import ListItem from "./ListItem.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import type PopoverPlacement from "./types/PopoverPlacement.js";
 import type { ResponsivePopoverBeforeCloseEventDetail } from "./ResponsivePopover.js";
+import type { IMenuItem } from "./Menu.js";
 type MenuBeforeOpenEventDetail = {
     item?: MenuItem;
 };
@@ -27,10 +28,11 @@ type MenuBeforeCloseEventDetail = {
  * `import "@ui5/webcomponents/dist/MenuItem.js";`
  * @constructor
  * @extends ListItem
+ * @implements {IMenuItem}
  * @since 1.3.0
  * @public
  */
-declare class MenuItem extends ListItem {
+declare class MenuItem extends ListItem implements IMenuItem {
     static onDefine(): Promise<void>;
     /**
      * Defines the text of the tree item.
@@ -58,16 +60,10 @@ declare class MenuItem extends ListItem {
      * **Example:**
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
-    /**
-     * Defines whether a visual separator should be rendered before the item.
-     * @default false
-     * @public
-     */
-    startsSection: boolean;
+    icon?: string;
     /**
      * Defines whether `ui5-menu-item` is in disabled state.
      *
@@ -101,11 +97,11 @@ declare class MenuItem extends ListItem {
     accessibleName: string;
     /**
      * Defines the text of the tooltip for the menu item.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.23.0
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * Indicates whether any of the element siblings have icon.
      */
@@ -113,7 +109,9 @@ declare class MenuItem extends ListItem {
     /**
      * Defines the items of this component.
      *
-     * **Note:** If there are items added to this slot, an arrow will be displayed at the end
+     * **Note:** The slot can hold `ui5-menu-item` and `ui5-menu-separator` items.
+     *
+     * If there are items added to this slot, an arrow will be displayed at the end
      * of the item in order to indicate that there are items added. In that case components added
      * to `endContent` slot or `additionalText` content will not be displayed.
      *
@@ -121,7 +119,7 @@ declare class MenuItem extends ListItem {
      * sub-menu arrow (if there are items added in `items` slot) -> components added in `endContent` -> text set to `additionalText`.
      * @public
      */
-    items: Array<MenuItem>;
+    items: Array<IMenuItem>;
     /**
      * Defines the components that should be displayed at the end of the menu item.
      *
@@ -147,6 +145,7 @@ declare class MenuItem extends ListItem {
     get isPhone(): boolean;
     get labelBack(): string;
     get labelClose(): string;
+    get isSeparator(): boolean;
     onBeforeRendering(): void;
     get _focusable(): boolean;
     get _accInfo(): {
@@ -166,6 +165,7 @@ declare class MenuItem extends ListItem {
         tooltip?: string | undefined;
     };
     get _popover(): ResponsivePopover;
+    get _menuItems(): MenuItem[];
     _closeAll(): void;
     _close(): void;
     _beforePopoverOpen(e: CustomEvent): void;

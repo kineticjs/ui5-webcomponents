@@ -10,7 +10,6 @@ import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.j
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 import MediaRange from "@ui5/webcomponents-base/dist/MediaRange.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import NavigationMode from "@ui5/webcomponents-base/dist/types/NavigationMode.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import Button from "@ui5/webcomponents/dist/Button.js";
@@ -22,8 +21,6 @@ import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import MediaGalleryItem from "./MediaGalleryItem.js";
 import MediaGalleryItemLayout from "./types/MediaGalleryItemLayout.js";
 import MediaGalleryLayout from "./types/MediaGalleryLayout.js";
-import MediaGalleryMenuHorizontalAlign from "./types/MediaGalleryMenuHorizontalAlign.js";
-import MediaGalleryMenuVerticalAlign from "./types/MediaGalleryMenuVerticalAlign.js";
 // Styles
 import MediaGalleryCss from "./generated/themes/MediaGallery.css.js";
 // Template
@@ -74,6 +71,62 @@ const COLUMNS_COUNT = {
 let MediaGallery = MediaGallery_1 = class MediaGallery extends UI5Element {
     constructor() {
         super();
+        /**
+         * If set to `true`, all thumbnails are rendered in a scrollable container.
+         * If `false`, only up to five thumbnails are rendered, followed by
+         * an overflow button that shows the count of the remaining thumbnails.
+         * @default false
+         * @public
+         */
+        this.showAllThumbnails = false;
+        /**
+         * If enabled, a `display-area-click` event is fired
+         * when the user clicks or taps on the display area.
+         *
+         * The display area is the central area that contains
+         * the enlarged content of the currently selected item.
+         * @default false
+         * @public
+         */
+        this.interactiveDisplayArea = false;
+        /**
+         * Determines the layout of the component.
+         * @default "Auto"
+         * @public
+         */
+        this.layout = "Auto";
+        /**
+         * Determines the horizontal alignment of the thumbnails menu
+         * vs. the central display area.
+         * @default "Left"
+         * @public
+         */
+        this.menuHorizontalAlign = "Left";
+        /**
+         * Determines the vertical alignment of the thumbnails menu
+         * vs. the central display area.
+         * @default "Bottom"
+         * @public
+         */
+        this.menuVerticalAlign = "Bottom";
+        /**
+         * Determines the actual applied layout type
+         * (esp. needed when the app did not specify a fixed layout type
+         * but selected `Auto` layout type).
+         * @default "Vertical"
+         * @private
+         */
+        this.effectiveLayout = "Vertical";
+        /**
+         * Defines the current media query size.
+         * @private
+         */
+        this.mediaRange = "S";
+        /**
+         * The number of items in the overflow.
+         * @private
+         */
+        this._overflowSize = 0;
         this._onResize = this._updateLayout.bind(this);
         this._itemNavigation = new ItemNavigation(this, {
             navigationMode: NavigationMode.Auto,
@@ -307,22 +360,22 @@ __decorate([
     property({ type: Boolean })
 ], MediaGallery.prototype, "interactiveDisplayArea", void 0);
 __decorate([
-    property({ type: MediaGalleryLayout, defaultValue: MediaGalleryLayout.Auto })
+    property()
 ], MediaGallery.prototype, "layout", void 0);
 __decorate([
-    property({ type: MediaGalleryMenuHorizontalAlign, defaultValue: MediaGalleryMenuHorizontalAlign.Left })
+    property()
 ], MediaGallery.prototype, "menuHorizontalAlign", void 0);
 __decorate([
-    property({ type: MediaGalleryMenuVerticalAlign, defaultValue: MediaGalleryMenuVerticalAlign.Bottom })
+    property()
 ], MediaGallery.prototype, "menuVerticalAlign", void 0);
 __decorate([
-    property({ type: MediaGalleryLayout, defaultValue: MediaGalleryLayout.Vertical })
+    property()
 ], MediaGallery.prototype, "effectiveLayout", void 0);
 __decorate([
     property()
 ], MediaGallery.prototype, "mediaRange", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true, defaultValue: 0 })
+    property({ type: Number, noAttribute: true })
 ], MediaGallery.prototype, "_overflowSize", void 0);
 __decorate([
     slot({

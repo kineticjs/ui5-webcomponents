@@ -29,10 +29,10 @@ declare class NavigationMenuItem extends MenuItem {
      * this should not be set, but instead an event handler
      * for the `click` event should be registered.
      * @public
-     * @default ""
+     * @default undefined
      * @since 1.22.0
      */
-    href: string;
+    href?: string;
     /**
      * Defines the component target.
      *
@@ -46,11 +46,11 @@ declare class NavigationMenuItem extends MenuItem {
      *
      * **This property must only be used when the `href` property is set.**
      * @public
-     * @default ""
+     * @default undefined
      * @since 1.22.0
      */
-    target: string;
-    get isExternalLink(): boolean | "";
+    target?: string;
+    get isExternalLink(): boolean | "" | undefined;
     get _href(): string | undefined;
     get _accInfo(): {
         role: string;

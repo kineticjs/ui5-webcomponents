@@ -7,9 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import CSSSize from "@ui5/webcomponents-base/dist/types/CSSSize.js";
 import Button from "./Button.js";
-import ButtonDesign from "./types/ButtonDesign.js";
 import ToolbarItem from "./ToolbarItem.js";
 import ToolbarButtonTemplate from "./generated/templates/ToolbarButtonTemplate.lit.js";
 import ToolbarPopoverButtonTemplate from "./generated/templates/ToolbarPopoverButtonTemplate.lit.js";
@@ -31,6 +29,47 @@ import { registerToolbarItem } from "./ToolbarRegistry.js";
  * @since 1.17.0
  */
 let ToolbarButton = class ToolbarButton extends ToolbarItem {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines if the action is disabled.
+         *
+         * **Note:** a disabled action can't be pressed or focused, and it is not in the tab chain.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the action design.
+         * @default "Default"
+         * @public
+         */
+        this.design = "Default";
+        /**
+         * Defines the additional accessibility attributes that will be applied to the component.
+         *
+         * The following fields are supported:
+         *
+         * - **expanded**: Indicates whether the button, or another grouping element it controls, is currently expanded or collapsed.
+         * Accepts the following string values: `true` or `false`
+         *
+         * - **hasPopup**: Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by the button.
+         * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+         *
+         * - **controls**: Identifies the element (or elements) whose contents or presence are controlled by the button element.
+         * Accepts a lowercase string value.
+         *
+         * @default {}
+         * @public
+         */
+        this.accessibilityAttributes = {};
+        /**
+         * Button text
+         * @public
+         * @default ""
+         */
+        this.text = "";
+    }
     get styles() {
         return {
             width: this.width,
@@ -56,7 +95,7 @@ __decorate([
     property({ type: Boolean })
 ], ToolbarButton.prototype, "disabled", void 0);
 __decorate([
-    property({ type: ButtonDesign, defaultValue: ButtonDesign.Default })
+    property()
 ], ToolbarButton.prototype, "design", void 0);
 __decorate([
     property()
@@ -68,10 +107,10 @@ __decorate([
     property()
 ], ToolbarButton.prototype, "tooltip", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], ToolbarButton.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], ToolbarButton.prototype, "accessibleNameRef", void 0);
 __decorate([
     property({ type: Object })
@@ -80,7 +119,7 @@ __decorate([
     property()
 ], ToolbarButton.prototype, "text", void 0);
 __decorate([
-    property({ validator: CSSSize })
+    property()
 ], ToolbarButton.prototype, "width", void 0);
 ToolbarButton = __decorate([
     customElement({

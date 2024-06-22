@@ -16,6 +16,21 @@ import SideNavigationItemBase from "./SideNavigationItemBase.js";
  * @public
  */
 let SideNavigationSelectableItemBase = class SideNavigationSelectableItemBase extends SideNavigationItemBase {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the item is selected
+         *
+         * @public
+         * @default false
+         */
+        this.selected = false;
+        /**
+         * @private
+         * @default false
+         */
+        this.isOverflow = false;
+    }
     get ariaRole() {
         if (this.sideNavCollapsed) {
             return this.isOverflow ? "menuitem" : "menuitemradio";

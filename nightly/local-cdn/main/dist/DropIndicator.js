@@ -37,6 +37,33 @@ let DropIndicator = class DropIndicator extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Element where the drop indicator will be shown.
+         *
+         * @public
+         * @default null
+         */
+        this.targetReference = null;
+        /**
+         * Owner of the indicator and the target.
+         * @public
+         * @default null
+         */
+        this.ownerReference = null;
+        /**
+         * Placement of the indicator relative to the target.
+         *
+         * @default "Before"
+         * @public
+         */
+        this.placement = "Before";
+        /**
+         * Orientation of the indicator.
+         *
+         * @default "Vertical"
+         * @public
+         */
+        this.orientation = "Vertical";
     }
     onAfterRendering() {
         if (!this.targetReference || !this.ownerReference) {
@@ -108,16 +135,16 @@ let DropIndicator = class DropIndicator extends UI5Element {
     }
 };
 __decorate([
-    property({ type: Object, defaultValue: null })
+    property({ type: Object })
 ], DropIndicator.prototype, "targetReference", void 0);
 __decorate([
-    property({ type: Object, defaultValue: null })
+    property({ type: Object })
 ], DropIndicator.prototype, "ownerReference", void 0);
 __decorate([
-    property({ type: MovePlacement, defaultValue: MovePlacement.Before })
+    property()
 ], DropIndicator.prototype, "placement", void 0);
 __decorate([
-    property({ type: Orientation, defaultValue: Orientation.Vertical })
+    property()
 ], DropIndicator.prototype, "orientation", void 0);
 DropIndicator = __decorate([
     customElement({

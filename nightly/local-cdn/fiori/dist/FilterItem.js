@@ -26,6 +26,15 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
  * @public
  */
 let FilterItem = class FilterItem extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the text of the component.
+         * @default ""
+         * @public
+         */
+        this.text = "";
+    }
 };
 __decorate([
     property()

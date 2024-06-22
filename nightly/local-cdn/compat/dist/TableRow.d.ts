@@ -72,10 +72,10 @@ declare class TableRow extends UI5Element implements ITableRow {
      * @private
      */
     active: boolean;
-    _columnsInfo: Array<TableColumnInfo>;
-    forcedTabIndex: string;
+    _columnsInfo?: Array<TableColumnInfo>;
+    forcedTabIndex?: string;
     forcedBusy: boolean;
-    forcedAriaPosition: string;
+    forcedAriaPosition?: string;
     /**
      * Defines the cells of the component.
      *
@@ -102,8 +102,8 @@ declare class TableRow extends UI5Element implements ITableRow {
     get _ariaCurrent(): true | undefined;
     activate(): void;
     deactivate(): void;
-    get shouldPopin(): number;
-    get allColumnsPoppedIn(): boolean;
+    get shouldPopin(): number | undefined;
+    get allColumnsPoppedIn(): boolean | undefined;
     onBeforeRendering(): void;
     get visibleCellsCount(): number;
     get ariaLabelText(): string;

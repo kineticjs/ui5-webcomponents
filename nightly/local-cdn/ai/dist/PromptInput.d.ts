@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import "@ui5/webcomponents-icons/dist/paper-plane.js";
 import type { InputEventDetail } from "@ui5/webcomponents/dist/Input.js";
 /**
@@ -31,19 +31,19 @@ declare class PromptInput extends UI5Element {
     /**
      * Defines a short hint intended to aid the user with data entry when the
      * component has no value.
-     * @default ""
+     * @default undefined
      * @since 2.0.0
      * @public
      */
-    placeholder: string;
+    placeholder?: string;
     /**
      * Defines the label of the input field.
      *
-     * @default ""
+     * @default undefined
      * @since 2.0.0
      * @public
      */
-    label: string;
+    label?: string;
     /**
      * Defines whether the clear icon of the input will be shown.
      * @default false

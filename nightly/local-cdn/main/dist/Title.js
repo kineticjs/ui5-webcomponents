@@ -9,7 +9,6 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import TitleLevel from "./types/TitleLevel.js";
-import WrappingType from "./types/WrappingType.js";
 // Template
 import TitleTemplate from "./generated/templates/TitleTemplate.lit.js";
 // Styles
@@ -34,6 +33,24 @@ import titleCss from "./generated/themes/Title.css.js";
  * @public
  */
 let Title = class Title extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines how the text of a component will be displayed when there is not enough space.
+         *
+         * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
+         * @default "Normal"
+         * @public
+         */
+        this.wrappingType = "Normal";
+        /**
+         * Defines the component level.
+         * Available options are: `"H6"` to `"H1"`.
+         * @default "H2"
+         * @public
+         */
+        this.level = "H2";
+    }
     get h1() {
         return this.level === TitleLevel.H1;
     }
@@ -54,10 +71,10 @@ let Title = class Title extends UI5Element {
     }
 };
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.Normal })
+    property()
 ], Title.prototype, "wrappingType", void 0);
 __decorate([
-    property({ type: TitleLevel, defaultValue: TitleLevel.H2 })
+    property()
 ], Title.prototype, "level", void 0);
 Title = __decorate([
     customElement({

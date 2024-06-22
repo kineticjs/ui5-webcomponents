@@ -15,7 +15,6 @@ import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
-import ButtonDesign from "./types/ButtonDesign.js";
 import Button from "./Button.js";
 import { SPLIT_BUTTON_DESCRIPTION, SPLIT_BUTTON_KEYBOARD_HINT, } from "./generated/i18n/i18n-defaults.js";
 // Template
@@ -72,6 +71,57 @@ let SplitButton = SplitButton_1 = class SplitButton extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines whether the arrow button should have the active state styles or not.
+         * @default false
+         * @public
+         * @since 1.21.0
+         */
+        this.activeArrowButton = false;
+        /**
+         * Defines the component design.
+         * @default "Default"
+         * @public
+         */
+        this.design = "Default";
+        /**
+         * Defines whether the component is disabled.
+         * A disabled component can't be pressed or
+         * focused, and it is not in the tab chain.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the tabIndex of the component.
+         * @default "0"
+         * @private
+         */
+        this._tabIndex = "0";
+        /**
+         * Indicates if there is Space key pressed
+         * @default false
+         * @private
+         */
+        this._spacePressed = false;
+        /**
+         * Indicates if there is SHIFT or ESCAPE key pressed
+         * @default false
+         * @private
+         */
+        this._shiftOrEscapePressed = false;
+        /**
+         * Defines the active state of the text button
+         * @default false
+         * @private
+         */
+        this._textButtonActive = false;
+        /**
+         * Defines the state of the internal Button used for the Arrow button of the SplitButton.
+         * @default false
+         * @private
+         */
+        this._activeArrowButton = false;
         this._isDefaultActionPressed = false;
         this._isKeyDownOperation = false;
         const handleTouchStartEvent = (e) => {
@@ -287,16 +337,16 @@ __decorate([
     property({ type: Boolean })
 ], SplitButton.prototype, "activeArrowButton", void 0);
 __decorate([
-    property({ type: ButtonDesign, defaultValue: ButtonDesign.Default })
+    property()
 ], SplitButton.prototype, "design", void 0);
 __decorate([
     property({ type: Boolean })
 ], SplitButton.prototype, "disabled", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], SplitButton.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "0", noAttribute: true })
+    property({ noAttribute: true })
 ], SplitButton.prototype, "_tabIndex", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

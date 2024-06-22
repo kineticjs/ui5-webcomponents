@@ -13,7 +13,7 @@
 		
 
 
-		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
 		<link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TimePicker-0bfa349e.css">
 	</head>
 	<body class="timepicker1auto">
@@ -75,12 +75,12 @@
 		<script>
 				var counter = 0;
 				timepickerChange.addEventListener("ui5-change", function() {
-					changeResult.value = ++counter;
+					changeResult.value = `${++counter}`;
 				});
 
 				var inputCounter = 0;
 				timepickerInput.addEventListener("ui5-input", function() {
-					inputResult.value = ++inputCounter;
+					inputResult.value = `${++inputCounter}`;
 				});
 
 				var tp = document.getElementById('timepickerSetTime');

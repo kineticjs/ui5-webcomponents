@@ -21,13 +21,13 @@ import InputType from "./types/InputType.js";
  */
 declare class TimeSelectionInputs extends TimePickerInternals {
     _editedInput: number;
-    _editedInputValue: string;
+    _editedInputValue?: string;
     get enterHoursLabel(): string;
     get enterMinutesLabel(): string;
     get enterSecondsLabel(): string;
     get _numberType(): InputType;
     get _isHoursInput(): boolean;
-    get _is24HoursFormat(): boolean;
+    get _is24HoursFormat(): boolean | undefined;
     onBeforeRendering(): void;
     _addNumericAttributes(): void;
     /**

@@ -20,9 +20,7 @@ import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/information.js";
-import WrappingType from "./types/WrappingType.js";
 import TagDesign from "./types/TagDesign.js";
-import TagSize from "./types/TagSize.js";
 // Template
 import TagTemplate from "./generated/templates/TagTemplate.lit.js";
 import { TAG_DESCRIPTION_TAG, TAG_ROLE_DESCRIPTION, TAG_ERROR, TAG_WARNING, TAG_SUCCESS, TAG_INFORMATION, } from "./generated/i18n/i18n-defaults.js";
@@ -51,6 +49,66 @@ import tagCss from "./generated/themes/Tag.css.js";
  * @public
  */
 let Tag = Tag_1 = class Tag extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the design type of the component.
+         * @default "Neutral"
+         * @public
+         * @since 1.22.0
+         */
+        this.design = "Neutral";
+        /**
+         * Defines the color scheme of the component.
+         * There are 10 predefined schemes.
+         * To use one you can set a number from `"1"` to `"10"`. The `colorScheme` `"1"` will be set by default.
+         * @default "1"
+         * @public
+         */
+        this.colorScheme = "1";
+        /**
+         * Defines if the default state icon is shown.
+         * @default false
+         * @public
+         * @since 1.22.0
+         */
+        this.hideStateIcon = false;
+        /**
+         * Defines if the component is interactive (focusable and pressable).
+         *
+         * @default false
+         * @public
+         * @since 1.22.0
+         */
+        this.interactive = false;
+        /**
+         * Defines how the text of a component will be displayed when there is not enough space.
+         *
+         * **Note:** For option "Normal" the text will wrap and the
+         * words will not be broken based on hyphenation.
+         * @default "Normal"
+         * @public
+         * @since 1.22.0
+         */
+        this.wrappingType = "Normal";
+        /**
+         * Defines predefined size of the component.
+         * @default "S"
+         * @public
+         * @since 2.0.0
+         */
+        this.size = "S";
+        /**
+         * Defines if the tag has an icon.
+         * @private
+         */
+        this._hasIcon = false;
+        /**
+         * Defines if the tag has only an icon (and no text).
+         * @private
+         */
+        this._iconOnly = false;
+    }
     static async onDefine() {
         Tag_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -126,10 +184,10 @@ let Tag = Tag_1 = class Tag extends UI5Element {
     }
 };
 __decorate([
-    property({ defaultValue: TagDesign.Neutral })
+    property()
 ], Tag.prototype, "design", void 0);
 __decorate([
-    property({ defaultValue: "1" })
+    property()
 ], Tag.prototype, "colorScheme", void 0);
 __decorate([
     property({ type: Boolean })
@@ -138,10 +196,10 @@ __decorate([
     property({ type: Boolean })
 ], Tag.prototype, "interactive", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.Normal })
+    property()
 ], Tag.prototype, "wrappingType", void 0);
 __decorate([
-    property({ type: TagSize, defaultValue: TagSize.S })
+    property()
 ], Tag.prototype, "size", void 0);
 __decorate([
     property({ type: Boolean })

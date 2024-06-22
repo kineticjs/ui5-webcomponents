@@ -1,8 +1,9 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import FormItemSpacing from "./types/FormItemSpacing.js";
+import type FormItemSpacing from "./types/FormItemSpacing.js";
 /**
  * Interface for components that can be slotted inside `ui5-form` as items.
  * @public
+ * @experimental
  * @since 2.0.0
  */
 interface IFormItem extends HTMLElement {
@@ -108,6 +109,7 @@ type ItemsInfo = {
  *
  * @public
  * @since 2.0.0
+ * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 declare class Form extends UI5Element {
@@ -142,10 +144,10 @@ declare class Form extends UI5Element {
      *
      * **Note:** The property gets overridden by the `header` slot.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Defines the vertical spacing between form items.
      *

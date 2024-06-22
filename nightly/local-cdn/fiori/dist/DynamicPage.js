@@ -93,8 +93,30 @@ const SCROLL_THRESHOLD = 10; // px
 let DynamicPage = DynamicPage_1 = class DynamicPage extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines if the pin button is hidden.
+         *
+         * @default false
+         * @public
+         */
+        this.hidePinButton = false;
+        /**
+         * Defines if the header is pinned.
+         *
+         * @default false
+         * @public
+         */
+        this.headerPinned = false;
+        /**
+         * Defines if the footer is shown.
+         *
+         * @default false
+         * @public
+         */
+        this.showFooter = false;
         this.skipSnapOnScroll = false;
         this.showHeaderInStickArea = false;
+        this._headerSnapped = false;
         this._updateMediaRange = this.updateMediaRange.bind(this);
     }
     static async onDefine() {

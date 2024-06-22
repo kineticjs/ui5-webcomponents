@@ -22,6 +22,21 @@ import TimeSelectionClocksCss from "./generated/themes/TimeSelectionClocks.css.j
  * Fired when the picker is being closed.
  */
 let TimeSelectionClocks = class TimeSelectionClocks extends TimePickerInternals {
+    constructor() {
+        super(...arguments);
+        /**
+         * Flag for pressed Space key
+         */
+        this._spacePressed = false;
+        /**
+         * Flag for focused state of Clocks component
+         */
+        this._focused = false;
+        /**
+         * Flag for focused state of AM/PM segmented button
+         */
+        this._amPmFocused = false;
+    }
     onBeforeRendering() {
         this._createComponents();
     }

@@ -5,11 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import FormItemSpacing from "./types/FormItemSpacing.js";
 /**
  * @class
  *
@@ -34,9 +32,22 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  * @public
  * @implements {IFormItem}
  * @since 2.0.0
+ * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 let FormGroup = class FormGroup extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * @private
+         */
+        this.colsS = 1;
+        this.colsM = 1;
+        this.colsL = 1;
+        this.colsXl = 1;
+        this.itemSpacing = "Normal";
+        this.labelSpan = "S12 M4 L4 XL4";
+    }
     onBeforeRendering() {
         this.processFormItems();
     }
@@ -54,7 +65,7 @@ __decorate([
     property()
 ], FormGroup.prototype, "headerText", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: undefined })
+    property({ type: Number })
 ], FormGroup.prototype, "columnSpan", void 0);
 __decorate([
     slot({
@@ -63,23 +74,20 @@ __decorate([
     })
 ], FormGroup.prototype, "items", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], FormGroup.prototype, "colsS", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], FormGroup.prototype, "colsM", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], FormGroup.prototype, "colsL", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], FormGroup.prototype, "colsXl", void 0);
 __decorate([
-    property({ type: FormItemSpacing, defaultValue: FormItemSpacing.Normal })
+    property()
 ], FormGroup.prototype, "itemSpacing", void 0);
-__decorate([
-    property({ type: String, defaultValue: "S12 M4 L4 XL4" })
-], FormGroup.prototype, "labelSpan", void 0);
 FormGroup = __decorate([
     customElement("ui5-form-group")
 ], FormGroup);

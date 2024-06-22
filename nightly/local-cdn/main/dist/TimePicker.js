@@ -98,6 +98,44 @@ import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverComm
  * @since 1.0.0-rc.6
  */
 let TimePicker = TimePicker_1 = class TimePicker extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Determines the name by which the component will be identified upon submission in an HTML form.
+         *
+         * **Note:** This property is only applicable within the context of an HTML Form element.
+         * @default ""
+         * @public
+         * @since 2.0.0
+         */
+        this.name = "";
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines the disabled state of the comonent.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the readonly state of the comonent.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Defines the open or closed state of the popover.
+         * @public
+         * @default false
+         * @since 2.0
+         */
+        this.open = false;
+        this._isInputsPopoverOpen = false;
+    }
     static async onDefine() {
         [TimePicker_1.i18nBundle] = await Promise.all([
             getI18nBundle("@ui5/webcomponents"),
@@ -146,7 +184,7 @@ let TimePicker = TimePicker_1 = class TimePicker extends UI5Element {
      * @protected
      */
     get _formatPattern() {
-        const hasHours = !!this.formatPattern.match(/H/i);
+        const hasHours = !!this.formatPattern?.match(/H/i);
         const fallback = !this.formatPattern || !hasHours;
         const localeData = getCachedLocaleDataInstance(getLocale());
         return fallback ? localeData.getTimePattern("medium") : this.formatPattern;
@@ -442,13 +480,13 @@ let TimePicker = TimePicker_1 = class TimePicker extends UI5Element {
     }
 };
 __decorate([
-    property({ type: String, defaultValue: undefined })
+    property()
 ], TimePicker.prototype, "value", void 0);
 __decorate([
     property()
 ], TimePicker.prototype, "name", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], TimePicker.prototype, "valueState", void 0);
 __decorate([
     property({ type: Boolean })
@@ -457,7 +495,7 @@ __decorate([
     property({ type: Boolean })
 ], TimePicker.prototype, "readonly", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], TimePicker.prototype, "placeholder", void 0);
 __decorate([
     property()

@@ -15,7 +15,6 @@ import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import executeTemplate from "@ui5/webcomponents-base/dist/renderer/executeTemplate.js";
 import IconTemplate from "./generated/templates/IconTemplate.lit.js";
-import IconDesign from "./types/IconDesign.js";
 import IconMode from "./types/IconMode.js";
 // Styles
 import iconCss from "./generated/themes/Icon.css.js";
@@ -91,6 +90,39 @@ const ICON_NOT_FOUND = "ICON_NOT_FOUND";
  * @public
  */
 let Icon = class Icon extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the component semantic design.
+         * @default "Default"
+         * @public
+         * @since 1.9.2
+         */
+        this.design = "Default";
+        /**
+         * Defines whether the component should have a tooltip.
+         *
+         * **Note:** The tooltip text should be provided via the `accessible-name` property.
+         * @default false
+         * @public
+         */
+        this.showTooltip = false;
+        /**
+         * Defines the mode of the component.
+         * @default "Image"
+         * @public
+         * @since 2.0.0
+         */
+        this.mode = "Image";
+        /**
+         * @private
+         */
+        this.pathData = [];
+        /**
+        * @private
+        */
+        this.invalid = false;
+    }
     _onkeydown(e) {
         if (this.mode !== IconMode.Interactive) {
             return;
@@ -181,7 +213,7 @@ let Icon = class Icon extends UI5Element {
     }
 };
 __decorate([
-    property({ type: IconDesign, defaultValue: IconDesign.Default })
+    property()
 ], Icon.prototype, "design", void 0);
 __decorate([
     property()
@@ -193,19 +225,19 @@ __decorate([
     property({ type: Boolean })
 ], Icon.prototype, "showTooltip", void 0);
 __decorate([
-    property({ type: IconMode, defaultValue: IconMode.Image })
+    property()
 ], Icon.prototype, "mode", void 0);
 __decorate([
-    property({ multiple: true })
+    property({ type: Array })
 ], Icon.prototype, "pathData", void 0);
 __decorate([
-    property({ type: Object, defaultValue: undefined, noAttribute: true })
+    property({ type: Object, noAttribute: true })
 ], Icon.prototype, "accData", void 0);
 __decorate([
     property({ type: Boolean })
 ], Icon.prototype, "invalid", void 0);
 __decorate([
-    property({ noAttribute: true, defaultValue: undefined })
+    property({ noAttribute: true })
 ], Icon.prototype, "effectiveAccessibleName", void 0);
 Icon = __decorate([
     customElement({

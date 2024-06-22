@@ -13,7 +13,6 @@ import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getEffectiveAriaLabelText, getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
@@ -66,6 +65,97 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the value of the component.
+         * @formEvents change input
+         * @formProperty
+         * @default ""
+         * @public
+         */
+        this.value = "";
+        /**
+         * Indicates whether the user can interact with the component or not.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         * @since 1.0.0-rc.3
+         */
+        this.required = false;
+        /**
+         * Defines the value state of the component.
+         *
+         * **Note:** If `maxlength` property is set,
+         * the component turns into "Warning" state once the characters exceeds the limit.
+         * In this case, only the "Error" state is considered and can be applied.
+         * @default "None"
+         * @since 1.0.0-rc.7
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines the number of visible text rows for the component.
+         *
+         * **Notes:**
+         *
+         * - If the `growing` property is enabled, this property defines the minimum rows to be displayed
+         * in the textarea.
+         * - The CSS `height` property wins over the `rows` property, if both are set.
+         * @default 0
+         * @public
+         */
+        this.rows = 0;
+        /**
+         * Determines whether the characters exceeding the maximum allowed character count are visible
+         * in the component.
+         *
+         * If set to `false`, the user is not allowed to enter more characters than what is set in the
+         * `maxlength` property.
+         * If set to `true` the characters exceeding the `maxlength` value are selected on
+         * paste and the counter below the component displays their number.
+         * @default false
+         * @public
+         */
+        this.showExceededText = false;
+        /**
+         * Enables the component to automatically grow and shrink dynamically with its content.
+         * @default false
+         * @public
+         */
+        this.growing = false;
+        /**
+         * Defines the maximum number of rows that the component can grow.
+         * @default 0
+         * @public
+         */
+        this.growingMaxRows = 0;
+        /**
+         * @private
+         */
+        this.focused = false;
+        /**
+         * @private
+         */
+        this.exceeding = false;
+        /**
+         * @private
+         */
+        this._mirrorText = [];
         this._firstRendering = true;
         this._openValueStateMsgPopover = false;
         this._fnOnResize = this._onResize.bind(this);
@@ -342,13 +432,13 @@ __decorate([
     property()
 ], TextArea.prototype, "placeholder", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], TextArea.prototype, "valueState", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], TextArea.prototype, "rows", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], TextArea.prototype, "maxlength", void 0);
 __decorate([
     property({ type: Boolean })
@@ -357,7 +447,7 @@ __decorate([
     property({ type: Boolean })
 ], TextArea.prototype, "growing", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], TextArea.prototype, "growingMaxRows", void 0);
 __decorate([
     property()
@@ -375,13 +465,13 @@ __decorate([
     property({ type: Boolean })
 ], TextArea.prototype, "exceeding", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], TextArea.prototype, "_mirrorText", void 0);
 __decorate([
     property({ noAttribute: true })
 ], TextArea.prototype, "_maxHeight", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], TextArea.prototype, "_width", void 0);
 __decorate([
     slot()

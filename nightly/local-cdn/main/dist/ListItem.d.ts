@@ -8,7 +8,7 @@ import ListItemType from "./types/ListItemType.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
 import ListItemBase from "./ListItemBase.js";
 import type { IButton } from "./Button.js";
-import ListItemAccessibleRole from "./types/ListItemAccessibleRole.js";
+import type ListItemAccessibleRole from "./types/ListItemAccessibleRole.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
 interface IAccessibleListItem {
     accessibleName?: string;
@@ -21,7 +21,7 @@ type SelectionRequestEventDetail = {
     key?: string;
 };
 type AccInfo = {
-    role: string;
+    role?: string;
     ariaExpanded?: boolean;
     ariaLevel?: number;
     ariaLabel: string;
@@ -82,11 +82,11 @@ declare abstract class ListItem extends ListItemBase {
     navigated: boolean;
     /**
      * Defines the text of the tooltip that would be displayed for the list item.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.23.0
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * Indicates if the list item is active, e.g pressed down with the mouse or the keyboard keys.
      * @private

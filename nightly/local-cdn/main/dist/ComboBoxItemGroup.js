@@ -20,6 +20,20 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
  * @since 1.0.0-rc.15
  */
 let ComboBoxItemGroup = class ComboBoxItemGroup extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the text of the component.
+         * @default ""
+         * @public
+         */
+        this.text = "";
+        /**
+         * Indicates whether the item is focused
+         * @protected
+         */
+        this.focused = false;
+    }
     /**
      * Used to avoid tag name checks
      * @protected

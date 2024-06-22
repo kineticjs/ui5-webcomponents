@@ -46,8 +46,15 @@ let SegmentedButton = SegmentedButton_1 = class SegmentedButton extends UI5Eleme
     }
     constructor() {
         super();
+        /**
+         * Defines the component selection mode.
+         * @default "Single"
+         * @public
+         * @since 1.14.0
+         */
+        this.selectionMode = "Single";
         this._itemNavigation = new ItemNavigation(this, {
-            getItemsCallback: () => this.getSlottedNodes("items"),
+            getItemsCallback: () => this.navigatableItems,
         });
         this.hasPreviouslyFocusedItem = false;
     }
@@ -154,6 +161,11 @@ let SegmentedButton = SegmentedButton_1 = class SegmentedButton extends UI5Eleme
     get selectedItems() {
         return this.items.filter(item => item.selected);
     }
+    get navigatableItems() {
+        return this.getSlottedNodes("items").filter(item => {
+            return !item.disabled;
+        });
+    }
     get ariaDescribedBy() {
         return SegmentedButton_1.i18nBundle.getText(SEGMENTEDBUTTON_ARIA_DESCRIBEDBY);
     }
@@ -162,10 +174,10 @@ let SegmentedButton = SegmentedButton_1 = class SegmentedButton extends UI5Eleme
     }
 };
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], SegmentedButton.prototype, "accessibleName", void 0);
 __decorate([
-    property({ type: SegmentedButtonSelectionMode, defaultValue: SegmentedButtonSelectionMode.Single })
+    property()
 ], SegmentedButton.prototype, "selectionMode", void 0);
 __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true, "default": true })

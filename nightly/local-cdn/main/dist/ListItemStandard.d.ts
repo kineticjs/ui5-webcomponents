@@ -1,7 +1,7 @@
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItem from "./ListItem.js";
 import type { IAccessibleListItem } from "./ListItem.js";
-import WrappingType from "./types/WrappingType.js";
+import type WrappingType from "./types/WrappingType.js";
 /**
  * @class
  * The `ui5-li` represents the simplest type of item for a `ui5-list`.
@@ -30,21 +30,21 @@ import WrappingType from "./types/WrappingType.js";
 declare class ListItemStandard extends ListItem implements IAccessibleListItem {
     /**
      * Defines the description displayed right under the item text, if such is present.
-     * @default ""
+     * @default undefined
      * @public
      * @since 0.8.0
      */
-    description: string;
+    description?: string;
     /**
      * Defines the `icon` source URI.
      *
      * **Note:**
      * SAP-icons font provides numerous built-in icons. To find all the available icons, see the
      * [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines whether the `icon` should be displayed in the beginning of the list item or in the end.
      *
@@ -57,17 +57,17 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
      * Defines the `image` source URI.
      *
      * **Note:** The `image` would be displayed in the beginning of the list item.
-     * @default ""
+     * @default undefined
      * @public
      */
-    image: string;
+    image?: string;
     /**
      * Defines the `additionalText`, displayed in the end of the list item.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    additionalText: string;
+    additionalText?: string;
     /**
      * Defines the state of the `additionalText`.
      *
@@ -87,7 +87,7 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
     /**
      * Defines the text alternative of the component.
      * Note: If not provided a default text alternative will be set, if present.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */

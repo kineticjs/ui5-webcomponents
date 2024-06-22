@@ -12,7 +12,6 @@ import getLocale from "@ui5/webcomponents-base/dist/locale/getLocale.js";
 import { getFirstDayOfWeek } from "@ui5/webcomponents-base/dist/config/FormatSettings.js";
 import getCachedLocaleDataInstance from "@ui5/webcomponents-localization/dist/getCachedLocaleDataInstance.js";
 import { isSpace, isSpaceShift, isEnter, isEnterShift, isUp, isDown, isLeft, isRight, isHome, isEnd, isHomeCtrl, isEndCtrl, isPageUp, isPageDown, isPageUpShift, isPageUpAlt, isPageUpShiftCtrl, isPageDownShift, isPageDownAlt, isPageDownShiftCtrl, } from "@ui5/webcomponents-base/dist/Keys.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
 import calculateWeekNumber from "@ui5/webcomponents-localization/dist/dates/calculateWeekNumber.js";
 import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
@@ -35,6 +34,51 @@ const DAYS_IN_WEEK = 7;
  * @private
  */
 let DayPicker = DayPicker_1 = class DayPicker extends CalendarPart {
+    constructor() {
+        super(...arguments);
+        /**
+         * An array of UTC timestamps representing the selected date or dates depending on the capabilities of the picker component.
+         * @default []
+         * @public
+         */
+        this.selectedDates = [];
+        /**
+         * Defines the type of selection used in the day picker component.
+         * Accepted property values are:
+         *
+         * - `CalendarSelectionMode.Single` - enables a single date selection.(default value)
+         * - `CalendarSelectionMode.Range` - enables selection of a date range.
+         * - `CalendarSelectionMode.Multiple` - enables selection of multiple dates.
+         * @default "Single"
+         * @public
+         */
+        this.selectionMode = "Single";
+        /**
+         * Defines the visibility of the week numbers column.
+         *
+         * **Note:** For calendars other than Gregorian,
+         * the week numbers are not displayed regardless of what is set.
+         * @default false
+         * @public
+         * @since 1.0.0-rc.8
+         */
+        this.hideWeekNumbers = false;
+        /**
+         * @private
+         */
+        this._weeks = [];
+        this._dayNames = [];
+        /**
+         * When set, the component will skip all work in onBeforeRendering and will not automatically set the focus on itself
+         * @private
+         */
+        this._hidden = false;
+        /**
+         * Array of special calendar dates (if such are passed) from the calendar.
+         * @private
+         */
+        this.specialCalendarDates = [];
+    }
     onBeforeRendering() {
         const localeData = getCachedLocaleDataInstance(getLocale());
         this._buildWeeks(localeData);
@@ -593,29 +637,19 @@ let DayPicker = DayPicker_1 = class DayPicker extends CalendarPart {
     }
 };
 __decorate([
-    property({
-        validator: Integer,
-        multiple: true,
-        compareValues: true,
-    })
+    property({ type: Array })
 ], DayPicker.prototype, "selectedDates", void 0);
 __decorate([
-    property({ type: CalendarSelectionMode, defaultValue: CalendarSelectionMode.Single })
+    property()
 ], DayPicker.prototype, "selectionMode", void 0);
 __decorate([
     property({ type: Boolean })
 ], DayPicker.prototype, "hideWeekNumbers", void 0);
 __decorate([
-    property({
-        type: Object,
-        multiple: true,
-    })
+    property({ type: Array })
 ], DayPicker.prototype, "_weeks", void 0);
 __decorate([
-    property({
-        type: Object,
-        multiple: true,
-    })
+    property({ type: Array })
 ], DayPicker.prototype, "_dayNames", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })
@@ -624,7 +658,7 @@ __decorate([
     property()
 ], DayPicker.prototype, "_secondTimestamp", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], DayPicker.prototype, "specialCalendarDates", void 0);
 DayPicker = DayPicker_1 = __decorate([
     customElement({

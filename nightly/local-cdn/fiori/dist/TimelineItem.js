@@ -32,6 +32,18 @@ const LARGE_LINE_WIDTH = "LargeLineWidth";
 let TimelineItem = class TimelineItem extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines if the `name` is clickable.
+         * @default false
+         * @public
+         */
+        this.nameClickable = false;
+        /**
+         * Defines the items orientation.
+         * @default "Vertical"
+         * @private
+         */
+        this.layout = "Vertical";
     }
     onNamePress() {
         this.fireEvent("name-click", {});
@@ -73,10 +85,10 @@ __decorate([
     property()
 ], TimelineItem.prototype, "subtitleText", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property({ noAttribute: true })
 ], TimelineItem.prototype, "forcedTabIndex", void 0);
 __decorate([
-    property({ type: TimelineLayout, defaultValue: TimelineLayout.Vertical })
+    property()
 ], TimelineItem.prototype, "layout", void 0);
 __decorate([
     property()

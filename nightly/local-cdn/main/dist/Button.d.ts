@@ -6,7 +6,7 @@ import type { I18nText } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import ButtonDesign from "./types/ButtonDesign.js";
 import ButtonType from "./types/ButtonType.js";
-import ButtonAccessibleRole from "./types/ButtonAccessibleRole.js";
+import type ButtonAccessibleRole from "./types/ButtonAccessibleRole.js";
 import IconMode from "./types/IconMode.js";
 /**
  * Interface for components that may be used as a button inside numerous higher-order components
@@ -68,10 +68,10 @@ declare class Button extends UI5Element implements IButton, IFormElement {
      *
      * Example:
      * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the icon, displayed as graphical element within the component after the button text.
      *
@@ -82,10 +82,10 @@ declare class Button extends UI5Element implements IButton, IFormElement {
      *
      * Example:
      * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    endIcon: string;
+    endIcon?: string;
     /**
      * When set to `true`, the component will
      * automatically submit the nearest HTML form element on `press`.
@@ -100,11 +100,11 @@ declare class Button extends UI5Element implements IButton, IFormElement {
      * Defines the tooltip of the component.
      *
      * **Note:** A tooltip attribute should be provided for icon-only buttons, in order to represent their exact meaning/function.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.2.0
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * Defines the accessible ARIA name of the component.
      * @default undefined
@@ -114,11 +114,11 @@ declare class Button extends UI5Element implements IButton, IFormElement {
     accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.1.0
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the additional accessibility attributes that will be applied to the component.
      * The following fields are supported:

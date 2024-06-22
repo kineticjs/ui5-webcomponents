@@ -46,7 +46,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      * @public
      * @since 1.2.0
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * Defines the accessible ARIA name of the component.
      * @default undefined
@@ -60,7 +60,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      * @public
      * @since 1.1.0
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the icon, displayed as graphical element within the component.
      * The SAP-icons font provides numerous options.
@@ -70,7 +70,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      * @default ""
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines if the button has icon and no text.
      * @private
@@ -85,7 +85,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      * Defines the tabIndex of the component.
      * @private
      */
-    forcedTabIndex: string;
+    forcedTabIndex?: string;
     /**
      * Defines the index of the item inside of the SegmentedButton.
      * @default 0
@@ -108,11 +108,11 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
     static i18nBundle: I18nBundle;
     get ariaDescription(): string;
     constructor();
-    _onclick(): void;
+    _onclick(e: MouseEvent): void;
     onEnterDOM(): void;
     onBeforeRendering(): void;
     _onkeyup(e: KeyboardEvent): void;
-    get tabIndexValue(): string;
+    get tabIndexValue(): string | undefined;
     get ariaLabelText(): string | undefined;
     get showIconTooltip(): boolean;
     static onDefine(): Promise<void>;

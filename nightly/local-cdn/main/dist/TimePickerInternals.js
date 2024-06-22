@@ -15,9 +15,7 @@ import getLocale from "@ui5/webcomponents-base/dist/locale/getLocale.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import getCachedLocaleDataInstance from "@ui5/webcomponents-localization/dist/getCachedLocaleDataInstance.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js"; // default calendar for bundling
-import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
 import { fetchCldr } from "@ui5/webcomponents-base/dist/asset-registries/LocaleData.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
 import { getHoursConfigByFormat, getTimeControlsByFormat } from "./timepicker-utils/TimeSlider.js";
 import { TIMEPICKER_HOURS_LABEL, TIMEPICKER_MINUTES_LABEL, TIMEPICKER_SECONDS_LABEL, TIMEPICKER_CLOCK_DIAL_LABEL, } from "./generated/i18n/i18n-defaults.js";
@@ -36,6 +34,30 @@ const TYPE_COOLDOWN_DELAY = 1000; // Cooldown delay; 0 = disabled cooldown
  * @private
  */
 let TimePickerInternals = TimePickerInternals_1 = class TimePickerInternals extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * The index of the active Clock/TogleSpinButton.
+         * @default 0
+         * @private
+         */
+        this._activeIndex = 0;
+        /**
+         * Contains currently available Time Picker components depending on time format.
+         * @private
+         */
+        this._entities = [];
+        /**
+         * Contains currently available Button components depending on time format.
+         * @private
+         */
+        this._periods = [];
+        /**
+         * Buffer for entered by keyboard numbers
+         * @private
+         */
+        this._keyboardBuffer = "";
+    }
     static async onDefine() {
         [TimePickerInternals_1.i18nBundle] = await Promise.all([
             getI18nBundle("@ui5/webcomponents"),
@@ -124,7 +146,7 @@ let TimePickerInternals = TimePickerInternals_1 = class TimePickerInternals exte
     }
     get _formatPattern() {
         const pattern = this.formatPattern;
-        const hasHours = !!pattern.match(/H/i);
+        const hasHours = !!pattern?.match(/H/i);
         const fallback = !pattern || !hasHours;
         const localeData = getCachedLocaleDataInstance(getLocale());
         return fallback ? localeData.getCombinedDateTimePattern("medium", "medium", undefined) : pattern;
@@ -313,34 +335,34 @@ let TimePickerInternals = TimePickerInternals_1 = class TimePickerInternals exte
     _setExactMatch() { }
 };
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], TimePickerInternals.prototype, "value", void 0);
 __decorate([
     property()
 ], TimePickerInternals.prototype, "formatPattern", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerInternals.prototype, "_activeIndex", void 0);
 __decorate([
-    property({ type: CalendarType })
+    property()
 ], TimePickerInternals.prototype, "_calendarType", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], TimePickerInternals.prototype, "_entities", void 0);
 __decorate([
     property({ type: Object })
 ], TimePickerInternals.prototype, "_componentMap", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], TimePickerInternals.prototype, "_periods", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerInternals.prototype, "_typeCooldownId", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerInternals.prototype, "_exactMatch", void 0);
 __decorate([
-    property({ defaultValue: "", noAttribute: true })
+    property({ noAttribute: true })
 ], TimePickerInternals.prototype, "_keyboardBuffer", void 0);
 TimePickerInternals = TimePickerInternals_1 = __decorate([
     customElement({

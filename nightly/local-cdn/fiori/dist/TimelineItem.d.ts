@@ -19,16 +19,16 @@ declare class TimelineItem extends UI5Element implements ITimelineItem {
      * SAP-icons font provides numerous options.
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the name of the item, displayed before the `title-text`.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines if the `name` is clickable.
      * @default false
@@ -37,17 +37,17 @@ declare class TimelineItem extends UI5Element implements ITimelineItem {
     nameClickable: boolean;
     /**
      * Defines the title text of the component.
-     * @default ""
+     * @default undefined
      * @public
      */
-    titleText: string;
+    titleText?: string;
     /**
      * Defines the subtitle text of the component.
-     * @default ""
+     * @default undefined
      * @public
      */
-    subtitleText: string;
-    forcedTabIndex: string;
+    subtitleText?: string;
+    forcedTabIndex?: string;
     /**
      * Defines the items orientation.
      * @default "Vertical"
@@ -58,7 +58,7 @@ declare class TimelineItem extends UI5Element implements ITimelineItem {
      * Defines the indicator line width.
      * @private
      */
-    forcedLineWidth: string;
+    forcedLineWidth?: string;
     constructor();
     onNamePress(): void;
     /**

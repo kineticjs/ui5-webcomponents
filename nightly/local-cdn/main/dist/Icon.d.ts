@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { I18nText } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import IconDesign from "./types/IconDesign.js";
+import type IconDesign from "./types/IconDesign.js";
 import IconMode from "./types/IconMode.js";
 /**
  * Interface for components that represent an icon, usable in numerous higher-order components
@@ -108,20 +108,20 @@ declare class Icon extends UI5Element implements IIcon {
      *
      * Example:
      * `name='business-suite/3d'`, `name='business-suite/1x2-grid-layout'`, `name='business-suite/4x4-grid-layout'`.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the text alternative of the component.
      * If not provided a default text alternative will be set, if present.
      *
      * **Note:** Every icon should have a text alternative in order to
      * calculate its accessible name.
-     * @default ""
+     * @default undefined
      * @public
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines whether the component should have a tooltip.
      *

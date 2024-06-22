@@ -9,8 +9,8 @@ import TimelineLayout from "./types/TimelineLayout.js";
  */
 interface ITimelineItem extends UI5Element, ITabbable {
     layout: `${TimelineLayout}`;
-    icon: string;
-    forcedLineWidth: string;
+    icon?: string;
+    forcedLineWidth?: string;
     nameClickable: boolean;
     focusLink: () => void;
 }
@@ -39,11 +39,11 @@ declare class Timeline extends UI5Element {
     layout: `${TimelineLayout}`;
     /**
      * Defines the accessible ARIA name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.2.0
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Determines the content of the `ui5-timeline`.
      * @public

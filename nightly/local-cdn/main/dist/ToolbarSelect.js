@@ -8,8 +8,6 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import CSSSize from "@ui5/webcomponents-base/dist/types/CSSSize.js";
 import { registerToolbarItem } from "./ToolbarRegistry.js";
 // Templates
 import ToolbarSelectTemplate from "./generated/templates/ToolbarSelectTemplate.lit.js";
@@ -51,6 +49,20 @@ let ToolbarSelect = class ToolbarSelect extends ToolbarItem {
     }
     constructor() {
         super();
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component is in disabled state.
+         *
+         * **Note:** A disabled component is noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
         this._onEvent = this._onEventHandler.bind(this);
     }
     onEnterDOM() {
@@ -91,13 +103,13 @@ let ToolbarSelect = class ToolbarSelect extends ToolbarItem {
     }
 };
 __decorate([
-    property({ validator: CSSSize })
+    property()
 ], ToolbarSelect.prototype, "width", void 0);
 __decorate([
     slot({ "default": true, type: HTMLElement, invalidateOnChildChange: true })
 ], ToolbarSelect.prototype, "options", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], ToolbarSelect.prototype, "valueState", void 0);
 __decorate([
     property({ type: Boolean })

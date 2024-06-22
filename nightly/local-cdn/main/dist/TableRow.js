@@ -32,6 +32,23 @@ import RadioButton from "./RadioButton.js";
  * @public
  */
 let TableRow = class TableRow extends TableRowBase {
+    constructor() {
+        super(...arguments);
+        /**
+         * Unique identifier of the component.
+         *
+         * @default ""
+         * @public
+         */
+        this.key = "";
+        /**
+         * Defines the interactive state of the row.
+         *
+         * @default false
+         * @public
+         */
+        this.interactive = false;
+    }
     static async onDefine() {
         await super.onDefine();
         if (isSafari() && isIOS()) {

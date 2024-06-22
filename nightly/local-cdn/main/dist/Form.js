@@ -9,13 +9,11 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 // Template
 import FormTemplate from "./generated/templates/FormTemplate.lit.js";
 // Styles
 import FormCss from "./generated/themes/Form.css.js";
 import Title from "./Title.js";
-import FormItemSpacing from "./types/FormItemSpacing.js";
 const additionalStylesMap = new Map();
 const StepColumn = {
     "S": 1,
@@ -107,9 +105,61 @@ const StepColumn = {
  *
  * @public
  * @since 2.0.0
+ * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 let Form = class Form extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the number of columns to distribute the form content by breakpoint.
+         *
+         * Supported values:
+         * - `S` - 1 column by default (1 column is recommended)
+         * - `M` - 1 column by default (up to 2 columns are recommended)
+         * - `L` - 2 columns by default (up to 3 columns are recommended)
+         * - `XL` - 2 columns by default (up to 6 columns  are recommended)
+         *
+         * @default "S1 M1 L2 XL2"
+         * @public
+         */
+        this.layout = "S1 M1 L2 XL2";
+        /**
+         * Defines the width proportion of the labels and fields of a FormItem by breakpoint.
+         *
+         * By default, the labels take 4/12 (or 1/3) of the form item in M,L and XL sizes,
+         * and 12/12 in S size, e.g in S the label is on top of its associated field.
+         *
+         * The supported values are between 1 and 12. Greater the number, more space the label will use.
+         *
+         * **Note:** If "12" is set, the label will be displayed on top of its assosiated field.
+         * @default "S12 M4 L4 XL4"
+         * @public
+         */
+        this.labelSpan = "S12 M4 L4 XL4";
+        /**
+         * Defines the vertical spacing between form items.
+         *
+         * **Note:** If the Form is meant to be switched between "non-edit" and "edit" modes,
+         * we recommend using "Large" item spacing in "non-edit" mode, and "Normal" - for "edit" mode,
+         * to avoid "jumping" effect, caused by the hight difference between texts in "non-edit" mode and the input fields in "edit" mode.
+         *
+         * @default "Normal"
+         * @public
+         */
+        this.itemSpacing = "Normal";
+        /**
+         * @private
+         */
+        this.columnsS = 1;
+        this.labelSpanS = 12;
+        this.columnsM = 1;
+        this.labelSpanM = 4;
+        this.columnsL = 2;
+        this.labelSpanL = 4;
+        this.columnsXl = 2;
+        this.labelSpanXl = 4;
+    }
     onBeforeRendering() {
         // Parse the layout and set it to the FormGroups/FormItems.
         this.setColumnLayout();
@@ -251,7 +301,7 @@ let Form = class Form extends UI5Element {
         const key = `${step}-${colsNumber}`;
         if (!additionalStylesMap.has(key)) {
             let containerQuery;
-            let supporedColumnsNumber;
+            let supporedColumnsNumber = StepColumn.S;
             let stepSpanCSS = "";
             let cols = colsNumber;
             if (step === "S") {
@@ -275,7 +325,7 @@ let Form = class Form extends UI5Element {
 				:host([columns-${step.toLocaleLowerCase()}="${cols}"]) .ui5-form-layout {
 					grid-template-columns: repeat(${cols}, 1fr);
 				}
-				
+
 				.ui5-form-column-span${step}-${cols},
 				.ui5-form-item-span-${cols} {
 					grid-column: span ${cols};
@@ -299,16 +349,16 @@ let Form = class Form extends UI5Element {
     }
 };
 __decorate([
-    property({ type: String, defaultValue: "S1 M1 L2 XL2" })
+    property()
 ], Form.prototype, "layout", void 0);
 __decorate([
-    property({ type: String, defaultValue: "S12 M4 L4 XL4" })
+    property()
 ], Form.prototype, "labelSpan", void 0);
 __decorate([
     property()
 ], Form.prototype, "headerText", void 0);
 __decorate([
-    property({ type: FormItemSpacing, defaultValue: FormItemSpacing.Normal })
+    property()
 ], Form.prototype, "itemSpacing", void 0);
 __decorate([
     slot({ type: HTMLElement })
@@ -322,28 +372,28 @@ __decorate([
     })
 ], Form.prototype, "items", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], Form.prototype, "columnsS", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 12 })
+    property({ type: Number })
 ], Form.prototype, "labelSpanS", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], Form.prototype, "columnsM", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 4 })
+    property({ type: Number })
 ], Form.prototype, "labelSpanM", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 2 })
+    property({ type: Number })
 ], Form.prototype, "columnsL", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 4 })
+    property({ type: Number })
 ], Form.prototype, "labelSpanL", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 2 })
+    property({ type: Number })
 ], Form.prototype, "columnsXl", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 4 })
+    property({ type: Number })
 ], Form.prototype, "labelSpanXl", void 0);
 Form = __decorate([
     customElement({

@@ -13,7 +13,6 @@ import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import { isPhone, isAndroid } from "@ui5/webcomponents-base/dist/Device.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import InvisibleMessageMode from "@ui5/webcomponents-base/dist/types/InvisibleMessageMode.js";
 import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import announce from "@ui5/webcomponents-base/dist/util/InvisibleMessage.js";
@@ -49,7 +48,6 @@ import ListItemStandard from "./ListItemStandard.js";
 import ComboBoxItemGroup, { isInstanceOfComboBoxItemGroup } from "./ComboBoxItemGroup.js";
 import ListItemGroup from "./ListItemGroup.js";
 import ListItemGroupHeader from "./ListItemGroupHeader.js";
-import ComboBoxFilter from "./types/ComboBoxFilter.js";
 import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import Input from "./Input.js";
 import SuggestionItem from "./SuggestionItem.js";
@@ -114,16 +112,114 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the value of the component.
+         * @default ""
+         * @formEvents change input
+         * @formProperty
+         * @public
+         */
+        this.value = "";
+        /**
+         * Defines whether the value will be autocompleted to match an item
+         * @default false
+         * @public
+         * @since 1.19.0
+         */
+        this.noTypeahead = false;
+        /**
+         * Defines the "live" value of the component.
+         *
+         * **Note:** If we have an item e.g. "Bulgaria", "B" is typed, "ulgaria" is typed ahead, value will be "Bulgaria", filterValue will be "B".
+         *
+         * **Note:** Initially the filter value is synced with value.
+         * @default ""
+         * @private
+         */
+        this.filterValue = "";
+        /**
+         * Defines whether the component is in disabled state.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         */
+        this.required = false;
+        /**
+         * Indicates whether a loading indicator should be shown in the picker.
+         * @default false
+         * @public
+         */
+        this.loading = false;
+        /**
+         * Defines the filter type of the component.
+         * @default "StartsWithPerTerm"
+         * @public
+         */
+        this.filter = "StartsWithPerTerm";
+        /**
+         * Defines whether the clear icon of the combobox will be shown.
+         * @default false
+         * @public
+         * @since 1.20.1
+         */
+        this.showClearIcon = false;
+        /**
+         * Indicates whether the input is focssed
+         * @private
+         */
+        this.focused = false;
+        /**
+         * Indicates whether the visual focus is on the value state header
+         * @private
+         */
+        this._isValueStateFocused = false;
+        this._iconPressed = false;
         this._filteredItems = [];
+        this._effectiveShowClearIcon = false;
+        /**
+         * Indicates whether the value state message popover is open.
+         * @private
+         * @since 2.0.0
+         */
+        this.valueStateOpen = false;
+        /**
+         * Indicates whether the items picker is open.
+         * @private
+         * @since 2.0.0
+         */
+        this.open = false;
         this._initialRendering = true;
         this._itemFocused = false;
+        // used only for Safari fix (check onAfterRendering)
         this._autocomplete = false;
         this._isKeyNavigation = false;
-        // when an initial value is set it should be considered as a _lastValue
-        this._lastValue = this.getAttribute("value") || "";
         this._selectionPerformed = false;
         this._selectedItemText = "";
         this._userTypedValue = "";
+        // when an initial value is set it should be considered as a _lastValue
+        this._lastValue = this.getAttribute("value") || "";
     }
     onBeforeRendering() {
         this._effectiveShowClearIcon = (this.showClearIcon && !!this.value && !this.readonly && !this.disabled);
@@ -892,7 +988,7 @@ __decorate([
     property({ type: Boolean })
 ], ComboBox.prototype, "disabled", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], ComboBox.prototype, "valueState", void 0);
 __decorate([
     property({ type: Boolean })
@@ -904,7 +1000,7 @@ __decorate([
     property({ type: Boolean })
 ], ComboBox.prototype, "loading", void 0);
 __decorate([
-    property({ type: ComboBoxFilter, defaultValue: ComboBoxFilter.StartsWithPerTerm })
+    property()
 ], ComboBox.prototype, "filter", void 0);
 __decorate([
     property({ type: Boolean })
@@ -925,10 +1021,10 @@ __decorate([
     property({ type: Boolean, noAttribute: true })
 ], ComboBox.prototype, "_iconPressed", void 0);
 __decorate([
-    property({ type: Object, noAttribute: true, multiple: true })
+    property({ type: Array })
 ], ComboBox.prototype, "_filteredItems", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], ComboBox.prototype, "_listWidth", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

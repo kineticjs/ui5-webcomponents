@@ -3,7 +3,7 @@ interface IFormElement extends UI5Element {
     _internals?: ElementInternals;
 }
 interface IFormInputElement extends IFormElement {
-    name: string;
+    name?: string;
     formFormattedValue: FormData | string | null;
     formValidityMessage?: string;
     formValidity?: ValidityStateFlags;

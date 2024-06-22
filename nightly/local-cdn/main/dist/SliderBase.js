@@ -9,8 +9,6 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { isPhone, supportsTouch } from "@ui5/webcomponents-base/dist/Device.js";
 import "@ui5/webcomponents-icons/dist/direction-arrows.js";
@@ -36,6 +34,71 @@ class SliderBase extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the minimum value of the slider.
+         * @default 0
+         * @public
+         */
+        this.min = 0;
+        /**
+         * Defines the maximum value of the slider.
+         * @default 100
+         * @public
+         */
+        this.max = 100;
+        /**
+         * Determines the name by which the component will be identified upon submission in an HTML form.
+         *
+         * **Note:** This property is only applicable within the context of an HTML Form element.
+         * @default ""
+         * @public
+         * @since 2.0.0
+         */
+        this.name = "";
+        /**
+         * Defines the size of the slider's selection intervals (e.g. min = 0, max = 10, step = 5 would result in possible selection of the values 0, 5, 10).
+         *
+         * **Note:** If set to 0 the slider handle movement is disabled. When negative number or value other than a number, the component fallbacks to its default value.
+         * @default 1
+         * @public
+         */
+        this.step = 1;
+        /**
+         * Displays a label with a value on every N-th step.
+         *
+         * **Note:** The step and tickmarks properties must be enabled.
+         * Example - if the step value is set to 2 and the label interval is also specified to 2 - then every second
+         * tickmark will be labelled, which means every 4th value number.
+         * @default 0
+         * @public
+         */
+        this.labelInterval = 0;
+        /**
+         * Enables tickmarks visualization for each step.
+         *
+         * **Note:** The step must be a positive number.
+         * @default false
+         * @public
+         */
+        this.showTickmarks = false;
+        /**
+         * Enables handle tooltip displaying the current value.
+         * @default false
+         * @public
+         */
+        this.showTooltip = false;
+        /**
+         * Defines whether the slider is in disabled state.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * @private
+         */
+        this._tooltipVisibility = "hidden";
+        this._labelsOverlapping = false;
+        this._hiddenTickmarks = false;
         this.notResized = false;
         this._isUserInteraction = false;
         this._isInnerElementFocusing = false;
@@ -517,19 +580,19 @@ class SliderBase extends UI5Element {
     }
 };
 __decorate([
-    property({ validator: Float, defaultValue: 0 })
+    property({ type: Number })
 ], SliderBase.prototype, "min", void 0);
 __decorate([
-    property({ validator: Float, defaultValue: 100 })
+    property({ type: Number })
 ], SliderBase.prototype, "max", void 0);
 __decorate([
     property()
 ], SliderBase.prototype, "name", void 0);
 __decorate([
-    property({ validator: Float, defaultValue: 1 })
+    property({ type: Number })
 ], SliderBase.prototype, "step", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], SliderBase.prototype, "labelInterval", void 0);
 __decorate([
     property({ type: Boolean })
@@ -544,7 +607,7 @@ __decorate([
     property()
 ], SliderBase.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "hidden" })
+    property()
 ], SliderBase.prototype, "_tooltipVisibility", void 0);
 __decorate([
     property({ type: Boolean })

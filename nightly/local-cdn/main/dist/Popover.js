@@ -8,13 +8,12 @@ var Popover_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { isIOS } from "@ui5/webcomponents-base/dist/Device.js";
-import DOMReference from "@ui5/webcomponents-base/dist/types/DOMReference.js";
 import { getClosedPopupParent } from "@ui5/webcomponents-base/dist/util/PopupUtils.js";
 import clamp from "@ui5/webcomponents-base/dist/util/clamp.js";
 import isElementContainingBlock from "@ui5/webcomponents-base/dist/util/isElementContainingBlock.js";
 import getParentElement from "@ui5/webcomponents-base/dist/util/getParentElement.js";
+import DOMReferenceConverter from "@ui5/webcomponents-base/dist/converters/DOMReference.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import Popup from "./Popup.js";
 import PopoverPlacement from "./types/PopoverPlacement.js";
@@ -75,6 +74,67 @@ let Popover = Popover_1 = class Popover extends Popup {
     }
     constructor() {
         super();
+        /**
+         * Determines on which side the component is placed at.
+         * @default "End"
+         * @public
+         */
+        this.placement = "End";
+        /**
+         * Determines the horizontal alignment of the component.
+         * @default "Center"
+         * @public
+         */
+        this.horizontalAlign = "Center";
+        /**
+         * Determines the vertical alignment of the component.
+         * @default "Center"
+         * @public
+         */
+        this.verticalAlign = "Center";
+        /**
+         * Defines whether the component should close when
+         * clicking/tapping outside of the popover.
+         * If enabled, it blocks any interaction with the background.
+         * @default false
+         * @public
+         */
+        this.modal = false;
+        /**
+         * Determines whether the component arrow is hidden.
+         * @default false
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.hideArrow = false;
+        /**
+         * Determines if there is no enough space, the component can be placed
+         * over the target.
+         * @default false
+         * @public
+         */
+        this.allowTargetOverlap = false;
+        /**
+         * Defines whether the content is scrollable.
+         * @default false
+         * @private
+         */
+        this.disableScrolling = false;
+        /**
+         * Sets the X translation of the arrow
+         * @private
+         */
+        this.arrowTranslateX = 0;
+        /**
+         * Sets the Y translation of the arrow
+         * @private
+         */
+        this.arrowTranslateY = 0;
+        /**
+         * Returns the calculated placement depending on the free space
+         * @private
+         */
+        this.actualPlacement = "End";
     }
     /**
      * Defines the ID or DOM Reference of the element at which the popover is shown.
@@ -546,13 +606,13 @@ __decorate([
     property()
 ], Popover.prototype, "headerText", void 0);
 __decorate([
-    property({ type: PopoverPlacement, defaultValue: PopoverPlacement.End })
+    property()
 ], Popover.prototype, "placement", void 0);
 __decorate([
-    property({ type: PopoverHorizontalAlign, defaultValue: PopoverHorizontalAlign.Center })
+    property()
 ], Popover.prototype, "horizontalAlign", void 0);
 __decorate([
-    property({ type: PopoverVerticalAlign, defaultValue: PopoverVerticalAlign.Center })
+    property()
 ], Popover.prototype, "verticalAlign", void 0);
 __decorate([
     property({ type: Boolean })
@@ -567,19 +627,19 @@ __decorate([
     property({ type: Boolean })
 ], Popover.prototype, "disableScrolling", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], Popover.prototype, "arrowTranslateX", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], Popover.prototype, "arrowTranslateY", void 0);
 __decorate([
-    property({ type: PopoverPlacement, defaultValue: PopoverPlacement.End })
+    property()
 ], Popover.prototype, "actualPlacement", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], Popover.prototype, "_maxHeight", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], Popover.prototype, "_maxWidth", void 0);
 __decorate([
     slot({ type: HTMLElement })
@@ -588,7 +648,7 @@ __decorate([
     slot({ type: HTMLElement })
 ], Popover.prototype, "footer", void 0);
 __decorate([
-    property({ validator: DOMReference })
+    property({ converter: DOMReferenceConverter })
 ], Popover.prototype, "opener", null);
 Popover = Popover_1 = __decorate([
     customElement({

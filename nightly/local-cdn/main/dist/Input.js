@@ -17,7 +17,6 @@ import { isPhone, isAndroid, } from "@ui5/webcomponents-base/dist/Device.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import { getFeature } from "@ui5/webcomponents-base/dist/FeaturesRegistry.js";
 import { isUp, isDown, isSpace, isEnter, isBackSpace, isDelete, isEscape, isTabNext, isPageUp, isPageDown, isHome, isEnd, } from "@ui5/webcomponents-base/dist/Keys.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { submitForm } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import { getAssociatedLabelForTexts, getAllAccessibleNameRefTexts, registerUI5Element, deregisterUI5Element, } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
@@ -111,6 +110,129 @@ let Input = Input_1 = class Input extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines whether the component is in disabled state.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines if characters within the suggestions are to be highlighted
+         * in case the input value matches parts of the suggestions text.
+         *
+         * **Note:** takes effect when `showSuggestions` is set to `true`
+         * @default false
+         * @private
+         * @since 1.0.0-rc.8
+         */
+        this.highlight = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         * @since 1.0.0-rc.3
+         */
+        this.required = false;
+        /**
+         * Defines whether the value will be autcompleted to match an item
+         * @default false
+         * @public
+         * @since 1.4.0
+         */
+        this.noTypeahead = false;
+        /**
+         * Defines the HTML type of the component.
+         *
+         * **Notes:**
+         *
+         * - The particular effect of this property differs depending on the browser
+         * and the current language settings, especially for type `Number`.
+         * - The property is mostly intended to be used with touch devices
+         * that use different soft keyboard layouts depending on the given input type.
+         * @default "Text"
+         * @public
+         */
+        this.type = "Text";
+        /**
+         * Defines the value of the component.
+         *
+         * **Note:** The property is updated upon typing.
+         * @default ""
+         * @formEvents change input
+         * @formProperty
+         * @public
+         */
+        this.value = "";
+        /**
+         * Defines the inner stored value of the component.
+         *
+         * **Note:** The property is updated upon typing. In some special cases the old value is kept (e.g. deleting the value after the dot in a float)
+         * @default ""
+         * @private
+         */
+        this._innerValue = "";
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component should show suggestions, if such are present.
+         *
+         * **Note:** You need to import the `InputSuggestions` module
+         * from `"@ui5/webcomponents/dist/features/InputSuggestions.js"` to enable this functionality.
+         * @default false
+         * @public
+         */
+        this.showSuggestions = false;
+        /**
+         * Defines whether the clear icon of the input will be shown.
+         * @default false
+         * @public
+         * @since 1.2.0
+         */
+        this.showClearIcon = false;
+        /**
+         * Defines whether the suggestions picker is open.
+         * The picker will not open if the `showSuggestions` property is set to `false`, the input is disabled or the input is readonly.
+         * The picker will close automatically and `close` event will be fired if the input is not in the viewport.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.open = false;
+        /**
+         * Defines whether the clear icon is visible.
+         * @default false
+         * @private
+         * @since 1.2.0
+         */
+        this._effectiveShowClearIcon = false;
+        /**
+         * @private
+         */
+        this.focused = false;
+        this.valueStateOpen = false;
+        /**
+         * Indicates whether the visual focus is on the value state header
+         * @private
+         */
+        this._isValueStateFocused = false;
+        this._inputAccInfo = {};
+        this._nativeInputAttributes = {};
+        this._inputIconFocused = false;
         // Indicates if there is selected suggestionItem.
         this.hasSuggestionItemSelected = false;
         // Represents the value before user moves selection from suggestion item to another
@@ -995,7 +1117,7 @@ __decorate([
     property({ type: Boolean })
 ], Input.prototype, "noTypeahead", void 0);
 __decorate([
-    property({ type: InputType, defaultValue: InputType.Text })
+    property()
 ], Input.prototype, "type", void 0);
 __decorate([
     property()
@@ -1004,7 +1126,7 @@ __decorate([
     property({ noAttribute: true })
 ], Input.prototype, "_innerValue", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], Input.prototype, "valueState", void 0);
 __decorate([
     property()
@@ -1013,13 +1135,13 @@ __decorate([
     property({ type: Boolean })
 ], Input.prototype, "showSuggestions", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Input.prototype, "maxlength", void 0);
 __decorate([
     property()
 ], Input.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Input.prototype, "accessibleNameRef", void 0);
 __decorate([
     property({ type: Boolean })
@@ -1040,25 +1162,25 @@ __decorate([
     property({ type: Boolean })
 ], Input.prototype, "_isValueStateFocused", void 0);
 __decorate([
-    property({ type: Object, noAttribute: true })
+    property({ type: Object })
 ], Input.prototype, "_inputAccInfo", void 0);
 __decorate([
-    property({ type: Object, noAttribute: true })
+    property({ type: Object })
 ], Input.prototype, "_nativeInputAttributes", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Input.prototype, "_inputWidth", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Input.prototype, "_listWidth", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })
 ], Input.prototype, "_inputIconFocused", void 0);
 __decorate([
-    property({ type: String, noAttribute: true, defaultValue: undefined })
+    property({ noAttribute: true })
 ], Input.prototype, "_associatedLabelsTexts", void 0);
 __decorate([
-    property({ type: String, noAttribute: true, defaultValue: undefined })
+    property({ noAttribute: true })
 ], Input.prototype, "_accessibleLabelsRefTexts", void 0);
 __decorate([
     slot({ type: HTMLElement, "default": true })
@@ -1137,7 +1259,7 @@ Input = Input_1 = __decorate([
             /**
             * @public
             */
-            scrollTop: { type: Integer },
+            scrollTop: { type: Number },
             /**
             * @public
             */

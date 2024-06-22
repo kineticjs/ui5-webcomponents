@@ -36,7 +36,7 @@ declare class Button extends UI5Element {
      * @public
      */
     disabled: boolean;
-    icon: string;
-    endIcon: string;
+    icon?: string;
+    endIcon?: string;
 }
 export default Button;

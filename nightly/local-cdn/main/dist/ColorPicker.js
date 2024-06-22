@@ -10,10 +10,7 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import { isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
-import CSSColor from "@ui5/webcomponents-base/dist/types/CSSColor.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 import { getRGBColor, HSLToRGB, HEXToRGB, RGBToHSL, } from "@ui5/webcomponents-base/dist/util/ColorConversion.js";
@@ -51,6 +48,7 @@ const PICKER_POINTER_WIDTH = 6.5;
  * @public
  */
 let ColorPicker = ColorPicker_1 = class ColorPicker extends UI5Element {
+    ;
     async formElementAnchor() {
         return this.getFocusDomRefAsync();
     }
@@ -62,6 +60,46 @@ let ColorPicker = ColorPicker_1 = class ColorPicker extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the currently selected color of the component.
+         *
+         * **Note**: use HEX, RGB, RGBA, HSV formats or a CSS color name when modifying this property.
+         * @default "rgba(255, 255, 255, 1)"
+         * @public
+         */
+        this.value = "rgba(255, 255, 255, 1)";
+        /**
+         * Defines the HEX code of the currently selected color
+         *
+         * **Note**: If Alpha(transperancy) is set it is not included in this property. Use `color` property.
+         * @private
+         */
+        this.hex = "ffffff";
+        /**
+         * Defines the currenty selected color from the main color section.
+         * @private
+         */
+        this._value = getRGBColor(this.value);
+        /**
+         * @private
+         */
+        this._alpha = 1;
+        /**
+         * @private
+         */
+        this._hue = 0;
+        /**
+         * @private
+         */
+        this._isSelectedColorChanged = false;
+        /**
+         * @private
+         */
+        this._isHueValueChanged = false;
+        /**
+         * @private
+         */
+        this._wrongHEX = false;
         // Bottom Right corner
         this._selectedCoordinates = {
             x: 256 - PICKER_POINTER_WIDTH,
@@ -138,6 +176,9 @@ let ColorPicker = ColorPicker_1 = class ColorPicker extends UI5Element {
     _handleAlphaInput(e) {
         const aphaInputValue = e.target.value;
         this._alpha = parseFloat(aphaInputValue);
+        if (Number.isNaN(this._alpha)) {
+            this._alpha = 1;
+        }
         this._setColor(this._value);
     }
     _handleHueInput(e) {
@@ -364,13 +405,13 @@ let ColorPicker = ColorPicker_1 = class ColorPicker extends UI5Element {
     }
 };
 __decorate([
-    property({ validator: CSSColor, defaultValue: "rgba(255, 255, 255, 1)" })
+    property()
 ], ColorPicker.prototype, "value", void 0);
 __decorate([
     property()
 ], ColorPicker.prototype, "name", void 0);
 __decorate([
-    property({ defaultValue: "ffffff", noAttribute: true })
+    property({ noAttribute: true })
 ], ColorPicker.prototype, "hex", void 0);
 __decorate([
     property({ type: Object })
@@ -382,10 +423,10 @@ __decorate([
     property({ type: Object })
 ], ColorPicker.prototype, "_selectedCoordinates", void 0);
 __decorate([
-    property({ validator: Float, defaultValue: 1 })
+    property({ type: Number })
 ], ColorPicker.prototype, "_alpha", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], ColorPicker.prototype, "_hue", void 0);
 __decorate([
     property({ type: Boolean })

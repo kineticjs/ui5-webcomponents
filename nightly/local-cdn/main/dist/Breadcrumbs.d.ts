@@ -6,7 +6,7 @@ import type { AccessibilityAttributes } from "@ui5/webcomponents-base/dist/types
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import BreadcrumbsDesign from "./types/BreadcrumbsDesign.js";
-import BreadcrumbsSeparator from "./types/BreadcrumbsSeparator.js";
+import type BreadcrumbsSeparator from "./types/BreadcrumbsSeparator.js";
 import BreadcrumbsItem from "./BreadcrumbsItem.js";
 import Link from "./Link.js";
 import type { LinkClickEventDetail } from "./Link.js";

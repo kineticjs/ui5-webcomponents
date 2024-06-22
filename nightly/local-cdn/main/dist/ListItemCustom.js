@@ -30,6 +30,16 @@ import ListItemCustomCss from "./generated/themes/ListItemCustom.css.js";
  * @public
  */
 let ListItemCustom = class ListItemCustom extends ListItem {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the item is movable.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.movable = false;
+    }
     async _onkeydown(e) {
         const isTab = isTabNext(e) || isTabPrevious(e);
         const isFocused = this.matches(":focus");

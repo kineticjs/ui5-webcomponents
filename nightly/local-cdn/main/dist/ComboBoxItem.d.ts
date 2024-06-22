@@ -18,11 +18,11 @@ declare class ComboBoxItem extends UI5Element implements IComboBoxItem {
     text: string;
     /**
      * Defines the additional text of the component.
-     * @default ""
+     * @default undefined
      * @since 1.0.0-rc.11
      * @public
      */
-    additionalText: string;
+    additionalText?: string;
     /**
      * Indicates whether the item is filtered
      * @private

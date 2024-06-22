@@ -130,10 +130,10 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
      * HH:mm:ss -> 11:42:35
      * hh:mm:ss a -> 2:23:15 PM
      * mm:ss -> 12:04 (only minutes and seconds)
-     * @default ""
+     * @default undefined
      * @public
      */
-    formatPattern: string;
+    formatPattern?: string;
     /**
      * Defines the open or closed state of the popover.
      * @public
@@ -178,7 +178,7 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
     /**
      * @protected
      */
-    get _formatPattern(): string;
+    get _formatPattern(): string | undefined;
     get _displayFormat(): string;
     get _effectiveValue(): string | undefined;
     get _timeSelectionValue(): string | undefined;

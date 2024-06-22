@@ -59,6 +59,15 @@ import NotificationListGroupItemCss from "./generated/themes/NotificationListGro
  * @public
  */
 let NotificationListGroupItem = NotificationListGroupItem_1 = class NotificationListGroupItem extends NotificationListItemBase {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines if the group is collapsed or expanded.
+         * @default false
+         * @public
+         */
+        this.collapsed = false;
+    }
     onBeforeRendering() {
         super.onBeforeRendering();
         if (this.loading) {

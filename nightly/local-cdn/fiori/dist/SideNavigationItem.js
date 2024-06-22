@@ -39,6 +39,21 @@ import SideNavigationItemCss from "./generated/themes/SideNavigationItem.css.js"
 let SideNavigationItem = class SideNavigationItem extends SideNavigationSelectableItemBase {
     constructor() {
         super(...arguments);
+        /**
+         * Defines if the item is expanded
+         *
+         * @public
+         * @default false
+         */
+        this.expanded = false;
+        /**
+         * Defines if the item should be collapsible or not.
+         * It is true, for example, for the items inside the Popover of the Side Navigation
+         * @private
+         * @default false
+         * @since 1.10.0
+         */
+        this._fixed = false;
         this._onToggleClick = (e) => {
             e.stopPropagation();
             this.expanded = !this.expanded;

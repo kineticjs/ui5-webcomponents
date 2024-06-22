@@ -39,6 +39,30 @@ import CalendarLegendCss from "./generated/themes/CalendarLegend.css.js";
 let CalendarLegend = class CalendarLegend extends UI5Element {
     constructor() {
         super();
+        /**
+         * Hides the Today item in the legend.
+         * @default false
+         * @public
+         */
+        this.hideToday = false;
+        /**
+         * Hides the Selected day item in the legend.
+         * @default false
+         * @public
+         */
+        this.hideSelectedDay = false;
+        /**
+         * Hides the Non-Working day item in the legend.
+         * @default false
+         * @public
+         */
+        this.hideNonWorkingDay = false;
+        /**
+         * Hides the Working day item in the legend.
+         * @default false
+         * @public
+         */
+        this.hideWorkingDay = false;
         this._lastFocusedItemIndex = null;
     }
     onAfterRendering() {

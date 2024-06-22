@@ -11,7 +11,6 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import AnimationMode from "@ui5/webcomponents-base/dist/types/AnimationMode.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getAnimationMode } from "@ui5/webcomponents-base/dist/config/AnimationMode.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import Icon from "./Icon.js";
@@ -43,6 +42,27 @@ import ProgressIndicatorCss from "./generated/themes/ProgressIndicator.css.js";
 let ProgressIndicator = ProgressIndicator_1 = class ProgressIndicator extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines whether the component value is shown.
+         * @default false
+         * @public
+         */
+        this.hideValue = false;
+        /**
+         * Specifies the numerical value in percent for the length of the component.
+         *
+         * **Note:**
+         * If a value greater than 100 is provided, the percentValue is set to 100. In other cases of invalid value, percentValue is set to its default of 0.
+         * @default 0
+         * @public
+         */
+        this.value = 0;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
         this._previousValue = 0;
         this._transitionDuration = 0;
     }
@@ -119,13 +139,13 @@ __decorate([
     property({ type: Boolean })
 ], ProgressIndicator.prototype, "hideValue", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], ProgressIndicator.prototype, "value", void 0);
 __decorate([
-    property({ defaultValue: null })
+    property()
 ], ProgressIndicator.prototype, "displayValue", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], ProgressIndicator.prototype, "valueState", void 0);
 ProgressIndicator = ProgressIndicator_1 = __decorate([
     customElement({

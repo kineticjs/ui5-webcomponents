@@ -19,7 +19,6 @@ import DropIndicator from "./DropIndicator.js";
 import TreeItem from "./TreeItem.js";
 import TreeItemCustom from "./TreeItemCustom.js";
 import TreeList from "./TreeList.js";
-import ListSelectionMode from "./types/ListSelectionMode.js";
 import ListAccessibleRole from "./types/ListAccessibleRole.js";
 // Template
 import TreeTemplate from "./generated/templates/TreeTemplate.lit.js";
@@ -69,6 +68,16 @@ import TreeCss from "./generated/themes/Tree.css.js";
  * @since 1.0.0-rc.8
  */
 let Tree = class Tree extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the selection mode of the component. Since the tree uses a `ui5-list` to display its structure,
+         * the tree modes are exactly the same as the list modes, and are all applicable.
+         * @public
+         * @default "None"
+         */
+        this.selectionMode = "None";
+    }
     onEnterDOM() {
         DragRegistry.subscribe(this);
     }
@@ -280,7 +289,7 @@ let Tree = class Tree extends UI5Element {
     }
 };
 __decorate([
-    property({ type: ListSelectionMode, defaultValue: ListSelectionMode.None })
+    property()
 ], Tree.prototype, "selectionMode", void 0);
 __decorate([
     property()

@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { TemplateFunction } from "@ui5/webcomponents-base/dist/renderer/executeTemplate.js";
-import ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js";
+import type ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js";
 type IEventOptions = {
     preventClosing: boolean;
 };

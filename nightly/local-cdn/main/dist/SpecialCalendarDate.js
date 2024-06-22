@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import CalendarDate from "./CalendarDate.js";
-import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 /**
  * @class
  *
@@ -22,9 +21,18 @@ import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
  * @since 1.23.0
  */
 let SpecialCalendarDate = class SpecialCalendarDate extends CalendarDate {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the type of the special date.
+         * @default "None"
+         * @public
+         */
+        this.type = "None";
+    }
 };
 __decorate([
-    property({ type: CalendarLegendItemType, defaultValue: CalendarLegendItemType.None })
+    property()
 ], SpecialCalendarDate.prototype, "type", void 0);
 SpecialCalendarDate = __decorate([
     customElement("ui5-special-date")

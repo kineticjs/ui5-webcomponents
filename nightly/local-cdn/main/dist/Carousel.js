@@ -11,7 +11,6 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { isLeft, isRight, isDown, isUp, isF7, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ScrollEnablement from "@ui5/webcomponents-base/dist/delegate/ScrollEnablement.js";
@@ -24,8 +23,6 @@ import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/Ari
 import { CAROUSEL_OF_TEXT, CAROUSEL_DOT_TEXT, CAROUSEL_PREVIOUS_ARROW_TEXT, CAROUSEL_NEXT_ARROW_TEXT, } from "./generated/i18n/i18n-defaults.js";
 import CarouselArrowsPlacement from "./types/CarouselArrowsPlacement.js";
 import CarouselPageIndicatorType from "./types/CarouselPageIndicatorType.js";
-import BackgroundDesign from "./types/BackgroundDesign.js";
-import BorderDesign from "./types/BorderDesign.js";
 import CarouselTemplate from "./generated/templates/CarouselTemplate.lit.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-left.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
@@ -87,6 +84,99 @@ let Carousel = Carousel_1 = class Carousel extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines whether the carousel should loop, i.e show the first page after the last page is reached and vice versa.
+         * @default false
+         * @public
+         */
+        this.cyclic = false;
+        /**
+         * Defines the number of items per page depending on the carousel width.
+         *
+         * - 'S' for screens smaller than 600 pixels.
+         * - 'M' for screens greater than or equal to 600 pixels and smaller than 1024 pixels.
+         * - 'L' for screens greater than or equal to 1024 pixels and smaller than 1440 pixels.
+         * - 'XL' for screens greater than or equal to 1440 pixels.
+         *
+         * One item per page is shown by default.
+         * @default "S1 M1 L1 XL1"
+         * @public
+         */
+        this.itemsPerPage = "S1 M1 L1 XL1";
+        /**
+         * Defines the visibility of the navigation arrows.
+         * If set to true the navigation arrows will be hidden.
+         *
+         * **Note:** The navigation arrows are never displayed on touch devices.
+         * In this case, the user can swipe to navigate through the items.
+         * @since 1.0.0-rc.15
+         * @default false
+         * @public
+         */
+        this.hideNavigationArrows = false;
+        /**
+         * Defines the visibility of the page indicator.
+         * If set to true the page indicator will be hidden.
+         * @since 1.0.0-rc.15
+         * @default false
+         * @public
+         */
+        this.hidePageIndicator = false;
+        /**
+         * Defines the style of the page indicator.
+         * Available options are:
+         *
+         * - `Default` - The page indicator will be visualized as dots if there are fewer than 9 pages. If there are more pages, the page indicator will switch to displaying the current page and the total number of pages. (e.g. X of Y)
+         * - `Numeric` - The page indicator will display the current page and the total number of pages. (e.g. X of Y)
+         * @since 1.10
+         * @default "Default"
+         * @public
+         */
+        this.pageIndicatorType = "Default";
+        /**
+         * Defines the carousel's background design.
+         * @since 1.14
+         * @default "Translucent"
+         * @public
+         */
+        this.backgroundDesign = "Translucent";
+        /**
+         * Defines the page indicator background design.
+         * @since 1.14
+         * @default "Solid"
+         * @public
+         */
+        this.pageIndicatorBackgroundDesign = "Solid";
+        /**
+         * Defines the page indicator border design.
+         * @since 1.14
+         * @default "Solid"
+         * @public
+         */
+        this.pageIndicatorBorderDesign = "Solid";
+        /**
+         * Defines the index of the initially selected item.
+         * @default 0
+         * @private
+         */
+        this._selectedIndex = 0;
+        /**
+         * Defines the position of arrows.
+         *
+         * Available options are:
+         *
+         * - `Content` - the arrows are placed on the sides of the current page.
+         * - `Navigation` - the arrows are placed on the sides of the page indicator.
+         * @default "Content"
+         * @public
+         */
+        this.arrowsPlacement = "Content";
+        /**
+         * If set to true navigation arrows are shown.
+         * @private
+         * @since 1.0.0-rc.15
+         */
+        this._visibleNavigationArrows = false;
         this._scrollEnablement = new ScrollEnablement(this);
         this._scrollEnablement.attachEvent("touchend", e => {
             this._updateScrolling(e);
@@ -467,13 +557,13 @@ __decorate([
     property()
 ], Carousel.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Carousel.prototype, "accessibleNameRef", void 0);
 __decorate([
     property({ type: Boolean })
 ], Carousel.prototype, "cyclic", void 0);
 __decorate([
-    property({ type: String, defaultValue: "S1 M1 L1 XL1" })
+    property()
 ], Carousel.prototype, "itemsPerPage", void 0);
 __decorate([
     property({ type: Boolean })
@@ -482,28 +572,28 @@ __decorate([
     property({ type: Boolean })
 ], Carousel.prototype, "hidePageIndicator", void 0);
 __decorate([
-    property({ type: CarouselPageIndicatorType, defaultValue: CarouselPageIndicatorType.Default })
+    property()
 ], Carousel.prototype, "pageIndicatorType", void 0);
 __decorate([
-    property({ type: BackgroundDesign, defaultValue: BackgroundDesign.Translucent })
+    property()
 ], Carousel.prototype, "backgroundDesign", void 0);
 __decorate([
-    property({ type: BackgroundDesign, defaultValue: BackgroundDesign.Solid })
+    property()
 ], Carousel.prototype, "pageIndicatorBackgroundDesign", void 0);
 __decorate([
-    property({ type: BorderDesign, defaultValue: BorderDesign.Solid })
+    property()
 ], Carousel.prototype, "pageIndicatorBorderDesign", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], Carousel.prototype, "_selectedIndex", void 0);
 __decorate([
-    property({ type: CarouselArrowsPlacement, defaultValue: CarouselArrowsPlacement.Content })
+    property()
 ], Carousel.prototype, "arrowsPlacement", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Carousel.prototype, "_width", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Carousel.prototype, "_itemWidth", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })
@@ -538,7 +628,7 @@ Carousel = Carousel_1 = __decorate([
             /**
              * @public
              */
-            selectedIndex: { type: Integer },
+            selectedIndex: { type: Number },
         },
     })
 ], Carousel);

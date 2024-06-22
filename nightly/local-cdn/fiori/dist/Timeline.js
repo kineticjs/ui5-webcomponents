@@ -41,6 +41,13 @@ const LARGE_LINE_WIDTH = "LargeLineWidth";
 let Timeline = Timeline_1 = class Timeline extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the items orientation.
+         * @default "Vertical"
+         * @since 1.0.0-rc.15
+         * @public
+         */
+        this.layout = "Vertical";
         this._itemNavigation = new ItemNavigation(this, {
             getItemsCallback: () => this.items,
         });
@@ -98,7 +105,7 @@ let Timeline = Timeline_1 = class Timeline extends UI5Element {
     }
 };
 __decorate([
-    property({ type: TimelineLayout, defaultValue: TimelineLayout.Vertical })
+    property()
 ], Timeline.prototype, "layout", void 0);
 __decorate([
     property()

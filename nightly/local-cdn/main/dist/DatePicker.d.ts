@@ -154,7 +154,7 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * @default ""
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the visibility of the week numbers column.
      *
@@ -178,15 +178,15 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
      * @default ""
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleNameRef: string;
-    _respPopoverConfig: object;
+    accessibleNameRef?: string;
+    _respPopoverConfig?: object;
     _calendarCurrentPicker: string;
     liveValue?: string;
     /**

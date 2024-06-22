@@ -6,7 +6,7 @@ import "@ui5/webcomponents-icons/dist/complete.js";
 import "@ui5/webcomponents-icons/dist/border.js";
 import "@ui5/webcomponents-icons/dist/tri-state.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import WrappingType from "./types/WrappingType.js";
+import type WrappingType from "./types/WrappingType.js";
 /**
  * @class
  *
@@ -56,14 +56,14 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
      * @public
      * @since 1.1.0
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the accessible ARIA name of the component.
      * @public
      * @default ""
      * @since 1.1.0
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines whether the component is disabled.
      *
@@ -132,7 +132,7 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
      * @default ""
      * @public
      */
-    text: string;
+    text?: string;
     /**
      * Defines the value state of the component.
      * @default "None"
@@ -155,7 +155,7 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
      * @default ""
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the active state (pressed or not) of the component.
      * @private

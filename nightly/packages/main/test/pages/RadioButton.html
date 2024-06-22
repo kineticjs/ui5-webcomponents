@@ -6,7 +6,7 @@
 	<title>ui5-radio-button</title>
 	
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/RadioButton-63f73a47.css">
 </head>
 
@@ -178,7 +178,7 @@
 		[window["rb1"], window["rb2"], window["rb3"], window["rb4"]].forEach(function (radio) {
 			radio.addEventListener("ui5-change", function (event) {
 				counter += 1;
-				window["field"].value = counter;
+				window["field"].value = `${counter}`;
 			});
 		})
 

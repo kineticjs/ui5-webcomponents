@@ -10,7 +10,6 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
@@ -58,6 +57,28 @@ import { DYNAMIC_PAGE_ARIA_DESCR_TOGGLE_HEADER, } from "./generated/i18n/i18n-de
 let DynamicPageTitle = DynamicPageTitle_1 = class DynamicPageTitle extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines if the title is snapped.
+         *
+         * @protected
+         * @default false
+         */
+        this.snapped = false;
+        /**
+         * Defines if the mobileNavigationActions are shown.
+         *
+         * @private
+         */
+        this.mobileNavigationActions = false;
+        /**
+         * Indicates if the elements is on focus
+         * @private
+         */
+        this.focused = false;
+        /**
+         * @private
+         */
+        this.interactive = false;
         this._handleResize = this.handleResize.bind(this);
     }
     static async onDefine() {
@@ -154,10 +175,10 @@ __decorate([
     property({ type: Boolean })
 ], DynamicPageTitle.prototype, "focused", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], DynamicPageTitle.prototype, "minContentWidth", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], DynamicPageTitle.prototype, "minActionsWidth", void 0);
 __decorate([
     slot({ type: HTMLElement })

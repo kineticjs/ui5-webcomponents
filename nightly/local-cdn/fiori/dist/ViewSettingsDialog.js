@@ -60,12 +60,44 @@ import viewSettingsDialogCSS from "./generated/themes/ViewSettingsDialog.css.js"
  */
 let ViewSettingsDialog = ViewSettingsDialog_1 = class ViewSettingsDialog extends UI5Element {
     constructor() {
-        super();
+        super(...arguments);
+        /**
+         * Defines the initial sort order.
+         * @default false
+         * @public
+         */
+        this.sortDescending = false;
+        /**
+         * Stores current settings of the dialog.
+         * @private
+         */
         this._currentSettings = {
             sortOrder: [],
             sortBy: [],
             filters: [],
         };
+        /**
+         * Stores settings of the dialog before the initial open.
+         * @private
+         */
+        this._initialSettings = this._currentSettings;
+        /**
+         * Stores settings of the dialog after confirmation.
+         * @private
+         */
+        this._confirmedSettings = this._currentSettings;
+        /**
+         * Defnies the current mode of the component.
+         * @since 1.0.0-rc.16
+         * @private
+         */
+        this._currentMode = "Sort";
+        /**
+         * When in Filter By mode, defines whether we need to show the list of keys, or the list with values.
+         * @since 1.0.0-rc.16
+         * @private
+         */
+        this._filterStepTwo = false;
     }
     onBeforeRendering() {
         if (this._currentSettings.filters && this._currentSettings.filters.length) {
@@ -469,15 +501,15 @@ __decorate([
 ], ViewSettingsDialog.prototype, "_recentlyFocused", void 0);
 __decorate([
     property({ type: Object })
+], ViewSettingsDialog.prototype, "_currentSettings", void 0);
+__decorate([
+    property({ type: Object })
 ], ViewSettingsDialog.prototype, "_initialSettings", void 0);
 __decorate([
     property({ type: Object })
 ], ViewSettingsDialog.prototype, "_confirmedSettings", void 0);
 __decorate([
-    property({ type: Object })
-], ViewSettingsDialog.prototype, "_currentSettings", void 0);
-__decorate([
-    property({ type: ViewSettingsDialogMode, defaultValue: ViewSettingsDialogMode.Sort })
+    property()
 ], ViewSettingsDialog.prototype, "_currentMode", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

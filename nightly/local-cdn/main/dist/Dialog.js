@@ -105,6 +105,52 @@ const ICON_PER_STATE = {
 let Dialog = Dialog_1 = class Dialog extends Popup {
     constructor() {
         super();
+        /**
+         * Determines whether the component should be stretched to fullscreen.
+         *
+         * **Note:** The component will be stretched to approximately
+         * 90% of the viewport.
+         * @default false
+         * @public
+         */
+        this.stretch = false;
+        /**
+         * Determines whether the component is draggable.
+         * If this property is set to true, the Dialog will be draggable by its header.
+         *
+         * **Note:** The component can be draggable only in desktop mode.
+         *
+         * **Note:** This property overrides the default HTML "draggable" attribute native behavior.
+         * When "draggable" is set to true, the native browser "draggable"
+         * behavior is prevented and only the Dialog custom logic ("draggable by its header") works.
+         * @default false
+         * @since 1.0.0-rc.9
+         * @public
+         */
+        this.draggable = false;
+        /**
+         * Configures the component to be resizable.
+         * If this property is set to true, the Dialog will have a resize handle in its bottom right corner in LTR languages.
+         * In RTL languages, the resize handle will be placed in the bottom left corner.
+         *
+         * **Note:** The component can be resizable only in desktop mode.
+         *
+         * **Note:** Upon resizing, externally defined height and width styling will be ignored.
+         * @default false
+         * @since 1.0.0-rc.10
+         * @public
+         */
+        this.resizable = false;
+        /**
+         * Defines the state of the `Dialog`.
+         *
+         * **Note:** If `"Negative"` and `"Critical"` states is set, it will change the
+         * accessibility role to "alertdialog", if the accessibleRole property is set to `"Dialog"`.
+         * @default "None"
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.state = "None";
         this._draggedOrResized = false;
         this._revertSize = () => {
             Object.assign(this.style, {
@@ -132,7 +178,7 @@ let Dialog = Dialog_1 = class Dialog extends Popup {
     }
     get _ariaLabelledBy() {
         let ariaLabelledById;
-        if (this.headerText !== "" && !this._ariaLabel) {
+        if (this.headerText && !this._ariaLabel) {
             ariaLabelledById = "ui5-popup-header-text";
         }
         return ariaLabelledById;
@@ -432,7 +478,7 @@ __decorate([
     property({ type: Boolean })
 ], Dialog.prototype, "resizable", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], Dialog.prototype, "state", void 0);
 __decorate([
     slot()

@@ -29,7 +29,7 @@ declare class FilterItem extends UI5Element {
      * @default ""
      * @public
      */
-    additionalText: string;
+    additionalText?: string;
     /**
      * Defines the `values` list.
      * @public

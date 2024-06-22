@@ -30,6 +30,39 @@ import WizardTabCss from "./generated/themes/WizardTab.css.js";
  * @private
  */
 let WizardTab = class WizardTab extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines if the step is `disabled` - the step is not responding to user interaction.
+         * @default false
+         * @private
+         */
+        this.disabled = false;
+        /**
+         * Defines if the step is `selected`.
+         * @default false
+         * @private
+         */
+        this.selected = false;
+        /**
+         * Defines if the step's separator is hidden or not.
+         * @default false
+         * @private
+         */
+        this.hideSeparator = false;
+        /**
+         * Defines if the step's separator is active or not.
+         * @default false
+         * @private
+         */
+        this.activeSeparator = false;
+        /**
+         * Defines if the step's separator is dashed or not.
+         * @default false
+         * @private
+         */
+        this.branchingSeparator = false;
+    }
     _onclick() {
         if (!this.disabled) {
             this.fireEvent("selection-change-requested");
@@ -90,7 +123,7 @@ __decorate([
     property({ type: Boolean })
 ], WizardTab.prototype, "branchingSeparator", void 0);
 __decorate([
-    property({ defaultValue: "-1" })
+    property()
 ], WizardTab.prototype, "forcedTabIndex", void 0);
 WizardTab = __decorate([
     customElement({

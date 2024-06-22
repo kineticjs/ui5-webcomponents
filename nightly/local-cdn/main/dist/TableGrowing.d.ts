@@ -56,18 +56,18 @@ declare class TableGrowing extends UI5Element implements ITableGrowing {
      * **Note:** When not provided and the type is set to Button, a default text is displayed, corresponding to the
      * current language.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    growingText: string;
+    growingText?: string;
     /**
      * Defines the text that will be displayed below the `growingText` inside the growing button.
      * Has no effect when type is set to Scroll.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    growingSubText: string;
+    growingSubText?: string;
     /**
      * Disables the growing feature.
      */
@@ -77,7 +77,7 @@ declare class TableGrowing extends UI5Element implements ITableGrowing {
      * Used for keyboard interaction.
      * @private
      */
-    _activeState?: boolean;
+    _activeState: boolean;
     _table?: Table;
     _observer?: IntersectionObserver;
     _individualSlot?: string;

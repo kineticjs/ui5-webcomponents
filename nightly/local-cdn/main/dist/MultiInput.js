@@ -47,7 +47,7 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
     }
     get formFormattedValue() {
         const tokens = (this.tokens || []);
-        if (tokens.length) {
+        if (tokens.length && this.name) {
             const formData = new FormData();
             formData.append(this.name, this.value);
             for (let i = 0; i < tokens.length; i++) {
@@ -59,6 +59,19 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
     }
     constructor() {
         super();
+        /**
+         * Determines whether a value help icon will be visualized in the end of the input.
+         * Pressing the icon will fire `value-help-trigger` event.
+         * @default false
+         * @public
+         */
+        this.showValueHelpIcon = false;
+        /**
+         * Indicates whether the tokenizer has tokens
+         * @default false
+         * @private
+         */
+        this.tokenizerAvailable = false;
         // Prevent suggestions' opening.
         this._skipOpenSuggestions = false;
         this._valueHelpIconPressed = false;

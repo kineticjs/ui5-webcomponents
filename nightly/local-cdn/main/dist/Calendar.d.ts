@@ -9,7 +9,7 @@ import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import CalendarLegend from "./CalendarLegend.js";
 import type { CalendarLegendItemSelectionChangeEventDetail } from "./CalendarLegend.js";
 import SpecialCalendarDate from "./SpecialCalendarDate.js";
-import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
+import type CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
 interface ICalendarPicker {
     _showPreviousPage: () => void;
@@ -156,13 +156,13 @@ declare class Calendar extends CalendarPart {
      * Which picker is currently visible to the user: day/month/year
      * @private
      */
-    _currentPicker: string;
+    _currentPicker: "day" | "month" | "year";
     _previousButtonDisabled: boolean;
     _nextButtonDisabled: boolean;
-    _headerMonthButtonText: string;
-    _headerYearButtonText: string;
-    _headerYearButtonTextSecType: string;
-    _pickersMode: CalendarPickersMode;
+    _headerMonthButtonText?: string;
+    _headerYearButtonText?: string;
+    _headerYearButtonTextSecType?: string;
+    _pickersMode: `${CalendarPickersMode}`;
     _valueIsProcessed: boolean;
     /**
      * Defines the calendar legend of the component.

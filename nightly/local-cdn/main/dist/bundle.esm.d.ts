@@ -31,7 +31,7 @@ declare const testAssets: {
     attachThemeLoaded: (listener: (theme: string) => void) => void;
     detachThemeLoaded: (listener: (theme: string) => void) => void;
     getIconNames: () => Promise<string[]>;
-    getIconAccessibleName: (name: string) => Promise<string | undefined>;
+    getIconAccessibleName: (name: string | undefined) => Promise<string | undefined>;
     renderFinished: () => Promise<void>;
     defaultTexts: typeof import("./generated/i18n/i18n-defaults.js");
     getEffectiveIconCollection: (collectionName?: string | undefined) => string;

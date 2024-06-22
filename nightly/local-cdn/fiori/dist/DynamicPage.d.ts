@@ -92,7 +92,7 @@ declare class DynamicPage extends UI5Element {
      *
      * @private
      */
-    mediaRange: string;
+    mediaRange?: string;
     /**
      * Defines the content of the Dynamic Page.
      *

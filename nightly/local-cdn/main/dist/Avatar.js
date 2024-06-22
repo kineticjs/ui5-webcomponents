@@ -22,9 +22,6 @@ import { AVATAR_TOOLTIP } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import AvatarCss from "./generated/themes/Avatar.css.js";
 import Icon from "./Icon.js";
-import AvatarSize from "./types/AvatarSize.js";
-import AvatarShape from "./types/AvatarShape.js";
-import AvatarColorScheme from "./types/AvatarColorScheme.js";
 // Icon
 import "@ui5/webcomponents-icons/dist/employee.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
@@ -54,6 +51,82 @@ import "@ui5/webcomponents-icons/dist/alert.js";
 let Avatar = Avatar_1 = class Avatar extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines whether the component is disabled.
+         * A disabled component can't be pressed or
+         * focused, and it is not in the tab chain.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines if the avatar is interactive (focusable and pressable).
+         *
+         * **Note:** This property won't have effect if the `disabled`
+         * property is set to `true`.
+         * @default false
+         * @public
+         */
+        this.interactive = false;
+        /**
+         * Defines the name of the fallback icon, which should be displayed in the following cases:
+         *
+         * 	- If the initials are not valid (more than 3 letters, unsupported languages or empty initials).
+         * 	- If there are three initials and they do not fit in the shape (e.g. WWW for some of the sizes).
+         * 	- If the image src is wrong.
+         *
+         * **Note:** If not set, a default fallback icon "employee" is displayed.
+         *
+         * **Note:** You should import the desired icon first, then use its name as "fallback-icon".
+         *
+         * `import "@ui5/webcomponents-icons/dist/{icon_name}.js"`
+         *
+         * `<ui5-avatar fallback-icon="alert">`
+         *
+         * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
+         * @default "employee"
+         * @public
+         */
+        this.fallbackIcon = "employee";
+        /**
+         * Defines the shape of the component.
+         * @default "Circle"
+         * @public
+         */
+        this.shape = "Circle";
+        /**
+         * Defines predefined size of the component.
+         * @default "S"
+         * @public
+         */
+        this.size = "S";
+        /**
+         * @private
+         */
+        this._size = "S";
+        /**
+         * Defines the background color of the desired image.
+         * @default "Accent6"
+         * @public
+         */
+        this.colorScheme = "Accent6";
+        /**
+         * @private
+         */
+        this._colorScheme = "Accent6";
+        /**
+         * Defines the additional accessibility attributes that will be applied to the component.
+         * The following field is supported:
+         *
+         * - **hasPopup**: Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by the button.
+         * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+         *
+         * @public
+         * @since 2.0.0
+         * @default {}
+         */
+        this.accessibilityAttributes = {};
+        this._hasImage = false;
         this._handleResizeBound = this.handleResize.bind(this);
     }
     static async onDefine() {
@@ -85,12 +158,6 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
     }
     get _ariaHasPopup() {
         return this._getAriaHasPopup();
-    }
-    get _fallbackIcon() {
-        if (this.fallbackIcon === "") {
-            this.fallbackIcon = "employee";
-        }
-        return this.fallbackIcon;
     }
     get _interactive() {
         return this.interactive && !this.disabled;
@@ -208,19 +275,19 @@ __decorate([
     property()
 ], Avatar.prototype, "initials", void 0);
 __decorate([
-    property({ type: AvatarShape, defaultValue: AvatarShape.Circle })
+    property()
 ], Avatar.prototype, "shape", void 0);
 __decorate([
-    property({ type: AvatarSize, defaultValue: AvatarSize.S })
+    property()
 ], Avatar.prototype, "size", void 0);
 __decorate([
-    property({ type: AvatarSize, defaultValue: AvatarSize.S })
+    property()
 ], Avatar.prototype, "_size", void 0);
 __decorate([
-    property({ type: AvatarColorScheme, defaultValue: AvatarColorScheme.Accent6 })
+    property()
 ], Avatar.prototype, "colorScheme", void 0);
 __decorate([
-    property({ type: AvatarColorScheme, defaultValue: AvatarColorScheme.Accent6 })
+    property()
 ], Avatar.prototype, "_colorScheme", void 0);
 __decorate([
     property()

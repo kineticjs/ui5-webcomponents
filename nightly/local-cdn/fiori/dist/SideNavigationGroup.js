@@ -40,6 +40,13 @@ import SideNavigationGroupCss from "./generated/themes/SideNavigationGroup.css.j
 let SideNavigationGroup = SideNavigationGroup_1 = class SideNavigationGroup extends SideNavigationItemBase {
     constructor() {
         super(...arguments);
+        /**
+         * Defines if the item is expanded
+         *
+         * @public
+         * @default false
+         */
+        this.expanded = false;
         this._onkeydown = (e) => {
             if (isLeft(e)) {
                 this.expanded = false;

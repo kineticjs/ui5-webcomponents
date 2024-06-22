@@ -43,6 +43,17 @@ import styles from "./generated/themes/Button.css.js";
  * @public
  */
 let Button = class Button extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the component is disabled.
+         * A disabled component can't be pressed or
+         * focused, and it is not in the tab chain.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+    }
 };
 __decorate([
     property({ type: Boolean })

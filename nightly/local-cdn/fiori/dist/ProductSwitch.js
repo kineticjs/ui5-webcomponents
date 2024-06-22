@@ -12,7 +12,6 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isDown, isUp, } from "@ui5/webcomponents-base/dist/Keys.js";
 import ProductSwitchTemplate from "./generated/templates/ProductSwitchTemplate.lit.js";
@@ -122,7 +121,7 @@ let ProductSwitch = ProductSwitch_1 = class ProductSwitch extends UI5Element {
     }
 };
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], ProductSwitch.prototype, "desktopColumns", void 0);
 __decorate([
     slot({ type: HTMLElement, "default": true })

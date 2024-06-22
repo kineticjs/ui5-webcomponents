@@ -37,6 +37,13 @@ import tableGroupRowStyles from "./generated/themes/TableGroupRow.css.js";
 let TableGroupRow = TableGroupRow_1 = class TableGroupRow extends UI5Element {
     constructor() {
         super(...arguments);
+        /**
+         * Defines the mode of the row
+         * @default "None"
+         * @private
+         */
+        this.mode = "None";
+        this.forcedBusy = false;
         // Properties, set and handled by the Table
         this.selected = false;
         this.tabbableElements = [];
@@ -49,9 +56,9 @@ let TableGroupRow = TableGroupRow_1 = class TableGroupRow extends UI5Element {
         return `${TableGroupRow_1.i18nBundle.getText(TABLE_GROUP_ROW_ARIA_LABEL)} ${this.innerText}. ${this.forcedAriaPosition}`;
     }
     visibleColCount() {
-        let count = this._columnsInfo.reduce((acc, column) => {
+        let count = this._columnsInfo?.reduce((acc, column) => {
             return column.visible ? ++acc : acc;
-        }, 0);
+        }, 0) || 0;
         if (this.mode === TableMode.MultiSelect) {
             count++;
         }
@@ -71,19 +78,19 @@ let TableGroupRow = TableGroupRow_1 = class TableGroupRow extends UI5Element {
     }
 };
 __decorate([
-    property({ type: TableMode, defaultValue: TableMode.None })
+    property()
 ], TableGroupRow.prototype, "mode", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], TableGroupRow.prototype, "_columnsInfo", void 0);
 __decorate([
-    property({ defaultValue: "-1" })
+    property()
 ], TableGroupRow.prototype, "forcedTabIndex", void 0);
 __decorate([
     property({ type: Boolean })
 ], TableGroupRow.prototype, "forcedBusy", void 0);
 __decorate([
-    property({ defaultValue: "", noAttribute: true })
+    property()
 ], TableGroupRow.prototype, "forcedAriaPosition", void 0);
 TableGroupRow = TableGroupRow_1 = __decorate([
     customElement({

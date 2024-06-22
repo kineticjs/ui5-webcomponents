@@ -68,6 +68,46 @@ const pageScrollingBlockers = new Set();
 let Popup = Popup_1 = class Popup extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines if the focus should be returned to the previously focused element,
+         * when the popup closes.
+         * @default false
+         * @public
+         * @since 1.0.0-rc.8
+        */
+        this.preventFocusRestore = false;
+        /**
+         * Allows setting a custom role.
+         * @default "Dialog"
+         * @public
+         * @since 1.10.0
+         */
+        this.accessibleRole = "Dialog";
+        /**
+         * Indicates whether initial focus should be prevented.
+         * @public
+         * @default false
+         * @since 2.0.0
+         */
+        this.preventInitialFocus = false;
+        /**
+         * Indicates if the element is the top modal popup
+         *
+         * This property is calculated automatically
+         * @private
+         * @default false
+         */
+        this.isTopModalPopup = false;
+        /**
+         * @private
+         */
+        this.onPhone = false;
+        /**
+         * @private
+         */
+        this.onDesktop = false;
+        this._opened = false;
+        this._open = false;
         this._resizeHandler = this._resize.bind(this);
         this._getRealDomRef = () => {
             return this.shadowRoot.querySelector("[root-element]");
@@ -390,13 +430,13 @@ __decorate([
     property({ type: Boolean })
 ], Popup.prototype, "preventFocusRestore", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], Popup.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Popup.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ type: PopupAccessibleRole, defaultValue: PopupAccessibleRole.Dialog })
+    property()
 ], Popup.prototype, "accessibleRole", void 0);
 __decorate([
     property()

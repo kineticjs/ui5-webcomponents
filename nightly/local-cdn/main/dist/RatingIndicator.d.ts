@@ -84,14 +84,14 @@ declare class RatingIndicator extends UI5Element {
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
      * @default ""
      * @public
      * @since 1.15.0
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
     * Defines whether the component is required.
     * @default false
@@ -101,11 +101,11 @@ declare class RatingIndicator extends UI5Element {
     required: boolean;
     /**
      * Defines the tooltip of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.19.0
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * @private
      */

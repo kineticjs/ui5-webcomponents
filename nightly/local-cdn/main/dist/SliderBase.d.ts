@@ -72,11 +72,11 @@ declare abstract class SliderBase extends UI5Element {
     disabled: boolean;
     /**
      * Defines the accessible ARIA name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.4.0
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * @private
      */

@@ -13,7 +13,6 @@ import "@ui5/webcomponents-icons/dist/background.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import MediaGalleryItemLayout from "./types/MediaGalleryItemLayout.js";
 // Styles
 import MediaGalleryItemCss from "./generated/themes/MediaGalleryItem.css.js";
 // Template
@@ -44,6 +43,44 @@ import MediaGalleryItemTemplate from "./generated/templates/MediaGalleryItemTemp
 let MediaGalleryItem = class MediaGalleryItem extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the selected state of the component.
+         * @default false
+         * @public
+         */
+        this.selected = false;
+        /**
+         * Defines whether the component is in disabled state.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Determines the layout of the item container.
+         * @default "Square"
+         * @public
+         */
+        this.layout = "Square";
+        /**
+         * @private
+         */
+        this._interactive = false;
+        /**
+         * @private
+         */
+        this._square = false;
+        /**
+         * @private
+         */
+        this._contentImageNotFound = false;
+        /**
+         * @private
+         */
+        this._thumbnailNotFound = false;
+        /**
+         * @private
+         */
+        this._thumbnailDesign = false;
         this._monitoredContent = null;
         this._monitoredThumbnail = null;
     }
@@ -151,7 +188,7 @@ __decorate([
     property({ type: Boolean })
 ], MediaGalleryItem.prototype, "disabled", void 0);
 __decorate([
-    property({ type: MediaGalleryItemLayout, defaultValue: MediaGalleryItemLayout.Square })
+    property()
 ], MediaGalleryItem.prototype, "layout", void 0);
 __decorate([
     property({ type: Boolean })

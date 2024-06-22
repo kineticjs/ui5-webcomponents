@@ -26,10 +26,10 @@ import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 declare class CalendarLegendItem extends UI5Element implements ITabbable {
     /**
      * Defines the text content of the Calendar Legend Item.
-     * @default ""
+     * @default undefined
      * @public
      */
-    text: string;
+    text?: string;
     /**
      * Defines the type of the Calendar Legend Item.
      * @default "None"

@@ -51,7 +51,7 @@ declare class DynamicPageHeaderActions extends UI5Element {
      * @default {}
      */
     accessibilityAttributes: {
-        controls: string;
+        controls?: string;
     };
     static i18nBundle: I18nBundle;
     static onDefine(): Promise<void>;

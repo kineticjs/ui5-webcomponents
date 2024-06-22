@@ -20,6 +20,23 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
  * @since 2.0
  */
 let CalendarDateRange = class CalendarDateRange extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Start of date range formatted according to the `formatPattern` property
+         * of the `ui5-calendar` that hosts the component.
+         * @default ""
+         * @public
+         */
+        this.startValue = "";
+        /**
+         * End of date range formatted according to the `formatPattern` property
+         * of the `ui5-calendar` that hosts the component.
+         * @default ""
+         * @public
+         */
+        this.endValue = "";
+    }
 };
 __decorate([
     property()

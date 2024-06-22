@@ -42,6 +42,25 @@ import ResponsivePopoverCss from "./generated/themes/ResponsivePopover.css.js";
 let ResponsivePopover = ResponsivePopover_1 = class ResponsivePopover extends Popover {
     constructor() {
         super();
+        /**
+         * Defines if only the content would be displayed (without header and footer) in the popover on Desktop.
+         * By default both the header and footer would be displayed.
+         * @private
+         */
+        this.contentOnlyOnDesktop = false;
+        /**
+         * Used internaly for controls which must not have header.
+         * @private
+         */
+        this._hideHeader = false;
+        /**
+         * Defines whether a close button will be rendered in the header of the component
+         * **Note:** If you are using the `header` slot, this property will have no effect
+         * @private
+         * @default false
+         * @since 1.0.0-rc.16
+         */
+        this._hideCloseButton = false;
     }
     async openPopup() {
         if (!isPhone()) {

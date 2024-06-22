@@ -17,6 +17,30 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
  * @public
  */
 let ComboBoxItem = class ComboBoxItem extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the text of the component.
+         * @default ""
+         * @public
+         */
+        this.text = "";
+        /**
+         * Indicates whether the item is filtered
+         * @private
+         */
+        this._isVisible = false;
+        /**
+         * Indicates whether the item is focssed
+         * @protected
+         */
+        this.focused = false;
+        /**
+         * Indicates whether the item is selected
+         * @protected
+         */
+        this.selected = false;
+    }
     get stableDomRef() {
         return this.getAttribute("stable-dom-ref") || `${this._id}-stable-dom-ref`;
     }

@@ -73,8 +73,24 @@ const PAGE_UP_DOWN_SIZE = 10;
  * @public
  */
 let SideNavigation = SideNavigation_1 = class SideNavigation extends UI5Element {
+    ;
+    ;
     constructor() {
         super();
+        /**
+         * Defines whether the `ui5-side-navigation` is expanded or collapsed.
+         *
+         * @public
+         * @default false
+         */
+        this.collapsed = false;
+        this.inPopover = false;
+        this._menuPopoverItems = [];
+        this._isOverflow = false;
+        /**
+         * @private
+         */
+        this.isTouchDevice = false;
         this._flexibleItemNavigation = new ItemNavigation(this, {
             skipItemsSize: PAGE_UP_DOWN_SIZE,
             navigationMode: NavigationMode.Vertical,
@@ -147,7 +163,7 @@ let SideNavigation = SideNavigation_1 = class SideNavigation extends UI5Element 
         }
         this._selectItem(associatedItem);
         this.closePicker();
-        this._popoverContents.item.getDomRef().classList.add("ui5-sn-item-no-hover-effect");
+        this._popoverContents.item?.getDomRef().classList.add("ui5-sn-item-no-hover-effect");
     }
     handleOverflowItemClick(e) {
         const associatedItem = e.detail?.item.associatedItem;
@@ -449,7 +465,7 @@ __decorate([
     property({ type: Boolean })
 ], SideNavigation.prototype, "inPopover", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], SideNavigation.prototype, "_menuPopoverItems", void 0);
 __decorate([
     property({ type: Boolean })

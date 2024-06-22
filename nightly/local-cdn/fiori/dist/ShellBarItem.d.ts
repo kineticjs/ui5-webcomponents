@@ -21,25 +21,25 @@ type ShellBarItemClickEventDetail = {
 declare class ShellBarItem extends UI5Element {
     /**
      * Defines the name of the item's icon.
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the item text.
      *
      * **Note:** The text is only displayed inside the overflow popover list view.
-     * @default ""
+     * @default undefined
      * @public
      */
-    text: string;
+    text?: string;
     /**
      * Defines the count displayed in the top-right corner.
-     * @default ""
+     * @default undefined
      * @since 1.0.0-rc.6
      * @public
      */
-    count: string;
+    count?: string;
     get stableDomRef(): string;
     fireClickEvent(e: MouseEvent): boolean;
 }

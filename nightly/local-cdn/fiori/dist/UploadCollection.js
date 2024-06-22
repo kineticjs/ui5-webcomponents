@@ -23,7 +23,6 @@ import "@ui5/webcomponents-icons/dist/document.js";
 import { UPLOADCOLLECTION_NO_DATA_TEXT, UPLOADCOLLECTION_NO_DATA_DESCRIPTION, UPLOADCOLLECTION_DRAG_FILE_INDICATOR, UPLOADCOLLECTION_DROP_FILE_INDICATOR, UPLOADCOLLECTION_ARIA_ROLE_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
 import { attachBodyDnDHandler, detachBodyDnDHandler, draggingFiles, } from "./upload-utils/UploadCollectionBodyDnD.js";
 import UploadCollectionDnDOverlayMode from "./types/UploadCollectionDnDMode.js";
-import UploadCollectionSelectionMode from "./types/UploadCollectionSelectionMode.js";
 // Template
 import UploadCollectionTemplate from "./generated/templates/UploadCollectionTemplate.lit.js";
 // Styles
@@ -50,6 +49,29 @@ let UploadCollection = UploadCollection_1 = class UploadCollection extends UI5El
     }
     constructor() {
         super();
+        /**
+         * Defines the selection mode of the `ui5-upload-collection`.
+         *
+         * @default "None"
+         * @public
+         */
+        this.selectionMode = "None";
+        /**
+         * By default there will be drag and drop overlay shown over the `ui5-upload-collection` when files
+         * are dragged. If you don't intend to use drag and drop, set this property.
+         *
+         * **Note:** It is up to the application developer to add handler for `drop` event and handle it.
+         * `ui5-upload-collection` only displays an overlay.
+         * @default false
+         * @public
+         */
+        this.hideDragOverlay = false;
+        /**
+         * Indicates what overlay to show when files are being dragged.
+         * @default "None"
+         * @private
+         */
+        this._dndOverlayMode = "None";
         this._bodyDnDHandler = this.bodyDnDHandler.bind(this);
     }
     bodyDnDHandler(e) {
@@ -151,7 +173,7 @@ let UploadCollection = UploadCollection_1 = class UploadCollection extends UI5El
     }
 };
 __decorate([
-    property({ type: UploadCollectionSelectionMode, defaultValue: UploadCollectionSelectionMode.None })
+    property()
 ], UploadCollection.prototype, "selectionMode", void 0);
 __decorate([
     property()
@@ -166,7 +188,7 @@ __decorate([
     property()
 ], UploadCollection.prototype, "accessibleName", void 0);
 __decorate([
-    property({ type: UploadCollectionDnDOverlayMode, defaultValue: UploadCollectionDnDOverlayMode.None })
+    property()
 ], UploadCollection.prototype, "_dndOverlayMode", void 0);
 __decorate([
     slot({ type: HTMLElement, "default": true })

@@ -12,7 +12,6 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import MediaRange from "@ui5/webcomponents-base/dist/MediaRange.js";
 import browserScrollbarCSS from "@ui5/webcomponents/dist/generated/themes/BrowserScrollbar.css.js";
-import PageBackgroundDesign from "./types/PageBackgroundDesign.js";
 // Template
 import PageTemplate from "./generated/templates/PageTemplate.lit.js";
 // Styles
@@ -49,6 +48,41 @@ import PageCss from "./generated/themes/Page.css.js";
 let Page = class Page extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the background color of the `ui5-page`.
+         *
+         * **Note:** When a ui5-list is placed inside the page, we recommend using “List” to ensure better color contrast.
+         * @default "Solid"
+         * @public
+         */
+        this.backgroundDesign = "Solid";
+        /**
+         * Disables vertical scrolling of page content.
+         * If set to true, there will be no vertical scrolling at all.
+         * @default false
+         * @public
+         */
+        this.noScrolling = false;
+        /**
+         * Defines if the footer is fixed at the very bottom of the page.
+         *
+         * **Note:** When set to true the footer is fixed at the very bottom of the page, otherwise it floats over the content with a slight offset from the bottom.
+         * @default false
+         * @public
+         */
+        this.fixedFooter = false;
+        /**
+         * Defines the footer visibility.
+         * @default false
+         * @public
+         */
+        this.hideFooter = false;
+        /**
+         * Defines the current media query size.
+         * @private
+         * @since 1.0.0-rc.15
+         */
+        this.mediaRange = "S";
         this._updateMediaRange = this.updateMediaRange.bind(this);
     }
     onEnterDOM() {
@@ -81,7 +115,7 @@ let Page = class Page extends UI5Element {
     }
 };
 __decorate([
-    property({ type: PageBackgroundDesign, defaultValue: PageBackgroundDesign.Solid })
+    property()
 ], Page.prototype, "backgroundDesign", void 0);
 __decorate([
     property({ type: Boolean })

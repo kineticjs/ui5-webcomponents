@@ -2,7 +2,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import WrappingType from "./types/WrappingType.js";
+import type WrappingType from "./types/WrappingType.js";
 /**
  * @class
  *
@@ -74,10 +74,10 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
     checked: boolean;
     /**
      * Defines the text of the component.
-     * @default ""
+     * @default undefined
      * @public
      */
-    text: string;
+    text?: string;
     /**
      * Defines the value state of the component.
      * @default "None"
@@ -94,18 +94,18 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
      * **Note:** The selection can be changed with `ARROW_UP/DOWN` and `ARROW_LEFT/RIGHT` keys between radio buttons in same group.
      *
      * **Note:** Only one radio button can be selected per group.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the form value of the component.
      * When a form with a radio button group is submitted, the group's value
      * will be the value of the currently selected radio button.
-     * @default ""
+     * @default undefined
      * @public
      */
-    value: string;
+    value?: string;
     /**
      * Defines whether the component text wraps when there is not enough space.
      *
@@ -120,15 +120,15 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
      * @public
      * @since 1.6.0
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the IDs of the elements that label the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.1.0
      */
-    accessibleNameRef: string;
-    _tabIndex: string;
+    accessibleNameRef?: string;
+    _tabIndex?: string;
     /**
      * Defines the active state (pressed or not) of the component.
      * @default false
@@ -176,6 +176,6 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
     get effectiveAriaDescribedBy(): string | undefined;
     get hasValueState(): boolean;
     get valueStateText(): string;
-    get effectiveTabIndex(): string;
+    get effectiveTabIndex(): string | undefined;
 }
 export default RadioButton;

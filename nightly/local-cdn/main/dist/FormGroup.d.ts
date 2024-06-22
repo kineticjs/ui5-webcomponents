@@ -1,7 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type FormItem from "./FormItem.js";
 import type { IFormItem } from "./Form.js";
-import FormItemSpacing from "./types/FormItemSpacing.js";
+import type FormItemSpacing from "./types/FormItemSpacing.js";
 /**
  * @class
  *
@@ -26,16 +26,17 @@ import FormItemSpacing from "./types/FormItemSpacing.js";
  * @public
  * @implements {IFormItem}
  * @since 2.0.0
+ * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 declare class FormGroup extends UI5Element implements IFormItem {
     /**
      * Defines header text of the component.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Defines column span of the component,
      * e.g how many columns the group should span to.

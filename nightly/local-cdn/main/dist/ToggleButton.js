@@ -34,6 +34,15 @@ import toggleBtnCss from "./generated/themes/ToggleButton.css.js";
  * @public
  */
 let ToggleButton = class ToggleButton extends Button {
+    constructor() {
+        super(...arguments);
+        /**
+         * Determines whether the component is displayed as pressed.
+         * @default false
+         * @public
+         */
+        this.pressed = false;
+    }
     _onclick() {
         this.pressed = !this.pressed;
         if (isSafari()) {

@@ -14,7 +14,6 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isFirefox, isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import CardHeaderTemplate from "./generated/templates/CardHeaderTemplate.lit.js";
 import { AVATAR_TOOLTIP, ARIA_ROLEDESCRIPTION_CARD_HEADER, ARIA_ROLEDESCRIPTION_INTERACTIVE_CARD_HEADER, } from "./generated/i18n/i18n-defaults.js";
 // Styles
@@ -43,6 +42,25 @@ import cardHeaderCss from "./generated/themes/CardHeader.css.js";
  * @csspart additional-text - Used to style the additional text of the CardHeader
  */
 let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines if the component would be interactive,
+         * e.g gets hover effect, gets focus outline and `click` event is fired, when pressed.
+         * @default false
+         * @public
+        */
+        this.interactive = false;
+        /**
+         * Define the `aria-level` attribute of the component
+         *
+         * **Note: ** If the interactive property is set, `aria-level` attribute is not rendered at all.
+         * @private
+         * @default 3
+        */
+        this._ariaLevel = 3;
+        this._headerActive = false;
+    }
     onEnterDOM() {
         if (isDesktop()) {
             this.setAttribute("desktop", "");
@@ -147,7 +165,7 @@ __decorate([
     property({ type: Boolean })
 ], CardHeader.prototype, "interactive", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 3 })
+    property({ type: Number })
 ], CardHeader.prototype, "_ariaLevel", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

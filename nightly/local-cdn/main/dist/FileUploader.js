@@ -50,6 +50,39 @@ import ValueStateMessageCss from "./generated/themes/ValueStateMessage.css.js";
  * @public
  */
 let FileUploader = FileUploader_1 = class FileUploader extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * If set to "true", the input field of component will not be rendered. Only the default slot that is passed will be rendered.
+         * @default false
+         * @public
+         */
+        this.hideInput = false;
+        /**
+         * Defines whether the component is in disabled state.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Allows multiple files to be chosen.
+         * @default false
+         * @public
+         */
+        this.multiple = false;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * @private
+         */
+        this.focused = false;
+    }
     async formElementAnchor() {
         return this.getFocusDomRefAsync();
     }
@@ -60,7 +93,7 @@ let FileUploader = FileUploader_1 = class FileUploader extends UI5Element {
         return this.content[0];
     }
     get formFormattedValue() {
-        if (this.files) {
+        if (this.files && this.name) {
             const formData = new FormData();
             for (let i = 0; i < this.files.length; i++) {
                 formData.append(this.name, this.files[i]);
@@ -276,7 +309,7 @@ __decorate([
     property()
 ], FileUploader.prototype, "value", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], FileUploader.prototype, "valueState", void 0);
 __decorate([
     property({ type: Boolean })

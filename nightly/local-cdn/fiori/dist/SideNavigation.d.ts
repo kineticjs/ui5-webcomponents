@@ -103,10 +103,10 @@ declare class SideNavigation extends UI5Element {
      */
     _popoverContents: SideNavigationPopoverContents;
     inPopover: boolean;
+    _menuPopoverItems: Array<HTMLElement>;
     _isOverflow: boolean;
     _flexibleItemNavigation: ItemNavigation;
     _fixedItemNavigation: ItemNavigation;
-    _menuPopoverItems: Array<HTMLElement>;
     /**
      * @private
      */

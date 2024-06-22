@@ -13,7 +13,6 @@ import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import NavigationMode from "@ui5/webcomponents-base/dist/types/NavigationMode.js";
 import { isTabNext, isTabPrevious, isSpace, isEnter, isCtrlA, isUpAlt, isDownAlt, isUpShift, isDownShift, isHomeCtrl, isEndCtrl, isHomeShift, isEndShift, } from "@ui5/webcomponents-base/dist/Keys.js";
 import getNormalizedTarget from "@ui5/webcomponents-base/dist/util/getNormalizedTarget.js";
@@ -108,6 +107,94 @@ let Table = Table_1 = class Table extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines if the value of `noDataText` will be diplayed when there is no rows present in the table.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.hideNoData = false;
+        /**
+         * Defines whether the table will have growing capability either by pressing a `More` button,
+         * or via user scroll. In both cases `load-more` event is fired.
+         *
+         * Available options:
+         *
+         * `Button` - Shows a `More` button at the bottom of the table, pressing of which triggers the `load-more` event.
+         *
+         * `Scroll` - The `load-more` event is triggered when the user scrolls to the bottom of the table;
+         *
+         * `None` (default) - The growing is off.
+         *
+         * **Restrictions:** `growing="Scroll"` is not supported for Internet Explorer,
+         * and the component will fallback to `growing="Button"`.
+         * @default "None"
+         * @since 2.0.0
+         * @public
+         */
+        this.growing = "None";
+        /**
+         * Defines if the table is in busy state.
+         *
+         * In this state the component's opacity is reduced
+         * and busy indicator is displayed at the bottom of the table.
+         * @default false
+         * @since 2.0.0
+         * @public
+         */
+        this.busy = false;
+        /**
+         * Defines the delay in milliseconds, after which the busy indicator will show up for this component.
+         * @default 1000
+         * @public
+         */
+        this.busyDelay = 1000;
+        /**
+         * Determines whether the column headers remain fixed at the top of the page during
+         * vertical scrolling as long as the Web Component is in the viewport.
+         *
+         * **Restrictions:**
+         *
+         * - Browsers that do not support this feature:
+         *
+         * - Internet Explorer
+         * - Microsoft Edge lower than version 41 (EdgeHTML 16)
+         * - Mozilla Firefox lower than version 59
+         *
+         * - Scrolling behavior:
+         *
+         * - If the Web Component is placed in layout containers that have the `overflow: hidden`
+         * or `overflow: auto` style definition, this can
+         * prevent the sticky elements of the Web Component from becoming fixed at the top of the viewport.
+         * @default false
+         * @public
+         */
+        this.stickyColumnHeader = false;
+        /**
+         * Defines the mode of the component.
+         * @default "None"
+         * @since 2.0.0
+         * @public
+         */
+        this.mode = "None";
+        this._noDataDisplayed = false;
+        /**
+         * Defines the active state of the `More` button.
+         * @private
+         */
+        this._loadMoreActive = false;
+        /**
+         * Defines if the entire table is in view port.
+         * @private
+         */
+        this._inViewport = false;
+        /**
+         * Defines whether all rows are selected or not when table is in MultiSelect mode.
+         * @default false
+         * @since 2.0.0
+         * @private
+         */
+        this._allRowsSelected = false;
         this.visibleColumns = []; // template loop should always have a defined array
         // The ItemNavigation requires each item to 1) have a "forcedTabIndex" property and 2) be either a UI5Element, or have an id property (to find it in the component's shadow DOM by)
         this._columnHeader = {
@@ -153,7 +240,7 @@ let Table = Table_1 = class Table extends UI5Element {
             row.mode = this.mode;
         });
         this.visibleColumns = this.columns.filter((column, index) => {
-            return !this._hiddenColumns[index];
+            return !this._hiddenColumns?.[index];
         });
         this._noDataDisplayed = !this.rows.length && !this.hideNoData;
         this.visibleColumnsCount = this.visibleColumns.length;
@@ -621,7 +708,7 @@ let Table = Table_1 = class Table extends UI5Element {
             }
             this.columns[visibleColumnsIndexes[visibleColumnsIndexes.length - 1]].last = true;
         }
-        const hiddenColumnsChange = (this._hiddenColumns.length !== hiddenColumns.length) || this._hiddenColumns.some((column, index) => column !== hiddenColumns[index]);
+        const hiddenColumnsChange = (this._hiddenColumns?.length !== hiddenColumns.length) || this._hiddenColumns?.some((column, index) => column !== hiddenColumns[index]);
         const shownColumnsChange = hiddenColumns.length === 0;
         // invalidate if hidden columns count has changed or columns are shown
         if (hiddenColumnsChange || shownColumnsChange) {
@@ -643,7 +730,7 @@ let Table = Table_1 = class Table extends UI5Element {
                 text: column.textContent,
                 popinText: column.popinText,
                 popinDisplay: column.popinDisplay,
-                visible: !this._hiddenColumns[index],
+                visible: !this._hiddenColumns?.[index],
             };
         }, this);
     }
@@ -737,28 +824,28 @@ __decorate([
     property({ type: Boolean })
 ], Table.prototype, "hideNoData", void 0);
 __decorate([
-    property({ type: TableGrowingMode, defaultValue: TableGrowingMode.None })
+    property()
 ], Table.prototype, "growing", void 0);
 __decorate([
     property({ type: Boolean })
 ], Table.prototype, "busy", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1000 })
+    property({ type: Number })
 ], Table.prototype, "busyDelay", void 0);
 __decorate([
     property({ type: Boolean })
 ], Table.prototype, "stickyColumnHeader", void 0);
 __decorate([
-    property({ type: TableMode, defaultValue: TableMode.None })
+    property()
 ], Table.prototype, "mode", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], Table.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Table.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], Table.prototype, "_hiddenColumns", void 0);
 __decorate([
     property({ type: Boolean })

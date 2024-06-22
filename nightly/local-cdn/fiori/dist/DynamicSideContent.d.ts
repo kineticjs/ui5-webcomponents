@@ -6,7 +6,7 @@ import SideContentVisibility from "./types/SideContentVisibility.js";
 import SideContentFallDown from "./types/SideContentFallDown.js";
 type DynamicSideContentLayoutChangeEventDetail = {
     currentBreakpoint: string;
-    previousBreakpoint: string;
+    previousBreakpoint: string | undefined;
     mainContentVisible: boolean;
     sideContentVisible: boolean;
 };
@@ -145,7 +145,7 @@ declare class DynamicSideContent extends UI5Element {
     /**
      * @private
      */
-    _currentBreakpoint: string;
+    _currentBreakpoint?: string;
     /**
      * Defines the side content.
      * @public

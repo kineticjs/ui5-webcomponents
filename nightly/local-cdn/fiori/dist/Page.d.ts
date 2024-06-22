@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import PageBackgroundDesign from "./types/PageBackgroundDesign.js";
+import type PageBackgroundDesign from "./types/PageBackgroundDesign.js";
 /**
  * @class
  *

@@ -31,6 +31,14 @@ import ListItemGroupHeader from "./ListItemGroupHeader.js";
  * @since 2.0.0
  */
 let ListItemGroup = class ListItemGroup extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Indicates whether the header is focused
+         * @private
+         */
+        this.focused = false;
+    }
     get groupHeaderItem() {
         return this.shadowRoot.querySelector("[ui5-li-group-header]");
     }
@@ -48,7 +56,7 @@ __decorate([
     property()
 ], ListItemGroup.prototype, "headerText", void 0);
 __decorate([
-    property({ type: String })
+    property()
 ], ListItemGroup.prototype, "headerAccessibleName", void 0);
 __decorate([
     slot({

@@ -25,10 +25,10 @@ declare class TableGroupRow extends UI5Element implements ITableRow {
      * @private
      */
     mode: `${TableMode}`;
-    _columnsInfo: Array<TableColumnInfo>;
-    forcedTabIndex: string;
+    _columnsInfo?: Array<TableColumnInfo>;
+    forcedTabIndex?: string;
     forcedBusy: boolean;
-    forcedAriaPosition: string;
+    forcedAriaPosition?: string;
     selected: boolean;
     tabbableElements: Array<HTMLElement>;
     _columnsInfoString: string;

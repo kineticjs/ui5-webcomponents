@@ -7,11 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItem from "./ListItem.js";
 import Icon from "./Icon.js";
 import Avatar from "./Avatar.js";
-import WrappingType from "./types/WrappingType.js";
 import ListItemStandardTemplate from "./generated/templates/ListItemStandardTemplate.lit.js";
 /**
  * @class
@@ -39,6 +37,48 @@ import ListItemStandardTemplate from "./generated/templates/ListItemStandardTemp
  * @public
  */
 let ListItemStandard = class ListItemStandard extends ListItem {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the `icon` should be displayed in the beginning of the list item or in the end.
+         *
+         * **Note:** If `image` is set, the `icon` would be displayed after the `image`.
+         * @default false
+         * @public
+         */
+        this.iconEnd = false;
+        /**
+         * Defines the state of the `additionalText`.
+         *
+         * Available options are: `"None"` (by default), `"Positive"`, `"Critical"`, `"Information"` and `"Negative"`.
+         * @default "None"
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.additionalTextState = "None";
+        /**
+         * Defines whether the item is movable.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.movable = false;
+        /**
+         * Defines if the text of the component should wrap, they truncate by default.
+         *
+         * **Note:** this property takes affect only if text node is provided to default slot of the component
+         * @default "None"
+         * @private
+         * @since 1.5.0
+         */
+        this.wrappingType = "None";
+        /**
+         * Indicates if the list item has text content.
+         * @private
+         */
+        this.hasTitle = false;
+        this._hasImageContent = false;
+    }
     onBeforeRendering() {
         super.onBeforeRendering();
         this.hasTitle = !!this.textContent;
@@ -73,7 +113,7 @@ __decorate([
     property()
 ], ListItemStandard.prototype, "additionalText", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], ListItemStandard.prototype, "additionalTextState", void 0);
 __decorate([
     property({ type: Boolean })
@@ -82,7 +122,7 @@ __decorate([
     property()
 ], ListItemStandard.prototype, "accessibleName", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.None })
+    property()
 ], ListItemStandard.prototype, "wrappingType", void 0);
 __decorate([
     property({ type: Boolean })

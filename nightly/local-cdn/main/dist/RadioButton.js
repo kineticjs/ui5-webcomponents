@@ -17,7 +17,6 @@ import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/Ari
 import { isSpace, isEnter, isDown, isLeft, isUp, isRight, } from "@ui5/webcomponents-base/dist/Keys.js";
 import Label from "./Label.js";
 import RadioButtonGroup from "./RadioButtonGroup.js";
-import WrappingType from "./types/WrappingType.js";
 // Template
 import RadioButtonTemplate from "./generated/templates/RadioButtonTemplate.lit.js";
 // i18n
@@ -72,6 +71,72 @@ let RadioButton = RadioButton_1 = class RadioButton extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines whether the component is disabled.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         * @since 1.9.0
+         */
+        this.required = false;
+        /**
+         * Defines whether the component is checked or not.
+         *
+         * **Note:** The property value can be changed with user interaction,
+         * either by clicking/tapping on the component,
+         * or by using the Space or Enter key.
+         * @default false
+         * @formEvents change
+         * @formProperty
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.checked = false;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component text wraps when there is not enough space.
+         *
+         * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
+         * @default "Normal"
+         * @public
+         */
+        this.wrappingType = "Normal";
+        /**
+         * Defines the active state (pressed or not) of the component.
+         * @default false
+         * @private
+         */
+        this.active = false;
+        /**
+         * Defines if the component is selected in specific group
+         * @default false
+         * @private
+         */
+        this._groupChecked = false;
+        this._groupRequired = false;
+        this._name = "";
+        this._checked = false;
         this._deactivate = () => {
             if (activeRadio) {
                 activeRadio.active = false;
@@ -120,7 +185,7 @@ let RadioButton = RadioButton_1 = class RadioButton extends UI5Element {
         if (this.name && currentChecked !== oldChecked) {
             RadioButtonGroup.updateTabOrder(this.name);
         }
-        this._name = this.name;
+        this._name = this.name || "";
         this._checked = this.checked;
     }
     _onclick() {
@@ -250,7 +315,7 @@ __decorate([
     property()
 ], RadioButton.prototype, "text", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], RadioButton.prototype, "valueState", void 0);
 __decorate([
     property()
@@ -259,7 +324,7 @@ __decorate([
     property()
 ], RadioButton.prototype, "value", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.Normal })
+    property()
 ], RadioButton.prototype, "wrappingType", void 0);
 __decorate([
     property()
@@ -268,7 +333,7 @@ __decorate([
     property()
 ], RadioButton.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property()
 ], RadioButton.prototype, "_tabIndex", void 0);
 __decorate([
     property({ type: Boolean })

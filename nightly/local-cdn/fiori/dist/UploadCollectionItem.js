@@ -10,7 +10,6 @@ import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItemType from "@ui5/webcomponents/dist/types/ListItemType.js";
 import Button from "@ui5/webcomponents/dist/Button.js";
@@ -47,6 +46,73 @@ import UploadCollectionItemCss from "./generated/themes/UploadCollectionItem.css
  * @since 1.0.0-rc.7
  */
 let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem extends ListItem {
+    constructor() {
+        super(...arguments);
+        /**
+         * Holds an instance of `File` associated with this item.
+         * @default null
+         * @public
+         */
+        this.file = null;
+        /**
+         * The name of the file.
+         * @default ""
+         * @public
+         */
+        this.fileName = "";
+        /**
+         * If set to `true` the file name will be clickable and it will fire `file-name-click` event upon click.
+         * @default false
+         * @public
+         */
+        this.fileNameClickable = false;
+        /**
+         * Hides the delete button.
+         * @default false
+         * @public
+         */
+        this.hideDeleteButton = false;
+        /**
+         * Hides the retry button when `uploadState` property is `Error`.
+         * @default false
+         * @public
+         */
+        this.hideRetryButton = false;
+        /**
+         * Hides the terminate button when `uploadState` property is `Uploading`.
+         * @default false
+         * @public
+         */
+        this.hideTerminateButton = false;
+        /**
+         * The upload progress in percentage.
+         *
+         * **Note:** Expected values are in the interval [0, 100].
+         * @default 0
+         * @public
+         */
+        this.progress = 0;
+        /**
+         * Upload state.
+         *
+         * Depending on this property, the item displays the following:
+         *
+         * - `Ready` - progress indicator is displayed.
+         * - `Uploading` - progress indicator and terminate button are displayed. When the terminate button is pressed, `terminate` event is fired.
+         * - `Error` - progress indicator and retry button are displayed. When the retry button is pressed, `retry` event is fired.
+         * - `Complete` - progress indicator is not displayed.
+         *
+         * @default "Ready"
+         * @public
+         */
+        this.uploadState = "Ready";
+        /**
+         * Indicates if editing.
+         * @default false
+         * @private
+         */
+        this._editing = false;
+    }
     static async onDefine() {
         [UploadCollectionItem_1.i18nFioriBundle] = await Promise.all([
             getI18nBundle("@ui5/webcomponents-fiori"),
@@ -220,7 +286,7 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
     }
 };
 __decorate([
-    property({ type: Object, noAttribute: true, defaultValue: null })
+    property({ type: Object, noAttribute: true })
 ], UploadCollectionItem.prototype, "file", void 0);
 __decorate([
     property()
@@ -229,7 +295,7 @@ __decorate([
     property({ type: Boolean })
 ], UploadCollectionItem.prototype, "fileNameClickable", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: false })
+    property({ type: Boolean })
 ], UploadCollectionItem.prototype, "disableDeleteButton", void 0);
 __decorate([
     property({ type: Boolean })
@@ -241,10 +307,10 @@ __decorate([
     property({ type: Boolean })
 ], UploadCollectionItem.prototype, "hideTerminateButton", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], UploadCollectionItem.prototype, "progress", void 0);
 __decorate([
-    property({ type: UploadState, defaultValue: UploadState.Ready })
+    property()
 ], UploadCollectionItem.prototype, "uploadState", void 0);
 __decorate([
     property({ type: Boolean })

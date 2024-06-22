@@ -34,7 +34,7 @@ declare class ListItemBase extends UI5Element implements ITabbable {
     * @private
     */
     hasBorder: boolean;
-    forcedTabIndex: string;
+    forcedTabIndex?: string;
     /**
     * Defines whether `ui5-li` is in disabled state.
     *
@@ -77,7 +77,7 @@ declare class ListItemBase extends UI5Element implements ITabbable {
     get _focusable(): boolean;
     get _pressable(): boolean;
     get hasConfigurableMode(): boolean;
-    get _effectiveTabIndex(): string | 0 | -1;
+    get _effectiveTabIndex(): string | 0 | -1 | undefined;
 }
 export default ListItemBase;
 export type { ListItemBasePressEventDetail, };

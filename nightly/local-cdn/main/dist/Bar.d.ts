@@ -1,5 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import BarDesign from "./types/BarDesign.js";
+import type BarDesign from "./types/BarDesign.js";
 /**
  * @class
  *

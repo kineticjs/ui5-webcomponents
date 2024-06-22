@@ -153,24 +153,24 @@ declare class Table extends UI5Element {
     /**
      * Defines the accessible ARIA name of the component.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Identifies the element (or elements) that labels the component.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the text to be displayed when there are no rows in the component.
      *
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataText: string;
+    noDataText?: string;
     /**
      * Defines the mode of the <code>ui5-table</code> overflow behavior.
      *

@@ -9,7 +9,6 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 // Template
 import TimePickerClockTemplate from "./generated/templates/TimePickerClockTemplate.lit.js";
 // Styles
@@ -50,6 +49,114 @@ const CLOCK_MIDDOT_CLASS = "ui5-tp-clock-mid-dot";
 let TimePickerClock = class TimePickerClock extends UI5Element {
     constructor() {
         super();
+        /**
+         * Determines whether the component is displayed as disabled.
+         * @default false
+         */
+        this.disabled = false;
+        /**
+         * Determines whether the component is active (visible).
+         * @default false
+         */
+        this.active = false;
+        /**
+         * Minimum item value for the outer circle of the clock.
+         * @default -1
+         */
+        this.itemMin = -1;
+        /**
+         * Maximum item value for the outer circle of the clock.
+         * @default -1
+         */
+        this.itemMax = -1;
+        /**
+         * If set to `true`, an inner circle is displayed.
+         * The first item value of the inner circle will be itemMax + 1
+         * @default false
+         */
+        this.showInnerCircle = false;
+        /**
+         * If set to `true`, a surrounding circle with markers (dots) will be hidden.
+         * (for example, on the 'Minutes' clock-dial, markers represent minutes).
+         * @default false
+         */
+        this.hideFractions = false;
+        /**
+         * If provided, this will replace the last item displayed. If there is only one (outer) circle,
+         * the last item from outer circle will be replaced; if there is an inner circle too, the last
+         * item of inner circle will be replaced. Usually, the last item '24' is replaced with '0'.
+         * @default -1
+         */
+        this.lastItemReplacement = -1;
+        /**
+         * Prepend with zero flag. If `true`, values less than 10 will be prepend with 0.
+         * @default false
+         */
+        this.prependZero = false;
+        /**
+         * The currently selected value of the clock.
+         * @default -1
+         */
+        this.selectedValue = -1;
+        /**
+         * The step for displaying of one unit of items.
+         * 1 means 1/60 of the circle.
+         * The default display step is 5 which means minutes and seconds are displayed as "0", "5", "10", etc.
+         * For hours the display step must be set to 1.
+         * @default 5
+         */
+        this.displayStep = 5;
+        /**
+         * The step for selection of items.
+         * 1 means 1 unit:
+         * - if the clock displays hours - 1 unit = 1 hour
+         * - if the clock displays minutes/seconds - 1 unit = 1 minute/second
+         * @default 1
+         */
+        this.valueStep = 1;
+        /**
+         * Defines the currently available Time Picker Clock items depending on Clock setup.
+         */
+        this._items = [];
+        /**
+         * Defines the currently selected Time Picker Clock item.
+         */
+        this._selectedItem = {};
+        /**
+         * Mousedown or Touchstart event flag.
+         * @default false
+         */
+        this._mouseOrTouchDown = false;
+        /**
+         * Cancel Mouseout flag.
+         * @default false
+         */
+        this._cancelTouchOut = false;
+        /**
+         * Calculated selected value of the clock during interactions.
+         * @default -1
+         */
+        this._selectedValue = -1;
+        /**
+         * Selected value of the clock during interactions.
+         * @default -1
+         */
+        this._movSelectedValue = -1;
+        /**
+         * Hovered value of the clock during interactions.
+         * @default -1
+         */
+        this._hoveredValue = -1;
+        /**
+         * Previously hovered value of the clock during interactions.
+         * @default -1
+         */
+        this._prevHoveredValue = -1;
+        /**
+         * Animation in progress flag.
+         * @default false
+         */
+        this._animationInProgress = false;
         this._fnOnMouseOutUp = () => {
             this._mouseOrTouchDown = false;
         };
@@ -493,37 +600,37 @@ __decorate([
     property({ type: Boolean })
 ], TimePickerClock.prototype, "active", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], TimePickerClock.prototype, "itemMin", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], TimePickerClock.prototype, "itemMax", void 0);
 __decorate([
     property({ type: Boolean })
 ], TimePickerClock.prototype, "showInnerCircle", void 0);
 __decorate([
-    property({ type: String, defaultValue: undefined })
+    property()
 ], TimePickerClock.prototype, "label", void 0);
 __decorate([
     property({ type: Boolean })
 ], TimePickerClock.prototype, "hideFractions", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], TimePickerClock.prototype, "lastItemReplacement", void 0);
 __decorate([
     property({ type: Boolean })
 ], TimePickerClock.prototype, "prependZero", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], TimePickerClock.prototype, "selectedValue", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 5 })
+    property({ type: Number })
 ], TimePickerClock.prototype, "displayStep", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], TimePickerClock.prototype, "valueStep", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], TimePickerClock.prototype, "_items", void 0);
 __decorate([
     property({ type: Object })
@@ -538,16 +645,16 @@ __decorate([
     property({ type: Boolean, noAttribute: true })
 ], TimePickerClock.prototype, "_cancelTouchOut", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerClock.prototype, "_selectedValue", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerClock.prototype, "_movSelectedValue", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerClock.prototype, "_hoveredValue", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TimePickerClock.prototype, "_prevHoveredValue", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })
@@ -571,7 +678,7 @@ TimePickerClock = __decorate([
             /**
              * @public
              */
-            value: { type: Integer },
+            value: { type: Number },
             /**
              * @public
              */

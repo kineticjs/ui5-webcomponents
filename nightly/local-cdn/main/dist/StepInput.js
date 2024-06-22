@@ -14,8 +14,6 @@ import { isUp, isDown, isUpCtrl, isDownCtrl, isUpShift, isDownShift, isUpShiftCt
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import StepInputTemplate from "./generated/templates/StepInputTemplate.lit.js";
 import { STEPINPUT_DEC_ICON_TITLE, STEPINPUT_INC_ICON_TITLE } from "./generated/i18n/i18n-defaults.js";
@@ -73,6 +71,59 @@ const INITIAL_SPEED = 120; // milliseconds
  * @public
  */
 let StepInput = StepInput_1 = class StepInput extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines a value of the component.
+         * @default 0
+         * @public
+         */
+        this.value = 0;
+        /**
+         * Defines a step of increasing/decreasing the value of the component.
+         * @default 1
+         * @public
+         */
+        this.step = 1;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         */
+        this.required = false;
+        /**
+         * Determines whether the component is displayed as disabled.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Determines whether the component is displayed as read-only.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Determines the number of digits after the decimal point of the component.
+         * @default 0
+         * @public
+         */
+        this.valuePrecision = 0;
+        this._decIconDisabled = false;
+        this._incIconDisabled = false;
+        this.focused = false;
+        this._inputFocused = false;
+        this._previousValue = this.value;
+        this._waitTimeout = INITIAL_WAIT_TIMEOUT;
+        this._speed = INITIAL_SPEED;
+        this._spinStarted = false;
+    }
     async formElementAnchor() {
         return (await this.getFocusDomRefAsync())?.getFocusDomRefAsync();
     }
@@ -385,19 +436,19 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
     }
 };
 __decorate([
-    property({ validator: Float, defaultValue: 0 })
+    property({ type: Number })
 ], StepInput.prototype, "value", void 0);
 __decorate([
-    property({ validator: Float })
+    property({ type: Number })
 ], StepInput.prototype, "min", void 0);
 __decorate([
-    property({ validator: Float })
+    property({ type: Number })
 ], StepInput.prototype, "max", void 0);
 __decorate([
-    property({ validator: Float, defaultValue: 1 })
+    property({ type: Number })
 ], StepInput.prototype, "step", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], StepInput.prototype, "valueState", void 0);
 __decorate([
     property({ type: Boolean })
@@ -409,49 +460,49 @@ __decorate([
     property({ type: Boolean })
 ], StepInput.prototype, "readonly", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], StepInput.prototype, "placeholder", void 0);
 __decorate([
     property()
 ], StepInput.prototype, "name", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], StepInput.prototype, "valuePrecision", void 0);
 __decorate([
     property()
 ], StepInput.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], StepInput.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_decIconDisabled", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_incIconDisabled", void 0);
 __decorate([
     property({ type: Boolean })
 ], StepInput.prototype, "focused", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_inputFocused", void 0);
 __decorate([
-    property({ validator: Float, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_previousValue", void 0);
 __decorate([
-    property({ validator: Float, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_waitTimeout", void 0);
 __decorate([
-    property({ validator: Float, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_speed", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_btnDown", void 0);
 __decorate([
-    property({ validator: Integer, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_spinTimeoutId", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
+    property({ noAttribute: true })
 ], StepInput.prototype, "_spinStarted", void 0);
 __decorate([
     slot()

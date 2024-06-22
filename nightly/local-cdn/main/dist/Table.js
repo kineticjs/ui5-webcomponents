@@ -15,7 +15,6 @@ import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsSco
 import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import TableTemplate from "./generated/templates/TableTemplate.lit.js";
 import TableStyles from "./generated/themes/Table.css.js";
 import TableRow from "./TableRow.js";
@@ -106,6 +105,38 @@ let Table = Table_1 = class Table extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the mode of the <code>ui5-table</code> overflow behavior.
+         *
+         * Available options are:
+         *
+         * <code>Scroll</code> - Columns are shown as regular columns and horizontal scrolling is enabled.
+         *
+         * <code>Popin</code> - Columns are shown as pop-ins instead of regular columns.
+         *
+         * @default "Scroll"
+         * @public
+         */
+        this.overflowMode = "Scroll";
+        /**
+         * Defines if the loading indicator should be shown.
+         *
+         * <b>Note:</b> When the component is loading, it is non-interactive.
+         * @default false
+         * @public
+         */
+        this.loading = false;
+        /**
+         * Defines the delay in milliseconds, after which the loading indicator will show up for this component.
+         * @default 1000
+         * @public
+         */
+        this.loadingDelay = 1000;
+        /**
+         * Defines the sticky top offset of the table, if other sticky elements outside of the table exist.
+         */
+        this.stickyTop = "0";
+        this._invalidate = 0;
         this._events = ["keydown", "keyup", "click", "focusin", "focusout"];
         this._poppedIn = [];
         this._containerWidth = 0;
@@ -359,19 +390,19 @@ __decorate([
     property()
 ], Table.prototype, "noDataText", void 0);
 __decorate([
-    property({ type: TableOverflowMode, defaultValue: TableOverflowMode.Scroll })
+    property()
 ], Table.prototype, "overflowMode", void 0);
 __decorate([
     property({ type: Boolean })
 ], Table.prototype, "loading", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1000 })
+    property({ type: Number })
 ], Table.prototype, "loadingDelay", void 0);
 __decorate([
-    property({ type: String, defaultValue: "0" })
+    property()
 ], Table.prototype, "stickyTop", void 0);
 __decorate([
-    property({ type: Integer, defaultValue: 0, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], Table.prototype, "_invalidate", void 0);
 Table = Table_1 = __decorate([
     customElement({

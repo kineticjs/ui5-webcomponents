@@ -20,8 +20,8 @@
 
 
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/test/pages/Icon.html-a74e8d5d.js"></script>
-  <link rel="modulepreload" crossorigin href="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/test/pages/Icon.html-9d258b7d.js"></script>
+  <link rel="modulepreload" crossorigin href="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js">
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/Icon-026bf4d7.css">
 </head>
 
@@ -185,18 +185,18 @@
 			nonInteractiveIconUI5ClickCounter = 0;
 
 		interactiveIcon.addEventListener("click", function() {
-			inpClickEventIteractive.value = ++interactiveIconClickCounter;
+			inpClickEventIteractive.value = `${++interactiveIconClickCounter}`;
 		});
 		interactiveIcon.addEventListener("ui5-click", function() {
-			inpUI5ClickEventIteractive.value = ++interactiveIconUI5ClickCounter;
+			inpUI5ClickEventIteractive.value = `${++interactiveIconUI5ClickCounter}`;
 		});
 
 
 		nonInteractiveIcon.addEventListener("click", function() {
-			inpClickEventNonIteractive.value = ++nonInteractiveIconClickCounter;
+			inpClickEventNonIteractive.value = `${++nonInteractiveIconClickCounter}`;
 		});
 		nonInteractiveIcon.addEventListener("ui5-click", function() {
-			inpUI5ClickEventNonIteractive.value = ++nonInteractiveIconUI5ClickCounter;
+			inpUI5ClickEventNonIteractive.value = `${++nonInteractiveIconUI5ClickCounter}`;
 		});
 	</script>
 

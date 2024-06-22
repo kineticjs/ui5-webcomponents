@@ -1,5 +1,5 @@
 import CalendarDate from "./CalendarDate.js";
-import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
+import type CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 /**
  * @class
  *

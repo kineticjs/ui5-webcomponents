@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import ListItemType from "./types/ListItemType.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type ListItemType from "./types/ListItemType.js";
 import type { IInputSuggestionItem } from "./Input.js";
 /**
  * @class
@@ -41,10 +41,10 @@ declare class SuggestionItem extends UI5Element implements IInputSuggestionItem 
      * **Note:**
      * SAP-icons font provides numerous built-in icons. To find all the available icons, see the
      * [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines whether the `icon` should be displayed in the beginning of the item or in the end.
      *
@@ -57,10 +57,10 @@ declare class SuggestionItem extends UI5Element implements IInputSuggestionItem 
      * Defines the `image` source URI.
      *
      * **Note:** The `image` would be displayed in the beginning of the item.
-     * @default ""
+     * @default undefined
      * @public
      */
-    image: string;
+    image?: string;
     /**
      * Defines the `additionalText`, displayed in the end of the item.
      * @default ""

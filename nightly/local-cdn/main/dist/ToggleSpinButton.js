@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import Button from "./Button.js";
 import ToggleButton from "./ToggleButton.js";
 // Template
@@ -26,6 +25,25 @@ import ToggleSpinButtonTemplate from "./generated/templates/ToggleSpinButtonTemp
  * @private
  */
 let ToggleSpinButton = class ToggleSpinButton extends ToggleButton {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the ARIA valuemin of the component.
+         * @default -1
+         */
+        this.valueMin = -1;
+        /**
+         * Defines the ARIA valuemax of the component.
+         * @default -1
+         */
+        this.valueMax = -1;
+        /**
+         * Defines the ARIA valuenow of the component.
+         * @default -1
+         */
+        this.valueNow = -1;
+    }
+    ;
     /**
      * Override of the handler in order to prevent button toggle functionality
      */
@@ -38,13 +56,13 @@ let ToggleSpinButton = class ToggleSpinButton extends ToggleButton {
     }
 };
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], ToggleSpinButton.prototype, "valueMin", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], ToggleSpinButton.prototype, "valueMax", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: -1 })
+    property({ type: Number })
 ], ToggleSpinButton.prototype, "valueNow", void 0);
 __decorate([
     property()

@@ -74,10 +74,10 @@ declare class Dialog extends Popup {
      * Defines the header text.
      *
      * **Note:** If `header` slot is provided, the `headerText` is ignored.
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Determines whether the component should be stretched to fullscreen.
      *

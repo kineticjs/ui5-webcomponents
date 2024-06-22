@@ -72,10 +72,10 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     required: boolean;
     /**
      * Defines a short hint intended to aid the user with data entry when the component has no value.
-     * @default ""
+     * @default undefined
      * @public
      */
-    placeholder: string;
+    placeholder?: string;
     /**
      * Defines the value state of the component.
      *
@@ -133,24 +133,24 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the accessible ARIA name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the textarea.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * @private
      */
@@ -166,7 +166,7 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     /**
      * @private
      */
-    _maxHeight: string;
+    _maxHeight?: string;
     /**
      * @private
      */

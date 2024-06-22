@@ -15,7 +15,6 @@ import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import NavigationMode from "@ui5/webcomponents-base/dist/types/NavigationMode.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
 import clamp from "@ui5/webcomponents-base/dist/util/clamp.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
@@ -24,7 +23,6 @@ import { getFirstFocusableElement } from "@ui5/webcomponents-base/dist/util/Focu
 import Button from "@ui5/webcomponents/dist/Button.js";
 import ResponsivePopover from "@ui5/webcomponents/dist/ResponsivePopover.js";
 import browserScrollbarCSS from "@ui5/webcomponents/dist/generated/themes/BrowserScrollbar.css.js";
-import WizardContentLayout from "./types/WizardContentLayout.js";
 // Texts
 import { WIZARD_NAV_STEP_DEFAULT_HEADING, WIZARD_NAV_ARIA_ROLE_DESCRIPTION, WIZARD_NAV_ARIA_LABEL, WIZARD_LIST_ARIA_LABEL, WIZARD_LIST_ARIA_DESCRIBEDBY, WIZARD_ACTIONSHEET_STEPS_ARIA_LABEL, WIZARD_OPTIONAL_STEP_ARIA_LABEL, WIZARD_STEP_ARIA_LABEL, WIZARD_STEP_ACTIVE, WIZARD_STEP_INACTIVE, } from "./generated/i18n/i18n-defaults.js";
 // Step in header and content
@@ -139,11 +137,36 @@ const RESPONSIVE_BREAKPOINTS = {
 let Wizard = Wizard_1 = class Wizard extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines how the content of the `ui5-wizard` would be visualized.
+         * @public
+         * @since 1.14.0
+         * @default "MultipleSteps"
+         */
+        this.contentLayout = "MultipleSteps";
+        /**
+         * Defines the threshold to switch between steps upon user scrolling.
+         *
+         * **For Example:**
+         *
+         * (1) To switch to the next step, when half of the step is scrolled out - set `step-switch-threshold="0.5"`.
+         * (2) To switch to the next step, when the entire current step is scrolled out - set `step-switch-threshold="1"`.
+         *
+         * **Note:** Supported values are between 0.5 and 1
+         * and values out of the range will be normalized to 0.5 and 1 respectively.
+         * @private
+         * @default 0.7
+         * @since 1.0.0-rc.13
+         */
+        this.stepSwitchThreshold = STEP_SWITCH_THRESHOLDS.DEFAULT;
+        /**
+         * Stores references to the grouped steps.
+         * @private
+         */
+        this._groupedTabs = [];
         // Stores the scroll offsets of the steps,
         // e.g. the steps' starting point.
         this.stepScrollOffsets = [];
-        // Stores references to the grouped steps.
-        this._groupedTabs = [];
         // Keeps track of the currently selected step index.
         this.selectedStepIndex = 0;
         // Keeps track of the previously selected step index.
@@ -769,19 +792,19 @@ let Wizard = Wizard_1 = class Wizard extends UI5Element {
     }
 };
 __decorate([
-    property({ type: WizardContentLayout, defaultValue: WizardContentLayout.MultipleSteps })
+    property()
 ], Wizard.prototype, "contentLayout", void 0);
 __decorate([
-    property({ validator: Float })
+    property({ type: Number })
 ], Wizard.prototype, "width", void 0);
 __decorate([
-    property({ validator: Float, defaultValue: STEP_SWITCH_THRESHOLDS.DEFAULT })
+    property({ type: Number })
 ], Wizard.prototype, "stepSwitchThreshold", void 0);
 __decorate([
-    property({ validator: Float })
+    property({ type: Number })
 ], Wizard.prototype, "contentHeight", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], Wizard.prototype, "_groupedTabs", void 0);
 __decorate([
     property()

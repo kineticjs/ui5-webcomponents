@@ -95,6 +95,29 @@ const PHONE_MODE_BREAKPOINT = 640; // px
 let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker {
     constructor() {
         super();
+        /**
+         * Defines the visibility of the time view in `phoneMode`.
+         * For more information, see the `phoneMode` property.
+         *
+         * **Note:** The date view would be displayed by default.
+         * @default false
+         * @private
+         */
+        this._showTimeView = false;
+        /**
+         * Defines if the `DateTimePicker` should be displayed in phone mode.
+         * The phone mode turns on when the component is used on small screens or phone devices.
+         * In phone mode the user can see either the calendar view, or the time view
+         * and can switch between the views via toggle buttons.
+         * @default false
+         * @private
+         */
+        this._phoneMode = false;
+        /**
+         * Selected, but not yet confirmed date/time
+         * @private
+         */
+        this._previewValues = {};
         this._handleResizeBound = this._handleResize.bind(this);
     }
     /**

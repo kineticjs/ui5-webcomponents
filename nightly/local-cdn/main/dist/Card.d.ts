@@ -32,14 +32,14 @@ declare class Card extends UI5Element {
      * @public
      * @since 1.0.0-rc.16
     */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the IDs of the elements that label the component.
      * @default ""
      * @public
      * @since 1.0.0-rc.16
     */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the content of the component.
      * @public

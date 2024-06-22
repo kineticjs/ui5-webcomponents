@@ -30,7 +30,7 @@ declare class ToggleSpinButton extends ToggleButton {
     valueNow: number;
     /**
      * Defines the ARIA valuetext of the component.
-     * @default ""
+     * @default undefined
      */
     valueText?: string;
     /**

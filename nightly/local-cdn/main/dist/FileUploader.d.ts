@@ -39,7 +39,7 @@ declare class FileUploader extends UI5Element implements IFormInputElement {
      * @default ""
      * @public
      */
-    accept: string;
+    accept?: string;
     /**
      * If set to "true", the input field of component will not be rendered. Only the default slot that is passed will be rendered.
      * @default false
@@ -64,24 +64,24 @@ declare class FileUploader extends UI5Element implements IFormInputElement {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines a short hint intended to aid the user with data entry when the component has no value.
-     * @default ""
+     * @default undefined
      * @public
      */
-    placeholder: string;
+    placeholder?: string;
     /**
      * Defines the name/names of the file/files to upload.
-     * @default ""
+     * @default undefined
      * @formEvents change
      * @formProperty
      * @public
      */
-    value: string;
+    value?: string;
     /**
      * Defines the value state of the component.
      * @default "None"

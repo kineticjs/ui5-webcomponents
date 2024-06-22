@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AriaLabelHelper</title>
     
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
 </head>
 
 <style>
@@ -247,8 +247,8 @@
         btnChange5.addEventListener("click", () => {
             const inputEnterDesc = document.getElementById("inputEnterDesc");
             let accessibleName = inputEnterDesc['accessibleName'];
-            if(accessibleName.length) {
-                accessibleName = '';
+            if(accessibleName) {
+                accessibleName = undefined;
                 btnChange5.innerHTML = btnChange5.innerHTML.replace('Remove','Add');
             } else {
                 accessibleName = 'Some description added by accessibleName'
@@ -261,11 +261,11 @@
         btnChange6.addEventListener("click", () => {
             const inputEnterDesc = document.getElementById("inputEnterDesc");
             const accessibleNameRef = inputEnterDesc['accessibleNameRef'];
-            if(accessibleNameRef==="") {
+            if(!accessibleNameRef) {
                 inputEnterDesc['accessibleNameRef']="lblEnterDesc3";
                 btnChange6.innerHTML = btnChange6.innerHTML.replace('Add','Remove');
             } else {
-                inputEnterDesc['accessibleNameRef']="";
+                inputEnterDesc['accessibleNameRef']=undefined;
                 btnChange6.innerHTML = btnChange6.innerHTML.replace('Remove','Add');
             }
         });

@@ -27,6 +27,46 @@ import draggableElementStyles from "./generated/themes/DraggableElement.css.js";
  * @public
  */
 let ListItemBase = class ListItemBase extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the selected state of the component.
+         * @default false
+         * @public
+         */
+        this.selected = false;
+        /**
+         * Defines whether the item is movable.
+         * @default false
+         * @private
+         * @since 2.0.0
+         */
+        this.movable = false;
+        /**
+        * Defines if the list item should display its bottom border.
+        * @private
+        */
+        this.hasBorder = false;
+        /**
+        * Defines whether `ui5-li` is in disabled state.
+        *
+        * **Note:** A disabled `ui5-li` is noninteractive.
+        * @default false
+        * @protected
+        * @since 1.0.0-rc.12
+        */
+        this.disabled = false;
+        /**
+         * Indicates if the element is on focus
+         * @private
+         */
+        this.focused = false;
+        /**
+         * Indicates if the list item is actionable, e.g has hover and pressed effects.
+         * @private
+         */
+        this.actionable = false;
+    }
     onEnterDOM() {
         if (isDesktop()) {
             this.setAttribute("desktop", "");
@@ -149,7 +189,7 @@ __decorate([
     property({ type: Boolean })
 ], ListItemBase.prototype, "hasBorder", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property()
 ], ListItemBase.prototype, "forcedTabIndex", void 0);
 __decorate([
     property({ type: Boolean })

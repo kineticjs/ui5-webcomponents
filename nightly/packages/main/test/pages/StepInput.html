@@ -23,7 +23,7 @@
 	</script>
 
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/StepInput-5c7e8966.css">
 </head>
 <body class="stepinput1auto">
@@ -176,7 +176,7 @@
 		var displayChange = function (event) {
 			labelChange.innerHTML = "Event [change] :: [" + event.target.id + " ] :: " + event.detail.value;
 			changeCount++;
-			changeResult.value = changeCount;
+			changeResult.value = `${changeCount}`;
 		}
 
 		siCozy.addEventListener('ui5-change', displayChange);
@@ -186,7 +186,7 @@
 
 		stepInputChange1.addEventListener('ui5-change', function(e) {
 			const val = Number.parseInt(e.target.value, 10);
-			stepInputChange2.value = val + 999;
+			stepInputChange2.value = `${val + 999}`;
 			displayChange(e);
 		});
 

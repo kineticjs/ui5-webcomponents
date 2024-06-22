@@ -22,17 +22,17 @@ declare class OptionCustom extends ListItemBase implements IOption {
     /**
      * Defines the text, displayed inside the `ui5-select` input filed
      * when the option gets selected.
-     * @default ""
+     * @default undefined
      * @public
      */
-    displayText: string;
+    displayText?: string;
     /**
      * Defines the value of the `ui5-select` inside an HTML Form element when this component is selected.
      * For more information on HTML Form support, see the `name` property of `ui5-select`.
-     * @default ""
+     * @default undefined
      * @public
      */
-    value: string;
+    value?: string;
     /**
      * Defines the text of the component.
      *
@@ -42,10 +42,10 @@ declare class OptionCustom extends ListItemBase implements IOption {
     content: Array<Node>;
     /**
      * Defines the text of the tooltip that would be displayed for the list item.
-     * @default ""
+     * @default undefined
      * @public
      */
-    tooltip: string;
+    tooltip?: string;
     get effectiveDisplayText(): string;
 }
 export default OptionCustom;

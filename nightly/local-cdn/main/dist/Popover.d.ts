@@ -63,10 +63,10 @@ declare class Popover extends Popup {
      * Defines the header text.
      *
      * **Note:** If `header` slot is provided, the `headerText` is ignored.
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Determines on which side the component is placed at.
      * @default "End"

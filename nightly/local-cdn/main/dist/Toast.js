@@ -4,7 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
@@ -12,7 +11,6 @@ import { isMac } from "@ui5/webcomponents-base/dist/Device.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import ToastPlacement from "./types/ToastPlacement.js";
 // Template
 import ToastTemplate from "./generated/templates/ToastTemplate.lit.js";
 // Styles
@@ -81,6 +79,46 @@ const handleGlobalKeydown = (e) => {
 let Toast = class Toast extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the duration in milliseconds for which component
+         * remains on the screen before it's automatically closed.
+         *
+         * **Note:** The minimum supported value is `500` ms
+         * and even if a lower value is set, the duration would remain `500` ms.
+         * @default 3000
+         * @public
+         */
+        this.duration = 3000;
+        /**
+         * Defines the placement of the component.
+         * @default "BottomCenter"
+         * @public
+         */
+        this.placement = "BottomCenter";
+        /**
+         * Indicates whether the component is open (visible).
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.open = false;
+        /**
+         * Indicates whether the component is hovered.
+         * @private
+         */
+        this.hover = false;
+        /**
+         * Indicates whether the toast could be focused
+         * This happens when ctr / command + shift + m is pressed
+         * @private
+         */
+        this.focusable = false;
+        /**
+         * Indicates whether the toast is focused
+         * This happens when ctr / command + shift + m is pressed
+         * @private
+         */
+        this.focused = false;
         this._onfocusinFn = this._onfocusin.bind(this);
         this._onfocusoutFn = this._onfocusout.bind(this);
         this._onkeydownFn = this._onkeydown.bind(this);
@@ -90,14 +128,17 @@ let Toast = class Toast extends UI5Element {
     }
     onBeforeRendering() {
         if (this.open) {
-            this._initiateOpening();
+            openedToasts.pop();
+            openedToasts.push(this);
         }
-        // Transition duration (animation) should be a third of the duration
-        // property, but not bigger than the maximum allowed (1000ms).
-        const transitionDuration = Math.min(this.effectiveDuration / 3, MAX_DURATION);
-        this.style.transitionDuration = this.open ? `${transitionDuration}ms` : "";
-        this.style.transitionDelay = this.open ? `${this.effectiveDuration - transitionDuration}ms` : "";
-        this.style.opacity = this.open && !this.hover && !this.focused ? "0" : "";
+        requestAnimationFrame(() => {
+            // Transition duration (animation) should be a third of the duration
+            // property, but not bigger than the maximum allowed (1000ms).
+            const transitionDuration = Math.min(this.effectiveDuration / 3, MAX_DURATION);
+            this.style.transitionDuration = this.open ? `${transitionDuration}ms` : "";
+            this.style.transitionDelay = this.open ? `${this.effectiveDuration - transitionDuration}ms` : "";
+            this.style.opacity = this.open && !this.hover && !this.focused ? "0" : "";
+        });
         if (!globalListenerAdded) {
             document.addEventListener("keydown", handleGlobalKeydown);
             globalListenerAdded = true;
@@ -119,19 +160,10 @@ let Toast = class Toast extends UI5Element {
     get effectiveDuration() {
         return this.duration < MIN_DURATION ? MIN_DURATION : this.duration;
     }
-    _initiateOpening() {
-        this.domRendered = true;
-        requestAnimationFrame(() => {
-            this.open = true;
-            openedToasts.pop();
-            openedToasts.push(this);
-        });
-    }
     _ontransitionend() {
         if (this.hover || this.focused) {
             return;
         }
-        this.domRendered = false;
         this.open = false;
         this.focusable = false;
         this.focused = false;
@@ -172,10 +204,10 @@ let Toast = class Toast extends UI5Element {
     }
 };
 __decorate([
-    property({ validator: Integer, defaultValue: 3000 })
+    property({ type: Number })
 ], Toast.prototype, "duration", void 0);
 __decorate([
-    property({ type: ToastPlacement, defaultValue: ToastPlacement.BottomCenter })
+    property()
 ], Toast.prototype, "placement", void 0);
 __decorate([
     property({ type: Boolean })
@@ -183,9 +215,6 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Toast.prototype, "hover", void 0);
-__decorate([
-    property({ type: Boolean })
-], Toast.prototype, "domRendered", void 0);
 __decorate([
     property({ type: Boolean })
 ], Toast.prototype, "focusable", void 0);

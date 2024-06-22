@@ -29,7 +29,6 @@ import CalendarSelectionMode from "./types/CalendarSelectionMode.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import CalendarLegend from "./CalendarLegend.js";
 import SpecialCalendarDate from "./SpecialCalendarDate.js";
-import CalendarLegendItemType from "./types/CalendarLegendItemType.js";
 import Icon from "./Icon.js";
 // Default calendar for bundling
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
@@ -139,6 +138,40 @@ import { CALENDAR_HEADER_NEXT_BUTTON, CALENDAR_HEADER_PREVIOUS_BUTTON } from "./
 let Calendar = Calendar_1 = class Calendar extends CalendarPart {
     constructor() {
         super();
+        /**
+         * Defines the type of selection used in the calendar component.
+         * Accepted property values are:
+         *
+         * - `CalendarSelectionMode.Single` - enables a single date selection.(default value)
+         * - `CalendarSelectionMode.Range` - enables selection of a date range.
+         * - `CalendarSelectionMode.Multiple` - enables selection of multiple dates.
+         * @default "Single"
+         * @public
+         */
+        this.selectionMode = "Single";
+        /**
+         * Defines the visibility of the week numbers column.
+         *
+         * **Note:** For calendars other than Gregorian,
+         * the week numbers are not displayed regardless of what is set.
+         * @default false
+         * @public
+         */
+        this.hideWeekNumbers = false;
+        /**
+         * Which picker is currently visible to the user: day/month/year
+         * @private
+         */
+        this._currentPicker = "day";
+        this._previousButtonDisabled = false;
+        this._nextButtonDisabled = false;
+        this._pickersMode = "DAY_MONTH_YEAR";
+        this._valueIsProcessed = false;
+        /**
+         * Defines the selected item type of the calendar legend item (if such exists).
+         * @private
+         */
+        this._selectedItemType = "None";
         this._valueIsProcessed = false;
     }
     static async onDefine() {
@@ -539,16 +572,13 @@ let Calendar = Calendar_1 = class Calendar extends CalendarPart {
     }
 };
 __decorate([
-    property({
-        type: CalendarSelectionMode,
-        defaultValue: CalendarSelectionMode.Single,
-    })
+    property()
 ], Calendar.prototype, "selectionMode", void 0);
 __decorate([
     property({ type: Boolean })
 ], Calendar.prototype, "hideWeekNumbers", void 0);
 __decorate([
-    property({ defaultValue: "day" })
+    property()
 ], Calendar.prototype, "_currentPicker", void 0);
 __decorate([
     property({ type: Boolean })
@@ -566,7 +596,7 @@ __decorate([
     property()
 ], Calendar.prototype, "_headerYearButtonTextSecType", void 0);
 __decorate([
-    property({ type: CalendarPickersMode, defaultValue: CalendarPickersMode.DAY_MONTH_YEAR, noAttribute: true })
+    property({ noAttribute: true })
 ], Calendar.prototype, "_pickersMode", void 0);
 __decorate([
     slot({ type: HTMLElement })
@@ -578,7 +608,7 @@ __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true })
 ], Calendar.prototype, "specialDates", void 0);
 __decorate([
-    property({ type: CalendarLegendItemType, defaultValue: CalendarLegendItemType.None })
+    property()
 ], Calendar.prototype, "_selectedItemType", void 0);
 Calendar = Calendar_1 = __decorate([
     customElement({

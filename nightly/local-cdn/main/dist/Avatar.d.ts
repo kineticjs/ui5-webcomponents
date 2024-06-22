@@ -5,9 +5,9 @@ import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNaviga
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type { IAvatarGroupItem } from "./AvatarGroup.js";
 import Icon from "./Icon.js";
-import AvatarSize from "./types/AvatarSize.js";
-import AvatarShape from "./types/AvatarShape.js";
-import AvatarColorScheme from "./types/AvatarColorScheme.js";
+import type AvatarSize from "./types/AvatarSize.js";
+import type AvatarShape from "./types/AvatarShape.js";
+import type AvatarColorScheme from "./types/AvatarColorScheme.js";
 import "@ui5/webcomponents-icons/dist/employee.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 type AvatarAccessibilityAttributes = Pick<AccessibilityAttributes, "hasPopup">;
@@ -66,10 +66,10 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
      * **Note:** If no icon or an empty one is provided, by default the "employee" icon should be displayed.
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the name of the fallback icon, which should be displayed in the following cases:
      *
@@ -86,7 +86,7 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
      * `<ui5-avatar fallback-icon="alert">`
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default "employee"
      * @public
      */
     fallbackIcon: string;
@@ -94,10 +94,10 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
      * Defines the displayed initials.
      *
      * Up to three Latin letters can be displayed as initials.
-     * @default ""
+     * @default undefined
      * @public
      */
-    initials: string;
+    initials?: string;
     /**
      * Defines the shape of the component.
      * @default "Circle"
@@ -113,7 +113,7 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
     /**
      * @private
      */
-    _size: AvatarSize;
+    _size: `${AvatarSize}`;
     /**
      * Defines the background color of the desired image.
      * @default "Accent6"
@@ -123,15 +123,15 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
     /**
      * @private
      */
-    _colorScheme: AvatarColorScheme;
+    _colorScheme: `${AvatarColorScheme}`;
     /**
      * Defines the text alternative of the component.
      * If not provided a default text alternative will be set, if present.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.7
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the additional accessibility attributes that will be applied to the component.
      * The following field is supported:
@@ -144,7 +144,7 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
      * @default {}
      */
     accessibilityAttributes: AvatarAccessibilityAttributes;
-    forcedTabIndex: string;
+    forcedTabIndex?: string;
     _hasImage: boolean;
     /**
      * Receives the desired `<img>` tag
@@ -184,9 +184,8 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
     get еffectiveBackgroundColor(): AvatarColorScheme;
     get _role(): "button" | "img";
     get _ariaHasPopup(): ("dialog" | "grid" | "listbox" | "menu" | "tree") | undefined;
-    get _fallbackIcon(): string;
     get _interactive(): boolean;
-    get validInitials(): string | null;
+    get validInitials(): string | null | undefined;
     get accessibleNameText(): string | undefined;
     get hasImage(): boolean;
     get initialsContainer(): HTMLObjectElement | null;

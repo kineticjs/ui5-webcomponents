@@ -1,8 +1,8 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
-import TitleLevel from "./types/TitleLevel.js";
-import PanelAccessibleRole from "./types/PanelAccessibleRole.js";
+import type TitleLevel from "./types/TitleLevel.js";
+import type PanelAccessibleRole from "./types/PanelAccessibleRole.js";
 /**
  * @class
  *
@@ -65,10 +65,10 @@ declare class Panel extends UI5Element {
      * The text is visible in both expanded and collapsed states.
      *
      * **Note:** This property is overridden by the `header` slot.
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Determines whether the component is in a fixed state that is not
      * expandable/collapsible by user interaction.
@@ -106,11 +106,11 @@ declare class Panel extends UI5Element {
     headerLevel: `${TitleLevel}`;
     /**
      * Defines the accessible ARIA name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Indicates whether the Panel header is sticky or not.
      * If stickyHeader is set to true, then whenever you scroll the content or
@@ -184,7 +184,7 @@ declare class Panel extends UI5Element {
     get headingWrapperAriaLevel(): string | undefined;
     get headingWrapperRole(): "heading" | undefined;
     get nonFixedInternalHeader(): boolean;
-    get hasHeaderOrHeaderText(): string | true;
+    get hasHeaderOrHeaderText(): string | true | undefined;
     get nonFocusableButton(): boolean;
     get styles(): {
         content: {

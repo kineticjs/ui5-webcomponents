@@ -53,6 +53,44 @@ import switchCss from "./generated/themes/Switch.css.js";
  * @csspart handle - Used to style the handle of the switch
  */
 let Switch = Switch_1 = class Switch extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the component design.
+         *
+         * **Note:** If `Graphical` type is set,
+         * positive and negative icons will replace the `textOn` and `textOff`.
+         * @public
+         * @default "Textual"
+         */
+        this.design = "Textual";
+        /**
+         * Defines if the component is checked.
+         *
+         * **Note:** The property can be changed with user interaction,
+         * either by cliking the component, or by pressing the `Enter` or `Space` key.
+         * @default false
+         * @formEvents change
+         * @formProperty
+         * @public
+         */
+        this.checked = false;
+        /**
+         * Defines whether the component is disabled.
+         *
+         * **Note:** A disabled component is noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         * @since 1.16.0
+         */
+        this.required = false;
+    }
     get formValidityMessage() {
         return Switch_1.i18nBundle.getText(FORM_CHECKABLE_REQUIRED);
     }
@@ -143,7 +181,7 @@ let Switch = Switch_1 = class Switch extends UI5Element {
     }
 };
 __decorate([
-    property({ type: SwitchDesign, defaultValue: SwitchDesign.Textual })
+    property()
 ], Switch.prototype, "design", void 0);
 __decorate([
     property({ type: Boolean })
@@ -161,7 +199,7 @@ __decorate([
     property()
 ], Switch.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Switch.prototype, "accessibleNameRef", void 0);
 __decorate([
     property()

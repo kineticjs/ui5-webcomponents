@@ -13,7 +13,7 @@ type TimePickerClockItem = {
     innerStyles?: object;
 };
 type TimePickerClockSelection = {
-    showMarker: boolean;
+    showMarker?: boolean;
     itemClasses?: string;
     innerItemClasses?: string;
 };

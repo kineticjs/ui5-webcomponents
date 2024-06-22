@@ -45,6 +45,23 @@ import TableSelectionMode from "./types/TableSelectionMode.js";
  * @public
  */
 let TableSelection = class TableSelection extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the selection mode.
+         *
+         * @default "Multiple"
+         * @public
+         */
+        this.mode = "Multiple";
+        /**
+         * Defines the selected rows separated by a space.
+         *
+         * @default ""
+         * @public
+         */
+        this.selected = "";
+    }
     onTableActivate(table) {
         this._table = table;
         this._invalidateTableAndRows();
@@ -158,7 +175,7 @@ let TableSelection = class TableSelection extends UI5Element {
     }
 };
 __decorate([
-    property({ type: TableSelectionMode, defaultValue: TableSelectionMode.Multiple })
+    property()
 ], TableSelection.prototype, "mode", void 0);
 __decorate([
     property()

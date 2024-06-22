@@ -21,7 +21,6 @@ import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.j
 import { submitForm, resetForm } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import ButtonDesign from "./types/ButtonDesign.js";
 import ButtonType from "./types/ButtonType.js";
-import ButtonAccessibleRole from "./types/ButtonAccessibleRole.js";
 import ButtonTemplate from "./generated/templates/ButtonTemplate.lit.js";
 import Icon from "./Icon.js";
 import IconMode from "./types/IconMode.js";
@@ -64,6 +63,107 @@ let activeButton = null;
 let Button = Button_1 = class Button extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the component design.
+         * @default "Default"
+         * @public
+         */
+        this.design = "Default";
+        /**
+         * Defines whether the component is disabled.
+         * A disabled component can't be pressed or
+         * focused, and it is not in the tab chain.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * When set to `true`, the component will
+         * automatically submit the nearest HTML form element on `press`.
+         *
+         * **Note:** This property is only applicable within the context of an HTML Form element.`
+         * @default false
+         * @public
+         * @deprecated Set the "type" property to "Submit" to achieve the same result. The "submits" property is ignored if "type" is set to any value other than "Button".
+         */
+        this.submits = false;
+        /**
+         * Defines the additional accessibility attributes that will be applied to the component.
+         * The following fields are supported:
+         *
+         * - **expanded**: Indicates whether the button, or another grouping element it controls, is currently expanded or collapsed.
+         * Accepts the following string values: `true` or `false`
+         *
+         * - **hasPopup**: Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by the button.
+         * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+         *
+         * - **controls**: Identifies the element (or elements) whose contents or presence are controlled by the button element.
+         * Accepts a lowercase string value.
+         *
+         * @public
+         * @since 1.2.0
+         * @default {}
+         */
+        this.accessibilityAttributes = {};
+        /**
+         * Defines whether the button has special form-related functionality.
+         *
+         * **Note:** This property is only applicable within the context of an HTML Form element.
+         * @default "Button"
+         * @public
+         * @since 1.15.0
+         */
+        this.type = "Button";
+        /**
+         * Describes the accessibility role of the button.
+         *
+         * **Note:** Use <code>ButtonAccessibleRole.Link</code> role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.
+         *
+         * @default "Button"
+         * @public
+         * @since 1.23
+         */
+        this.accessibleRole = "Button";
+        /**
+         * Used to switch the active state (pressed or not) of the component.
+         * @private
+         */
+        this.active = false;
+        /**
+         * Defines if a content has been added to the default slot
+         * @private
+         */
+        this.iconOnly = false;
+        /**
+         * Indicates if the elements has a slotted icon
+         * @private
+         */
+        this.hasIcon = false;
+        /**
+         * Indicates if the elements has a slotted end icon
+         * @private
+         */
+        this.hasEndIcon = false;
+        /**
+         * Indicates if the element is focusable
+         * @private
+         */
+        this.nonInteractive = false;
+        /**
+         * @private
+         */
+        this._iconSettings = {};
+        /**
+         * Defines the tabIndex of the component.
+         * @private
+         */
+        this.forcedTabIndex = "0";
+        /**
+         * @since 1.0.0-rc.13
+         * @private
+         */
+        this._isTouch = false;
+        this._cancelAction = false;
         this._deactivate = () => {
             if (activeButton) {
                 activeButton._setActiveState(false);
@@ -242,7 +342,7 @@ let Button = Button_1 = class Button extends UI5Element {
     }
 };
 __decorate([
-    property({ type: ButtonDesign, defaultValue: ButtonDesign.Default })
+    property()
 ], Button.prototype, "design", void 0);
 __decorate([
     property({ type: Boolean })
@@ -260,19 +360,19 @@ __decorate([
     property()
 ], Button.prototype, "tooltip", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], Button.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Button.prototype, "accessibleNameRef", void 0);
 __decorate([
     property({ type: Object })
 ], Button.prototype, "accessibilityAttributes", void 0);
 __decorate([
-    property({ type: ButtonType, defaultValue: ButtonType.Button })
+    property()
 ], Button.prototype, "type", void 0);
 __decorate([
-    property({ type: ButtonAccessibleRole, defaultValue: ButtonAccessibleRole.Button })
+    property()
 ], Button.prototype, "accessibleRole", void 0);
 __decorate([
     property({ type: Boolean })
@@ -296,7 +396,7 @@ __decorate([
     property({ type: Object })
 ], Button.prototype, "_iconSettings", void 0);
 __decorate([
-    property({ defaultValue: "0", noAttribute: true })
+    property({ noAttribute: true })
 ], Button.prototype, "forcedTabIndex", void 0);
 __decorate([
     property({ type: Boolean })

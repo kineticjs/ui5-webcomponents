@@ -5,8 +5,8 @@ import type { ScrollEnablementEventListenerParam } from "@ui5/webcomponents-base
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import CarouselArrowsPlacement from "./types/CarouselArrowsPlacement.js";
 import CarouselPageIndicatorType from "./types/CarouselPageIndicatorType.js";
-import BackgroundDesign from "./types/BackgroundDesign.js";
-import BorderDesign from "./types/BorderDesign.js";
+import type BackgroundDesign from "./types/BackgroundDesign.js";
+import type BorderDesign from "./types/BorderDesign.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-left.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
 type CarouselNavigateEventDetail = {
@@ -63,18 +63,18 @@ type CarouselNavigateEventDetail = {
 declare class Carousel extends UI5Element {
     /**
      * Defines the accessible name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.24
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the IDs of the elements that label the input.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.24
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines whether the carousel should loop, i.e show the first page after the last page is reached and vice versa.
      * @default false
@@ -130,21 +130,21 @@ declare class Carousel extends UI5Element {
      * @default "Translucent"
      * @public
      */
-    backgroundDesign: BackgroundDesign;
+    backgroundDesign: `${BackgroundDesign}`;
     /**
      * Defines the page indicator background design.
      * @since 1.14
      * @default "Solid"
      * @public
      */
-    pageIndicatorBackgroundDesign: BackgroundDesign;
+    pageIndicatorBackgroundDesign: `${BackgroundDesign}`;
     /**
      * Defines the page indicator border design.
      * @since 1.14
      * @default "Solid"
      * @public
      */
-    pageIndicatorBorderDesign: BorderDesign;
+    pageIndicatorBorderDesign: `${BorderDesign}`;
     /**
      * Defines the index of the initially selected item.
      * @default 0

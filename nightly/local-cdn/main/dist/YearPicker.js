@@ -10,7 +10,6 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import { isEnter, isSpace, isDown, isUp, isLeft, isRight, isHome, isEnd, isHomeCtrl, isEndCtrl, isPageUp, isPageDown, } from "@ui5/webcomponents-base/dist/Keys.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import getLocale from "@ui5/webcomponents-base/dist/locale/getLocale.js";
 import transformDateToSecondaryType from "@ui5/webcomponents-localization/dist/dates/transformDateToSecondaryType.js";
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
@@ -31,6 +30,18 @@ import yearPickerStyles from "./generated/themes/YearPicker.css.js";
  * @private
  */
 let YearPicker = YearPicker_1 = class YearPicker extends CalendarPart {
+    constructor() {
+        super(...arguments);
+        /**
+         * An array of UTC timestamps representing the selected date
+         * or dates depending on the capabilities of the picker component.
+         * @default []
+         * @public
+         */
+        this.selectedDates = [];
+        this._years = [];
+        this._hidden = false;
+    }
     static async onDefine() {
         YearPicker_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -270,14 +281,10 @@ let YearPicker = YearPicker_1 = class YearPicker extends CalendarPart {
     }
 };
 __decorate([
-    property({
-        validator: Integer,
-        multiple: true,
-        compareValues: true,
-    })
+    property({ type: Array })
 ], YearPicker.prototype, "selectedDates", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], YearPicker.prototype, "_years", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

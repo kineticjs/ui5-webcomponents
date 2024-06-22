@@ -39,6 +39,16 @@ let TableHeaderRow =
  * @public
  */
 class TableHeaderRow extends TableRowBase {
+    constructor() {
+        super(...arguments);
+        /**
+         * Sticks the `ui5-table-header-row` to the top of a table.
+         *
+         * @default false
+         * @public
+         */
+        this.sticky = false;
+    }
     onBeforeRendering() {
         super.onBeforeRendering();
         if (this._table) {

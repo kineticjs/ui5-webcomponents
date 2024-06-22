@@ -40,6 +40,45 @@ import tableRowStyles from "./generated/themes/TableRow.css.js";
 let TableRow = TableRow_1 = class TableRow extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the visual indication and behavior of the component.
+         *
+         * **Note:** When set to `Active`, the item will provide visual response upon press,
+         * while with type `Inactive`-will not.
+         * @default "Inactive"
+         * @since 2.0.0
+         * @public
+         */
+        this.type = "Inactive";
+        /**
+         * Defines the row's selected state.
+         * @default false
+         * @since 2.0.0
+         * @public
+         */
+        this.selected = false;
+        /**
+         * Indicates if the table row is navigated.
+         * @default false
+         * @since 2.0.0
+         * @public
+         */
+        this.navigated = false;
+        /**
+         * Defines the mode of the row (None, SingleSelect, MultiSelect).
+         * @default "None"
+         * @since 2.0.0
+         * @private
+         */
+        this.mode = "None";
+        /**
+         * Indicates if the table row is active.
+         * @default false
+         * @since 2.0.0
+         * @private
+         */
+        this.active = false;
+        this.forcedBusy = false;
         this.visibleCells = [];
         this.popinCells = [];
         // Properties, set and handled by the Table
@@ -156,12 +195,12 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         }
     }
     get shouldPopin() {
-        return this._columnsInfo.filter(el => {
+        return this._columnsInfo?.filter(el => {
             return el.demandPopin || !el.visible;
         }).length;
     }
     get allColumnsPoppedIn() {
-        return this._columnsInfo.every(el => el.demandPopin && !el.visible);
+        return this._columnsInfo?.every(el => el.demandPopin && !el.visible);
     }
     onBeforeRendering() {
         if (!this.shouldPopin) {
@@ -173,7 +212,7 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
             return;
         }
         const allColumnsPoppedInClass = this.allColumnsPoppedIn ? "all-columns-popped-in" : "";
-        this._columnsInfo.forEach((info, index) => {
+        this._columnsInfo?.forEach((info, index) => {
             const cell = this.cells[index];
             const popinDisplay = info.popinDisplay === TableColumnPopinDisplay.Inline;
             if (!cell) {
@@ -244,7 +283,7 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         return cellTextContent ? this.getNormilzedTextContent(cellTextContent) : "";
     }
     getColumnTextByIdx(index) {
-        const columnInfo = this._columnsInfo[index];
+        const columnInfo = this._columnsInfo?.[index];
         if (!columnInfo) {
             return "";
         }
@@ -258,7 +297,7 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
     }
 };
 __decorate([
-    property({ type: TableRowType, defaultValue: TableRowType.Inactive })
+    property()
 ], TableRow.prototype, "type", void 0);
 __decorate([
     property({ type: Boolean })
@@ -267,22 +306,22 @@ __decorate([
     property({ type: Boolean })
 ], TableRow.prototype, "navigated", void 0);
 __decorate([
-    property({ type: TableMode, defaultValue: TableMode.None })
+    property()
 ], TableRow.prototype, "mode", void 0);
 __decorate([
     property({ type: Boolean })
 ], TableRow.prototype, "active", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], TableRow.prototype, "_columnsInfo", void 0);
 __decorate([
-    property({ defaultValue: "-1" })
+    property()
 ], TableRow.prototype, "forcedTabIndex", void 0);
 __decorate([
     property({ type: Boolean })
 ], TableRow.prototype, "forcedBusy", void 0);
 __decorate([
-    property({ defaultValue: "", noAttribute: true })
+    property({ noAttribute: true })
 ], TableRow.prototype, "forcedAriaPosition", void 0);
 __decorate([
     slot({ type: HTMLElement, "default": true, individualSlots: true })

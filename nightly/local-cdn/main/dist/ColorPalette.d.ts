@@ -62,7 +62,7 @@ declare class ColorPalette extends UI5Element {
      */
     showDefaultColor: boolean;
     /**
-     * Defines the default color of the color palette
+     * Defines the default color of the color palette, only valid CSS color values accepted
      *
      * **Note:** The default color should be a part of the ColorPalette colors`
      * @private
@@ -70,7 +70,7 @@ declare class ColorPalette extends UI5Element {
      */
     defaultColor?: string;
     /**
-     * Defines the selected color.
+     * Defines the selected color, only valid CSS color values accepted
      * @private
      */
     _selectedColor?: string;

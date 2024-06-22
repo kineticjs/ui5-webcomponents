@@ -10,7 +10,6 @@ import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import ListItemBase from "@ui5/webcomponents/dist/ListItemBase.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import { getFirstFocusableElement } from "@ui5/webcomponents-base/dist/util/FocusableElements.js";
 // Texts
@@ -25,8 +24,33 @@ import { NOTIFICATION_LIST_ITEM_LOADING, } from "./generated/i18n/i18n-defaults.
  * @public
  */
 class NotificationListItemBase extends ListItemBase {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines if the `notification` is new or has been already read.
+         *
+         * **Note:** if set to `false` the `titleText` has bold font,
+         * if set to true - it has a normal font.
+         * @default false
+         * @public
+         */
+        this.read = false;
+        /**
+         * Defines if a busy indicator would be displayed over the item.
+         * @default false
+         * @public
+         * @since 1.0.0-rc.8
+         */
+        this.loading = false;
+        /**
+         * Defines the delay in milliseconds, after which the busy indicator will show up for this component.
+         * @default 1000
+         * @public
+         */
+        this.loadingDelay = 1000;
+    }
     get hasTitleText() {
-        return !!this.titleText.length;
+        return !!this.titleText?.length;
     }
     get loadingText() {
         return NotificationListItemBase.i18nFioriBundle.getText(NOTIFICATION_LIST_ITEM_LOADING);
@@ -77,7 +101,7 @@ __decorate([
     property({ type: Boolean })
 ], NotificationListItemBase.prototype, "loading", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1000 })
+    property({ type: Number })
 ], NotificationListItemBase.prototype, "loadingDelay", void 0);
 export default NotificationListItemBase;
 //# sourceMappingURL=NotificationListItemBase.js.map

@@ -13,7 +13,6 @@ import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
-import CSSColor from "@ui5/webcomponents-base/dist/types/CSSColor.js";
 import ItemNavigationBehavior from "@ui5/webcomponents-base/dist/types/ItemNavigationBehavior.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 import { isSpace, isEnter, isDown, isUp, isTabNext, } from "@ui5/webcomponents-base/dist/Keys.js";
@@ -54,7 +53,39 @@ let ColorPalette = ColorPalette_1 = class ColorPalette extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines whether the user can see the last used colors in the bottom of the component
+         * @private
+         * @since 1.0.0-rc.15
+         */
+        this.showRecentColors = false;
+        /**
+         * Defines whether the user can choose a custom color from a color picker
+         *
+         * **Note:** In order to use this property you need to import the following module: `"@ui5/webcomponents/dist/features/ColorPaletteMoreColors.js"`
+         * @private
+         * @since 1.0.0-rc.15
+         */
+        this.showMoreColors = false;
+        /**
+         * Defines whether the user can choose the default color from a button.
+         * @default false
+         * @private
+         * @since 1.0.0-rc.16
+         */
+        this.showDefaultColor = false;
+        /**
+         * Defines if the palette is in Popup or Embeded mode.
+         * @private
+         */
+        this.popupMode = false;
+        /**
+         * Defines if the palette is rendered on phone.
+         * @private
+         */
+        this.onPhone = false;
         this.moreColorsFeature = {};
+        this._shouldFocusRecentColors = false;
         this._itemNavigation = new ItemNavigation(this, {
             getItemsCallback: () => this.displayedColors,
             rowSize: this.rowSize,
@@ -453,10 +484,10 @@ __decorate([
     property({ type: Boolean })
 ], ColorPalette.prototype, "showDefaultColor", void 0);
 __decorate([
-    property({ validator: CSSColor })
+    property()
 ], ColorPalette.prototype, "defaultColor", void 0);
 __decorate([
-    property({ validator: CSSColor })
+    property()
 ], ColorPalette.prototype, "_selectedColor", void 0);
 __decorate([
     property({ type: Boolean })

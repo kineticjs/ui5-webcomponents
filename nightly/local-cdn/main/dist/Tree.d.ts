@@ -3,7 +3,7 @@ import MovePlacement from "@ui5/webcomponents-base/dist/types/MovePlacement.js";
 import DropIndicator from "./DropIndicator.js";
 import type TreeItemBase from "./TreeItemBase.js";
 import TreeList from "./TreeList.js";
-import ListSelectionMode from "./types/ListSelectionMode.js";
+import type ListSelectionMode from "./types/ListSelectionMode.js";
 import ListAccessibleRole from "./types/ListAccessibleRole.js";
 import type { TreeItemBaseToggleEventDetail, TreeItemBaseStepInEventDetail, TreeItemBaseStepOutEventDetail } from "./TreeItemBase.js";
 import type { ListItemClickEventDetail, ListItemDeleteEventDetail, ListItemFocusEventDetail, ListSelectionChangeEventDetail } from "./List.js";
@@ -81,41 +81,41 @@ declare class Tree extends UI5Element {
      * @public
      * @default "None"
      */
-    selectionMode: `${ListSelectionMode}`;
+    selectionMode?: `${ListSelectionMode}`;
     /**
      * Defines the text that is displayed when the component contains no items.
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataText: string;
+    noDataText?: string;
     /**
      * Defines the component header text.
      *
      * **Note:** If the `header` slot is set, this property is ignored.
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Defines the component footer text.
-     * @default ""
+     * @default undefined
      * @public
      */
-    footerText: string;
+    footerText?: string;
     /**
      * Defines the accessible name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.8.0
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the IDs of the elements that label the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.8.0
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the items of the component. Tree items may have other tree items as children.
      *

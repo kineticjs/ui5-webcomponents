@@ -15,7 +15,6 @@ import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/Ari
 import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { SEGMENTEDBUTTONITEM_ARIA_DESCRIPTION } from "./generated/i18n/i18n-defaults.js";
 import SegmentedButtonItemTemplate from "./generated/templates/SegmentedButtonItemTemplate.lit.js";
 import Icon from "./Icon.js";
@@ -47,8 +46,48 @@ let SegmentedButtonItem = SegmentedButtonItem_1 = class SegmentedButtonItem exte
     }
     constructor() {
         super();
+        /**
+         * Defines whether the component is disabled.
+         * A disabled component can't be selected or
+         * focused, and it is not in the tab chain.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Determines whether the component is displayed as selected.
+         * @default false
+         * @public
+         */
+        this.selected = false;
+        /**
+         * Defines if the button has icon and no text.
+         * @private
+         */
+        this.iconOnly = false;
+        /**
+         * Indicates if the element is focusable
+         * @private
+         */
+        this.nonInteractive = false;
+        /**
+         * Defines the index of the item inside of the SegmentedButton.
+         * @default 0
+         * @private
+         */
+        this.posInSet = 0;
+        /**
+         * Defines how many items are inside of the SegmentedButton.
+         * @default 0
+         * @private
+         */
+        this.sizeOfSet = 0;
     }
-    _onclick() {
+    _onclick(e) {
+        if (this.disabled) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         this.selected = !this.selected;
     }
     onEnterDOM() {
@@ -65,6 +104,9 @@ let SegmentedButtonItem = SegmentedButtonItem_1 = class SegmentedButtonItem exte
         }
     }
     get tabIndexValue() {
+        if (this.disabled) {
+            return;
+        }
         const tabindex = this.getAttribute("tabindex");
         if (tabindex) {
             return tabindex;
@@ -91,10 +133,10 @@ __decorate([
     property()
 ], SegmentedButtonItem.prototype, "tooltip", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], SegmentedButtonItem.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], SegmentedButtonItem.prototype, "accessibleNameRef", void 0);
 __decorate([
     property()
@@ -106,13 +148,13 @@ __decorate([
     property({ type: Boolean })
 ], SegmentedButtonItem.prototype, "nonInteractive", void 0);
 __decorate([
-    property({ type: String, defaultValue: "0", noAttribute: true })
+    property({ noAttribute: true })
 ], SegmentedButtonItem.prototype, "forcedTabIndex", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], SegmentedButtonItem.prototype, "posInSet", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], SegmentedButtonItem.prototype, "sizeOfSet", void 0);
 __decorate([
     slot({ type: Node, "default": true })

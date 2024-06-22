@@ -11,7 +11,7 @@
 	</script>
 	
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-25fa844d.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-d99d4338.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/SideNavigation-ffae42e2.css">
 </head>
 
@@ -100,7 +100,7 @@
 
 		document.querySelectorAll("ui5-side-navigation-item").forEach(function (item) {
 			item.addEventListener("ui5-click", function (event) {
-				clickInput.value = ++clickCounter;
+				clickInput.value = `${++clickCounter}`;
 			});
 		});
 
@@ -114,7 +114,7 @@
 				return;
 			}
 
-			input.value = ++counter;
+			input.value = `${++counter}`;
 		});
 
 	</script>

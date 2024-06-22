@@ -15,7 +15,7 @@ import Popover from "./Popover.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import List from "./List.js";
 import type { ListItemClickEventDetail } from "./List.js";
-import ComboBoxFilter from "./types/ComboBoxFilter.js";
+import type ComboBoxFilter from "./types/ComboBoxFilter.js";
 import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import type { InputEventDetail } from "./Input.js";
 /**
@@ -88,11 +88,11 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      * @since 2.0.0
      */
-    name: string;
+    name?: string;
     /**
      * Defines whether the value will be autocompleted to match an item
      * @default false
@@ -113,10 +113,10 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     /**
      * Defines a short hint intended to aid the user with data entry when the
      * component has no value.
-     * @default ""
+     * @default undefined
      * @public
      */
-    placeholder: string;
+    placeholder?: string;
     /**
      * Defines whether the component is in disabled state.
      *
@@ -181,17 +181,17 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component
      * @default ""
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     _iconPressed: boolean;
     _filteredItems: Array<IComboBoxItem>;
-    _listWidth: number;
+    _listWidth?: number;
     _effectiveShowClearIcon: boolean;
     /**
      * Indicates whether the value state message popover is open.

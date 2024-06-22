@@ -18,9 +18,9 @@ import type ListItemBase from "./ListItemBase.js";
  * @public
  */
 type IOption = ListItemBase & {
-    tooltip: string;
+    tooltip?: string;
     icon?: string;
-    value: string;
+    value?: string;
     additionalText?: string;
     focused?: boolean;
     effectiveDisplayText: string;
@@ -87,10 +87,10 @@ declare class Select extends UI5Element implements IFormInputElement {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the value state of the component.
      * @default "None"
@@ -118,16 +118,16 @@ declare class Select extends UI5Element implements IFormInputElement {
      * Defines the accessible ARIA name of the component.
      * @since 1.0.0-rc.9
      * @public
-     * @default ""
+     * @default undefined
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the select.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * @private
      */
@@ -191,7 +191,6 @@ declare class Select extends UI5Element implements IFormInputElement {
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     get formFormattedValue(): string | null;
-    constructor();
     onBeforeRendering(): void;
     onAfterRendering(): void;
     _ensureSingleSelection(): void;

@@ -1,5 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import TableColumnPopinDisplay from "./types/TableColumnPopinDisplay.js";
+import type TableColumnPopinDisplay from "./types/TableColumnPopinDisplay.js";
 /**
  * @class
  *
@@ -27,10 +27,10 @@ declare class TableColumn extends UI5Element {
     minWidth: number;
     /**
      * The text for the column when it pops in.
-     * @default ""
+     * @default undefined
      * @public
      */
-    popinText: string;
+    popinText?: string;
     /**
      * According to your `minWidth` settings, the component can be hidden
      * in different screen sizes.

@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import TableCellBase from "./TableCellBase.js";
 import TableHeaderCellTemplate from "./generated/templates/TableHeaderCellTemplate.lit.js";
 import TableHeaderCellStyles from "./generated/themes/TableHeaderCell.css.js";
@@ -32,6 +31,42 @@ import TableHeaderCellStyles from "./generated/themes/TableHeaderCell.css.js";
 let TableHeaderCell = class TableHeaderCell extends TableCellBase {
     constructor() {
         super(...arguments);
+        /**
+         * Defines the width of column.
+         *
+         * @default "auto"
+         * @public
+         */
+        this.width = "auto";
+        /**
+         * Defines the minimum width of the column.
+         *
+         * If the table is in `Popin` mode, the column will move into the popin when
+         * when the minimum width does not fit anymore.
+         *
+         * @default "auto"
+         * @public
+         */
+        this.minWidth = "auto";
+        /**
+         * Defines the maximum width of the column.
+         *
+         * @default "auto"
+         * @public
+         */
+        this.maxWidth = "auto";
+        /**
+         * Defines the importance of the column.
+         *
+         * This property affects the popin behaviour.
+         * Columns with higher importance will move into the popin area later then less important
+         * columns.
+         *
+         * @default 0
+         * @public
+         */
+        this.importance = 0;
+        this._popin = false;
         this.ariaRole = "columnheader";
         this._popinWidth = 0;
     }
@@ -42,16 +77,16 @@ let TableHeaderCell = class TableHeaderCell extends TableCellBase {
     }
 };
 __decorate([
-    property({ type: String, defaultValue: "auto" })
+    property()
 ], TableHeaderCell.prototype, "width", void 0);
 __decorate([
-    property({ type: String, defaultValue: "auto" })
+    property()
 ], TableHeaderCell.prototype, "minWidth", void 0);
 __decorate([
-    property({ type: String, defaultValue: "auto" })
+    property()
 ], TableHeaderCell.prototype, "maxWidth", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0 })
+    property({ type: Number })
 ], TableHeaderCell.prototype, "importance", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

@@ -13,8 +13,6 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isDown, isUp, isLeft, isRight, isSpace, isEnter, isHome, isEnd, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
 import { RATING_INDICATOR_TEXT, RATING_INDICATOR_TOOLTIP_TEXT, RATING_INDICATOR_ARIA_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
 import RatingIndicatorTemplate from "./generated/templates/RatingIndicatorTemplate.lit.js";
 import Icon from "./Icon.js";
@@ -62,6 +60,57 @@ let RatingIndicator = RatingIndicator_1 = class RatingIndicator extends UI5Eleme
     }
     constructor() {
         super();
+        /**
+         * The indicated value of the rating.
+         *
+         * **Note:** If you set a number which is not round, it would be shown as follows:
+         *
+         * - 1.0 - 1.2 -> 1
+         * - 1.3 - 1.7 -> 1.5
+         * - 1.8 - 1.9 -> 2
+         * @default 0
+         * @public
+         */
+        this.value = 0;
+        /**
+         * The number of displayed rating symbols.
+         * @default 5
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.max = 5;
+        /**
+         * Defines whether the component is disabled.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+        * Defines whether the component is required.
+        * @default false
+        * @public
+        * @since 1.15.0
+        */
+        this.required = false;
+        /**
+         * @private
+         */
+        this._stars = [];
+        /**
+         * @private
+         */
+        this._focused = false;
     }
     onBeforeRendering() {
         this.calcState();
@@ -176,10 +225,10 @@ let RatingIndicator = RatingIndicator_1 = class RatingIndicator extends UI5Eleme
     }
 };
 __decorate([
-    property({ validator: Float, defaultValue: 0 })
+    property({ type: Number })
 ], RatingIndicator.prototype, "value", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 5 })
+    property({ type: Number })
 ], RatingIndicator.prototype, "max", void 0);
 __decorate([
     property({ type: Boolean })
@@ -191,7 +240,7 @@ __decorate([
     property()
 ], RatingIndicator.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], RatingIndicator.prototype, "accessibleNameRef", void 0);
 __decorate([
     property({ type: Boolean })
@@ -200,7 +249,7 @@ __decorate([
     property()
 ], RatingIndicator.prototype, "tooltip", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array })
 ], RatingIndicator.prototype, "_stars", void 0);
 __decorate([
     property({ type: Boolean })

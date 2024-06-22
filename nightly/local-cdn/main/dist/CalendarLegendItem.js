@@ -37,6 +37,20 @@ import CalendarLegendItemCss from "./generated/themes/CalendarLegendItem.css.js"
  * @public
  */
 let CalendarLegendItem = CalendarLegendItem_1 = class CalendarLegendItem extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the type of the Calendar Legend Item.
+         * @default "None"
+         * @public
+         */
+        this.type = "None";
+        /**
+         * Tab index of the component.
+         * @private
+         */
+        this.forcedTabIndex = "-1";
+    }
     static async onDefine() {
         CalendarLegendItem_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -58,10 +72,10 @@ __decorate([
     property()
 ], CalendarLegendItem.prototype, "text", void 0);
 __decorate([
-    property({ type: CalendarLegendItemType, defaultValue: CalendarLegendItemType.None })
+    property()
 ], CalendarLegendItem.prototype, "type", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property({ noAttribute: true })
 ], CalendarLegendItem.prototype, "forcedTabIndex", void 0);
 CalendarLegendItem = CalendarLegendItem_1 = __decorate([
     customElement({

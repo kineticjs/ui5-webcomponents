@@ -12,8 +12,6 @@ import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import "@ui5/webcomponents-icons/dist/paper-plane.js";
 import Input from "@ui5/webcomponents/dist/Input.js";
 import Label from "@ui5/webcomponents/dist/Label.js";
@@ -45,6 +43,60 @@ let PromptInput = PromptInput_1 = class PromptInput extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines the value of the component.
+         *
+         * @default ""
+         * @since 2.0.0
+         * @public
+         */
+        this.value = "";
+        /**
+         * Defines whether the clear icon of the input will be shown.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.showClearIcon = false;
+        /**
+         * Determines whether the characters exceeding the maximum allowed character count are visible
+         * in the component.
+         *
+         * If set to `false`, the user is not allowed to enter more characters than what is set in the
+         * `maxlength` property.
+         * If set to `true` the characters exceeding the `maxlength` value are selected on
+         * paste and the counter below the component displays their number.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.showExceededText = false;
+        /**
+         * Defines whether the component is in disabled state.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.disabled = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.readonly = false;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @since 2.0.0
+         * @public
+         */
+        this.valueState = "None";
     }
     _onkeydown(e) {
         if (isEnter(e)) {
@@ -103,10 +155,10 @@ __decorate([
     property({ type: Boolean })
 ], PromptInput.prototype, "readonly", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], PromptInput.prototype, "maxlength", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], PromptInput.prototype, "valueState", void 0);
 __decorate([
     slot({

@@ -19,7 +19,7 @@
 		max-height: 120px;
 	}
 </style>
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-a7c55119.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-0afff69d.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/Select-e17517bf.css">
 </head>
 
@@ -265,7 +265,7 @@
 
 	select.addEventListener("ui5-change", function(e) {
 		lbl.innerHTML = "selected item :: " + e.detail.selectedOption.textContent + " :: " + (++counter);
-		inputResult.value = counter;
+		inputResult.value = `${counter}`;
 	});
 
 	select.addEventListener("change", function(e) {
@@ -274,17 +274,17 @@
 
 	select.addEventListener("ui5-open", function(e) {
 		++counterOpen;
-		inputResultOpen.value = counterOpen;
+		inputResultOpen.value = `${counterOpen}`;
 	});
 
 	select.addEventListener("ui5-close", function(e) {
 		++counterClose;
-		inputResultClose.value = counterClose
+		inputResultClose.value = `${counterClose}`;
 	});
 
 	select2.addEventListener("ui5-change", function(e) {
 		++counter;
-		inputResult.value = counter;
+		inputResult.value = `${counter}`;
 	});
 
 	// Input with Suggestions

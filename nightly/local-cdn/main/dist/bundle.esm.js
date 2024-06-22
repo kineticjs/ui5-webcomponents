@@ -58,6 +58,7 @@ import "./Menu.js";
 import "./NavigationMenu.js";
 import "./NavigationMenuItem.js";
 import "./MenuItem.js";
+import "./MenuSeparator.js";
 import "./Popover.js";
 import "./Panel.js";
 import "./RadioButton.js";

@@ -67,47 +67,47 @@ declare class Switch extends UI5Element implements IFormInputElement {
      * Defines the text, displayed when the component is checked.
      *
      * **Note:** We recommend using short texts, up to 3 letters (larger texts would be cut off).
-     * @default ""
+     * @default undefined
      * @public
      */
-    textOn: string;
+    textOn?: string;
     /**
      * Defines the text, displayed when the component is not checked.
      *
      * **Note:** We recommend using short texts, up to 3 letters (larger texts would be cut off).
-     * @default ""
+     * @default undefined
      * @public
      */
-    textOff: string;
+    textOff?: string;
     /**
      * Sets the accessible ARIA name of the component.
      *
      * **Note**: We recommend that you set an accessibleNameRef pointing to an external label or at least an `accessibleName`.
      * Providing an `accessibleNameRef` or an `accessibleName` is mandatory in the cases when `textOn` and `textOff` properties aren't set.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.2.0
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
      *
      * **Note**: We recommend that you set an accessibleNameRef pointing to an external label or at least an `accessibleName`.
      * Providing an `accessibleNameRef` or an `accessibleName` is mandatory in the cases when `textOn` and `textOff` properties aren't set.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.1.0
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the tooltip of the component.
      *
      * **Note:** If applicable an external label reference should always be the preferred option to provide context to the `ui5-switch` component over a tooltip.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.9.0
      */
-    tooltip: string;
+    tooltip?: string;
     /**
      * Defines whether the component is required.
      * @default false
@@ -119,11 +119,11 @@ declare class Switch extends UI5Element implements IFormInputElement {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.16.0
      */
-    name: string;
+    name?: string;
     static i18nBundle: I18nBundle;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
@@ -136,14 +136,14 @@ declare class Switch extends UI5Element implements IFormInputElement {
     toggle(): void;
     get graphical(): boolean;
     get hasNoLabel(): boolean;
-    get _textOn(): string;
-    get _textOff(): string;
+    get _textOn(): string | undefined;
+    get _textOff(): string | undefined;
     get effectiveTabIndex(): "0" | undefined;
     get classes(): ClassMap;
     get effectiveAriaDisabled(): "true" | undefined;
-    get accessibilityOnText(): string;
-    get accessibilityOffText(): string;
-    get hiddenText(): string;
+    get accessibilityOnText(): string | undefined;
+    get accessibilityOffText(): string | undefined;
+    get hiddenText(): string | undefined;
     get ariaLabelText(): string;
     static onDefine(): Promise<void>;
 }

@@ -3,7 +3,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
-import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
+import type CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
 import type SegmentedButton from "./SegmentedButton.js";
 type TimePickerComponentIndexMap = {
     hours: number;
@@ -68,10 +68,10 @@ declare class TimePickerInternals extends UI5Element {
      * hh:mm:ss a -> 2:23:15 PM
      * mm:ss -> 12:04 (only minutes and seconds)
 
-     * @default ""
+     * @default undefined
      * @public
      */
-    formatPattern: string;
+    formatPattern?: string;
     /**
      * The index of the active Clock/TogleSpinButton.
      * @default 0
@@ -82,7 +82,7 @@ declare class TimePickerInternals extends UI5Element {
      * Contains calendar type.
      * @private
      */
-    _calendarType: CalendarType;
+    _calendarType?: CalendarType;
     /**
      * Contains currently available Time Picker components depending on time format.
      * @private

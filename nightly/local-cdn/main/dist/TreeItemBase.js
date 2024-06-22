@@ -9,10 +9,8 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { isLeft, isRight } from "@ui5/webcomponents-base/dist/Keys.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 import ListItem from "./ListItem.js";
 import Icon from "./Icon.js";
@@ -32,6 +30,63 @@ import treeItemCss from "./generated/themes/TreeItem.css.js";
  * @public
  */
 let TreeItemBase = TreeItemBase_1 = class TreeItemBase extends ListItem {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the indentation of the tree list item. Use level 1 for tree list items, representing top-level tree nodes.
+         * @protected
+         * @default 1
+         */
+        this.level = 1;
+        /**
+         * Defines whether the tree list item should display an expand/collapse button.
+         * @default false
+         * @protected
+         */
+        this.showToggleButton = false;
+        /**
+         * Defines whether the tree list item will show a collapse or expand icon inside its toggle button.
+         * @default false
+         * @public
+         */
+        this.expanded = false;
+        /**
+         * Defines whether the tree node has children, even if currently no other tree nodes are slotted inside.
+         *
+         * **Note:** This property is useful for showing big tree structures where not all nodes are initially loaded due to performance reasons.
+         * Set this to `true` for nodes you intend to load lazily, when the user clicks the expand button.
+         * It is not necessary to set this property otherwise. If a tree item has children, the expand button will be displayed anyway.
+         * @default false
+         * @public
+         */
+        this.hasChildren = false;
+        /**
+         * Defines the state of the `additionalText`.
+         *
+         * Available options are: `"None"` (by default), `"Positive"`, `"Critical"`, `"Information"` and `"Negative"`.
+         * @default "None"
+         * @public
+         * @since 1.0.0-rc.15
+         */
+        this.additionalTextState = "None";
+        /**
+         * @private
+         * @since 1.0.0-rc.11
+         */
+        this.forcedSetsize = 1;
+        /**
+         * @private
+         * @since 1.0.0-rc.11
+         */
+        this.forcedPosinset = 1;
+        /**
+         * Defines if the item should be collapsible or not.
+         * @private
+         * @default false
+         * @since 1.10.0
+         */
+        this._fixed = false;
+    }
     onBeforeRendering() {
         this.showToggleButton = this.requiresToggleButton;
     }
@@ -125,7 +180,7 @@ let TreeItemBase = TreeItemBase_1 = class TreeItemBase extends ListItem {
     }
 };
 __decorate([
-    property({ validator: Integer, defaultValue: 1 })
+    property({ type: Number })
 ], TreeItemBase.prototype, "level", void 0);
 __decorate([
     property()
@@ -146,16 +201,16 @@ __decorate([
     property({ type: Boolean })
 ], TreeItemBase.prototype, "hasChildren", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], TreeItemBase.prototype, "additionalTextState", void 0);
 __decorate([
     property()
 ], TreeItemBase.prototype, "accessibleName", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TreeItemBase.prototype, "forcedSetsize", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], TreeItemBase.prototype, "forcedPosinset", void 0);
 __decorate([
     property({ type: Boolean })

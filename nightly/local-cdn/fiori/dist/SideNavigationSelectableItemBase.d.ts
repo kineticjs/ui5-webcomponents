@@ -13,9 +13,9 @@ declare class SideNavigationSelectableItemBase extends SideNavigationItemBase {
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
      * @public
-     * @default ""
+     * @default undefined
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines whether the item is selected
      *
@@ -30,10 +30,10 @@ declare class SideNavigationSelectableItemBase extends SideNavigationItemBase {
      * for the `click` event should be registered.
      *
      * @public
-     * @default ""
+     * @default undefined
      * @since 1.19.0
      */
-    href: string;
+    href?: string;
     /**
      * Defines the component target.
      *
@@ -48,10 +48,10 @@ declare class SideNavigationSelectableItemBase extends SideNavigationItemBase {
      * **This property must only be used when the `href` property is set.**
      *
      * @public
-     * @default ""
+     * @default undefined
      * @since 1.19.0
      */
-    target: string;
+    target?: string;
     /**
      * @private
      * @default false
@@ -60,7 +60,7 @@ declare class SideNavigationSelectableItemBase extends SideNavigationItemBase {
     get ariaRole(): "menuitem" | "menuitemradio" | "treeitem";
     get _href(): string | undefined;
     get _target(): string | undefined;
-    get isExternalLink(): boolean | "";
+    get isExternalLink(): boolean | "" | undefined;
     get _selected(): boolean;
     get classesArray(): string[];
     get _classes(): string;

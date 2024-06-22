@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js";
 /**
  * @class
  *
@@ -18,6 +17,23 @@ import ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js"
  * @since 1.17.0
  */
 class ToolbarItem extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Property used to define the access of the item to the overflow Popover. If "NeverOverflow" option is set,
+         * the item never goes in the Popover, if "AlwaysOverflow" - it never comes out of it.
+         * @public
+         * @default "Default"
+         */
+        this.overflowPriority = "Default";
+        /**
+         * Defines if the toolbar overflow popup should close upon intereaction with the item.
+         * It will close by default.
+         * @default false
+         * @public
+         */
+        this.preventOverflowClosing = false;
+    }
     /**
     * Defines if the width of the item should be ignored in calculating the whole width of the toolbar
     * @protected
@@ -83,7 +99,7 @@ class ToolbarItem extends UI5Element {
     }
 }
 __decorate([
-    property({ type: ToolbarItemOverflowBehavior, defaultValue: ToolbarItemOverflowBehavior.Default })
+    property()
 ], ToolbarItem.prototype, "overflowPriority", void 0);
 __decorate([
     property({ type: Boolean })

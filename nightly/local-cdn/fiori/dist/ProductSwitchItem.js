@@ -41,6 +41,30 @@ import ProductSwitchItemCss from "./generated/themes/ProductSwitchItem.css.js";
 let ProductSwitchItem = class ProductSwitchItem extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines a target where the `targetSrc` content must be open.
+         *
+         * Available options are:
+         *
+         * - `_self`
+         * - `_top`
+         * - `_blank`
+         * - `_parent`
+         * - `_search`
+         * @default "_self"
+         * @public
+         */
+        this.target = "_self";
+        /**
+         * Used to switch the active state (pressed or not) of the component.
+         * @private
+         */
+        this.active = false;
+        /**
+         * Used to set the selected state of the component. Only one selected in a sequence.
+         * **Note:** Set by the `ProductSwitch`
+         */
+        this.selected = false;
         this._deactivate = () => {
             if (this.active) {
                 this.active = false;
@@ -101,7 +125,7 @@ __decorate([
     property()
 ], ProductSwitchItem.prototype, "icon", void 0);
 __decorate([
-    property({ defaultValue: "_self" })
+    property()
 ], ProductSwitchItem.prototype, "target", void 0);
 __decorate([
     property()
@@ -113,7 +137,7 @@ __decorate([
     property({ type: Boolean })
 ], ProductSwitchItem.prototype, "selected", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property({ noAttribute: true })
 ], ProductSwitchItem.prototype, "forcedTabIndex", void 0);
 ProductSwitchItem = __decorate([
     customElement({

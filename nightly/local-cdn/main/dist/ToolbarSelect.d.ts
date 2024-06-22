@@ -1,4 +1,4 @@
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ToolbarSelectTemplate from "./generated/templates/ToolbarSelectTemplate.lit.js";
 import ToolbarPopoverSelectTemplate from "./generated/templates/ToolbarPopoverSelectTemplate.lit.js";
 import ToolbarItem from "./ToolbarItem.js";
@@ -58,15 +58,15 @@ declare class ToolbarSelect extends ToolbarItem {
     /**
      * Defines the accessible ARIA name of the component.
      * @public
-     * @default ""
+     * @default undefined
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the select.
-     * @default ""
+     * @default undefined
      * @public
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     _onEvent: EventListener;
     static get toolbarTemplate(): typeof ToolbarSelectTemplate;
     static get toolbarPopoverTemplate(): typeof ToolbarPopoverSelectTemplate;

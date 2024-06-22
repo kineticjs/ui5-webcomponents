@@ -58,6 +58,7 @@ declare enum ClipboardDataOperation {
  * @extends UI5Element
  * @public
  * @since 2.0.0
+ * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  */
 declare class Tokenizer extends UI5Element {
     /**
@@ -111,7 +112,7 @@ declare class Tokenizer extends UI5Element {
      * @private
      * @default ""
      */
-    opener: HTMLElement;
+    opener?: HTMLElement;
     /**
      * Sets the min-width of the nMore Popover.
      * **Note:** Used inside MultiInput and MultiComboBox components.

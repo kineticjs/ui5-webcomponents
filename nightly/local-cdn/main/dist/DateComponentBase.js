@@ -14,7 +14,6 @@ import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getCalendarType, getSecondaryCalendarType } from "@ui5/webcomponents-base/dist/config/CalendarType.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import getCachedLocaleDataInstance from "@ui5/webcomponents-localization/dist/getCachedLocaleDataInstance.js";
-import CalendarType from "@ui5/webcomponents-base/dist/types/CalendarType.js";
 import getLocale from "@ui5/webcomponents-base/dist/locale/getLocale.js";
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
 import { getMaxCalendarDate, getMinCalendarDate } from "@ui5/webcomponents-localization/dist/dates/ExtremeDates.js";
@@ -35,6 +34,30 @@ import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
 let DateComponentBase = DateComponentBase_1 = class DateComponentBase extends UI5Element {
     constructor() {
         super();
+        /**
+         * Determines the format, displayed in the input field.
+         * @default ""
+         * @public
+         */
+        this.formatPattern = "";
+        /**
+         * Determines the minimum date available for selection.
+         *
+         * **Note:** If the formatPattern property is not set, the minDate value must be provided in the ISO date format (YYYY-MM-dd).
+         * @default undefined
+         * @since 1.0.0-rc.6
+         * @public
+         */
+        this.minDate = "";
+        /**
+         * Determines the maximum date available for selection.
+         *
+         * **Note:** If the formatPattern property is not set, the maxDate value must be provided in the ISO date format (YYYY-MM-dd).
+         * @default ""
+         * @since 1.0.0-rc.6
+         * @public
+         */
+        this.maxDate = "";
     }
     get _primaryCalendarType() {
         const localeData = getCachedLocaleDataInstance(getLocale());
@@ -122,10 +145,10 @@ let DateComponentBase = DateComponentBase_1 = class DateComponentBase extends UI
     }
 };
 __decorate([
-    property({ type: CalendarType })
+    property()
 ], DateComponentBase.prototype, "primaryCalendarType", void 0);
 __decorate([
-    property({ type: CalendarType })
+    property()
 ], DateComponentBase.prototype, "secondaryCalendarType", void 0);
 __decorate([
     property()

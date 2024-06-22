@@ -1,6 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import "@ui5/webcomponents-icons/dist/background.js";
-import MediaGalleryItemLayout from "./types/MediaGalleryItemLayout.js";
+import type MediaGalleryItemLayout from "./types/MediaGalleryItemLayout.js";
 import type { IMediaGalleryItem } from "./MediaGallery.js";
 /**
  * @class
@@ -67,11 +67,11 @@ declare class MediaGalleryItem extends UI5Element implements IMediaGalleryItem {
     /**
      * @private
      */
-    forcedTabIndex: string;
+    forcedTabIndex?: string;
     /**
      * @private
      */
-    contentHeight: string;
+    contentHeight?: string;
     /**
      * Defines the content of the component.
      * @public
@@ -96,7 +96,7 @@ declare class MediaGalleryItem extends UI5Element implements IMediaGalleryItem {
     get _showBackgroundIcon(): boolean;
     get styles(): {
         wrapper: {
-            height: string;
+            height: string | undefined;
         };
     };
     get _role(): "button" | undefined;

@@ -49,10 +49,10 @@ declare class NotificationList extends UI5Element {
     items: Array<NotificationListItemBase>;
     /**
      * Defines the text that is displayed when the component contains no items.
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataText: string;
+    noDataText?: string;
     get _accessibleName(): string;
     static i18nFioriBundle: I18nBundle;
     getEnabledItems(): import("@ui5/webcomponents/dist/ListItemBase.js").default[];

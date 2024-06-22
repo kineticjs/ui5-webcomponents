@@ -15,7 +15,7 @@ declare class NotificationListItemBase extends ListItemBase {
      * @default ""
      * @public
      */
-    titleText: string;
+    titleText?: string;
     /**
      * Defines if the `notification` is new or has been already read.
      *

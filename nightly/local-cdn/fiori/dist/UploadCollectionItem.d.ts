@@ -26,7 +26,7 @@ declare class UploadCollectionItem extends ListItem {
      * @default null
      * @public
      */
-    file?: File | null;
+    file: File | null;
     /**
      * The name of the file.
      * @default ""
@@ -44,7 +44,7 @@ declare class UploadCollectionItem extends ListItem {
      * @default false
      * @public
      */
-    disableDeleteButton: boolean;
+    disableDeleteButton: boolean | undefined;
     /**
      * Hides the delete button.
      * @default false

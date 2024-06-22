@@ -15,8 +15,6 @@ import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/Ari
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { markEvent } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import LinkDesign from "./types/LinkDesign.js";
-import WrappingType from "./types/WrappingType.js";
-import LinkAccessibleRole from "./types/LinkAccessibleRole.js";
 // Template
 import LinkTemplate from "./generated/templates/LinkTemplate.lit.js";
 import { LINK_SUBTLE, LINK_EMPHASIZED } from "./generated/i18n/i18n-defaults.js";
@@ -66,17 +64,70 @@ import Icon from "./Icon.js";
 let Link = Link_1 = class Link extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines whether the component is disabled.
+         *
+         * **Note:** When disabled, the click event cannot be triggered by the user.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the component design.
+         *
+         * **Note:** Avaialble options are `Default`, `Subtle`, and `Emphasized`.
+         * @default "Default"
+         * @public
+         */
+        this.design = "Default";
+        /**
+         * Defines how the text of a component will be displayed when there is not enough space.
+         *
+         * **Note:** By default the text will wrap. If "None" is set - the text will truncate.
+         * @default "Normal"
+         * @public
+         */
+        this.wrappingType = "Normal";
+        /**
+         * Defines the ARIA role of the component.
+         *
+         * **Note:** Use the <code>LinkAccessibleRole.Button</code> role in cases when navigation is not expected to occur and the href property is not defined.
+         * @default "Link"
+         * @public
+         * @since 1.9.0
+         */
+        this.accessibleRole = "Link";
+        /**
+         * Defines the additional accessibility attributes that will be applied to the component.
+         * The following fields are supported:
+         *
+         * - **expanded**: Indicates whether the button, or another grouping element it controls, is currently expanded or collapsed.
+         * Accepts the following string values: `true` or `false`.
+         *
+         * - **hasPopup**: Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by the button.
+         * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+         *
+         * @public
+         * @since 1.1.0
+         * @default {}
+         */
+        this.accessibilityAttributes = {};
+        /**
+         * Indicates if the element is on focus.
+         * @private
+         */
+        this.focused = false;
         this._dummyAnchor = document.createElement("a");
     }
     onBeforeRendering() {
         const needsNoReferrer = this.target !== "_self"
             && this.href
-            && this._isCrossOrigin();
+            && this._isCrossOrigin(this.href);
         this._rel = needsNoReferrer ? "noreferrer noopener" : undefined;
     }
-    _isCrossOrigin() {
+    _isCrossOrigin(href) {
         const loc = window.location;
-        this._dummyAnchor.href = this.href;
+        this._dummyAnchor.href = href;
         return !(this._dummyAnchor.hostname === loc.hostname
             && this._dummyAnchor.port === loc.port
             && this._dummyAnchor.protocol === loc.protocol);
@@ -170,10 +221,10 @@ __decorate([
     property()
 ], Link.prototype, "target", void 0);
 __decorate([
-    property({ type: LinkDesign, defaultValue: LinkDesign.Default })
+    property()
 ], Link.prototype, "design", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.Normal })
+    property()
 ], Link.prototype, "wrappingType", void 0);
 __decorate([
     property()
@@ -182,7 +233,7 @@ __decorate([
     property()
 ], Link.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ type: LinkAccessibleRole, defaultValue: LinkAccessibleRole.Link })
+    property()
 ], Link.prototype, "accessibleRole", void 0);
 __decorate([
     property({ type: Object })

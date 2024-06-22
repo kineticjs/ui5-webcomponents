@@ -6,7 +6,7 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import MovePlacement from "@ui5/webcomponents-base/dist/types/MovePlacement.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
 import ListGrowingMode from "./types/ListGrowingMode.js";
-import ListAccessibleRole from "./types/ListAccessibleRole.js";
+import type ListAccessibleRole from "./types/ListAccessibleRole.js";
 import type ListItemBase from "./ListItemBase.js";
 import type { ListItemBasePressEventDetail } from "./ListItemBase.js";
 import DropIndicator from "./DropIndicator.js";
@@ -104,16 +104,16 @@ declare class List extends UI5Element {
      * Defines the component header text.
      *
      * **Note:** If `header` is set this property is ignored.
-     * @default ""
+     * @default undefined
      * @public
      */
-    headerText: string;
+    headerText?: string;
     /**
      * Defines the footer text.
-     * @default ""
+     * @default undefined
      * @public
      */
-    footerText: string;
+    footerText?: string;
     /**
      * Determines whether the component is indented.
      * @default false
@@ -128,10 +128,10 @@ declare class List extends UI5Element {
     selectionMode: `${ListSelectionMode}`;
     /**
      * Defines the text that is displayed when the component contains no items.
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataText: string;
+    noDataText?: string;
     /**
      * Defines the item separator style that is used.
      * @default "All"
@@ -155,11 +155,11 @@ declare class List extends UI5Element {
      * **Note:** If not specified a built-in text will be displayed.
      *
      * **Note:** This property takes effect if the `growing` property is set to the `Button`.
-     * @default ""
+     * @default undefined
      * @since 1.24
      * @public
      */
-    growingButtonText: string;
+    growingButtonText?: string;
     /**
      * Defines if the component would display a loading indicator over the list.
      * @default false
@@ -175,18 +175,18 @@ declare class List extends UI5Element {
     loadingDelay: number;
     /**
      * Defines the accessible name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the IDs of the elements that label the input.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleNameRef: string;
+    accessibleNameRef?: string;
     /**
      * Defines the accessible role of the component.
      * @public
@@ -251,13 +251,13 @@ declare class List extends UI5Element {
     attachGroupHeaderEvents(): void;
     detachGroupHeaderEvents(): void;
     attachForResize(): void;
-    get shouldRenderH1(): string | false;
+    get shouldRenderH1(): string | false | undefined;
     get headerID(): string;
     get modeLabelID(): string;
     get listEndDOM(): Element | null;
     get dropIndicatorDOM(): DropIndicator | null;
     get hasData(): boolean;
-    get showNoDataText(): string | false;
+    get showNoDataText(): string | false | undefined;
     get isDelete(): boolean;
     get isSingleSelect(): boolean;
     get isMultiple(): boolean;

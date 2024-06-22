@@ -114,13 +114,31 @@ const offsets = {
 let AvatarGroup = AvatarGroup_1 = class AvatarGroup extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the mode of the `AvatarGroup`.
+         * @default "Group"
+         * @public
+         */
+        this.type = "Group";
+        /**
+         * Defines the additional accessibility attributes that will be applied to the component.
+         * The following field is supported:
+         *
+         * - **hasPopup**: Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by the button.
+         * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+         *
+         * @public
+         * @since 2.0.0
+         * @default {}
+         */
+        this.accessibilityAttributes = {};
+        this._colorIndex = 0;
+        this._hiddenItems = 0;
         this._itemNavigation = new ItemNavigation(this, {
             getItemsCallback: () => {
                 return this._isGroup ? [] : this.items.slice(0, this._hiddenStartIndex);
             },
         });
-        this._colorIndex = 0;
-        this._hiddenItems = 0;
         this._onResizeHandler = this._onResize.bind(this);
     }
     static async onDefine() {
@@ -395,7 +413,7 @@ let AvatarGroup = AvatarGroup_1 = class AvatarGroup extends UI5Element {
     }
 };
 __decorate([
-    property({ type: AvatarGroupType, defaultValue: AvatarGroupType.Group })
+    property()
 ], AvatarGroup.prototype, "type", void 0);
 __decorate([
     property({ type: Object })

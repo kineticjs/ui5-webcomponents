@@ -52,6 +52,31 @@ import { TABLE_MORE, TABLE_MORE_DESCRIPTION, } from "./generated/i18n/i18n-defau
  * @public
  */
 let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the mode of the <code>ui5-table</code> growing.
+         *
+         * Available options are:
+         *
+         * Button - Shows a More button at the bottom of the table, pressing it will load more rows.
+         *
+         * Scroll - The rows are loaded automatically by scrolling to the bottom of the table. If the table is not scrollable, this option is the same as the Button.
+         * @default "Button"
+         * @public
+         */
+        this.type = "Button";
+        /**
+         * Disables the growing feature.
+         */
+        this.disabled = false;
+        /**
+         * Defines the active state of the growing button.
+         * Used for keyboard interaction.
+         * @private
+         */
+        this._activeState = false;
+    }
     static async onDefine() {
         TableGrowing_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -188,7 +213,7 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
     }
 };
 __decorate([
-    property({ type: TableGrowingMode, defaultValue: TableGrowingMode.Button })
+    property()
 ], TableGrowing.prototype, "type", void 0);
 __decorate([
     property()

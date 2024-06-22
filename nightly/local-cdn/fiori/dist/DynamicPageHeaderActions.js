@@ -41,6 +41,37 @@ import { DYNAMIC_PAGE_ARIA_LABEL_EXPAND_HEADER, DYNAMIC_PAGE_ARIA_LABEL_SNAP_HEA
  * @private
  */
 let DynamicPageHeaderActions = DynamicPageHeaderActions_1 = class DynamicPageHeaderActions extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the header is pinned.
+         *
+         * @protected
+         * @default false
+         */
+        this.pinned = false;
+        /**
+         * Defines whether the pin button is hidden.
+         *
+         * @protected
+         * @default false
+         */
+        this.hidePinButton = false;
+        /**
+         * Defines whether the header is snapped.
+         *
+         * @protected
+         * @default false
+         */
+        this.snapped = false;
+        /**
+         * Contains attributes to be added to HTML to gain accessibility.
+         *
+         * @protected
+         * @default {}
+         */
+        this.accessibilityAttributes = {};
+    }
     static async onDefine() {
         DynamicPageHeaderActions_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
     }

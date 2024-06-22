@@ -14,7 +14,6 @@ import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import "@ui5/webcomponents-icons/dist/overflow.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
@@ -23,8 +22,6 @@ import { TOOLBAR_OVERFLOW_BUTTON_ARIA_LABEL, } from "./generated/i18n/i18n-defau
 import ToolbarTemplate from "./generated/templates/ToolbarTemplate.lit.js";
 import ToolbarCss from "./generated/themes/Toolbar.css.js";
 import ToolbarPopoverCss from "./generated/themes/ToolbarPopover.css.js";
-import ToolbarAlign from "./types/ToolbarAlign.js";
-import ToolbarDesign from "./types/ToolbarDesign.js";
 import ToolbarItemOverflowBehavior from "./types/ToolbarItemOverflowBehavior.js";
 import { getRegisteredToolbarItem, getRegisteredStyles, getRegisteredDependencies, } from "./ToolbarRegistry.js";
 import Button from "./Button.js";
@@ -78,6 +75,24 @@ let Toolbar = Toolbar_1 = class Toolbar extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Indicated the direction in which the Toolbar items will be aligned.
+         * @public
+         * @default "End"
+         */
+        this.alignContent = "End";
+        /**
+         * Notifies the toolbar if it should show the items in a reverse way if Toolbar Popover needs to be placed on "Top" position.
+         * @private
+         */
+        this.reverseOverflow = false;
+        /**
+         * Defines the toolbar design.
+         * @public
+         * @default "Solid"
+         * @since 2.0.0
+         */
+        this.design = "Solid";
         this.itemsToOverflow = [];
         this.itemsWidth = 0;
         this.minContentWidth = 0;
@@ -430,13 +445,13 @@ let Toolbar = Toolbar_1 = class Toolbar extends UI5Element {
     }
 };
 __decorate([
-    property({ type: ToolbarAlign, defaultValue: ToolbarAlign.End })
+    property()
 ], Toolbar.prototype, "alignContent", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Toolbar.prototype, "width", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], Toolbar.prototype, "contentWidth", void 0);
 __decorate([
     property({ type: Boolean })
@@ -445,10 +460,10 @@ __decorate([
     property()
 ], Toolbar.prototype, "accessibleName", void 0);
 __decorate([
-    property({ defaultValue: "" })
+    property()
 ], Toolbar.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ type: ToolbarDesign, defaultValue: ToolbarDesign.Solid })
+    property()
 ], Toolbar.prototype, "design", void 0);
 __decorate([
     slot({ "default": true, type: HTMLElement, invalidateOnChildChange: true })

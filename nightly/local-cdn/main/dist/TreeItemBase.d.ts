@@ -1,5 +1,5 @@
 import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItem from "./ListItem.js";
 import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
 import "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
@@ -27,9 +27,9 @@ declare class TreeItemBase extends ListItem {
     /**
      * If set, an icon will be displayed before the text of the tree list item.
      * @public
-     * @default ""
+     * @default undefined
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines whether the tree list item should display an expand/collapse button.
      * @default false
@@ -65,7 +65,7 @@ declare class TreeItemBase extends ListItem {
     * @public
     * @since 1.1.0
     */
-    indeterminate: boolean;
+    indeterminate: boolean | undefined;
     /**
      * Defines whether the tree node has children, even if currently no other tree nodes are slotted inside.
      *
@@ -87,11 +87,11 @@ declare class TreeItemBase extends ListItem {
     additionalTextState: `${ValueState}`;
     /**
      * Defines the accessible name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.8.0
      */
-    accessibleName: string;
+    accessibleName: string | undefined;
     /**
      * @private
      * @since 1.0.0-rc.11

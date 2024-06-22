@@ -17,10 +17,10 @@ declare class BreadcrumbsItem extends UI5Element {
      * Defines the link href.
      *
      * **Note:** Standard hyperlink behavior is supported.
-     * @default ""
+     * @default undefined
      * @public
      */
-    href: string;
+    href?: string;
     /**
      * Defines the link target.
      *
@@ -42,7 +42,7 @@ declare class BreadcrumbsItem extends UI5Element {
      * @default undefined
      * @public
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines the text of the component.
      *

@@ -33,6 +33,15 @@ import treeItemCustomCss from "./generated/themes/TreeItem.css.js";
  * @since 1.9.2
  */
 let TreeItemCustom = class TreeItemCustom extends TreeItemBase {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the tree list item should display the selection element.
+         * @public
+         * @default false
+         */
+        this.hideSelectionElement = false;
+    }
     async _onkeydown(e) {
         const isTab = isTabNext(e) || isTabPrevious(e);
         const isFocused = this.matches(":focus");

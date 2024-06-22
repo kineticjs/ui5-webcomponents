@@ -22,30 +22,30 @@ type WizardTabInfo = {
 declare class WizardTab extends UI5Element implements ITabbable {
     /**
      * Defines the `icon` of the step.
-     * @default ""
+     * @default undefined
      * @private
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the `titleText` of the step.
-     * @default ""
+     * @default undefined
      * @private
      * @since 1.0.0-rc.15
      */
-    titleText: string;
+    titleText?: string;
     /**
      * Defines the `subtitleText` of the step.
-     * @default ""
+     * @default undefined
      * @private
      * @since 1.0.0-rc.15
      */
-    subtitleText: string;
+    subtitleText?: string;
     /**
      * Defines the number that will be displayed in place of the `icon`, when it's missing.
-     * @default ""
+     * @default undefined
      * @private
      */
-    number: string;
+    number?: string;
     /**
      * Defines if the step is `disabled` - the step is not responding to user interaction.
      * @default false
@@ -81,13 +81,13 @@ declare class WizardTab extends UI5Element implements ITabbable {
      * @default "-1"
      * @private
      */
-    forcedTabIndex: string;
+    forcedTabIndex?: string;
     _wizardTabAccInfo?: WizardTabInfo;
     _onclick(): void;
     _onkeyup(e: KeyboardEvent): void;
     _onfocusin(): void;
     get tabIndex(): number;
-    get hasTexts(): string;
+    get hasTexts(): string | undefined;
     get accInfo(): {
         ariaSetsize: string | undefined;
         ariaPosinset: string | undefined;

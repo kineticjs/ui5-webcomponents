@@ -17,9 +17,9 @@ interface ITableRow extends HTMLElement, ITabbable {
     mode: `${TableMode}`;
     selected: boolean;
     forcedBusy: boolean;
-    forcedAriaPosition: string;
+    forcedAriaPosition?: string;
     _columnsInfoString: string;
-    _columnsInfo: Array<TableColumnInfo>;
+    _columnsInfo?: Array<TableColumnInfo>;
     tabbableElements: Array<HTMLElement>;
 }
 type TableColumnInfo = {
@@ -111,10 +111,10 @@ declare enum TableFocusTargetElement {
 declare class Table extends UI5Element {
     /**
      * Defines the text that will be displayed when there is no data and `hideNoData` is not present.
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataText: string;
+    noDataText?: string;
     /**
      * Defines the text that will be displayed inside the growing button at the bottom of the table,
      * meant for loading more rows upon press.
@@ -122,20 +122,20 @@ declare class Table extends UI5Element {
      * **Note:** If not specified a built-in text will be displayed.
      *
      * **Note:** This property takes effect if `growing` is set to `Button`.
-     * @default ""
+     * @default undefined
      * @since 2.0.0
      * @public
      */
-    growingButtonText: string;
+    growingButtonText?: string;
     /**
      * Defines the subtext that will be displayed under the `growingButtonText`.
      *
      * **Note:** This property takes effect if `growing` is set to `Button`.
-     * @default ""
+     * @default undefined
      * @since 2.0.0
      * @public
      */
-    growingButtonSubtext: string;
+    growingButtonSubtext?: string;
     /**
      * Defines if the value of `noDataText` will be diplayed when there is no rows present in the table.
      * @default false
@@ -215,12 +215,12 @@ declare class Table extends UI5Element {
     accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 2.0.0
      */
-    accessibleNameRef: string;
-    _hiddenColumns: Array<TableColumnInfo>;
+    accessibleNameRef?: string;
+    _hiddenColumns?: Array<TableColumnInfo>;
     _noDataDisplayed: boolean;
     /**
      * Defines the active state of the `More` button.

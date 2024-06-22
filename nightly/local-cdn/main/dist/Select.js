@@ -23,7 +23,6 @@ import "@ui5/webcomponents-icons/dist/information.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import "@ui5/webcomponents-icons/dist/decline.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import InvisibleMessageMode from "@ui5/webcomponents-base/dist/types/InvisibleMessageMode.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 import List from "./List.js";
@@ -83,6 +82,61 @@ import SelectPopoverCss from "./generated/themes/SelectPopover.css.js";
  * @since 0.8.0
  */
 let Select = Select_1 = class Select extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the component is in disabled state.
+         *
+         * **Note:** A disabled component is noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component is required.
+         * @since 1.0.0-rc.9
+         * @default false
+         * @public
+         */
+        this.required = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @since 1.21.0
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * @private
+         */
+        this._iconPressed = false;
+        /**
+         * @private
+         */
+        this.opened = false;
+        /**
+         * @private
+         */
+        this._listWidth = 0;
+        /**
+         * @private
+         */
+        this.focused = false;
+        this._selectedIndexBeforeOpen = -1;
+        this._escapePressed = false;
+        this._lastSelectedOption = null;
+        this._typedChars = "";
+    }
+    ;
     get formValidityMessage() {
         return Select_1.i18nBundle.getText(FORM_SELECTABLE_REQUIRED);
     }
@@ -99,14 +153,6 @@ let Select = Select_1 = class Select extends UI5Element {
             return selectedOption.hasAttribute("value") ? selectedOption.value : selectedOption.textContent;
         }
         return "";
-    }
-    constructor() {
-        super();
-        this._selectedIndexBeforeOpen = -1;
-        this._escapePressed = false;
-        this._lastSelectedOption = null;
-        this._typedChars = "";
-        this._upgradeProperty("value");
     }
     onBeforeRendering() {
         this._ensureSingleSelection();
@@ -582,7 +628,7 @@ __decorate([
     property()
 ], Select.prototype, "name", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], Select.prototype, "valueState", void 0);
 __decorate([
     property({ type: Boolean })
@@ -603,7 +649,7 @@ __decorate([
     property({ type: Boolean })
 ], Select.prototype, "opened", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 0, noAttribute: true })
+    property({ type: Number, noAttribute: true })
 ], Select.prototype, "_listWidth", void 0);
 __decorate([
     property({ type: Boolean })
@@ -617,6 +663,9 @@ __decorate([
 __decorate([
     slot()
 ], Select.prototype, "label", void 0);
+__decorate([
+    property()
+], Select.prototype, "value", null);
 Select = Select_1 = __decorate([
     customElement({
         tag: "ui5-select",

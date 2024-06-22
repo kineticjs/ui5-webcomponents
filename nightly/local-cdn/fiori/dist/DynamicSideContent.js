@@ -101,6 +101,65 @@ MINIMUM_WIDTH_BREAKPOINT = 960; // Minimum width of the control where main and s
 let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the visibility of the main content.
+         * @default false
+         * @public
+         *
+         */
+        this.hideMainContent = false;
+        /**
+         * Defines the visibility of the side content.
+         * @default false
+         * @public
+         *
+         */
+        this.hideSideContent = false;
+        /**
+         * Defines whether the side content is positioned before the main content (left side
+         * in LTR mode), or after the the main content (right side in LTR mode).
+    
+         * @default "End"
+         * @public
+         *
+         */
+        this.sideContentPosition = "End";
+        /**
+         * Defines on which breakpoints the side content is visible.
+         * @default "ShowAboveS"
+         * @public
+         *
+         */
+        this.sideContentVisibility = "ShowAboveS";
+        /**
+         * Defines on which breakpoints the side content falls down below the main content.
+         * @default "OnMinimumWidth"
+         * @public
+         *
+         */
+        this.sideContentFallDown = "OnMinimumWidth";
+        /**
+         * Defines whether the component is in equal split mode. In this mode, the side and
+         * the main content take 50:50 percent of the container on all screen sizes
+         * except for phone, where the main and side contents are switching visibility
+         * using the toggle method.
+         * @default false
+         * @public
+         *
+         */
+        this.equalSplit = false;
+        /**
+         * @private
+         */
+        this._mcSpan = "0";
+        /**
+         * @private
+         */
+        this._scSpan = "0";
+        /**
+         * @private
+         */
+        this._toggled = false;
         this._handleResizeBound = this.handleResize.bind(this);
     }
     static async onDefine() {
@@ -218,7 +277,7 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
         this._resizeContents();
     }
     _resizeContents() {
-        let mainSize, sideSize, sideVisible;
+        let mainSize, sideSize, sideVisible = false;
         // initial set contents sizes
         switch (this.breakpoint) {
             case this.sizeS:
@@ -305,22 +364,22 @@ __decorate([
     property({ type: Boolean })
 ], DynamicSideContent.prototype, "hideSideContent", void 0);
 __decorate([
-    property({ type: SideContentPosition, defaultValue: SideContentPosition.End })
+    property()
 ], DynamicSideContent.prototype, "sideContentPosition", void 0);
 __decorate([
-    property({ type: SideContentVisibility, defaultValue: SideContentVisibility.ShowAboveS })
+    property()
 ], DynamicSideContent.prototype, "sideContentVisibility", void 0);
 __decorate([
-    property({ type: SideContentFallDown, defaultValue: SideContentFallDown.OnMinimumWidth })
+    property()
 ], DynamicSideContent.prototype, "sideContentFallDown", void 0);
 __decorate([
     property({ type: Boolean })
 ], DynamicSideContent.prototype, "equalSplit", void 0);
 __decorate([
-    property({ defaultValue: "0", noAttribute: true })
+    property({ noAttribute: true })
 ], DynamicSideContent.prototype, "_mcSpan", void 0);
 __decorate([
-    property({ defaultValue: "0", noAttribute: true })
+    property({ noAttribute: true })
 ], DynamicSideContent.prototype, "_scSpan", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })
@@ -341,7 +400,7 @@ DynamicSideContent = DynamicSideContent_1 = __decorate([
     /**
      * Fires when the current breakpoint has been changed.
      * @param {string} currentBreakpoint the current breakpoint.
-     * @param {string} previousBreakpoint the breakpoint that was active before change to current breakpoint.
+     * @param {string | undefined} previousBreakpoint the breakpoint that was active before change to current breakpoint.
      * @param {boolean} mainContentVisible visibility of the main content.
      * @param {boolean} sideContentVisible visibility of the side content.
      * @public

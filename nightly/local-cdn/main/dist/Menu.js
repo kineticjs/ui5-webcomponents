@@ -10,19 +10,19 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import DOMReference from "@ui5/webcomponents-base/dist/types/DOMReference.js";
 import { isLeft, isRight, isEnter, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isPhone, isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
+import DOMReferenceConverter from "@ui5/webcomponents-base/dist/converters/DOMReference.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import Button from "./Button.js";
 import List from "./List.js";
 import Icon from "./Icon.js";
 import BusyIndicator from "./BusyIndicator.js";
 import MenuItem from "./MenuItem.js";
+import MenuSeparator from "./MenuSeparator.js";
 import menuTemplate from "./generated/templates/MenuTemplate.lit.js";
 import { MENU_CLOSE_BUTTON_ARIA_LABEL, } from "./generated/i18n/i18n-defaults.js";
 // Styles
@@ -35,9 +35,13 @@ const MENU_OPEN_DELAY = 300;
  *
  * `ui5-menu` component represents a hierarchical menu structure.
  *
- * ### Usage
+ * ### Structure
  *
- * `ui5-menu` contains `ui5-menu-item` components.
+ * The `ui5-menu` can hold two types of entities:
+ *
+ * - `ui5-menu-item` components
+ * - `ui5-menu-separator` - used to separate menu items with a line
+ *
  * An arbitrary hierarchy structure can be represented by recursively nesting menu items.
  *
  * ### Keyboard Handling
@@ -61,6 +65,30 @@ const MENU_OPEN_DELAY = 300;
  * @public
  */
 let Menu = Menu_1 = class Menu extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Indicates if the menu is open
+         * @public
+         * @default false
+         * @since 1.10.0
+         */
+        this.open = false;
+        /**
+         * Defines if a loading indicator would be displayed inside the corresponding ui5-menu popover.
+         * @default false
+         * @public
+         * @since 1.13.0
+         */
+        this.loading = false;
+        /**
+         * Defines the delay in milliseconds, after which the loading indicator will be displayed inside the corresponding ui5-menu popover..
+         * @default 1000
+         * @public
+         * @since 1.13.0
+         */
+        this.loadingDelay = 1000;
+    }
     static async onDefine() {
         Menu_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -76,9 +104,12 @@ let Menu = Menu_1 = class Menu extends UI5Element {
     get _popover() {
         return this.shadowRoot.querySelector("[ui5-responsive-popover]");
     }
+    get _menuItems() {
+        return this.items.filter((item) => !item.isSeparator);
+    }
     onBeforeRendering() {
-        const siblingsWithIcon = this.items.some(item => !!item.icon);
-        this.items.forEach(item => {
+        const siblingsWithIcon = this._menuItems.some(menuItem => !!menuItem.icon);
+        this._menuItems.forEach(item => {
             item._siblingsWithIcon = siblingsWithIcon;
         });
     }
@@ -99,7 +130,7 @@ let Menu = Menu_1 = class Menu extends UI5Element {
     }
     _closeItemSubMenu(item) {
         if (item && item._popover) {
-            const openedSibling = item.items.find(menuItem => menuItem._popover && menuItem._popover.open);
+            const openedSibling = item._menuItems.find(menuItem => menuItem._popover && menuItem._popover.open);
             if (openedSibling) {
                 this._closeItemSubMenu(openedSibling);
             }
@@ -111,16 +142,18 @@ let Menu = Menu_1 = class Menu extends UI5Element {
         if (isDesktop()) {
             // respect mouseover only on desktop
             const item = e.target;
-            item.focus();
-            // Opens submenu with 300ms delay
-            this._startOpenTimeout(item);
+            if (item.hasAttribute("ui5-menu-item")) {
+                item.focus();
+                // Opens submenu with 300ms delay
+                this._startOpenTimeout(item);
+            }
         }
     }
     _startOpenTimeout(item) {
         clearTimeout(this._timeout);
         this._timeout = setTimeout(() => {
             const opener = item.parentElement;
-            const openedSibling = opener && opener.items.find(menuItem => menuItem._popover && menuItem._popover.open);
+            const openedSibling = opener && opener._menuItems.find(menuItem => menuItem._popover && menuItem._popover.open);
             if (openedSibling) {
                 this._closeItemSubMenu(openedSibling);
             }
@@ -171,7 +204,7 @@ let Menu = Menu_1 = class Menu extends UI5Element {
     }
     _afterPopoverOpen() {
         this.open = true;
-        this.items[0]?.focus();
+        this._menuItems[0]?.focus();
         this.fireEvent("open", {}, false, true);
     }
     _beforePopoverClose(e) {
@@ -196,10 +229,10 @@ __decorate([
     property({ type: Boolean })
 ], Menu.prototype, "loading", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1000 })
+    property({ type: Number })
 ], Menu.prototype, "loadingDelay", void 0);
 __decorate([
-    property({ validator: DOMReference, defaultValue: "" })
+    property({ converter: DOMReferenceConverter })
 ], Menu.prototype, "opener", void 0);
 __decorate([
     slot({ "default": true, type: HTMLElement, invalidateOnChildChange: true })
@@ -215,6 +248,7 @@ Menu = Menu_1 = __decorate([
             Button,
             List,
             MenuItem,
+            MenuSeparator,
             Icon,
             BusyIndicator,
         ],

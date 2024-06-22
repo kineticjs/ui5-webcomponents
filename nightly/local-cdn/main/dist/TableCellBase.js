@@ -24,6 +24,7 @@ import TableCellBaseStyles from "./generated/themes/TableCellBase.css.js";
 let TableCellBase = TableCellBase_1 = class TableCellBase extends UI5Element {
     constructor() {
         super(...arguments);
+        this._popin = false;
         this.ariaRole = "gridcell";
     }
     static async onDefine() {

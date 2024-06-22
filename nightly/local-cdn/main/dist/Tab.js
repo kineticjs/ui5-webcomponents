@@ -51,6 +51,45 @@ const DESIGN_DESCRIPTIONS = {
  * @public
  */
 let Tab = Tab_1 = class Tab extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Disabled tabs can't be selected.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the component's design color.
+         *
+         * The design is applied to:
+         *
+         * - the component icon
+         * - the `text` when the component overflows
+         * - the tab selection line
+         *
+         * Available designs are: `"Default"`, `"Neutral"`, `"Positive"`, `"Critical"` and `"Negative"`.
+         *
+         * **Note:** The design depends on the current theme.
+         * @default "Default"
+         * @public
+         */
+        this.design = "Default";
+        /**
+         * Specifies if the component is selected.
+         * @default false
+         * @public
+         */
+        this.selected = false;
+        /**
+         * Defines if the tab is movable.
+         *
+         * @default false
+         * @private
+         */
+        this.movable = false;
+        this._isTopLevelTab = false;
+    }
     set forcedTabIndex(val) {
         this.getDomRefInStrip().setAttribute("tabindex", val);
     }
@@ -305,7 +344,7 @@ __decorate([
     property()
 ], Tab.prototype, "icon", void 0);
 __decorate([
-    property({ type: SemanticColor, defaultValue: SemanticColor.Default })
+    property()
 ], Tab.prototype, "design", void 0);
 __decorate([
     property({ type: Boolean })
@@ -317,7 +356,7 @@ __decorate([
     property({ type: Boolean })
 ], Tab.prototype, "_isTopLevelTab", void 0);
 __decorate([
-    property({ type: Object, defaultValue: null })
+    property({ type: Object })
 ], Tab.prototype, "_selectedTabReference", void 0);
 __decorate([
     slot({

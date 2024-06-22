@@ -8,7 +8,6 @@ var MenuItem_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 import AriaHasPopup from "@ui5/webcomponents-base/dist/types/AriaHasPopup.js";
@@ -40,10 +39,68 @@ import menuItemCss from "./generated/themes/MenuItem.css.js";
  * `import "@ui5/webcomponents/dist/MenuItem.js";`
  * @constructor
  * @extends ListItem
+ * @implements {IMenuItem}
  * @since 1.3.0
  * @public
  */
 let MenuItem = MenuItem_1 = class MenuItem extends ListItem {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the text of the tree item.
+         * @default ""
+         * @public
+         */
+        this.text = "";
+        /**
+         * Defines the `additionalText`, displayed in the end of the menu item.
+         *
+         * **Note:** The additional text will not be displayed if there are items added in `items` slot or there are
+         * components added to `endContent` slot.
+         *
+         * The priority of what will be displayed at the end of the menu item is as follows:
+         * sub-menu arrow (if there are items added in `items` slot) -> components added in `endContent` -> text set to `additionalText`.
+         * @default ""
+         * @public
+         * @since 1.8.0
+         */
+        this.additionalText = "";
+        /**
+         * Defines whether `ui5-menu-item` is in disabled state.
+         *
+         * **Note:** A disabled `ui5-menu-item` is noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines the delay in milliseconds, after which the loading indicator will be displayed inside the corresponding ui5-menu popover.
+         *
+         * **Note:** If set to `true` a `ui5-busy-indicator` component will be displayed into the related one to the current `ui5-menu-item` sub-menu popover.
+         * @default false
+         * @public
+         * @since 1.13.0
+         */
+        this.loading = false;
+        /**
+         * Defines the delay in milliseconds, after which the loading indicator will be displayed inside the corresponding ui5-menu popover.
+         * @default 1000
+         * @public
+         * @since 1.13.0
+         */
+        this.loadingDelay = 1000;
+        /**
+         * Defines the accessible ARIA name of the component.
+         * @default ""
+         * @public
+         * @since 1.7.0
+         */
+        this.accessibleName = "";
+        /**
+         * Indicates whether any of the element siblings have icon.
+         */
+        this._siblingsWithIcon = false;
+    }
     static async onDefine() {
         MenuItem_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
@@ -80,9 +137,12 @@ let MenuItem = MenuItem_1 = class MenuItem extends ListItem {
     get labelClose() {
         return MenuItem_1.i18nBundle.getText(MENU_CLOSE_BUTTON_ARIA_LABEL);
     }
+    get isSeparator() {
+        return false;
+    }
     onBeforeRendering() {
-        const siblingsWithIcon = this.items.some(item => !!item.icon);
-        this.items.forEach(item => {
+        const siblingsWithIcon = this._menuItems.some(menuItem => !!menuItem.icon);
+        this._menuItems.forEach(item => {
             item._siblingsWithIcon = siblingsWithIcon;
         });
     }
@@ -98,6 +158,9 @@ let MenuItem = MenuItem_1 = class MenuItem extends ListItem {
     }
     get _popover() {
         return this.shadowRoot.querySelector("[ui5-responsive-popover]");
+    }
+    get _menuItems() {
+        return this.items.filter((item) => !item.isSeparator);
     }
     _closeAll() {
         if (this._popover) {
@@ -148,21 +211,18 @@ __decorate([
 ], MenuItem.prototype, "icon", void 0);
 __decorate([
     property({ type: Boolean })
-], MenuItem.prototype, "startsSection", void 0);
-__decorate([
-    property({ type: Boolean })
 ], MenuItem.prototype, "disabled", void 0);
 __decorate([
     property({ type: Boolean })
 ], MenuItem.prototype, "loading", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1000 })
+    property({ type: Number })
 ], MenuItem.prototype, "loadingDelay", void 0);
 __decorate([
     property()
 ], MenuItem.prototype, "accessibleName", void 0);
 __decorate([
-    property({ type: String })
+    property()
 ], MenuItem.prototype, "tooltip", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

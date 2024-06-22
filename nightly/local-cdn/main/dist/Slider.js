@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var Slider_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import Float from "@ui5/webcomponents-base/dist/types/Float.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
 import SliderBase from "./SliderBase.js";
@@ -76,6 +75,14 @@ let Slider = Slider_1 = class Slider extends SliderBase {
     }
     constructor() {
         super();
+        /**
+         * Current value of the slider
+         * @default 0
+         * @formEvents change input
+         * @formProperty
+         * @public
+         */
+        this.value = 0;
         this._progressPercentage = 0;
         this._handlePositionFromStart = 0;
         this._stateStorage.value = undefined;
@@ -281,7 +288,7 @@ let Slider = Slider_1 = class Slider extends SliderBase {
     }
 };
 __decorate([
-    property({ validator: Float, defaultValue: 0 })
+    property({ type: Number })
 ], Slider.prototype, "value", void 0);
 Slider = Slider_1 = __decorate([
     customElement({

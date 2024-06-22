@@ -3,7 +3,7 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import ResponsivePopover from "@ui5/webcomponents/dist/ResponsivePopover.js";
-import WizardContentLayout from "./types/WizardContentLayout.js";
+import type WizardContentLayout from "./types/WizardContentLayout.js";
 import WizardTab from "./WizardTab.js";
 import WizardStep from "./WizardStep.js";
 type WizardStepChangeEventDetail = {
@@ -17,9 +17,9 @@ type AccessibilityInformation = {
     ariaLabel: string;
 };
 type StepInfo = {
-    icon: string;
-    titleText: string;
-    subtitleText: string;
+    icon?: string;
+    titleText?: string;
+    subtitleText?: string;
     number: number;
     selected: boolean;
     disabled: boolean;
@@ -124,7 +124,7 @@ declare class Wizard extends UI5Element {
      * @since 1.14.0
      * @default "MultipleSteps"
      */
-    contentLayout: WizardContentLayout;
+    contentLayout: `${WizardContentLayout}`;
     /**
      * Defines the width of the `ui5-wizard`.
      * @private
@@ -150,8 +150,12 @@ declare class Wizard extends UI5Element {
      * @private
      */
     contentHeight?: number;
+    /**
+     * Stores references to the grouped steps.
+     * @private
+     */
     _groupedTabs: Array<WizardTab>;
-    _breakpoint: string;
+    _breakpoint?: string;
     /**
      * Defines the steps.
      *

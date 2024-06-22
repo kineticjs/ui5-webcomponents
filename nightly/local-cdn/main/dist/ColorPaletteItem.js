@@ -10,9 +10,7 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import CSSColor from "@ui5/webcomponents-base/dist/types/CSSColor.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import ColorPaletteItemTemplate from "./generated/templates/ColorPaletteItemTemplate.lit.js";
 import { COLORPALETTE_COLOR_LABEL, } from "./generated/i18n/i18n-defaults.js";
 // Styles
@@ -35,6 +33,32 @@ let ColorPaletteItem = ColorPaletteItem_1 = class ColorPaletteItem extends UI5El
     }
     constructor() {
         super();
+        /**
+         * Defines if the component is selected.
+         *
+         * **Note:** Only one item must be selected per <code>ui5-color-palette</code>.
+         * If more than one item is defined as selected, the last one would be considered as the selected one.
+         *
+         * @public
+         * @default false
+         * @since 2.0.0
+         */
+        this.selected = false;
+        /**
+         * Defines the tab-index of the element, helper information for the ItemNavigation.
+         * @private
+         */
+        this.forcedTabIndex = "-1";
+        /**
+         * Defines if the ColorPalette is on phone mode.
+         * @private
+         */
+        this.onPhone = false;
+        /**
+         * @private
+         * @since 1.0.0-rc.15
+         */
+        this._disabled = false;
     }
     onBeforeRendering() {
         this._disabled = !this.value;
@@ -60,16 +84,16 @@ let ColorPaletteItem = ColorPaletteItem_1 = class ColorPaletteItem extends UI5El
     }
 };
 __decorate([
-    property({ validator: CSSColor })
+    property()
 ], ColorPaletteItem.prototype, "value", void 0);
 __decorate([
     property({ type: Boolean })
 ], ColorPaletteItem.prototype, "selected", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property({ noAttribute: true })
 ], ColorPaletteItem.prototype, "forcedTabIndex", void 0);
 __decorate([
-    property({ validator: Integer })
+    property({ type: Number })
 ], ColorPaletteItem.prototype, "index", void 0);
 __decorate([
     property({ type: Boolean })

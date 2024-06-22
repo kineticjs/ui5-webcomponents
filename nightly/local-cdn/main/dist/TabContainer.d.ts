@@ -14,7 +14,7 @@ import type { TabSeparatorInOverflow, TabSeparatorInStrip } from "./TabSeparator
 import type { ListItemClickEventDetail, ListMoveEventDetail } from "./List.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import TabContainerTabsPlacement from "./types/TabContainerTabsPlacement.js";
-import BackgroundDesign from "./types/BackgroundDesign.js";
+import type BackgroundDesign from "./types/BackgroundDesign.js";
 import TabLayout from "./types/TabLayout.js";
 import OverflowMode from "./types/OverflowMode.js";
 import type { IButton } from "./Button.js";
@@ -156,8 +156,8 @@ declare class TabContainer extends UI5Element {
      * Defines the current media query size.
      * @private
      */
-    mediaRange: string;
-    _selectedTab: Tab;
+    mediaRange?: string;
+    _selectedTab?: Tab;
     _animationRunning: boolean;
     _contentCollapsed: boolean;
     _startOverflowText: string;
@@ -186,7 +186,7 @@ declare class TabContainer extends UI5Element {
      */
     startOverflowButton: Array<IButton>;
     _itemNavigation: ItemNavigation;
-    _itemsFlat?: Array<ITab>;
+    _itemsFlat: Array<ITab>;
     responsivePopover?: ResponsivePopover;
     _hasScheduledPopoverOpen: boolean;
     _handleResizeBound: () => void;
@@ -244,7 +244,7 @@ declare class TabContainer extends UI5Element {
     _sendOverflowPresentationInfos(items: Array<ITab>): void;
     _onOverflowKeyDown(e: KeyboardEvent): Promise<void>;
     _setItemsForStrip(): void;
-    _getRootTab(tab: Tab): Tab;
+    _getRootTab(tab: Tab | undefined): Tab | undefined;
     _updateEndOverflow(itemsDomRefs: Array<TabInStrip | TabSeparatorInStrip>): void;
     _updateStartAndEndOverflow(itemsDomRefs: Array<TabInStrip | TabSeparatorInStrip>): void;
     _hasStartOverflow(containerWidth: number, itemsDomRefs: Array<TabInStrip | TabSeparatorInStrip>, selectedItemIndexAndWidth: {
@@ -256,7 +256,7 @@ declare class TabContainer extends UI5Element {
         index: number;
     }): boolean;
     _getItemWidth(itemDomRef: HTMLElement): number;
-    _getSelectedItemIndexAndWidth(itemsDomRefs: Array<TabInStrip | TabSeparatorInStrip>, selectedTabDomRef: TabInStrip): {
+    _getSelectedItemIndexAndWidth(itemsDomRefs: Array<TabInStrip | TabSeparatorInStrip>, selectedTabDomRef: TabInStrip | undefined): {
         index: number;
         width: number;
     };

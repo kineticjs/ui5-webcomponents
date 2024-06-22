@@ -86,6 +86,69 @@ let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines, if the notification icon would be displayed.
+         * @default false
+         * @public
+         */
+        this.showNotifications = false;
+        /**
+         * Defines, if the product switch icon would be displayed.
+         * @default false
+         * @public
+         */
+        this.showProductSwitch = false;
+        /**
+         * Defines, if the Search Field would be displayed when there is a valid `searchField` slot.
+         *
+         * **Note:** By default the Search Field is not displayed.
+         * @default false
+         * @public
+         */
+        this.showSearchField = false;
+        /**
+         * Defines additional accessibility attributes on different areas of the component.
+         *
+         * The accessibilityAttributes object has the following fields,
+         * where each field is an object supporting one or more accessibility attributes:
+         *
+         * - **logo** - `logo.role` and `logo.name`.
+         * - **notifications** - `notifications.expanded` and `notifications.hasPopup`.
+         * - **profile** - `profile.expanded`, `profile.hasPopup` and `profile.name`.
+         * - **product** - `product.expanded` and `product.hasPopup`.
+         * - **search** - `search.expanded` and `search.hasPopup`.
+         * - **overflow** - `overflow.expanded` and `overflow.hasPopup`.
+         *
+         * The accessibility attributes support the following values:
+         *
+         * - **role**: Defines the accessible ARIA role of the logo area.
+         * Accepts the following string values: `button` or `link`.
+         *
+         * - **expanded**: Indicates whether the button, or another grouping element it controls,
+         * is currently expanded or collapsed.
+         * Accepts the following string values: `true` or `false`.
+         *
+         * - **hasPopup**: Indicates the availability and type of interactive popup element,
+         * such as menu or dialog, that can be triggered by the button.
+         *
+         * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+         * - **name**: Defines the accessible ARIA name of the area.
+         * Accepts any string.
+         *
+         * @default {}
+         * @public
+         * @since 1.10.0
+         */
+        this.accessibilityAttributes = {};
+        /**
+         * @private
+         */
+        this.withLogo = false;
+        this._menuPopoverItems = [];
+        this._menuPopoverExpanded = false;
+        this._overflowPopoverExpanded = false;
+        this._fullWidthSearch = false;
+        this._isXXLBreakpoint = false;
         this._menuPopoverItems = [];
         this._hiddenIcons = [];
         this._itemsInfo = [];
@@ -624,7 +687,7 @@ let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
         return this.accessibilityAttributes.logo?.name || ShellBar_1.i18nBundle.getText(SHELLBAR_LOGO);
     }
     get _notificationsText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_NOTIFICATIONS, this.notificationsCount);
+        return ShellBar_1.i18nBundle.getText(SHELLBAR_NOTIFICATIONS, this.notificationsCount || 0);
     }
     get _cancelBtnText() {
         return ShellBar_1.i18nBundle.getText(SHELLBAR_CANCEL);
@@ -725,7 +788,7 @@ __decorate([
     property({ type: Object })
 ], ShellBar.prototype, "_itemsInfo", void 0);
 __decorate([
-    property({ type: Object, multiple: true })
+    property({ type: Array, noAttribute: true })
 ], ShellBar.prototype, "_menuPopoverItems", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

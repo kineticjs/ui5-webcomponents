@@ -7,7 +7,7 @@ import "@ui5/webcomponents-icons/dist/upload-to-cloud.js";
 import "@ui5/webcomponents-icons/dist/document.js";
 import type { DnDEventListener, DnDEventListenerParam } from "./upload-utils/UploadCollectionBodyDnD.js";
 import UploadCollectionDnDOverlayMode from "./types/UploadCollectionDnDMode.js";
-import UploadCollectionSelectionMode from "./types/UploadCollectionSelectionMode.js";
+import type UploadCollectionSelectionMode from "./types/UploadCollectionSelectionMode.js";
 type UploadCollectionSelectionChangeEventDetail = {
     selectedItems: Array<UploadCollectionItem>;
 };
@@ -40,16 +40,16 @@ declare class UploadCollection extends UI5Element {
     selectionMode: `${UploadCollectionSelectionMode}`;
     /**
      * Allows you to set your own text for the 'No data' description.
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataDescription: string;
+    noDataDescription?: string;
     /**
      * Allows you to set your own text for the 'No data' text.
-     * @default ""
+     * @default undefined
      * @public
      */
-    noDataText: string;
+    noDataText?: string;
     /**
      * By default there will be drag and drop overlay shown over the `ui5-upload-collection` when files
      * are dragged. If you don't intend to use drag and drop, set this property.
@@ -62,17 +62,17 @@ declare class UploadCollection extends UI5Element {
     hideDragOverlay: boolean;
     /**
      * Defines the accessible ARIA name of the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.16
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Indicates what overlay to show when files are being dragged.
      * @default "None"
      * @private
      */
-    _dndOverlayMode: UploadCollectionDnDOverlayMode;
+    _dndOverlayMode: `${UploadCollectionDnDOverlayMode}`;
     /**
      * Defines the items of the `ui5-upload-collection`.
      *

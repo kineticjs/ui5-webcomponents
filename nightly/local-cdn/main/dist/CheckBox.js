@@ -21,7 +21,6 @@ import "@ui5/webcomponents-icons/dist/border.js";
 import "@ui5/webcomponents-icons/dist/tri-state.js";
 import Icon from "./Icon.js";
 import Label from "./Label.js";
-import WrappingType from "./types/WrappingType.js";
 import { VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_SUCCESS, FORM_CHECKABLE_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import checkboxCss from "./generated/themes/CheckBox.css.js";
@@ -86,6 +85,89 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
     }
     constructor() {
         super();
+        /**
+         * Defines whether the component is disabled.
+         *
+         * **Note:** A disabled component is completely noninteractive.
+         * @default false
+         * @public
+         */
+        this.disabled = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component is not editable,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @public
+         */
+        this.readonly = false;
+        /**
+         * Determines whether the `ui5-checkbox` is in display only state.
+         *
+         * When set to `true`, the `ui5-checkbox` is not interactive, not editable, not focusable
+         * and not in the tab chain. This setting is used for forms in review mode.
+         *
+         * **Note:** When the property `disabled` is set to `true` this property has no effect.
+         * @since 1.22.0
+         * @public
+         * @default false
+         */
+        this.displayOnly = false;
+        /**
+         * Defines whether the component is required.
+         * @default false
+         * @public
+         * @since 1.3.0
+         */
+        this.required = false;
+        /**
+        * Defines whether the component is displayed as partially checked.
+        *
+        * **Note:** The indeterminate state can be set only programmatically and can’t be achieved by user
+        * interaction and the resulting visual state depends on the values of the `indeterminate`
+        * and `checked` properties:
+        *
+        * -  If the component is checked and indeterminate, it will be displayed as partially checked
+        * -  If the component is checked and it is not indeterminate, it will be displayed as checked
+        * -  If the component is not checked, it will be displayed as not checked regardless value of the indeterminate attribute
+        * @default false
+        * @public
+        * @since 1.0.0-rc.15
+        */
+        this.indeterminate = false;
+        /**
+         * Defines if the component is checked.
+         *
+         * **Note:** The property can be changed with user interaction,
+         * either by cliking/tapping on the component, or by
+         * pressing the Enter or Space key.
+         * @default false
+         * @formEvents change
+         * @formProperty
+         * @public
+         */
+        this.checked = false;
+        /**
+         * Defines the value state of the component.
+         * @default "None"
+         * @public
+         */
+        this.valueState = "None";
+        /**
+         * Defines whether the component text wraps when there is not enough space.
+         *
+         * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
+         * **Note:** for option "None" the text will be truncated with an ellipsis.
+         * @default "Normal"
+         * @public
+         */
+        this.wrappingType = "Normal";
+        /**
+         * Defines the active state (pressed or not) of the component.
+         * @private
+         */
+        this.active = false;
         this._deactivate = () => {
             if (activeCb) {
                 activeCb.active = false;
@@ -255,10 +337,10 @@ __decorate([
     property()
 ], CheckBox.prototype, "text", void 0);
 __decorate([
-    property({ type: ValueState, defaultValue: ValueState.None })
+    property()
 ], CheckBox.prototype, "valueState", void 0);
 __decorate([
-    property({ type: WrappingType, defaultValue: WrappingType.Normal })
+    property()
 ], CheckBox.prototype, "wrappingType", void 0);
 __decorate([
     property()

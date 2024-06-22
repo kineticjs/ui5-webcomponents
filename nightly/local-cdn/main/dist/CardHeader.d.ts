@@ -26,22 +26,22 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 declare class CardHeader extends UI5Element {
     /**
      * Defines the title text.
-     * @default ""
+     * @default undefined
      * @public
     */
-    titleText: string;
+    titleText?: string;
     /**
      * Defines the subtitle text.
-     * @default ""
+     * @default undefined
      * @public
     */
-    subtitleText: string;
+    subtitleText?: string;
     /**
      * Defines the additional text.
-     * @default ""
+     * @default undefined
      * @public
     */
-    additionalText: string;
+    additionalText?: string;
     /**
      * Defines if the component would be interactive,
      * e.g gets hover effect, gets focus outline and `click` event is fired, when pressed.

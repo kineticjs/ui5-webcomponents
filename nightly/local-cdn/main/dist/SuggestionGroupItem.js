@@ -20,6 +20,15 @@ import ListItemGroupHeader from "./ListItemGroupHeader.js";
  * @since 1.0.0-rc.15
  */
 let SuggestionGroupItem = class SuggestionGroupItem extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the text of the `ui5-suggestion-group-item`.
+         * @default ""
+         * @public
+         */
+        this.text = "";
+    }
     /**
      * Indicates the "grouping" nature of the component
      * to avoid tag name checks tag name to diferenciate from the standard suggestion item.

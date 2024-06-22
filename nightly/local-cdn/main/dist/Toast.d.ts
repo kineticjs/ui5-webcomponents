@@ -1,5 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import ToastPlacement from "./types/ToastPlacement.js";
+import type ToastPlacement from "./types/ToastPlacement.js";
 /**
  * @class
  *
@@ -65,11 +65,6 @@ declare class Toast extends UI5Element {
      */
     hover: boolean;
     /**
-     * Indicates whether the component DOM is rendered.
-     * @private
-     */
-    domRendered: boolean;
-    /**
      * Indicates whether the toast could be focused
      * This happens when ctr / command + shift + m is pressed
      * @private
@@ -97,7 +92,6 @@ declare class Toast extends UI5Element {
      * @private
      */
     get effectiveDuration(): number;
-    _initiateOpening(): void;
     _ontransitionend(): void;
     _onmouseover(): void;
     _onmouseleave(): void;

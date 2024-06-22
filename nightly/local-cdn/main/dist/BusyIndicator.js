@@ -11,9 +11,7 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isTabNext } from "@ui5/webcomponents-base/dist/Keys.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
-import BusyIndicatorSize from "./types/BusyIndicatorSize.js";
 import BusyIndicatorTextPlacement from "./types/BusyIndicatorTextPlacement.js";
 import Label from "./Label.js";
 // Template
@@ -62,6 +60,36 @@ import busyIndicatorCss from "./generated/themes/BusyIndicator.css.js";
 let BusyIndicator = BusyIndicator_1 = class BusyIndicator extends UI5Element {
     constructor() {
         super();
+        /**
+         * Defines the size of the component.
+         * @default "M"
+         * @public
+         */
+        this.size = "M";
+        /**
+         * Defines if the busy indicator is visible on the screen. By default it is not.
+         * @default false
+         * @public
+         */
+        this.active = false;
+        /**
+         * Defines the delay in milliseconds, after which the busy indicator will be visible on the screen.
+         * @default 1000
+         * @public
+         */
+        this.delay = 1000;
+        /**
+         * Defines the placement of the text.
+         *
+         * @default "Bottom"
+         * @public
+         */
+        this.textPlacement = "Bottom";
+        /**
+         * Defines if the component is currently in busy state.
+         * @private
+         */
+        this._isBusy = false;
         this._keydownHandler = this._handleKeydown.bind(this);
         this._preventEventHandler = this._preventEvent.bind(this);
     }
@@ -155,16 +183,16 @@ __decorate([
     property()
 ], BusyIndicator.prototype, "text", void 0);
 __decorate([
-    property({ type: BusyIndicatorSize, defaultValue: BusyIndicatorSize.M })
+    property()
 ], BusyIndicator.prototype, "size", void 0);
 __decorate([
     property({ type: Boolean })
 ], BusyIndicator.prototype, "active", void 0);
 __decorate([
-    property({ validator: Integer, defaultValue: 1000 })
+    property({ type: Number })
 ], BusyIndicator.prototype, "delay", void 0);
 __decorate([
-    property({ type: BusyIndicatorTextPlacement, defaultValue: BusyIndicatorTextPlacement.Bottom })
+    property()
 ], BusyIndicator.prototype, "textPlacement", void 0);
 __decorate([
     property({ type: Boolean })

@@ -37,6 +37,60 @@ import tokenStyles from "./generated/themes/Token.css.js";
  * @public
  */
 let Token = Token_1 = class Token extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the text of the token.
+         * @default ""
+         * @public
+         */
+        this.text = "";
+        /**
+         * Defines whether the component is selected or not.
+         * @default false
+         * @public
+         */
+        this.selected = false;
+        /**
+         * Defines whether the component is read-only.
+         *
+         * **Note:** A read-only component can not be deleted or selected,
+         * but still provides visual feedback upon user interaction.
+         * @default false
+         * @private
+         */
+        this.readonly = false;
+        /**
+         * Set by the tokenizer when a token is in the "more" area (overflowing)
+         * @default false
+         * @private
+         */
+        this.overflows = false;
+        this.singleToken = false;
+        /**
+         * Defines whether the component is focused or not.
+         * @default false
+         * @private
+         */
+        this.focused = false;
+        /**
+         * Defines whether the token is being deleted
+         * This flag is used in the ui5-multi-combobox
+         * @default false
+         * @private
+         */
+        this.toBeDeleted = false;
+        /**
+         * Defines the tabIndex of the component.
+         * @private
+         */
+        this.forcedTabIndex = "-1";
+        /**
+         * Indicates whether the token is visible or not.
+         * @private
+         */
+        this._isVisible = false;
+    }
     _handleSelect() {
         if (!this.toBeDeleted) {
             this.selected = !this.selected;
@@ -116,7 +170,7 @@ __decorate([
     property({ type: Boolean })
 ], Token.prototype, "toBeDeleted", void 0);
 __decorate([
-    property({ defaultValue: "-1", noAttribute: true })
+    property({ noAttribute: true })
 ], Token.prototype, "forcedTabIndex", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })

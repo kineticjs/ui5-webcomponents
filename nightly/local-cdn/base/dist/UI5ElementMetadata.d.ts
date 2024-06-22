@@ -1,4 +1,3 @@
-import type DataType from "./types/DataType.js";
 type SlotInvalidation = {
     properties: boolean | Array<string>;
     slots: boolean | Array<string>;
@@ -13,14 +12,14 @@ type Slot = {
 };
 type SlotValue = Node;
 type Property = {
-    type?: BooleanConstructor | StringConstructor | ObjectConstructor | DataType;
-    validator?: DataType;
-    defaultValue?: PropertyValue;
+    type?: BooleanConstructor | StringConstructor | ObjectConstructor | NumberConstructor | ArrayConstructor;
     noAttribute?: boolean;
-    multiple?: boolean;
-    compareValues?: boolean;
+    converter?: {
+        fromAttribute(value: string | null, type: unknown): string | number | boolean | null | undefined;
+        toAttribute(value: unknown, type: unknown): string | null;
+    };
 };
-type PropertyValue = boolean | number | string | object | undefined | null | DataType;
+type PropertyValue = boolean | number | string | object | undefined | null;
 type EventData = Record<string, object>;
 type Metadata = {
     tag?: string;
@@ -44,13 +43,6 @@ declare class UI5ElementMetadata {
     _initialState: State | undefined;
     constructor(metadata: Metadata);
     getInitialState(): State;
-    /**
-     * Validates the property's value and returns it if correct
-     * or returns the default value if not.
-     * **Note:** Only intended for use by UI5Element.js
-     * @public
-     */
-    static validatePropertyValue(value: PropertyValue, propData: Property): PropertyValue;
     /**
      * Validates the slot's value and returns it if correct
      * or throws an exception if not.

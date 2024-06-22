@@ -8,7 +8,6 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import renderer, { html } from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 // Styles
 import styles from "./generated/themes/Text.css.js";
@@ -42,12 +41,21 @@ import styles from "./generated/themes/Text.css.js";
  * @since 2.0.0
  */
 let Text = class Text extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the number of lines the text should wrap before it truncates.
+         * @default Infinity
+         * @public
+         */
+        this.maxLines = Infinity;
+    }
     onBeforeRendering() {
         this.style.setProperty(getScopedVarName("--_ui5_text_max_lines"), `${this.maxLines}`);
     }
 };
 __decorate([
-    property({ validator: Integer, defaultValue: Infinity })
+    property({ type: Number })
 ], Text.prototype, "maxLines", void 0);
 Text = __decorate([
     customElement({

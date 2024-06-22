@@ -8,9 +8,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import Integer from "@ui5/webcomponents-base/dist/types/Integer.js";
 import TableColumnTemplate from "./generated/templates/TableColumnTemplate.lit.js";
-import TableColumnPopinDisplay from "./types/TableColumnPopinDisplay.js";
 // Styles
 import tableColumnStyles from "./generated/themes/TableColumn.css.js";
 /**
@@ -27,9 +25,51 @@ import tableColumnStyles from "./generated/themes/TableColumn.css.js";
  * @csspart column - Used to style the native `th` element
  */
 let TableColumn = class TableColumn extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines the minimum table width required to display this column. By default it is always displayed.
+         *
+         * The responsive behavior of the `ui5-table` is determined by this property. As an example, by setting
+         * `minWidth` property to `400` sets the minimum width to 400 pixels, and	shows this column on tablet (and desktop) but hides it on mobile.
+         *
+         * For further responsive design options, see `demandPopin` property.
+         * @default Infinity
+         * @public
+         */
+        this.minWidth = Infinity;
+        /**
+         * According to your `minWidth` settings, the component can be hidden
+         * in different screen sizes.
+         *
+         * Setting this property to `true`, shows this column as pop-in instead of hiding it.
+         * @default false
+         * @public
+         */
+        this.demandPopin = false;
+        /**
+         * Defines how the popin row is displayed.
+         *
+         * **The available values are:**
+         *
+         * - `Block`
+         * - `Inline`
+         * @default "Block"
+         * @public
+         */
+        this.popinDisplay = "Block";
+        /**
+         * @private
+         */
+        this.first = false;
+        /**
+         * @private
+         */
+        this.last = false;
+    }
 };
 __decorate([
-    property({ validator: Integer, defaultValue: Infinity })
+    property({ type: Number })
 ], TableColumn.prototype, "minWidth", void 0);
 __decorate([
     property()
@@ -38,7 +78,7 @@ __decorate([
     property({ type: Boolean })
 ], TableColumn.prototype, "demandPopin", void 0);
 __decorate([
-    property({ type: TableColumnPopinDisplay, defaultValue: TableColumnPopinDisplay.Block })
+    property()
 ], TableColumn.prototype, "popinDisplay", void 0);
 __decorate([
     property({ type: Boolean })

@@ -33,7 +33,7 @@ __decorate([
     property()
 ], BreadcrumbsItem.prototype, "href", void 0);
 __decorate([
-    property({ defaultValue: undefined })
+    property()
 ], BreadcrumbsItem.prototype, "target", void 0);
 __decorate([
     property()
