@@ -1,11 +1,23 @@
-commit eef0cc9b663fda6268b98e516ed46439435fa2b0
-Author: Peter Skelin <petar.skelin@sap.com>
-Date:   Fri Jun 21 10:19:12 2024 +0300
+commit 52106ccffba64d13949764339a71225b33dac3a3
+Author: Tsanislav Gatev <tsanislav.gatev@sap.com>
+Date:   Fri Jun 21 16:42:05 2024 +0300
 
-    feat: add property initializers (#8846)
+    refactor(ui5-view-settings-dialog): change opening api to open property (#9249)
     
-    Initial values are only set by property initializers and there are no longer any defaults per type from the framework
-    Remove the defaultValue and related fields from the @property decorator
-    Remove all runtime checks and validations
+    Add `open` property to replace the `show` and `close` methods in the `ui5-view-settings-dialog` component.
     
-    BREAKING CHANGE: @property decorator must be adapted according to new type parameter
+    BREAKING CHANGE: Removed `show` and `close` methods.
+    
+    Before, the ui5-view-settings-dialog could be opened and closed by calling `show()` and `close()`:
+    ```ts
+    const viewSettingsDialog = document.getElementById("exampleID");
+    viewSettingsDialog.show();
+    viewSettingsDialog.close();
+    ```
+    Now, the dialog is opened and closed by setting the open property to true or false:
+    ```ts
+    const viewSettingsDialog = document.getElementById("exampleID");
+    viewSettingsDialog.open = true;
+    viewSettingsDialog.open = false;
+    ```
+    fixes: https://github.com/SAP/ui5-webcomponents/issues/9240

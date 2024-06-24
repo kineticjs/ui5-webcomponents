@@ -15,7 +15,7 @@
 	
 
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-d52d347c.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-9c3b34eb.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/ViewSettingsDialog-735acc66.css">
 </head>
 
@@ -97,7 +97,7 @@
 
 	<script>
 		btnOpenDialog.addEventListener("click", function () {
-			vsd.show();
+			vsd.open = true;
 		});
 		btnChangeSettings.addEventListener("click", function () {
 			vsd.setConfirmedSettings(JSON.parse(vsdSettings.value));
@@ -109,13 +109,13 @@
 			alert("OK button clicked, returned info is: " + JSON.stringify(evt.detail));
 		});
 		btnOpenDialogSort.addEventListener("click", function () {
-			vsdSort.show();
+			vsdSort.open = true;
 		});
 		vsdSort.addEventListener("ui5-confirm", function(evt) {
 			alert("OK button clicked, returned info is: " + JSON.stringify(evt.detail));
 		});
 		btnOpenDialogFilter.addEventListener("click", function () {
-			vsdFilter.show();
+			vsdFilter.open = true;
 		});
 		vsdFilter.addEventListener("ui5-confirm", function(evt) {
 			alert("OK button clicked, returned info is: " + JSON.stringify(evt.detail));

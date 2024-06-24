@@ -863,7 +863,11 @@ __decorate([
     property({ type: Boolean })
 ], List.prototype, "_loadMoreActive", void 0);
 __decorate([
-    slot({ type: HTMLElement, "default": true })
+    slot({
+        type: HTMLElement,
+        "default": true,
+        invalidateOnChildChange: true,
+    })
 ], List.prototype, "items", void 0);
 __decorate([
     slot()
