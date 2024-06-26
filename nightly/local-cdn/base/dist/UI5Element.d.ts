@@ -57,6 +57,11 @@ declare abstract class UI5Element extends HTMLElement {
     initializedProperties: Map<string, unknown>;
     _rendered: boolean;
     constructor();
+    _initShadowRoot(): void;
+    /**
+     * Note: this "slotchange" listener is for slots, rendered in the component's shadow root
+     */
+    _onShadowRootSlotChange(e: Event): void;
     /**
      * Returns a unique ID for this UI5 Element
      *
@@ -174,6 +179,7 @@ declare abstract class UI5Element extends HTMLElement {
     _detachSlotChange(child: HTMLSlotElement, slotName: string): void;
     /**
      * Whenever a slot element is slotted inside a UI5 Web Component, its slotchange event invalidates the component
+     * Note: this "slotchange" listener is for slots that are children of the component (in the light dom, as opposed to slots rendered by the component in the shadow root)
      *
      * @param slotName the name of the slot, where the slot element (whose slotchange event we're listening to) is
      * @private

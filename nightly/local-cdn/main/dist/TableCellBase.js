@@ -30,6 +30,9 @@ let TableCellBase = TableCellBase_1 = class TableCellBase extends UI5Element {
     static async onDefine() {
         TableCellBase_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
+    onEnterDOM() {
+        this.toggleAttribute("ui5-table-cell-base", true);
+    }
     onBeforeRendering() {
         if (this._popin) {
             this.removeAttribute("role");

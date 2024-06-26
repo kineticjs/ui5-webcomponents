@@ -1,7 +1,7 @@
 import type Table from "./Table";
-import type TableCellBase from "./TableCellBase";
-import type TableRowBase from "./TableRowBase";
+import type TableRow from "./TableRow";
 declare const isInstanceOfTable: (obj: any) => obj is Table;
-declare const isInstanceOfTableCellBase: (obj: any) => obj is TableCellBase;
-declare const isInstanceOfTableRowBase: (obj: any) => obj is TableRowBase;
-export { isInstanceOfTable, isInstanceOfTableCellBase, isInstanceOfTableRowBase, };
+declare const isSelectionCheckbox: (e: Event) => boolean;
+declare const isHeaderSelector: (e: Event) => boolean;
+declare const findRowInPath: (composedPath: Array<EventTarget>) => TableRow;
+export { isInstanceOfTable, isSelectionCheckbox, isHeaderSelector, findRowInPath, };

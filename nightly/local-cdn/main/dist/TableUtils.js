@@ -1,11 +1,14 @@
 const isInstanceOfTable = (obj) => {
     return "isTable" in obj && !!obj.isTable;
 };
-const isInstanceOfTableCellBase = (obj) => {
-    return "isTableCellBase" in obj && !!obj.isTableCellBase;
+const isSelectionCheckbox = (e) => {
+    return e.composedPath().some((el) => el.hasAttribute?.("ui5-table-selection-component"));
 };
-const isInstanceOfTableRowBase = (obj) => {
-    return "isTableRowBase" in obj && !!obj.isTableRowBase;
+const isHeaderSelector = (e) => {
+    return isSelectionCheckbox(e) && e.composedPath().some((el) => el instanceof HTMLElement && el.hasAttribute("ui5-table-header-row"));
 };
-export { isInstanceOfTable, isInstanceOfTableCellBase, isInstanceOfTableRowBase, };
+const findRowInPath = (composedPath) => {
+    return composedPath.find((el) => el instanceof HTMLElement && el.hasAttribute("ui5-table-row"));
+};
+export { isInstanceOfTable, isSelectionCheckbox, isHeaderSelector, findRowInPath, };
 //# sourceMappingURL=TableUtils.js.map

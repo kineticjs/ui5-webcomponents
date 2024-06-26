@@ -6,11 +6,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var TableRowBase_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
 import TableRowBaseCss from "./generated/themes/TableRowBase.css.js";
 import CheckBox from "./CheckBox.js";
 import { isInstanceOfTable } from "./TableUtils.js";
@@ -34,6 +34,7 @@ let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
     }
     onEnterDOM() {
         this.setAttribute("role", "row");
+        this.toggleAttribute("ui5-table-row-base", true);
     }
     onBeforeRendering() {
         if (this._isSelectable) {
@@ -46,11 +47,11 @@ let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
     getFocusDomRef() {
         return this;
     }
-    isHeaderRow() {
-        return false;
-    }
     _informSelectionChange() {
         this._tableSelection?.informSelectionChange(this);
+    }
+    isHeaderRow() {
+        return false;
     }
     _onkeydown(e, eventOrigin) {
         if ((eventOrigin === this && this._isSelectable && isSpace(e)) || (eventOrigin === this._selectionCell && (isSpace(e) || isEnter(e)))) {

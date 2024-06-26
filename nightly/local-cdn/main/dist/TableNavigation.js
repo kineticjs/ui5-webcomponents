@@ -1,11 +1,10 @@
-import { isUp, isDown, isLeft, isRight, isPageUp, isPageDown, isHome, isEnd, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
+import { isUp, isUpShift, isDown, isDownShift, isLeft, isRight, isPageUp, isPageDown, isHome, isEnd, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
 import isElementClickable from "@ui5/webcomponents-base/dist/util/isElementClickable.js";
 import isElementHidden from "@ui5/webcomponents-base/dist/util/isElementHidden.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
 import TableExtension from "./TableExtension.js";
 import GridWalker from "./GridWalker.js";
-import { isInstanceOfTableCellBase, isInstanceOfTableRowBase } from "./TableUtils.js";
 /**
  * Handles the keyboard navigation for the ui5-table.
  *
@@ -94,7 +93,7 @@ class TableNavigation extends TableExtension {
         this._focusElement(this._gridWalker.getCurrent());
     }
     _handleEnter(e, eventOrigin) {
-        if (isInstanceOfTableCellBase(eventOrigin)) {
+        if (eventOrigin.hasAttribute("ui5-table-cell-base")) {
             this._handleF2(e, eventOrigin);
         }
     }
@@ -109,7 +108,7 @@ class TableNavigation extends TableExtension {
         e.preventDefault();
     }
     _handleF7(e, eventOrigin) {
-        if (isInstanceOfTableRowBase(eventOrigin)) {
+        if (eventOrigin.hasAttribute("ui5-table-row-base")) {
             this._gridWalker.setColPos(this._colPosition);
             let elementToFocus = this._gridWalker.getCurrent();
             if (this._tabPosition > -1) {
@@ -184,10 +183,10 @@ class TableNavigation extends TableExtension {
         else if (isRight(e)) {
             this._gridWalker[this._table.effectiveDir === "rtl" ? "left" : "right"]();
         }
-        else if (isUp(e)) {
+        else if (isUp(e) || isUpShift(e)) {
             this._gridWalker.up();
         }
-        else if (isDown(e)) {
+        else if (isDown(e) || isDownShift(e)) {
             this._gridWalker.down();
         }
         else if (isHome(e)) {

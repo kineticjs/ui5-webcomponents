@@ -19,6 +19,7 @@ declare abstract class TableCellBase extends UI5Element {
     protected ariaRole: string;
     static i18nBundle: I18nBundle;
     static onDefine(): Promise<void>;
+    onEnterDOM(): void;
     onBeforeRendering(): void;
     getFocusDomRef(): this;
     isTableCellBase(): boolean;

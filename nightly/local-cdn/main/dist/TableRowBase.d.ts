@@ -19,8 +19,8 @@ declare abstract class TableRowBase extends UI5Element {
     onEnterDOM(): void;
     onBeforeRendering(): void;
     getFocusDomRef(): this;
-    isHeaderRow(): boolean;
     _informSelectionChange(): void;
+    isHeaderRow(): boolean;
     _onkeydown(e: KeyboardEvent, eventOrigin: HTMLElement): void;
     get _table(): Table | undefined;
     get _tableId(): string | undefined;

@@ -24,6 +24,8 @@ declare const getClassCopy: (klass: typeof UI5Element, constructorCallback: () =
         _getRealDomRef?: (() => HTMLElement) | undefined;
         initializedProperties: Map<string, unknown>;
         _rendered: boolean;
+        _initShadowRoot(): void;
+        _onShadowRootSlotChange(e: Event): void;
         readonly _id: string;
         render(): object;
         connectedCallback(): Promise<void>;

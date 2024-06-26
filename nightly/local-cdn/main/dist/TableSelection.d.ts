@@ -55,6 +55,13 @@ declare class TableSelection extends UI5Element implements ITableFeature {
      */
     selected: string;
     _table?: Table;
+    _rangeSelection?: {
+        selected: boolean;
+        isUp: boolean | null;
+        rows: TableRow[];
+        isMouse: boolean;
+        shiftPressed: boolean;
+    } | null;
     onTableActivate(table: Table): void;
     onExitDOM(): void;
     onBeforeRendering(): void;
@@ -70,8 +77,27 @@ declare class TableSelection extends UI5Element implements ITableFeature {
     set selectedAsArray(selectedArray: string[]);
     get selectedAsSet(): Set<string>;
     set selectedAsSet(selectedSet: Set<string>);
+    _selectRow(row: TableRow, selected: boolean): void;
     _informRowSelectionChange(row: TableRow): void;
     _informHeaderRowSelectionChange(): void;
     _invalidateTableAndRows(): void;
+    _onkeydown(e: KeyboardEvent): void;
+    _onkeyup(e: KeyboardEvent, eventOrigin: HTMLElement): void;
+    _onclick(e: MouseEvent): void;
+    /**
+     * Start the range selection and initialises the range selection state
+     * @param row starting row
+     * @private
+     */
+    _startRangeSelection(row: TableRow, isMouse?: boolean): void;
+    /**
+     * Handles the range selection
+     * @param targetRow row that is currently focused
+     * @param change indicates direction
+     * @private
+     */
+    _handleRangeSelection(targetRow: TableRow, change: number): void;
+    _stopRangeSelection(): void;
+    _reverseRangeSelection(): void;
 }
 export default TableSelection;
