@@ -52,7 +52,7 @@ import type WrappingType from "./types/WrappingType.js";
 declare class CheckBox extends UI5Element implements IFormInputElement {
     /**
      * Receives id(or many ids) of the elements that label the component
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.1.0
      */
@@ -60,7 +60,7 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
     /**
      * Defines the accessible ARIA name of the component.
      * @public
-     * @default ""
+     * @default undefined
      * @since 1.1.0
      */
     accessibleName?: string;
@@ -129,7 +129,7 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
     checked: boolean;
     /**
      * Defines the text of the component.
-     * @default ""
+     * @default undefined
      * @public
      */
     text?: string;
@@ -152,7 +152,7 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      */
     name?: string;

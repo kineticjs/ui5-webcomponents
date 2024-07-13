@@ -40,12 +40,6 @@ let Token = Token_1 = class Token extends UI5Element {
     constructor() {
         super(...arguments);
         /**
-         * Defines the text of the token.
-         * @default ""
-         * @public
-         */
-        this.text = "";
-        /**
          * Defines whether the component is selected or not.
          * @default false
          * @public

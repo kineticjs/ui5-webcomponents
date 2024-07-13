@@ -14,6 +14,7 @@ import actorv3 from "@ui5/webcomponents-icons-tnt/dist/v3/actor.js";
 import icon3d from "@ui5/webcomponents-icons-business-suite/dist/3d.js";
 import icon3dv1 from "@ui5/webcomponents-icons-business-suite/dist/v1/3d.js";
 import icon3dv2 from "@ui5/webcomponents-icons-business-suite/dist/v2/3d.js";
+import generateHighlightedMarkup from "@ui5/webcomponents-base/dist/util/generateHighlightedMarkup.js";
 // The SAP Icons V4 icon collection is set by default in sap_fiori_3,
 // but it's configurable:
 // import { setDefaultIconCollection } from  "@ui5/webcomponents-base/dist/config/Icons.js";
@@ -49,8 +50,10 @@ import "./Table.js";
 import "./TableHeaderCell.js";
 import "./TableHeaderRow.js";
 import "./TableGrowing.js";
+import "./TableSelection.js";
 import "./Icon.js";
 import "./Input.js";
+import "./SuggestionItemCustom.js";
 import "./MultiInput.js";
 import "./Label.js";
 import "./Link.js";
@@ -113,6 +116,7 @@ const icons = [accept, acceptv4, acceptv5, actor, actorv2, actorv3, icon3d, icon
 const testAssets = {
     ...testAssetsCommon,
     getAcceptIconPathData: getPathData,
+    generateHighlightedMarkup,
     getExportedIconsValues: () => icons,
 };
 registerIconLoader("my-icons", () => {

@@ -19,7 +19,7 @@ declare class ListItemBase extends UI5Element implements ITabbable {
     /**
      * Defines the selected state of the component.
      * @default false
-     * @public
+     * @private
      */
     selected: boolean;
     /**

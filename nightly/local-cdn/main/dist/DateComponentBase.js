@@ -35,16 +35,10 @@ let DateComponentBase = DateComponentBase_1 = class DateComponentBase extends UI
     constructor() {
         super();
         /**
-         * Determines the format, displayed in the input field.
-         * @default ""
-         * @public
-         */
-        this.formatPattern = "";
-        /**
          * Determines the minimum date available for selection.
          *
          * **Note:** If the formatPattern property is not set, the minDate value must be provided in the ISO date format (YYYY-MM-dd).
-         * @default undefined
+         * @default ""
          * @since 1.0.0-rc.6
          * @public
          */

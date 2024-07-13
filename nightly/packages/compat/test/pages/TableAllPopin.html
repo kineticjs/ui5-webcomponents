@@ -20,12 +20,13 @@
 
 
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-651cca70.js"></script>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-1173e7fd.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TableAllPopin-ec8feace.css">
 </head>
 
 <body class="tableallpopin1auto">
 
+	<ui5-button id="beforeEl">Before element</ui5-button>
 	<ui5-table class="demo-table" id="tbl">
 		<!-- Columns -->
 		<ui5-table-column class="title-column" slot="columns">
@@ -53,7 +54,7 @@
 
 		<ui5-table-row id="row1">
 			<ui5-table-cell class="title-cell">Notebook Basic 15</ui5-table-cell>
-			<ui5-table-cell>Very Best Screens</ui5-table-cell>
+			<ui5-table-cell><ui5-link href="#" id="focusedEl">I'm focus</ui5-link></ui5-table-cell>
 			<ui5-table-cell>30 x 18 x 3 cm</ui5-table-cell>
 			<ui5-table-cell>4.2 KG</ui5-table-cell>
 			<ui5-table-cell class="price-cell">956 EUR</ui5-table-cell>
@@ -61,7 +62,8 @@
 
 		<ui5-table-row id="row2">
 			<ui5-table-cell class="title-cell">Notebook Basic 17</ui5-table-cell>
-			<ui5-table-cell>Very Best Screens</ui5-table-cell>
+			
+			<ui5-table-cell><ui5-link href="#">I'm focus</ui5-link></ui5-table-cell>
 			<ui5-table-cell>40 x 18 x 3 cm</ui5-table-cell>
 			<ui5-table-cell>4.6 KG</ui5-table-cell>
 			<ui5-table-cell class="price-cell">1956 EUR</ui5-table-cell>
@@ -69,13 +71,15 @@
 
 		<ui5-table-row id="row3">
 			<ui5-table-cell class="title-cell">Notebook Basic 19</ui5-table-cell>
-			<ui5-table-cell>Very Best Screens</ui5-table-cell>
+			
+			<ui5-table-cell><ui5-link href="#">I'm focus</ui5-link></ui5-table-cell>
 			<ui5-table-cell>50 x 18 x 3 cm</ui5-table-cell>
 			<ui5-table-cell>4.9 KG</ui5-table-cell>
 			<ui5-table-cell class="price-cell">2956 EUR</ui5-table-cell>
 		</ui5-table-row>
 
 	</ui5-table>
+	<ui5-button id="afterEl">After element</ui5-button>
 
 	<br>
 	<br>

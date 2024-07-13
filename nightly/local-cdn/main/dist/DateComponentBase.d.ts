@@ -35,15 +35,15 @@ declare class DateComponentBase extends UI5Element {
     secondaryCalendarType?: `${CalendarType}`;
     /**
      * Determines the format, displayed in the input field.
-     * @default ""
+     * @default undefined
      * @public
      */
-    formatPattern: string;
+    formatPattern?: string;
     /**
      * Determines the minimum date available for selection.
      *
      * **Note:** If the formatPattern property is not set, the minDate value must be provided in the ISO date format (YYYY-MM-dd).
-     * @default undefined
+     * @default ""
      * @since 1.0.0-rc.6
      * @public
      */

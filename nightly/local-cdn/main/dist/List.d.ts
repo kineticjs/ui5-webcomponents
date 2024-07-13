@@ -11,7 +11,7 @@ import type ListItemBase from "./ListItemBase.js";
 import type { ListItemBasePressEventDetail } from "./ListItemBase.js";
 import DropIndicator from "./DropIndicator.js";
 import type { SelectionRequestEventDetail } from "./ListItem.js";
-import ListSeparators from "./types/ListSeparators.js";
+import ListSeparator from "./types/ListSeparator.js";
 import ListItemGroup from "./ListItemGroup.js";
 type ListItemFocusEventDetail = {
     item: ListItemBase;
@@ -137,7 +137,7 @@ declare class List extends UI5Element {
      * @default "All"
      * @public
      */
-    separators: `${ListSeparators}`;
+    separators: `${ListSeparator}`;
     /**
      * Defines whether the component will have growing capability either by pressing a `More` button,
      * or via user scroll. In both cases `load-more` event is fired.

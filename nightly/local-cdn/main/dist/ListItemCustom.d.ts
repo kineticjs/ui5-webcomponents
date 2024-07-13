@@ -30,11 +30,11 @@ declare class ListItemCustom extends ListItem {
      * Defines the text alternative of the component.
      *
      * **Note**: If not provided a default text alternative will be set, if present.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string | undefined;
+    accessibleName?: string;
     _onkeydown(e: KeyboardEvent): Promise<void>;
     _onkeyup(e: KeyboardEvent): void;
     get classes(): ClassMap;

@@ -55,7 +55,7 @@ declare class SplitButton extends UI5Element {
      * Example:
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
     icon?: string;

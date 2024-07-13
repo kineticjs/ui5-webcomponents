@@ -65,7 +65,7 @@ declare class TreeItemBase extends ListItem {
     * @public
     * @since 1.1.0
     */
-    indeterminate: boolean | undefined;
+    indeterminate: boolean;
     /**
      * Defines whether the tree node has children, even if currently no other tree nodes are slotted inside.
      *
@@ -91,7 +91,7 @@ declare class TreeItemBase extends ListItem {
      * @public
      * @since 1.8.0
      */
-    accessibleName: string | undefined;
+    accessibleName?: string;
     /**
      * @private
      * @since 1.0.0-rc.11
@@ -143,6 +143,7 @@ declare class TreeItemBase extends ListItem {
         ariaSelected?: boolean | undefined;
         ariaChecked?: boolean | undefined;
         tooltip?: string | undefined;
+        ariaKeyShortcuts?: string | undefined;
     };
     /**
      * Used to duck-type TreeItem elements without using instanceof

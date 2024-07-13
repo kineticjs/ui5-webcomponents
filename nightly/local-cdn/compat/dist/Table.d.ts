@@ -1,4 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
@@ -316,6 +317,7 @@ declare class Table extends UI5Element {
     _onColumnHeaderKeydown(e: KeyboardEvent): void;
     _onLoadMoreKeydown(e: KeyboardEvent): void;
     _onLoadMoreKeyup(e: KeyboardEvent): void;
+    onInvalidation(change: ChangeInfo): void;
     _onLoadMoreClick(): void;
     observeTableEnd(): void;
     onInteresection(entries: Array<IntersectionObserverEntry>): void;

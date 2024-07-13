@@ -11,12 +11,6 @@ import type { IMenuItem } from "./Menu.js";
  * @since 2.0
  */
 declare class MenuSeparator extends ListItemBase implements IMenuItem {
-    /**
-     * **Note:** This property is inherited and not supported. If set, it won't take any effect.
-     * @default false
-     * @public
-     */
-    selected: boolean;
     get isSeparator(): boolean;
     get classes(): ClassMap;
     /**

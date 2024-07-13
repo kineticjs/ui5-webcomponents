@@ -18,6 +18,7 @@ import type { InputEventDetail } from "@ui5/webcomponents/dist/Input.js";
  * @constructor
  * @public
  * @extends UI5Element
+ * @experimental The **@ui5/webcomponents-ai** package is under development and considered experimental - components' APIs are subject to change.
  */
 declare class PromptInput extends UI5Element {
     /**

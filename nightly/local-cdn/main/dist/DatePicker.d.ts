@@ -151,7 +151,7 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      */
     name?: string;
@@ -174,14 +174,14 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
     open: boolean;
     /**
      * Defines the aria-label attribute for the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */
     accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.0.0-rc.15
      */

@@ -32,7 +32,7 @@ let ListItemBase = class ListItemBase extends UI5Element {
         /**
          * Defines the selected state of the component.
          * @default false
-         * @public
+         * @private
          */
         this.selected = false;
         /**

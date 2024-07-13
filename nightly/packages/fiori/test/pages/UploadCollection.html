@@ -14,8 +14,8 @@
 
 	
 	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/test/pages/UploadCollection.html-f4e27f98.js"></script>
-  <link rel="modulepreload" crossorigin href="/ui5-webcomponents/nightly/assets/bundle.esm-2942818a.js">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/test/pages/UploadCollection.html-d3b592e5.js"></script>
+  <link rel="modulepreload" crossorigin href="/ui5-webcomponents/nightly/assets/bundle.esm-1e95da50.js">
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/UploadCollection-bf696a8d.css">
 </head>
 <body class="uploadcollection1auto">
@@ -75,6 +75,23 @@
 			id="latestReportsPdf"
 			file-name="latest.reports.pdf"
 			upload-state="Complete"
+		>
+			<ui5-icon name="document-text" slot="thumbnail"></ui5-icon>
+			Some description.
+		</ui5-upload-collection-item>
+		<ui5-upload-collection-item
+			id="reportPdf"
+			file-name="report.pdf"
+			upload-state="Complete"
+		>
+			<ui5-icon name="document-text" slot="thumbnail"></ui5-icon>
+			Some description.
+		</ui5-upload-collection-item>
+		<ui5-upload-collection-item
+			id="disabledPdf"
+			file-name="disabledFile.pdf"
+			upload-state="Complete"
+			disabled
 		>
 			<ui5-icon name="document-text" slot="thumbnail"></ui5-icon>
 			Some description.

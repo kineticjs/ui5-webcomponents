@@ -43,12 +43,9 @@ import ButtonCss from "./generated/themes/Button.css.js";
  * @extends UI5Element
  * @since 2.0
  * @public
+ * @experimental The Button and ButtonState web components are availabe since 2.0 under an experimental flag and their API and behaviour are subject to change.
  */
-let Button = 
-/**
- * @experimental
- */
-class Button extends UI5Element {
+let Button = class Button extends UI5Element {
     constructor() {
         super(...arguments);
         /**
@@ -114,7 +111,7 @@ class Button extends UI5Element {
             button.style.width = `${buttonWidth}px`;
             hiddenButton.icon = newStateObject.icon;
             hiddenButton.endIcon = newStateObject.endIcon;
-            hiddenButton.textContent = newStateObject.text;
+            hiddenButton.textContent = newStateObject.text || null;
             await renderFinished();
             const hiddenButtonWidth = hiddenButton.offsetWidth;
             this.fadeOut = true;
@@ -220,9 +217,6 @@ Button = __decorate([
      */
     ,
     event("click")
-    /**
-     * @experimental
-     */
 ], Button);
 Button.define();
 export default Button;

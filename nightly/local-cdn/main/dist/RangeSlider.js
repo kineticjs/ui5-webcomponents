@@ -73,6 +73,9 @@ import rangeSliderStyles from "./generated/themes/RangeSlider.css.js";
 let RangeSlider = RangeSlider_1 = class RangeSlider extends SliderBase {
     get formFormattedValue() {
         const formData = new FormData();
+        if (!this.name) {
+            return formData;
+        }
         formData.append(this.name, this.startValue.toString());
         formData.append(this.name, this.endValue.toString());
         return formData;

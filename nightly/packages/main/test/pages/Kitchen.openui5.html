@@ -31,8 +31,14 @@
 	
 
 
+	
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-958c1076.js"></script>
+	<style>
+		[ui5-avatar] img {
+			object-fit: contain;
+		}
+	</style>
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-d8ba3e7e.js"></script>
   <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/kitchen-scripts-2f5887ed.js"></script>
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/Kitchen.openui5-9a8987ae.css">
   <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/kitchen-styles-f4dfb211.css">
@@ -69,11 +75,11 @@
 
 	<div id="main-content" class="main">
 		<section class="row heading-row-centered">
-			<ui5-title level="H1">UI5 webcomponents</ui5-title>
+			<ui5-title size="H1" level="H1">UI5 webcomponents</ui5-title>
 		</section>
 
 		<section class="row heading-row-centered no-vertical-padding">
-			<ui5-title level="H3">For better experience, for Fiori3 experience</ui5-title>
+			<ui5-title size="H3" level="H3">For better experience, for Fiori3 experience</ui5-title>
 		</section>
 
 		<section class="row heading-row-centered">
@@ -89,9 +95,21 @@
 				</ui5-card-header>
 
 				<ui5-list id="myList12" separators="Inner">
-					<ui5-li image="./img/HT-1030.jpg" icon="source-code" icon-end>Java EE</ui5-li>
-					<ui5-li image="./img/HT-1030.jpg" icon="source-code" icon-end>Maven</ui5-li>
-					<ui5-li image="./img/HT-1030.jpg" icon="source-code" icon-end>Cloud computing</ui5-li>
+					<ui5-li icon="source-code" icon-end>Java EE
+						<ui5-avatar slot="image" shape="Square">
+							<img src="/ui5-webcomponents/nightly/assets/HT-1030-7ead454a.jpg" alt="Woman image">
+						</ui5-avatar>
+					</ui5-li>
+					<ui5-li icon="source-code" icon-end>Maven
+						<ui5-avatar slot="image" shape="Square">
+							<img src="/ui5-webcomponents/nightly/assets/HT-1030-7ead454a.jpg" alt="Woman image">
+						</ui5-avatar>
+					</ui5-li>
+					<ui5-li icon="source-code" icon-end>Cloud computing
+						<ui5-avatar slot="image" shape="Square">
+							<img src="/ui5-webcomponents/nightly/assets/HT-1030-7ead454a.jpg" alt="Woman image">
+						</ui5-avatar>
+					</ui5-li>
 				</ui5-list>
 			</ui5-card>
 			<ui5-card
@@ -101,9 +119,21 @@
 				</ui5-card-header>
 
 				<ui5-list id="myList12" separators="Inner">
-					<ui5-li image="./img/HT-1030.jpg" icon="source-code">C/C++</ui5-li>
-					<ui5-li image="./img/HT-1030.jpg" icon="source-code">Phyton</ui5-li>
-					<ui5-li image="./img/HT-1030.jpg" icon="source-code">Node JS</ui5-li>
+					<ui5-li icon="source-code">C/C++
+						<ui5-avatar slot="image" shape="Square">
+							<img src="/ui5-webcomponents/nightly/assets/HT-1030-7ead454a.jpg" alt="Woman image">
+						</ui5-avatar>
+					</ui5-li>
+					<ui5-li icon="source-code">Phyton
+						<ui5-avatar slot="image" shape="Square">
+							<img src="/ui5-webcomponents/nightly/assets/HT-1030-7ead454a.jpg" alt="Woman image">
+						</ui5-avatar>
+					</ui5-li>
+					<ui5-li icon="source-code">Node JS
+						<ui5-avatar slot="image" shape="Square">
+							<img src="/ui5-webcomponents/nightly/assets/HT-1030-7ead454a.jpg" alt="Woman image">
+						</ui5-avatar>
+					</ui5-li>
 				</ui5-list>
 			</ui5-card>
 			<ui5-card
@@ -164,7 +194,7 @@
 			<ui5-button id="openPopoverButton">Open Popover</ui5-button>
 			<ui5-popover header-text="Popover" id="hello-popover">
 				<div class="kitchen_openui54auto">
-					<ui5-title level="H2">Hello World!</ui5-title>
+					<ui5-title size="H2" level="H2">Hello World!</ui5-title>
 				</div>
 				<ui5-textarea
 					placeholder="Type some text"
@@ -180,7 +210,7 @@
 			<ui5-button id="openDialogButton">Open Dialog</ui5-button>
 			<ui5-dialog id="hello-dialog" header-text="Dialog">
 				<div class="kitchen_openui54auto">
-					<ui5-title level="H2">Hello World!</ui5-title>
+					<ui5-title size="H2" level="H2">Hello World!</ui5-title>
 				</div>
 				<ui5-textarea
 					placeholder="Type some text"
@@ -195,7 +225,7 @@
 			<ui5-button id="openDialogStretched">Open Dialog Stretched</ui5-button>
 			<ui5-dialog id="hello-dialog2" header-text="Dialog" stretch>
 				<div class="kitchen_openui54auto">
-					<ui5-title level="H2">Hello World!</ui5-title>
+					<ui5-title size="H2" level="H2">Hello World!</ui5-title>
 				</div>
 				<ui5-textarea
 					placeholder="Type some text"

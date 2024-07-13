@@ -14,10 +14,10 @@ import type { IComboBoxItem } from "./ComboBox.js";
 declare class ComboBoxItemGroup extends UI5Element implements IComboBoxItem {
     /**
      * Defines the text of the component.
-     * @default ""
+     * @default undefined
      * @public
      */
-    text: string;
+    headerText?: string;
     /**
      * Indicates whether the item is focused
      * @protected

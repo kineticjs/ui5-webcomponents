@@ -29,7 +29,7 @@ import MovePlacement from "@ui5/webcomponents-base/dist/types/MovePlacement.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
 import ListGrowingMode from "./types/ListGrowingMode.js";
 import DropIndicator from "./DropIndicator.js";
-import ListSeparators from "./types/ListSeparators.js";
+import ListSeparator from "./types/ListSeparator.js";
 import BusyIndicator from "./BusyIndicator.js";
 // Template
 import ListTemplate from "./generated/templates/ListTemplate.lit.js";
@@ -351,8 +351,8 @@ let List = List_1 = class List extends UI5Element {
         const slottedItems = this.getItemsForProcessing();
         slottedItems.forEach((item, key) => {
             const isLastChild = key === slottedItems.length - 1;
-            const showBottomBorder = this.separators === ListSeparators.All
-                || (this.separators === ListSeparators.Inner && !isLastChild);
+            const showBottomBorder = this.separators === ListSeparator.All
+                || (this.separators === ListSeparator.Inner && !isLastChild);
             if (item.hasConfigurableMode) {
                 item._selectionMode = this.selectionMode;
             }

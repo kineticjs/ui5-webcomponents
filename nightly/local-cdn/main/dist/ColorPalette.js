@@ -123,14 +123,6 @@ let ColorPalette = ColorPalette_1 = class ColorPalette extends UI5Element {
             this.recentColorsElements[0].selected = true;
             this.recentColorsElements[0].focus();
         }
-        if (this.popupMode) {
-            if (this.showDefaultColor) {
-                this.focusFirstFocusableElement();
-            }
-            else {
-                this.focusFirstDisplayColorElement();
-            }
-        }
     }
     selectColor(item) {
         if (!item.value) {
@@ -343,12 +335,6 @@ let ColorPalette = ColorPalette_1 = class ColorPalette extends UI5Element {
     focusColorElement(element, itemNavigation) {
         itemNavigation.setCurrentItem(element);
         itemNavigation._focusCurrentItem();
-    }
-    focusFirstDisplayColorElement() {
-        this.focusColorElement(this.displayedColors[0], this._itemNavigation);
-    }
-    focusFirstFocusableElement() {
-        this.firstFocusableElement.focus();
     }
     get firstFocusableElement() {
         return this.colorPaletteNavigationElements[0];

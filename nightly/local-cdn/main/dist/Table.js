@@ -19,12 +19,12 @@ import TableTemplate from "./generated/templates/TableTemplate.lit.js";
 import TableStyles from "./generated/themes/Table.css.js";
 import TableRow from "./TableRow.js";
 import TableExtension from "./TableExtension.js";
-import TableSelection from "./TableSelection.js";
 import TableOverflowMode from "./types/TableOverflowMode.js";
 import TableNavigation from "./TableNavigation.js";
 import { TABLE_NO_DATA, } from "./generated/i18n/i18n-defaults.js";
 import BusyIndicator from "./BusyIndicator.js";
 import TableCell from "./TableCell.js";
+import { isFeature } from "./TableUtils.js";
 /**
  * @class
  *
@@ -37,6 +37,7 @@ import TableCell from "./TableCell.js";
  *
  * The `ui5-table` can be enhanced in its functionalities by applying different features.
  * Features can be slotted into the `features` slot, to enable them in the component.
+ * Features need to be imported separately, as they are not enabled by default.
  *
  * The following features are currently available:
  *
@@ -98,6 +99,11 @@ import TableCell from "./TableCell.js";
  * @extends UI5Element
  * @since 2.0
  * @public
+ * @experimental This Table web component is available since 2.0 and has been newly implemented to provide better screen reader and keyboard handling support.
+ * Currently, it's considered experimental as its API is subject to change.
+ * This Table replaces the previous Table web component, that has been part of **@ui5/webcomponents** version 1.x.
+ * For compatibility reasons, we moved the previous Tabple implementation to the **@ui5/webcomponents-compat** package
+ * and will be maintained until the new Table is experimental.
  */
 let Table = Table_1 = class Table extends UI5Element {
     static async onDefine() {
@@ -137,6 +143,7 @@ let Table = Table_1 = class Table extends UI5Element {
          */
         this.stickyTop = "0";
         this._invalidate = 0;
+        this._renderNavigated = false;
         this._events = ["keydown", "keyup", "click", "focusin", "focusout"];
         this._poppedIn = [];
         this._containerWidth = 0;
@@ -159,17 +166,21 @@ let Table = Table_1 = class Table extends UI5Element {
         }
     }
     onBeforeRendering() {
+        const renderNavigated = this._renderNavigated;
+        this._renderNavigated = this.rows.some(row => row.navigated);
+        if (renderNavigated !== this._renderNavigated) {
+            this.rows.forEach(row => {
+                row._renderNavigated = this._renderNavigated;
+            });
+        }
         this.style.setProperty(getScopedVarName("--ui5_grid_sticky_top"), this.stickyTop);
         this._refreshPopinState();
     }
     onAfterRendering() {
         this.features.forEach(feature => feature.onTableRendered?.());
     }
-    _getFeature(klass) {
-        return this.features.find(feature => feature instanceof klass);
-    }
     _getSelection() {
-        return this._getFeature(TableSelection);
+        return this.features.find(feature => isFeature(feature, "TableSelection"));
     }
     _onEvent(e) {
         const composedPath = e.composedPath();
@@ -310,6 +321,9 @@ let Table = Table_1 = class Table extends UI5Element {
             }
             return `minmax(${cell.width}, ${cell.width})`;
         }));
+        if (this._renderNavigated) {
+            widths.push(`var(${getScopedVarName("--_ui5_table_navigated_cell_width")})`);
+        }
         return widths.join(" ");
     }
     get _tableOverflowX() {
@@ -369,7 +383,14 @@ let Table = Table_1 = class Table extends UI5Element {
     }
 };
 __decorate([
-    slot({ type: HTMLElement, "default": true })
+    slot({
+        type: HTMLElement,
+        "default": true,
+        invalidateOnChildChange: {
+            properties: ["navigated"],
+            slots: false,
+        },
+    })
 ], Table.prototype, "rows", void 0);
 __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: { properties: false, slots: true } })
@@ -404,6 +425,9 @@ __decorate([
 __decorate([
     property({ type: Number, noAttribute: true })
 ], Table.prototype, "_invalidate", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], Table.prototype, "_renderNavigated", void 0);
 Table = Table_1 = __decorate([
     customElement({
         tag: "ui5-table",

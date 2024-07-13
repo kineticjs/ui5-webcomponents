@@ -168,10 +168,10 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
         };
     }
     get _formatPattern() {
-        const hasHours = !!this.formatPattern.match(/H/i);
+        const hasHours = !!(this.formatPattern || "").match(/H/i);
         const fallback = !this.formatPattern || !hasHours;
         const localeData = getCachedLocaleDataInstance(getLocale());
-        return fallback ? localeData.getCombinedDateTimePattern("medium", "medium", this._primaryCalendarType) : this.formatPattern;
+        return fallback ? localeData.getCombinedDateTimePattern("medium", "medium", this._primaryCalendarType) : (this.formatPattern || "");
     }
     get _calendarTimestamp() {
         return this._previewValues.calendarTimestamp ? this._previewValues.calendarTimestamp : super._calendarTimestamp;

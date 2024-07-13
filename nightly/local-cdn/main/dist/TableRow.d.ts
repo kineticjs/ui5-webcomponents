@@ -15,6 +15,7 @@ import TableCell from "./TableCell.js";
  * @extends TableRowBase
  * @since 2.0
  * @public
+ * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 declare class TableRow extends TableRowBase {
     /**
@@ -26,12 +27,12 @@ declare class TableRow extends TableRowBase {
      */
     cells: Array<TableCell>;
     /**
-     * Unique identifier of the component.
+     * Unique identifier of the row.
      *
      * @default ""
      * @public
      */
-    key: string;
+    rowKey: string;
     /**
      * Defines the interactive state of the row.
      *
@@ -39,6 +40,14 @@ declare class TableRow extends TableRowBase {
      * @public
      */
     interactive: boolean;
+    /**
+     * Defines the navigated state of the row.
+     *
+     * @default false
+     * @public
+     */
+    navigated: boolean;
+    _renderNavigated: boolean;
     static onDefine(): Promise<void>;
     onBeforeRendering(): void;
     focus(focusOptions?: FocusOptions | undefined): Promise<void>;

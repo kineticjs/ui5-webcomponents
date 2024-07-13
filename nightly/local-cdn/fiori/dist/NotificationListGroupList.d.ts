@@ -1,4 +1,5 @@
 import List from "@ui5/webcomponents/dist/List.js";
+import type ListItemBase from "@ui5/webcomponents/dist/ListItemBase";
 /**
  * @class
  *
@@ -12,5 +13,8 @@ declare class NotificationListGroupList extends List {
     _handleTabNext(): void;
     onForwardBefore(): void;
     onForwardAfter(): void;
+    onItemTabIndexChange(): void;
+    onItemFocused(): void;
+    focusItem(item: ListItemBase): void;
 }
 export default NotificationListGroupList;

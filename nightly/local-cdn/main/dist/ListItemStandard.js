@@ -42,7 +42,6 @@ let ListItemStandard = class ListItemStandard extends ListItem {
         /**
          * Defines whether the `icon` should be displayed in the beginning of the list item or in the end.
          *
-         * **Note:** If `image` is set, the `icon` would be displayed after the `image`.
          * @default false
          * @public
          */
@@ -77,15 +76,12 @@ let ListItemStandard = class ListItemStandard extends ListItem {
          * @private
          */
         this.hasTitle = false;
-        this._hasImageContent = false;
+        this._hasImage = false;
     }
     onBeforeRendering() {
         super.onBeforeRendering();
         this.hasTitle = !!this.textContent;
-        this._hasImageContent = this.hasImageContent;
-    }
-    get displayImage() {
-        return !!this.image;
+        this._hasImage = this.hasImage;
     }
     get displayIconBegin() {
         return !!(this.icon && !this.iconEnd);
@@ -93,8 +89,8 @@ let ListItemStandard = class ListItemStandard extends ListItem {
     get displayIconEnd() {
         return !!(this.icon && this.iconEnd);
     }
-    get hasImageContent() {
-        return !!this.imageContent.length;
+    get hasImage() {
+        return !!this.image.length;
     }
 };
 __decorate([
@@ -106,9 +102,6 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], ListItemStandard.prototype, "iconEnd", void 0);
-__decorate([
-    property()
-], ListItemStandard.prototype, "image", void 0);
 __decorate([
     property()
 ], ListItemStandard.prototype, "additionalText", void 0);
@@ -129,10 +122,10 @@ __decorate([
 ], ListItemStandard.prototype, "hasTitle", void 0);
 __decorate([
     property({ type: Boolean })
-], ListItemStandard.prototype, "_hasImageContent", void 0);
+], ListItemStandard.prototype, "_hasImage", void 0);
 __decorate([
     slot()
-], ListItemStandard.prototype, "imageContent", void 0);
+], ListItemStandard.prototype, "image", void 0);
 ListItemStandard = __decorate([
     customElement({
         tag: "ui5-li",

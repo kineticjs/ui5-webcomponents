@@ -254,10 +254,9 @@ class UI5Element extends HTMLElement {
             return;
         }
         const canSlotText = metadata.canSlotText();
-        const hasClonedSlot = Object.keys(metadata.getSlots()).some(slotName => metadata.getSlots()[slotName].cloned);
         const mutationObserverOptions = {
             childList: true,
-            subtree: canSlotText || hasClonedSlot,
+            subtree: canSlotText,
             characterData: canSlotText,
         };
         observeDOMNode(this, this._processChildren.bind(this), mutationObserverOptions);

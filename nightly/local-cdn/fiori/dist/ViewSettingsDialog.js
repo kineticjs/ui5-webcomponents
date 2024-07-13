@@ -229,11 +229,11 @@ let ViewSettingsDialog = ViewSettingsDialog_1 = class ViewSettingsDialog extends
             sortBy: JSON.parse(JSON.stringify(this.initSortByItems)),
             filters: this.filterItems.map(item => {
                 return {
-                    text: item.text,
+                    text: item.text || "",
                     selected: false,
                     filterOptions: item.values.map(optionValue => {
                         return {
-                            text: optionValue.text,
+                            text: optionValue.text || "",
                             selected: optionValue.selected,
                         };
                     }),
@@ -366,7 +366,7 @@ let ViewSettingsDialog = ViewSettingsDialog_1 = class ViewSettingsDialog extends
         this.open = false;
     }
     get eventsParams() {
-        const _currentSortOrderSelected = this._currentSettings.sortOrder.filter(item => item.selected)[0], _currentSortBySelected = this._currentSettings.sortBy.filter(item => item.selected)[0], sortOrder = _currentSortOrderSelected && _currentSortOrderSelected.text, sortDescending = !this._currentSettings.sortOrder[0].selected, sortBy = _currentSortBySelected && _currentSortBySelected.text, sortByElementIndex = _currentSortBySelected && _currentSortBySelected.index, sortByItem = this.sortItems[sortByElementIndex];
+        const _currentSortOrderSelected = this._currentSettings.sortOrder.filter(item => item.selected)[0], _currentSortBySelected = this._currentSettings.sortBy.filter(item => item.selected)[0], sortOrder = _currentSortOrderSelected && (_currentSortOrderSelected.text || ""), sortDescending = !this._currentSettings.sortOrder[0].selected, sortBy = _currentSortBySelected && (_currentSortBySelected.text || ""), sortByElementIndex = _currentSortBySelected && _currentSortBySelected.index, sortByItem = this.sortItems[sortByElementIndex];
         return {
             sortOrder,
             sortDescending,
@@ -381,12 +381,12 @@ let ViewSettingsDialog = ViewSettingsDialog_1 = class ViewSettingsDialog extends
             const selectedOptions = [];
             filter.filterOptions.forEach(option => {
                 if (option.selected) {
-                    selectedOptions.push(option.text);
+                    selectedOptions.push(option.text || "");
                 }
             });
             if (selectedOptions.length) {
                 result.push({});
-                result[result.length - 1][filter.text] = selectedOptions;
+                result[result.length - 1][filter.text || ""] = selectedOptions;
             }
         });
         return result;
@@ -484,7 +484,7 @@ let ViewSettingsDialog = ViewSettingsDialog_1 = class ViewSettingsDialog extends
                 }
                 for (let i = 0; i < tempSettings.filters.length; i++) {
                     for (let j = 0; j < tempSettings.filters[i].filterOptions.length; j++) {
-                        if (inputFilters[tempSettings.filters[i].text] && inputFilters[tempSettings.filters[i].text].indexOf(tempSettings.filters[i].filterOptions[j].text) > -1) {
+                        if (inputFilters[tempSettings.filters[i].text || ""] && inputFilters[tempSettings.filters[i].text || ""].indexOf(tempSettings.filters[i].filterOptions[j].text || "") > -1) {
                             tempSettings.filters[i].filterOptions[j].selected = true;
                         }
                         else {

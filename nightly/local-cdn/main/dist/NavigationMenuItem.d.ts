@@ -55,6 +55,8 @@ declare class NavigationMenuItem extends MenuItem {
     get _accInfo(): {
         role: string;
         ariaHaspopup: "dialog" | "grid" | "listbox" | "menu" | "tree" | undefined;
+        ariaKeyShortcuts: string | undefined;
+        ariaHidden: boolean | undefined;
         ariaExpanded?: boolean | undefined;
         ariaLevel?: number | undefined;
         ariaLabel: string;

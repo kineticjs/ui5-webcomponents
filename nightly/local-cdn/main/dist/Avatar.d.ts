@@ -111,10 +111,6 @@ declare class Avatar extends UI5Element implements ITabbable, IAvatarGroupItem {
      */
     size: `${AvatarSize}`;
     /**
-     * @private
-     */
-    _size: `${AvatarSize}`;
-    /**
      * Defines the background color of the desired image.
      * @default "Accent6"
      * @public

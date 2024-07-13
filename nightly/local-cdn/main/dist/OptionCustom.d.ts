@@ -41,11 +41,17 @@ declare class OptionCustom extends ListItemBase implements IOption {
      */
     content: Array<Node>;
     /**
-     * Defines the text of the tooltip that would be displayed for the list item.
+     * Defines the tooltip of the option.
      * @default undefined
      * @public
      */
     tooltip?: string;
+    /**
+     * Defines the selected state of the component.
+     * @default false
+     * @public
+     */
+    selected: boolean;
     get effectiveDisplayText(): string;
 }
 export default OptionCustom;

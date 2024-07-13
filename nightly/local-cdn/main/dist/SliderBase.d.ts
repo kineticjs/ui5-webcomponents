@@ -27,11 +27,11 @@ declare abstract class SliderBase extends UI5Element {
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      * @since 2.0.0
      */
-    name: string;
+    name?: string;
     /**
      * Defines the size of the slider's selection intervals (e.g. min = 0, max = 10, step = 5 would result in possible selection of the values 0, 5, 10).
      *

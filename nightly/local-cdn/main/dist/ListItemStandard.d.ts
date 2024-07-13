@@ -48,19 +48,10 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
     /**
      * Defines whether the `icon` should be displayed in the beginning of the list item or in the end.
      *
-     * **Note:** If `image` is set, the `icon` would be displayed after the `image`.
      * @default false
      * @public
      */
     iconEnd: boolean;
-    /**
-     * Defines the `image` source URI.
-     *
-     * **Note:** The `image` would be displayed in the beginning of the list item.
-     * @default undefined
-     * @public
-     */
-    image?: string;
     /**
      * Defines the `additionalText`, displayed in the end of the list item.
      * @default undefined
@@ -91,7 +82,7 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
      * @public
      * @since 1.0.0-rc.15
      */
-    accessibleName: string;
+    accessibleName?: string;
     /**
      * Defines if the text of the component should wrap, they truncate by default.
      *
@@ -106,21 +97,20 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
      * @private
      */
     hasTitle: boolean;
-    _hasImageContent: boolean;
+    _hasImage: boolean;
     /**
      * **Note:** While the slot allows option for setting custom avatar, to match the
      * design guidelines, please use the `ui5-avatar` with it's default size - S.
      *
      * **Note:** If bigger `ui5-avatar` needs to be used, then the size of the
      * `ui5-li` should be customized in order to fit.
-     * @since 1.10.0
+     * @since 2.0.0
      * @public
      */
-    imageContent: Array<HTMLElement>;
+    image: Array<HTMLElement>;
     onBeforeRendering(): void;
-    get displayImage(): boolean;
     get displayIconBegin(): boolean;
     get displayIconEnd(): boolean;
-    get hasImageContent(): boolean;
+    get hasImage(): boolean;
 }
 export default ListItemStandard;

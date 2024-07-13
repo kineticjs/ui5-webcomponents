@@ -120,8 +120,6 @@ declare class ColorPalette extends UI5Element {
     _onColorContainerKeyDown(e: KeyboardEvent): void;
     _onRecentColorsContainerKeyDown(e: KeyboardEvent): void;
     focusColorElement(element: ColorPaletteNavigationItem, itemNavigation: ItemNavigation): void;
-    focusFirstDisplayColorElement(): void;
-    focusFirstFocusableElement(): void;
     get firstFocusableElement(): ColorPaletteNavigationItem;
     _chooseCustomColor(): void;
     _addRecentColor(color: string): void;

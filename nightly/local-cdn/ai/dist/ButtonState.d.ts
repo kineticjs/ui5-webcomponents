@@ -19,20 +19,21 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
  * @abstract
  * @since 2.0
  * @public
+ * @experimental The Button and ButtonState web components are availabe since 2.0 under an experimental flag and their API and behaviour are subject to change.
  */
 declare class ButtonState extends UI5Element {
     /**
      * Defines the name of the button state.
-     * @default ""
+     * @default undefined
      * @public
      */
-    name: string;
+    name?: string;
     /**
      * Defines the text of the button in this state.
-     * @default ""
+     * @default undefined
      * @public
      */
-    text: string;
+    text?: string;
     /**
      * Defines the icon to be displayed as graphical element within the component before the text.
      * The SAP-icons font provides numerous options.
@@ -40,10 +41,10 @@ declare class ButtonState extends UI5Element {
      * **Example:**
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    icon: string;
+    icon?: string;
     /**
      * Defines the icon to be displayed as graphical element within the component after the text.
      * The SAP-icons font provides numerous options.
@@ -51,9 +52,9 @@ declare class ButtonState extends UI5Element {
      * **Example:**
      *
      * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
-    endIcon: string;
+    endIcon?: string;
 }
 export default ButtonState;

@@ -19,7 +19,6 @@ import DOMReferenceConverter from "@ui5/webcomponents-base/dist/converters/DOMRe
 import ResponsivePopover from "./ResponsivePopover.js";
 import Button from "./Button.js";
 import List from "./List.js";
-import Icon from "./Icon.js";
 import BusyIndicator from "./BusyIndicator.js";
 import MenuItem from "./MenuItem.js";
 import MenuSeparator from "./MenuSeparator.js";
@@ -165,7 +164,7 @@ let Menu = Menu_1 = class Menu extends UI5Element {
         if (!item._popover) {
             const prevented = !this.fireEvent("item-click", {
                 "item": item,
-                "text": item.text,
+                "text": item.text || "",
             }, true, false);
             if (!prevented && this._popover) {
                 item.fireEvent("close-menu", {});
@@ -203,7 +202,6 @@ let Menu = Menu_1 = class Menu extends UI5Element {
         }
     }
     _afterPopoverOpen() {
-        this.open = true;
         this._menuItems[0]?.focus();
         this.fireEvent("open", {}, false, true);
     }
@@ -249,7 +247,6 @@ Menu = Menu_1 = __decorate([
             List,
             MenuItem,
             MenuSeparator,
-            Icon,
             BusyIndicator,
         ],
     })

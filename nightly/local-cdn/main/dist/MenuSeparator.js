@@ -5,7 +5,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import menuSeparatorTemplate from "./generated/templates/MenuSeparatorTemplate.lit.js";
 import menuSeparatorCss from "./generated/themes/MenuSeparator.css.js";
@@ -44,9 +43,6 @@ let MenuSeparator = class MenuSeparator extends ListItemBase {
         return false;
     }
 };
-__decorate([
-    property({ type: Boolean })
-], MenuSeparator.prototype, "selected", void 0);
 MenuSeparator = __decorate([
     customElement({
         tag: "ui5-menu-separator",

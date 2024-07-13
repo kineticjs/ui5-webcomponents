@@ -34,6 +34,14 @@ let ColorPaletteItem = ColorPaletteItem_1 = class ColorPaletteItem extends UI5El
     constructor() {
         super();
         /**
+         * Defines the colour of the component.
+         *
+         * **Note:** The value should be a valid CSS color.
+         * @default ""
+         * @public
+         */
+        this.value = "";
+        /**
          * Defines if the component is selected.
          *
          * **Note:** Only one item must be selected per <code>ui5-color-palette</code>.

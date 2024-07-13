@@ -229,15 +229,15 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
     }
     get ariaLabelledBy() {
         const id = this._id;
+        if (this.loading) {
+            return `${id}-loading`;
+        }
         const ids = [];
         if (this.hasImportance) {
             ids.push(`${id}-importance`);
         }
         if (this.hasTitleText) {
             ids.push(`${id}-title-text`);
-        }
-        if (this.isLoading) {
-            ids.push(`${id}-loading`);
         }
         ids.push(`${id}-read`);
         if (this.hasDesc) {

@@ -15,7 +15,7 @@ import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/Ari
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import Title from "@ui5/webcomponents/dist/Title.js";
 import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import IllustrationMessageSize from "./types/IllustrationMessageSize.js";
+import IllustrationMessageDesign from "./types/IllustrationMessageDesign.js";
 import IllustrationMessageType from "./types/IllustrationMessageType.js";
 import "./illustrations/BeforeSearch.js";
 // Styles
@@ -109,7 +109,7 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
         * elements of the component are displayed differently on the different breakpoints/illustration designs.
         * @default "Auto"
         * @public
-        * @since 1.5.0
+        * @since 2.0.0
         */
         this.design = "Auto";
         this._handleResize = this.handleResize.bind(this);
@@ -165,7 +165,7 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
         this.sceneSvg = illustrationData.sceneSvg;
         this.illustrationTitle = IllustratedMessage_1.i18nBundle.getText(illustrationData.title);
         this.illustrationSubtitle = IllustratedMessage_1.i18nBundle.getText(illustrationData.subtitle);
-        if (this.design !== IllustrationMessageSize.Auto) {
+        if (this.design !== IllustrationMessageDesign.Auto) {
             this._handleCustomSize();
         }
     }
@@ -176,7 +176,7 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
         ResizeHandler.deregister(this, this._handleResize);
     }
     handleResize() {
-        if (this.design !== IllustrationMessageSize.Auto) {
+        if (this.design !== IllustrationMessageDesign.Auto) {
             this._adjustHeightToFitContainer();
             return;
         }
@@ -247,16 +247,16 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
      */
     _handleCustomSize() {
         switch (this.design) {
-            case IllustrationMessageSize.Base:
+            case IllustrationMessageDesign.Base:
                 this.media = IllustratedMessage_1.MEDIA.BASE;
                 return;
-            case IllustrationMessageSize.Dot:
+            case IllustrationMessageDesign.Dot:
                 this.media = IllustratedMessage_1.MEDIA.DOT;
                 return;
-            case IllustrationMessageSize.Spot:
+            case IllustrationMessageDesign.Spot:
                 this.media = IllustratedMessage_1.MEDIA.SPOT;
                 return;
-            case IllustrationMessageSize.Dialog:
+            case IllustrationMessageDesign.Dialog:
                 this.media = IllustratedMessage_1.MEDIA.DIALOG;
                 return;
             default:

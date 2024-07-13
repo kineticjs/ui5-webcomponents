@@ -27,12 +27,9 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
  * @abstract
  * @since 2.0
  * @public
+ * @experimental The Button and ButtonState web components are availabe since 2.0 under an experimental flag and their API and behaviour are subject to change.
  */
-let ButtonState = 
-/**
- * @experimental
- */
-class ButtonState extends UI5Element {
+let ButtonState = class ButtonState extends UI5Element {
 };
 __decorate([
     property()
@@ -48,9 +45,6 @@ __decorate([
 ], ButtonState.prototype, "endIcon", void 0);
 ButtonState = __decorate([
     customElement("ui5-ai-button-state")
-    /**
-     * @experimental
-     */
 ], ButtonState);
 ButtonState.define();
 export default ButtonState;

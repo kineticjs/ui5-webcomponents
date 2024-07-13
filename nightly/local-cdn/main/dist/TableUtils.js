@@ -10,5 +10,8 @@ const isHeaderSelector = (e) => {
 const findRowInPath = (composedPath) => {
     return composedPath.find((el) => el instanceof HTMLElement && el.hasAttribute("ui5-table-row"));
 };
-export { isInstanceOfTable, isSelectionCheckbox, isHeaderSelector, findRowInPath, };
+const isFeature = (element, identifier) => {
+    return element.identifier === identifier;
+};
+export { isInstanceOfTable, isSelectionCheckbox, isHeaderSelector, findRowInPath, isFeature, };
 //# sourceMappingURL=TableUtils.js.map

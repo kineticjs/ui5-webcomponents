@@ -115,6 +115,14 @@ let RadioButton = RadioButton_1 = class RadioButton extends UI5Element {
          */
         this.valueState = "None";
         /**
+         * Defines the form value of the component.
+         * When a form with a radio button group is submitted, the group's value
+         * will be the value of the currently selected radio button.
+         * @default ""
+         * @public
+         */
+        this.value = "";
+        /**
          * Defines whether the component text wraps when there is not enough space.
          *
          * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.

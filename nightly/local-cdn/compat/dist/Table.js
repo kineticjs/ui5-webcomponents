@@ -572,6 +572,12 @@ let Table = Table_1 = class Table extends UI5Element {
         }
         this._loadMoreActive = false;
     }
+    onInvalidation(change) {
+        if (change.type === "property" && change.name === "growing") {
+            this.tableEndObserved = false;
+            this.getIntersectionObserver().disconnect();
+        }
+    }
     _onLoadMoreClick() {
         this.fireEvent("load-more");
     }

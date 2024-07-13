@@ -20,12 +20,6 @@ let ComboBoxItem = class ComboBoxItem extends UI5Element {
     constructor() {
         super(...arguments);
         /**
-         * Defines the text of the component.
-         * @default ""
-         * @public
-         */
-        this.text = "";
-        /**
          * Indicates whether the item is filtered
          * @private
          */

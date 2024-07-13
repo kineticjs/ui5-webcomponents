@@ -60,10 +60,12 @@ declare class ProductSwitchItem extends UI5Element implements IProductSwitchItem
      * - `_blank`
      * - `_parent`
      * - `_search`
-     * @default "_self"
+     *
+     * **Note:** By default target will be open in the same frame as it was clicked.
+     * @default undefined
      * @public
      */
-    target: string;
+    target?: string;
     /**
      * Defines the component target URI. Supports standard hyperlink behavior.
      * @default undefined
@@ -89,6 +91,7 @@ declare class ProductSwitchItem extends UI5Element implements IProductSwitchItem
     onEnterDOM(): void;
     onExitDOM(): void;
     _onmousedown(): void;
+    get _effectiveTarget(): string;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
     _onfocusout(): void;

@@ -104,7 +104,7 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         const target = e.target;
         const checkboxPressed = target.classList.contains("ui5-multi-select-checkbox");
         const rowElements = Array.from(this.shadowRoot.querySelectorAll("tr") || []);
-        const elements = rowElements.map(getLastTabbableElement);
+        const elements = rowElements.map(getLastTabbableElement).filter(Boolean);
         const lastFocusableElement = elements.pop();
         if (isTabNext(e) && activeElement === (lastFocusableElement || this.root)) {
             this.fireEvent("_forward-after", { target: activeElement });

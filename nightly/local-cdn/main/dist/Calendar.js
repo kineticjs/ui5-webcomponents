@@ -415,6 +415,13 @@ let Calendar = Calendar_1 = class Calendar extends CalendarPart {
     get _isHeaderMonthButtonHidden() {
         return this._currentPicker === "month" || this._currentPicker === "year";
     }
+    /**
+     * The year button is hidden when the year picker is shown
+     * @private
+     */
+    get _isHeaderYearButtonHidden() {
+        return this._currentPicker === "year";
+    }
     get _isDayPickerHidden() {
         return this._currentPicker !== "day";
     }

@@ -101,10 +101,6 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
          */
         this.size = "S";
         /**
-         * @private
-         */
-        this._size = "S";
-        /**
          * Defines the background color of the desired image.
          * @default "Accent6"
          * @public
@@ -142,7 +138,7 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
      */
     get effectiveSize() {
         // we read the attribute, because the "size" property will always have a default value
-        return this.getAttribute("size") || this._size;
+        return this.getAttribute("size");
     }
     /**
      * Returns the effective background color.
@@ -280,9 +276,6 @@ __decorate([
 __decorate([
     property()
 ], Avatar.prototype, "size", void 0);
-__decorate([
-    property()
-], Avatar.prototype, "_size", void 0);
 __decorate([
     property()
 ], Avatar.prototype, "colorScheme", void 0);

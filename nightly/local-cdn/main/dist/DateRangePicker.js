@@ -71,7 +71,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         * @default "-"
         * @public
         */
-        this.delimiter = DEFAULT_DELIMITER;
+        this.delimiter = "-";
         this._prevDelimiter = null;
     }
     /**

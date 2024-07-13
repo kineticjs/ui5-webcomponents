@@ -73,6 +73,14 @@ let FileUploader = FileUploader_1 = class FileUploader extends UI5Element {
          */
         this.multiple = false;
         /**
+         * Defines the name/names of the file/files to upload.
+         * @default ""
+         * @formEvents change
+         * @formProperty
+         * @public
+         */
+        this.value = "";
+        /**
          * Defines the value state of the component.
          * @default "None"
          * @public

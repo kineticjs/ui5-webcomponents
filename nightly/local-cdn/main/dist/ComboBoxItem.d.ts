@@ -12,10 +12,10 @@ import type { IComboBoxItem } from "./ComboBox.js";
 declare class ComboBoxItem extends UI5Element implements IComboBoxItem {
     /**
      * Defines the text of the component.
-     * @default ""
+     * @default undefined
      * @public
      */
-    text: string;
+    text?: string;
     /**
      * Defines the additional text of the component.
      * @default undefined

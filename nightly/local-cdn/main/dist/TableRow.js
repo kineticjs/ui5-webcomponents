@@ -30,17 +30,18 @@ import RadioButton from "./RadioButton.js";
  * @extends TableRowBase
  * @since 2.0
  * @public
+ * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 let TableRow = class TableRow extends TableRowBase {
     constructor() {
         super(...arguments);
         /**
-         * Unique identifier of the component.
+         * Unique identifier of the row.
          *
          * @default ""
          * @public
          */
-        this.key = "";
+        this.rowKey = "";
         /**
          * Defines the interactive state of the row.
          *
@@ -48,6 +49,14 @@ let TableRow = class TableRow extends TableRowBase {
          * @public
          */
         this.interactive = false;
+        /**
+         * Defines the navigated state of the row.
+         *
+         * @default false
+         * @public
+         */
+        this.navigated = false;
+        this._renderNavigated = false;
     }
     static async onDefine() {
         await super.onDefine();
@@ -59,6 +68,12 @@ let TableRow = class TableRow extends TableRowBase {
     onBeforeRendering() {
         super.onBeforeRendering();
         this.toggleAttribute("_interactive", this._isInteractive);
+        if (this._renderNavigated && this.navigated) {
+            this.setAttribute("aria-current", "true");
+        }
+        else {
+            this.removeAttribute("aria-current");
+        }
     }
     async focus(focusOptions) {
         this.setAttribute("tabindex", "-1");
@@ -103,10 +118,16 @@ __decorate([
 ], TableRow.prototype, "cells", void 0);
 __decorate([
     property()
-], TableRow.prototype, "key", void 0);
+], TableRow.prototype, "rowKey", void 0);
 __decorate([
     property({ type: Boolean })
 ], TableRow.prototype, "interactive", void 0);
+__decorate([
+    property({ type: Boolean })
+], TableRow.prototype, "navigated", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], TableRow.prototype, "_renderNavigated", void 0);
 TableRow = __decorate([
     customElement({
         tag: "ui5-table-row",

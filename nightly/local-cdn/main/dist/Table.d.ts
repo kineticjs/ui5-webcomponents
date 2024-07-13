@@ -5,15 +5,17 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import TableRow from "./TableRow.js";
 import type TableHeaderRow from "./TableHeaderRow.js";
 import type TableHeaderCell from "./TableHeaderCell.js";
-import TableSelection from "./TableSelection.js";
+import type TableSelection from "./TableSelection.js";
 import TableOverflowMode from "./types/TableOverflowMode.js";
 import TableNavigation from "./TableNavigation.js";
 /**
  * Interface for components that can be slotted inside the <code>features</code> slot of the <code>ui5-table</code>.
  *
  * @public
+ * @experimental
  */
 interface ITableFeature extends UI5Element {
+    readonly identifier: string;
     /**
      * Called when the table is activated.
      * @param table table instance
@@ -28,6 +30,7 @@ interface ITableFeature extends UI5Element {
  * Interface for components that can be slotted inside the <code>features</code> slot of the <code>ui5-table</code>
  * and provide growing/data loading functionality.
  * @public
+ * @experimental
  */
 interface ITableGrowing extends ITableFeature {
     /**
@@ -60,6 +63,7 @@ type TableRowClickEventDetail = {
  *
  * The `ui5-table` can be enhanced in its functionalities by applying different features.
  * Features can be slotted into the `features` slot, to enable them in the component.
+ * Features need to be imported separately, as they are not enabled by default.
  *
  * The following features are currently available:
  *
@@ -121,6 +125,11 @@ type TableRowClickEventDetail = {
  * @extends UI5Element
  * @since 2.0
  * @public
+ * @experimental This Table web component is available since 2.0 and has been newly implemented to provide better screen reader and keyboard handling support.
+ * Currently, it's considered experimental as its API is subject to change.
+ * This Table replaces the previous Table web component, that has been part of **@ui5/webcomponents** version 1.x.
+ * For compatibility reasons, we moved the previous Tabple implementation to the **@ui5/webcomponents-compat** package
+ * and will be maintained until the new Table is experimental.
  */
 declare class Table extends UI5Element {
     /**
@@ -203,6 +212,7 @@ declare class Table extends UI5Element {
      */
     stickyTop: string;
     _invalidate: number;
+    _renderNavigated: boolean;
     static i18nBundle: I18nBundle;
     static onDefine(): Promise<void>;
     _events: string[];
@@ -219,7 +229,6 @@ declare class Table extends UI5Element {
     onExitDOM(): void;
     onBeforeRendering(): void;
     onAfterRendering(): void;
-    _getFeature<Klass>(klass: any): Klass | undefined;
     _getSelection(): TableSelection | undefined;
     _onEvent(e: Event): void;
     _onResize(): void;
@@ -243,7 +252,7 @@ declare class Table extends UI5Element {
         };
     };
     get _gridTemplateColumns(): string;
-    get _tableOverflowX(): "hidden" | "auto";
+    get _tableOverflowX(): "auto" | "hidden";
     get _tableOverflowY(): string;
     get _nodataRow(): TableRow;
     get _beforeElement(): HTMLElement;

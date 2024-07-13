@@ -2,7 +2,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IButton } from "@ui5/webcomponents/dist/Button.js";
-import IllustrationMessageSize from "./types/IllustrationMessageSize.js";
+import IllustrationMessageDesign from "./types/IllustrationMessageDesign.js";
 import "./illustrations/BeforeSearch.js";
 /**
  * @class
@@ -80,9 +80,9 @@ declare class IllustratedMessage extends UI5Element {
     * elements of the component are displayed differently on the different breakpoints/illustration designs.
     * @default "Auto"
     * @public
-    * @since 1.5.0
+    * @since 2.0.0
     */
-    design: `${IllustrationMessageSize}`;
+    design: `${IllustrationMessageDesign}`;
     /**
     * Defines the subtitle of the component.
     *

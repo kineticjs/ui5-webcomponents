@@ -11,14 +11,12 @@ import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import "@ui5/webcomponents-icons/dist/information.js";
 import type SuggestionItem from "./SuggestionItem.js";
-import type { InputSuggestion, SuggestionComponent } from "./features/InputSuggestions.js";
+import type { SuggestionComponent } from "./features/InputSuggestions.js";
 import type InputSuggestions from "./features/InputSuggestions.js";
-import type SuggestionListItem from "./SuggestionListItem.js";
 import type { PopupScrollEventDetail } from "./Popup.js";
 import InputType from "./types/InputType.js";
 import Popover from "./Popover.js";
 import type { IIcon } from "./Icon.js";
-import type ListItemType from "./types/ListItemType.js";
 import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from "./List.js";
 /**
@@ -26,14 +24,13 @@ import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from ".
  * @public
  */
 interface IInputSuggestionItem extends UI5Element {
-    text: string;
-    groupItem: boolean;
-    description?: string;
-    image?: string;
-    icon?: string;
+    focused: boolean;
     additionalText?: string;
-    additionalTextState?: `${ValueState}`;
-    type?: `${ListItemType}`;
+    items?: IInputSuggestionItem[];
+}
+interface IInputSuggestionItemSelectable extends IInputSuggestionItem {
+    text?: string;
+    selected: boolean;
 }
 type NativeInputAttributes = {
     min?: number;
@@ -60,7 +57,6 @@ type InputEventDetail = {
 };
 type InputSelectionChangeEventDetail = {
     item: IInputSuggestionItem | null;
-    targetRef: SuggestionListItem | null;
 };
 type InputSuggestionScrollEventDetail = {
     scrollTop: number;
@@ -197,7 +193,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
      * **Note:** This property is only applicable within the context of an HTML Form element.
-     * @default ""
+     * @default undefined
      * @public
      */
     name?: string;
@@ -287,13 +283,13 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * **Note:** The suggestions would be displayed only if the `showSuggestions`
      * property is set to `true`.
      *
-     * **Note:** The `<ui5-suggestion-item>` and `<ui5-suggestion-group-item>` are recommended to be used as suggestion items.
+     * **Note:** The `<ui5-suggestion-item>`, `<ui5-suggestion-item-group>` and `ui5-suggestion-item-custom` are recommended to be used as suggestion items.
      *
      * **Note:** Importing the Input Suggestions Support feature:
      *
      * `import "@ui5/webcomponents/dist/features/InputSuggestions.js";`
      *
-     * automatically imports the `<ui5-suggestion-item>` and `<ui5-suggestion-group-item>` for your convenience.
+     * automatically imports the `<ui5-suggestion-item>` and `<ui5-suggestion-item-group>` for your convenience.
      * @public
      */
     suggestionItems: Array<IInputSuggestionItem>;
@@ -325,7 +321,6 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     typedInValue: string;
     lastConfirmedValue: string;
     isTyping: boolean;
-    suggestionObjects: Array<InputSuggestion>;
     _handleResizeBound: ResizeObserverCallback;
     _keepInnerValue: boolean;
     _shouldAutocomplete?: boolean;
@@ -335,6 +330,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     _selectedText?: string;
     _clearIconClicked?: boolean;
     _focusedAfterClear: boolean;
+    _changeToBeFired?: boolean;
     _performTextSelection?: boolean;
     _isLatestValueFromSuggestions: boolean;
     static i18nBundle: I18nBundle;
@@ -345,6 +341,8 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     constructor();
     onEnterDOM(): void;
     onExitDOM(): void;
+    _highlightSuggestionItem(item: SuggestionItem): void;
+    _isGroupItem(item: IInputSuggestionItem): boolean;
     onBeforeRendering(): void;
     onAfterRendering(): void;
     _onkeydown(e: KeyboardEvent): void;
@@ -373,18 +371,15 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     _iconMouseDown(): void;
     _scroll(e: CustomEvent<PopupScrollEventDetail>): void;
     _handleInput(e: InputEvent | CustomEvent<InputEventDetail>): void;
-    _startsWithMatchingItems(str: string): Array<IInputSuggestionItem>;
-    _getFirstMatchingItem(current: string): IInputSuggestionItem | undefined;
-    _handleTypeAhead(item: IInputSuggestionItem): void;
+    _startsWithMatchingItems(str: string): Array<IInputSuggestionItemSelectable>;
+    _getFirstMatchingItem(current: string): IInputSuggestionItemSelectable | undefined;
+    _handleSelectionChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
+    _handleTypeAhead(item: IInputSuggestionItemSelectable): void;
     _handleResize(): void;
     _updateAssociatedLabelsTexts(): void;
     _closePicker(): void;
     _afterOpenPicker(): void;
     _afterClosePicker(): void;
-    _handleSuggestionItemPress(e: CustomEvent<ListItemClickEventDetail>): void;
-    _handleSelectionChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
-    _handleItemMouseOver(e: MouseEvent): void;
-    _handleItemMouseOut(e: MouseEvent): void;
     _handlePickerAfterOpen(): void;
     _handlePickerAfterClose(): void;
     openValueStatePopover(): void;
@@ -392,12 +387,12 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     _handleValueStatePopoverAfterClose(): void;
     _getValueStatePopover(): Popover;
     enableSuggestions(): void;
-    acceptSuggestion(item: IInputSuggestionItem, keyboardUsed: boolean): void;
+    acceptSuggestion(item: IInputSuggestionItemSelectable, keyboardUsed: boolean): void;
     /**
      * Updates the input value on item select.
      * @param item The item that is on select
      */
-    updateValueOnSelect(item: SuggestionListItem): void;
+    updateValueOnSelect(item: IInputSuggestionItem): void;
     fireEventByAction(action: INPUT_ACTIONS, e: InputEvent): void;
     getInputValue(): string;
     getInputDOMRef(): HTMLInputElement | Input | null;
@@ -408,18 +403,18 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      */
     get nativeInput(): HTMLInputElement | null;
     get nativeInputWidth(): number;
-    getSuggestionByListItem(item: SuggestionListItem): IInputSuggestionItem;
     /**
      * Returns if the suggestions popover is scrollable.
      * The method returns `Promise` that resolves to true,
      * if the popup is scrollable and false otherwise.
      */
     isSuggestionsScrollable(): boolean | Promise<boolean>;
-    onItemMouseOver(e: MouseEvent): void;
-    onItemMouseOut(e: MouseEvent): void;
     onItemMouseDown(e: MouseEvent): void;
-    onItemSelected(suggestionItem: SuggestionItem, listItem: SuggestionListItem | null, keyboardUsed: boolean): void;
-    onItemSelect(item: SuggestionListItem): void;
+    onItemSelected(suggestionItem: IInputSuggestionItemSelectable, keyboardUsed: boolean): void;
+    _handleSuggestionItemPress(e: CustomEvent<ListItemClickEventDetail>): void;
+    onItemSelect(item: IInputSuggestionItem): void;
+    get _flattenItems(): Array<IInputSuggestionItem>;
+    get _selectableItems(): Array<IInputSuggestionItemSelectable>;
     get valueStateTypeMappings(): {
         Positive: string;
         Information: string;
@@ -433,7 +428,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
         Critical: string;
     };
     announceSelectedItem(): void;
-    fireSelectionChange(item: IInputSuggestionItem | null, targetRef: SuggestionListItem | null, isValueFromSuggestions: boolean): void;
+    fireSelectionChange(item: IInputSuggestionItem | null, isValueFromSuggestions: boolean): void;
     fireResetSelectionChange(): void;
     get _readonly(): boolean;
     get _headerTitleText(): string;
@@ -524,4 +519,4 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     static onDefine(): Promise<void>;
 }
 export default Input;
-export type { IInputSuggestionItem, InputSuggestionScrollEventDetail, InputSelectionChangeEventDetail, InputEventDetail, };
+export type { IInputSuggestionItem, IInputSuggestionItemSelectable, InputSuggestionScrollEventDetail, InputSelectionChangeEventDetail, InputEventDetail, };

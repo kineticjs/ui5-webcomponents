@@ -20,15 +20,6 @@ import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
  * @since 2.0
  */
 let MultiComboBoxItemGroup = class MultiComboBoxItemGroup extends UI5Element {
-    constructor() {
-        super(...arguments);
-        /**
-         * Defines the text of the component.
-         * @default ""
-         * @public
-         */
-        this.text = "";
-    }
     /**
      * Used to avoid tag name checks
      * @protected
@@ -45,7 +36,7 @@ let MultiComboBoxItemGroup = class MultiComboBoxItemGroup extends UI5Element {
 };
 __decorate([
     property()
-], MultiComboBoxItemGroup.prototype, "text", void 0);
+], MultiComboBoxItemGroup.prototype, "headerText", void 0);
 __decorate([
     slot({
         "default": true,

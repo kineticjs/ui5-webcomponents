@@ -344,6 +344,9 @@ __decorate([
     property()
 ], ListItem.prototype, "highlight", void 0);
 __decorate([
+    property({ type: Boolean })
+], ListItem.prototype, "selected", void 0);
+__decorate([
     property()
 ], ListItem.prototype, "accessibleRole", void 0);
 __decorate([

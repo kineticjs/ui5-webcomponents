@@ -47,6 +47,9 @@ __decorate([
 __decorate([
     property()
 ], OptionCustom.prototype, "tooltip", void 0);
+__decorate([
+    property({ type: Boolean })
+], OptionCustom.prototype, "selected", void 0);
 OptionCustom = __decorate([
     customElement({
         tag: "ui5-option-custom",

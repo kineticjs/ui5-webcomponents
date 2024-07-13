@@ -63,12 +63,6 @@ let ToolbarButton = class ToolbarButton extends ToolbarItem {
          * @public
          */
         this.accessibilityAttributes = {};
-        /**
-         * Button text
-         * @public
-         * @default ""
-         */
-        this.text = "";
     }
     get styles() {
         return {

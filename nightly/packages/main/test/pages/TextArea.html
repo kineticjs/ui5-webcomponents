@@ -23,7 +23,7 @@
 
 
 	
-		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-958c1076.js"></script>
+		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-d8ba3e7e.js"></script>
 		<link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TextArea-76f953a2.css">
 	</head>
 
@@ -56,7 +56,11 @@
 
 		<br>
 		<br>
-		<ui5-textarea rows="1" id="basic-textarea-error" placeholder="Placeholder" value-state="Negative"></ui5-textarea>
+		<ui5-textarea rows="1" id="basic-textarea-error" placeholder="Placeholder" value-state="Negative">
+			<div slot="valueStateMessage">
+				This is a random value state message text with a <a href="#" _target="blank">Link</a>.
+			</div>
+		</ui5-textarea>
 
 		<br>
 		<br>

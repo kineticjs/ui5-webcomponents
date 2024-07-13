@@ -50,6 +50,7 @@ import { TABLE_MORE, TABLE_MORE_DESCRIPTION, } from "./generated/i18n/i18n-defau
  * @extends UI5Element
  * @since 2.0
  * @public
+ * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
     constructor() {
@@ -76,6 +77,7 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
          * @private
          */
         this._activeState = false;
+        this.identifier = "TableGrowing";
     }
     static async onDefine() {
         TableGrowing_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");

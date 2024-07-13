@@ -51,6 +51,13 @@ let TreeItemBase = TreeItemBase_1 = class TreeItemBase extends ListItem {
          */
         this.expanded = false;
         /**
+         * Defines whether the item is movable.
+         * @default false
+         * @public
+         * @since 2.0.0
+         */
+        this.movable = false;
+        /**
          * Defines whether the tree node has children, even if currently no other tree nodes are slotted inside.
          *
          * **Note:** This property is useful for showing big tree structures where not all nodes are initially loaded due to performance reasons.

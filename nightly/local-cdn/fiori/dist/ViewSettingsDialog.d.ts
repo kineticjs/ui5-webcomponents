@@ -26,7 +26,7 @@ type ViewSettingsDialogCancelEventDetail = VSDSettings & {
     sortDescending: boolean;
 };
 type VSDItem = {
-    text: string;
+    text?: string;
     selected: boolean;
 };
 type VSDInternalSettings = {
@@ -163,7 +163,7 @@ declare class ViewSettingsDialog extends UI5Element {
      */
     get _settings(): VSDInternalSettings;
     get initSortByItems(): {
-        text: string;
+        text: string | undefined;
         selected: boolean;
         index: number;
     }[];

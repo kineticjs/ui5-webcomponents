@@ -28,12 +28,6 @@ let SortItem = class SortItem extends UI5Element {
     constructor() {
         super(...arguments);
         /**
-         * Defines the text of the component.
-         * @default ""
-         * @public
-         */
-        this.text = "";
-        /**
          * Defines if the component is selected.
          * @default false
          * @public

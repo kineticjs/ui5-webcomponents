@@ -419,7 +419,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         return !this.noTypeahead && !allowedEventTypes.includes(eventType);
     }
     _startsWithMatchingItems(str) {
-        const allItems = this._getItems();
+        const allItems = this._getItems().filter(item => !isInstanceOfComboBoxItemGroup(item));
         return Filters.StartsWith(str, allItems, "text");
     }
     _clearFocus() {
@@ -710,7 +710,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             this.value = this.filterValue;
             return;
         }
-        const matchingItems = (this._startsWithMatchingItems(current).filter(item => !isInstanceOfComboBoxItemGroup(item)));
+        const matchingItems = this._startsWithMatchingItems(current);
         if (matchingItems.length) {
             return matchingItems[0];
         }
@@ -755,7 +755,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     }
     _selectItem(e) {
         const listItem = e.detail.item;
-        this._selectedItemText = listItem.mappedItem.text;
+        this._selectedItemText = listItem.mappedItem.text || "";
         this._selectionPerformed = true;
         const sameItemSelected = this.value === this._selectedItemText;
         const sameSelectionPerformed = this.value.toLowerCase() === this.filterValue.toLowerCase();
@@ -790,7 +790,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         const itemPositionText = ComboBox_1.i18nBundle.getText(LIST_ITEM_POSITION, nonGroupItems.indexOf(currentItem) + 1, nonGroupItems.length);
         const groupHeaderText = ComboBox_1.i18nBundle.getText(LIST_ITEM_GROUP_HEADER);
         if (isGroupItem) {
-            announce(`${groupHeaderText} ${currentItem.text}`, InvisibleMessageMode.Polite);
+            announce(`${groupHeaderText} ${currentItem.headerText}`, InvisibleMessageMode.Polite);
         }
         else {
             announce(`${currentItemAdditionalText} ${itemPositionText}`.trim(), InvisibleMessageMode.Polite);

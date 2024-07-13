@@ -47,7 +47,7 @@ import { NOTIFICATION_LIST_ACCESSIBLE_NAME, } from "./generated/i18n/i18n-defaul
  * `import "@ui5/webcomponents-fiori/dist/NotificationList.js";``
  * @constructor
  * @extends UI5Element
- * @since 2.0
+ * @since 2.0.0
  * @public
  */
 let NotificationList = NotificationList_1 = class NotificationList extends UI5Element {

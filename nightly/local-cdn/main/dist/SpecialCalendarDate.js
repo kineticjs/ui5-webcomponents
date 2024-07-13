@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import CalendarDate from "./CalendarDate.js";
+import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 /**
  * @class
  *
@@ -15,14 +15,21 @@ import CalendarDate from "./CalendarDate.js";
  * The `ui5-special-date` component defines a special calendar date to be used inside `ui5-calendar`,
  * which is visually distinguished from the rest of the dates.
  * @constructor
- * @extends CalendarDate
+ * @extends UI5Element
  * @abstract
  * @public
  * @since 1.23.0
  */
-let SpecialCalendarDate = class SpecialCalendarDate extends CalendarDate {
+let SpecialCalendarDate = class SpecialCalendarDate extends UI5Element {
     constructor() {
         super(...arguments);
+        /**
+         * The date formatted according to the `formatPattern` property
+         * of the `ui5-calendar` that hosts the component.
+         * @default ""
+         * @public
+         */
+        this.value = "";
         /**
          * Defines the type of the special date.
          * @default "None"
@@ -31,6 +38,9 @@ let SpecialCalendarDate = class SpecialCalendarDate extends CalendarDate {
         this.type = "None";
     }
 };
+__decorate([
+    property()
+], SpecialCalendarDate.prototype, "value", void 0);
 __decorate([
     property()
 ], SpecialCalendarDate.prototype, "type", void 0);

@@ -46,10 +46,19 @@ let Title = class Title extends UI5Element {
         /**
          * Defines the component level.
          * Available options are: `"H6"` to `"H1"`.
+         * This property does not influence the style of the component.
+         * Use the property `size` for this purpose instead.
          * @default "H2"
          * @public
          */
         this.level = "H2";
+        /**
+         * Defines the visual appearance of the title.
+         * Available options are: `"H6"` to `"H1"`.
+         * @default "H5"
+         * @public
+         */
+        this.size = "H5";
     }
     get h1() {
         return this.level === TitleLevel.H1;
@@ -76,6 +85,9 @@ __decorate([
 __decorate([
     property()
 ], Title.prototype, "level", void 0);
+__decorate([
+    property()
+], Title.prototype, "size", void 0);
 Title = __decorate([
     customElement({
         tag: "ui5-title",

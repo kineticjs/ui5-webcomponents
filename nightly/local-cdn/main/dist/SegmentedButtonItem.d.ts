@@ -42,7 +42,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      * Defines the tooltip of the component.
      *
      * **Note:** A tooltip attribute should be provided for icon-only buttons, in order to represent their exact meaning/function.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.2.0
      */
@@ -56,7 +56,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
     accessibleName?: string;
     /**
      * Receives id(or many ids) of the elements that label the component.
-     * @default ""
+     * @default undefined
      * @public
      * @since 1.1.0
      */
@@ -67,7 +67,7 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      *
      * Example:
      * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
-     * @default ""
+     * @default undefined
      * @public
      */
     icon?: string;

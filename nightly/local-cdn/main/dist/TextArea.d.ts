@@ -178,7 +178,7 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed if the component has
-     * `valueState` of type `Information`, `Warning` or `Error`.
+     * `valueState` of type `Information`, `Critical` or `Negative`.
      * @since 1.0.0-rc.7
      * @public
      */
@@ -256,7 +256,6 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     get displayValueStateMessagePopover(): boolean;
     get hasCustomValueState(): boolean;
     get hasValueState(): boolean;
-    get valueStateMessageText(): Node[];
     get _valueStatePopoverHorizontalAlign(): `${PopoverHorizontalAlign}`;
     /**
      * This method is relevant for sap_horizon theme only

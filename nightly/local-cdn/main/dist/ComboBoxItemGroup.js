@@ -23,12 +23,6 @@ let ComboBoxItemGroup = class ComboBoxItemGroup extends UI5Element {
     constructor() {
         super(...arguments);
         /**
-         * Defines the text of the component.
-         * @default ""
-         * @public
-         */
-        this.text = "";
-        /**
          * Indicates whether the item is focused
          * @protected
          */
@@ -50,7 +44,7 @@ let ComboBoxItemGroup = class ComboBoxItemGroup extends UI5Element {
 };
 __decorate([
     property()
-], ComboBoxItemGroup.prototype, "text", void 0);
+], ComboBoxItemGroup.prototype, "headerText", void 0);
 __decorate([
     property({ type: Boolean })
 ], ComboBoxItemGroup.prototype, "focused", void 0);

@@ -7,7 +7,7 @@ import type { TokenizerTokenDeleteEventDetail } from "./Tokenizer.js";
 import "@ui5/webcomponents-icons/dist/value-help.js";
 import type { InputSelectionChangeEventDetail as MultiInputSelectionChangeEventDetail } from "./Input.js";
 interface IToken extends HTMLElement, ITabbable {
-    text: string;
+    text?: string;
     readonly: boolean;
     selected: boolean;
     isTruncatable: boolean;
@@ -55,7 +55,7 @@ declare class MultiInput extends Input implements IFormInputElement {
      * **Note:** This property is only applicable within the context of an HTML Form element.
      * **Note:** When the component is used inside a form element,
      * the value is sent as the first element in the form data, even if it's empty.
-     * @default ""
+     * @default undefined
      * @public
      */
     name?: string;

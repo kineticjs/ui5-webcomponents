@@ -24,6 +24,13 @@ let NotificationListGroupList = class NotificationListGroupList extends List {
     }
     onForwardAfter() {
     }
+    onItemTabIndexChange() {
+    }
+    onItemFocused() {
+    }
+    focusItem(item) {
+        item.focus();
+    }
 };
 NotificationListGroupList = __decorate([
     customElement("ui5-notification-group-list")

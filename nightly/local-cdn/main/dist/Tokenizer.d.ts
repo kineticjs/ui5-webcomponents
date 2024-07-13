@@ -110,7 +110,7 @@ declare class Tokenizer extends UI5Element {
      * You can only set the `opener` attribute to a DOM Reference when using JavaScript.
      * **Note:** Used inside MultiInput and MultiComboBox components.
      * @private
-     * @default ""
+     * @default undefined
      */
     opener?: HTMLElement;
     /**

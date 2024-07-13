@@ -42,20 +42,6 @@ let ProductSwitchItem = class ProductSwitchItem extends UI5Element {
     constructor() {
         super();
         /**
-         * Defines a target where the `targetSrc` content must be open.
-         *
-         * Available options are:
-         *
-         * - `_self`
-         * - `_top`
-         * - `_blank`
-         * - `_parent`
-         * - `_search`
-         * @default "_self"
-         * @public
-         */
-        this.target = "_self";
-        /**
          * Used to switch the active state (pressed or not) of the component.
          * @private
          */
@@ -82,6 +68,9 @@ let ProductSwitchItem = class ProductSwitchItem extends UI5Element {
     }
     _onmousedown() {
         this.active = true;
+    }
+    get _effectiveTarget() {
+        return this.target || "_self";
     }
     _onkeydown(e) {
         if (isSpace(e) || isEnter(e)) {

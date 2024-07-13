@@ -29,7 +29,8 @@ import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
  * @public
  */
 interface IMultiComboBoxItem extends UI5Element {
-    text: string;
+    text?: string;
+    headerText?: string;
     selected: boolean;
     isGroupItem?: boolean;
     stableDomRef: string;
@@ -104,7 +105,7 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
      * **Note:** This property is only applicable within the context of an HTML Form element.
      * **Note:** When the component is used inside a form element,
      * the value is sent as the first element in the form data, even if it's empty.
-     * @default ""
+     * @default undefined
      * @public
      * @since 2.0.0
      */
@@ -119,10 +120,10 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     /**
      * Defines a short hint intended to aid the user with data entry when the
      * component has no value.
-     * @default ""
+     * @default undefined
      * @public
      */
-    placeholder: string;
+    placeholder?: string;
     /**
      * Defines if the user input will be prevented, if no matching item has been found
      * @default false
@@ -194,8 +195,17 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     showSelectAll: boolean;
     _effectiveValueState: `${ValueState}`;
     /**
-     * Indicates whether the dropdown is open. True if the dropdown is open, false otherwise.
-     * @default false
+     * Indicates whether the value state message popover is open.
+     * @private
+     */
+    valueStateOpen: boolean;
+    /**
+     * Indicates whether the Tokenizer n-more popover is open.
+     * @private
+     */
+    tokenizerOpen: boolean;
+    /**
+     * Indicates whether the items picker is open.
      * @private
      */
     _open: boolean;
@@ -270,8 +280,8 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _handleResize(): void;
     _handleMobileInput(e: CustomEvent<InputEventDetail>): void;
     _inputChange(): void;
-    _mobileInputChange(e: CustomEvent): void;
-    _togglePopover(): void;
+    _onMobileInputKeydown(e: KeyboardEvent): void;
+    _toggleTokenizerPopover(): void;
     togglePopoverByDropdownIcon(): void;
     _showFilteredItems(): void;
     filterSelectedItems(e: MouseEvent): void;
@@ -287,6 +297,7 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _tokenDelete(e: CustomEvent<TokenizerTokenDeleteEventDetail>): void;
     get _getPlaceholder(): string;
     _handleArrowLeft(): void;
+    _onPopoverFocusOut(): void;
     _tokenizerFocusOut(e: FocusEvent): void;
     _tokenizerFocusIn(): void;
     _onkeydown(e: KeyboardEvent): void;
@@ -322,8 +333,7 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
      * @private
      */
     static _groupItemFilter(item: IMultiComboBoxItem, idx: number, allItems: Array<IMultiComboBoxItem>, filteredItems: Array<IMultiComboBoxItem>): boolean | undefined;
-    _afterOpenPicker(): void;
-    _toggle(): void;
+    _afterOpen(): void;
     /**
      * Retrieves a flat structure of all MultiComboBox items from the slotted nodes.
      *
@@ -334,30 +344,27 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _listSelectionChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
     syncItems(listItems: Array<ListItemBase>): void;
     fireSelectionChange(): boolean;
-    _getRespPopover(): ResponsivePopover;
-    _getList(): Promise<List>;
+    _getList(): List;
     _click(): void;
     handleBeforeTokenizerPopoverOpen(): void;
-    _afterClosePicker(): void;
+    _beforeClose(): void;
+    _afterClose(): void;
     _beforeOpen(): void;
     _handleTypeAhead(item: IMultiComboBoxItem, filterValue: string): void;
     _getFirstMatchingItem(current: string): IMultiComboBoxItem | undefined;
     _startsWithMatchingItems(str: string): IMultiComboBoxItem[];
     _revertSelection(): void;
     onBeforeRendering(): void;
-    onAfterRendering(): Promise<void>;
+    onAfterRendering(): void;
     get _isPhone(): boolean;
     _onIconMousedown(): void;
     _clear(): void;
     _iconMouseDown(): void;
     storeResponsivePopoverWidth(): void;
-    toggle(isToggled: boolean): void;
     handleCancel(): void;
     handleOK(): void;
-    openPopover(): void;
     _forwardFocusToInner(): void;
     get morePopoverOpener(): HTMLElement;
-    closePopover(): void;
     _getPopover(): Popover;
     _getResponsivePopover(): ResponsivePopover;
     _setValueStateHeader(): void;
@@ -373,7 +380,6 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     get ariaValueStateHiddenText(): string | undefined;
     get valueStateDefaultText(): string;
     get valueStateTextId(): "ui5-multi-combobox-valueStateDesc" | undefined;
-    get valueStateMessageText(): Node[];
     get ariaLabelText(): string | undefined;
     /**
      * This method is relevant for sap_horizon theme only

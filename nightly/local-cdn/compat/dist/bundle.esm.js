@@ -7,6 +7,7 @@ import "@ui5/webcomponents/dist/Button.js";
 import "@ui5/webcomponents/dist/Input.js";
 import "@ui5/webcomponents/dist/Label.js";
 import "@ui5/webcomponents/dist/Title.js";
+import "@ui5/webcomponents/dist/Link.js";
 import * as defaultFioriTexts from "./generated/i18n/i18n-defaults.js";
 import "./Table.js";
 import "./TableColumn.js";

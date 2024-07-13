@@ -1,7 +1,9 @@
+import generateHighlightedMarkup from "@ui5/webcomponents-base/dist/util/generateHighlightedMarkup.js";
 import "./features/ColorPaletteMoreColors.js";
 import "./features/InputSuggestions.js";
 declare const testAssets: {
     getAcceptIconPathData: () => Promise<string>;
+    generateHighlightedMarkup: typeof generateHighlightedMarkup;
     getExportedIconsValues: () => ("accept" | "SAP-icons-v4/accept" | "SAP-icons-v5/accept" | "tnt/actor" | "tnt-v2/actor" | "tnt-v3/actor" | "business-suite/3d" | "business-suite-v1/3d" | "business-suite-v2/3d")[];
     configuration: {
         getAnimationMode: () => "none" | "full" | "basic" | "minimal";
