@@ -1,4 +1,4 @@
-import { I18nText } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { I18nText } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 declare const LOAD_MORE_TEXT: I18nText;
 declare const TABLE_HEADER_ROW_INFORMATION: I18nText;
 declare const TABLE_ROW_POSITION: I18nText;

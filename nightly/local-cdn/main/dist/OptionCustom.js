@@ -9,7 +9,7 @@ import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import ListItemBase from "./ListItemBase.js";
 // Template
-import OptionCustomTemplate from "./generated/templates/OptionCustomTemplate.lit.js";
+import OptionCustomTemplate from "./OptionCustomTemplate.js";
 // Styles
 import optionBaseCss from "./generated/themes/OptionBase.css.js";
 /**

@@ -1,9 +1,8 @@
-import "@ui5/webcomponents-base/dist/i18nBundle.js";
 const LOAD_MORE_TEXT = { key: "LOAD_MORE_TEXT", defaultText: "More" };
 const TABLE_HEADER_ROW_INFORMATION = { key: "TABLE_HEADER_ROW_INFORMATION", defaultText: "Header Row 1 of {0}" };
 const TABLE_ROW_POSITION = { key: "TABLE_ROW_POSITION", defaultText: "{0} of {1}" };
-const TABLE_GROUP_ROW_ARIA_LABEL = { key: "TABLE_GROUP_ROW_ARIA_LABEL", defaultText: "Group header row." };
-const ARIA_LABEL_ROW_SELECTION = { key: "ARIA_LABEL_ROW_SELECTION", defaultText: "Item selection" };
+const TABLE_GROUP_ROW_ARIA_LABEL = { key: "TABLE_GROUP_ROW_ARIA_LABEL", defaultText: "Group Header Row" };
+const ARIA_LABEL_ROW_SELECTION = { key: "ARIA_LABEL_ROW_SELECTION", defaultText: "Item Selection" };
 const ARIA_LABEL_SELECT_ALL_CHECKBOX = { key: "ARIA_LABEL_SELECT_ALL_CHECKBOX", defaultText: "Select All Rows" };
 const ARIA_LABEL_EMPTY_CELL = { key: "ARIA_LABEL_EMPTY_CELL", defaultText: "Empty" };
 const LIST_ITEM_SELECTED = { key: "LIST_ITEM_SELECTED", defaultText: "Selected" };

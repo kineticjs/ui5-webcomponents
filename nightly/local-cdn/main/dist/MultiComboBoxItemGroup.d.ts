@@ -1,24 +1,19 @@
-import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IMultiComboBoxItem } from "./MultiComboBox.js";
 import type MultiComboBoxItem from "./MultiComboBoxItem.js";
+import type ListItemGroupHeader from "./ListItemGroupHeader.js";
+import ComboBoxItemGroup from "./ComboBoxItemGroup.js";
 /**
  * @class
  * The `ui5-mcb-item-group` is type of suggestion item,
  * that can be used to split the `ui5-multi-combobox` suggestions into groups.
  * @constructor
- * @extends UI5Element
- * @abstract
+ * @extends ComboBoxItemGroup
  * @public
  * @implements {IMultiComboBoxItem}
- * @since 2.0
+ * @since 2.0.0
  */
-declare class MultiComboBoxItemGroup extends UI5Element implements IMultiComboBoxItem {
-    /**
-     * Defines the text of the component.
-     * @default undefined
-     * @public
-     */
-    headerText?: string;
+declare class MultiComboBoxItemGroup extends ComboBoxItemGroup implements IMultiComboBoxItem {
+    eventDetails: ComboBoxItemGroup["eventDetails"];
     /**
      * Defines the items of the <code>ui5-mcb-item-group</code>.
      * @public
@@ -31,6 +26,7 @@ declare class MultiComboBoxItemGroup extends UI5Element implements IMultiComboBo
     get isGroupItem(): boolean;
     get selected(): boolean;
     get stableDomRef(): string;
+    getFocusDomRef(): ListItemGroupHeader;
 }
 declare const isInstanceOfMultiComboBoxItemGroup: (object: any) => object is MultiComboBoxItemGroup;
 export default MultiComboBoxItemGroup;

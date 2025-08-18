@@ -8,12 +8,8 @@ const loadThemeProperties = async (themeName) => {
         case "sap_fiori_3_hcw": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-fiori_3_hcw-parameters-bundle" */ "../assets/themes/sap_fiori_3_hcw/parameters-bundle.css.json")).default;
         case "sap_horizon": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon-parameters-bundle" */ "../assets/themes/sap_horizon/parameters-bundle.css.json")).default;
         case "sap_horizon_dark": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_dark-parameters-bundle" */ "../assets/themes/sap_horizon_dark/parameters-bundle.css.json")).default;
-        case "sap_horizon_dark_exp": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_dark_exp-parameters-bundle" */ "../assets/themes/sap_horizon_dark_exp/parameters-bundle.css.json")).default;
-        case "sap_horizon_exp": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_exp-parameters-bundle" */ "../assets/themes/sap_horizon_exp/parameters-bundle.css.json")).default;
         case "sap_horizon_hcb": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_hcb-parameters-bundle" */ "../assets/themes/sap_horizon_hcb/parameters-bundle.css.json")).default;
-        case "sap_horizon_hcb_exp": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_hcb_exp-parameters-bundle" */ "../assets/themes/sap_horizon_hcb_exp/parameters-bundle.css.json")).default;
         case "sap_horizon_hcw": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_hcw-parameters-bundle" */ "../assets/themes/sap_horizon_hcw/parameters-bundle.css.json")).default;
-        case "sap_horizon_hcw_exp": return (await import(/* webpackChunkName: "ui5-webcomponents-sap-horizon_hcw_exp-parameters-bundle" */ "../assets/themes/sap_horizon_hcw_exp/parameters-bundle.css.json")).default;
         default: throw "unknown theme";
     }
 };
@@ -24,6 +20,6 @@ const loadAndCheck = async (themeName) => {
     }
     return data;
 };
-["sap_fiori_3", "sap_fiori_3_dark", "sap_fiori_3_hcb", "sap_fiori_3_hcw", "sap_horizon", "sap_horizon_dark", "sap_horizon_dark_exp", "sap_horizon_exp", "sap_horizon_hcb", "sap_horizon_hcb_exp", "sap_horizon_hcw", "sap_horizon_hcw_exp"]
+["sap_fiori_3", "sap_fiori_3_dark", "sap_fiori_3_hcb", "sap_fiori_3_hcw", "sap_horizon", "sap_horizon_dark", "sap_horizon_hcb", "sap_horizon_hcw"]
     .forEach(themeName => registerThemePropertiesLoader("@ui5/webcomponents", themeName, loadAndCheck));
 //# sourceMappingURL=Themes.js.map

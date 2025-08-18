@@ -8,10 +8,10 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 // Template
-import BarTemplate from "./generated/templates/BarTemplate.lit.js";
+import BarTemplate from "./BarTemplate.js";
 // Styles
 import BarCss from "./generated/themes/Bar.css.js";
 /**
@@ -43,6 +43,9 @@ import BarCss from "./generated/themes/Bar.css.js";
  *
  * `import "@ui5/webcomponents/dist/Bar.js";`
  * @csspart bar - Used to style the wrapper of the content of the component
+ * @csspart startContent - Used to style the wrapper of the start content of the component
+ * @csspart midContent - Used to style the wrapper of the middle content of the component
+ * @csspart endContent - Used to style the wrapper of the end content of the component
  * @constructor
  * @extends UI5Element
  * @public
@@ -52,6 +55,7 @@ let Bar = class Bar extends UI5Element {
     get accInfo() {
         return {
             "label": this.design,
+            "role": this.effectiveRole,
         };
     }
     constructor() {
@@ -62,6 +66,21 @@ let Bar = class Bar extends UI5Element {
          * @public
          */
         this.design = "Header";
+        /**
+         * Specifies the ARIA role applied to the component for accessibility purposes.
+         *
+         * **Note:**
+         *
+         * - Set accessibleRole to "toolbar" only when the component contains two or more active, interactive elements (such as buttons, links, or input fields) within the bar.
+         *
+         * - If there is only one or no active element, it is recommended to avoid using the "toolbar" role, as it implies a grouping of multiple interactive controls.
+         *
+         * @public
+         * @default "Toolbar"
+         * @since 2.10.0
+         *
+         */
+        this.accessibleRole = "Toolbar";
         this._handleResizeBound = this.handleResize.bind(this);
     }
     handleResize() {
@@ -71,13 +90,6 @@ let Bar = class Bar extends UI5Element {
             return child.offsetWidth > barWidth / 3;
         });
         bar.classList.toggle("ui5-bar-root-shrinked", needShrinked);
-    }
-    get classes() {
-        return {
-            root: {
-                "ui5-bar-root": true,
-            },
-        };
     }
     onEnterDOM() {
         ResizeHandler.register(this, this._handleResizeBound);
@@ -91,10 +103,16 @@ let Bar = class Bar extends UI5Element {
             ResizeHandler.deregister(child, this._handleResizeBound);
         }, this);
     }
+    get effectiveRole() {
+        return this.accessibleRole.toLowerCase() === "toolbar" ? "toolbar" : undefined;
+    }
 };
 __decorate([
     property()
 ], Bar.prototype, "design", void 0);
+__decorate([
+    property()
+], Bar.prototype, "accessibleRole", void 0);
 __decorate([
     slot({ type: HTMLElement })
 ], Bar.prototype, "startContent", void 0);
@@ -108,7 +126,7 @@ Bar = __decorate([
     customElement({
         tag: "ui5-bar",
         fastNavigation: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: BarCss,
         template: BarTemplate,
     })

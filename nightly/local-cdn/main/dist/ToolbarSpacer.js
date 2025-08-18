@@ -6,9 +6,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import ToolbarSpacerTemplate from "./generated/templates/ToolbarSpacerTemplate.lit.js";
+import ToolbarCss from "./generated/themes/Toolbar.css.js";
 import ToolbarItem from "./ToolbarItem.js";
-import { registerToolbarItem } from "./ToolbarRegistry.js";
 /**
  * @class
  *
@@ -26,16 +25,10 @@ let ToolbarSpacer = class ToolbarSpacer extends ToolbarItem {
         return this.width ? { width: this.width } : { flex: "auto" };
     }
     get ignoreSpace() {
-        return this.width === "";
+        return this.width === "" || this.width === undefined || this.width === "auto";
     }
     get hasFlexibleWidth() {
-        return this.width === "";
-    }
-    static get toolbarTemplate() {
-        return ToolbarSpacerTemplate;
-    }
-    static get toolbarPopoverTemplate() {
-        return ToolbarSpacerTemplate;
+        return this.width === "" || this.width === undefined || this.width === "auto";
     }
     get isInteractive() {
         return false;
@@ -47,9 +40,9 @@ __decorate([
 ToolbarSpacer = __decorate([
     customElement({
         tag: "ui5-toolbar-spacer",
+        styles: ToolbarCss,
     })
 ], ToolbarSpacer);
-registerToolbarItem(ToolbarSpacer);
 ToolbarSpacer.define();
 export default ToolbarSpacer;
 //# sourceMappingURL=ToolbarSpacer.js.map

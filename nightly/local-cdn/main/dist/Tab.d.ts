@@ -8,9 +8,9 @@ import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import SemanticColor from "./types/SemanticColor.js";
 import ListItemType from "./types/ListItemType.js";
 import type { TabContainerStripInfo, TabContainerOverflowInfo, ITab } from "./TabContainer.js";
-import ListItemCustom from "./ListItemCustom.js";
-import TabInStripTemplate from "./generated/templates/TabInStripTemplate.lit.js";
-import TabInOverflowTemplate from "./generated/templates/TabInOverflowTemplate.lit.js";
+import type ListItemCustom from "./ListItemCustom.js";
+import TabInStripTemplate from "./TabInStripTemplate.js";
+import TabInOverflowTemplate from "./TabInOverflowTemplate.js";
 interface TabInStrip extends HTMLElement {
     realTabReference: Tab;
 }
@@ -81,7 +81,8 @@ declare class Tab extends UI5Element implements ITabbable, ITab {
      * Defines if the tab is movable.
      *
      * @default false
-     * @private
+     * @public
+     * @since 2.0.0
      */
     movable: boolean;
     _isTopLevelTab: boolean;
@@ -102,7 +103,6 @@ declare class Tab extends UI5Element implements ITabbable, ITab {
     _forcedMixedMode?: boolean;
     _getElementInStrip?: () => HTMLElement | undefined;
     _getElementInOverflow?: () => HTMLElement | undefined;
-    _individualSlot?: string;
     _forcedPosinset?: number;
     _forcedSetsize?: number;
     _forcedStyleInOverflow?: Record<string, any>;
@@ -152,16 +152,21 @@ declare class Tab extends UI5Element implements ITabbable, ITab {
     get expandButtonTitle(): string;
     get _roleDescription(): string | undefined;
     get _ariaHasPopup(): "menu" | undefined;
-    get semanticIconName(): "error" | "alert" | "sys-enter-2" | null;
+    get semanticIconName(): "alert" | "sys-enter-2" | "error" | null;
     get _designDescription(): string | null;
     get semanticIconClasses(): string;
     get overflowClasses(): string;
     get overflowState(): ListItemType.Inactive | ListItemType.Active;
     static get stripTemplate(): typeof TabInStripTemplate;
     static get overflowTemplate(): typeof TabInOverflowTemplate;
-    static onDefine(): Promise<void>;
     _ondragstart(e: DragEvent): void;
     _ondragend(e: DragEvent): void;
+    captureRef(ref: HTMLElement & {
+        realTabReference?: UI5Element;
+    } | null): void;
+    captureButtonRef(ref: HTMLElement & {
+        tab?: UI5Element;
+    } | null): void;
 }
 export default Tab;
 export type { TabInStrip, TabInOverflow, };

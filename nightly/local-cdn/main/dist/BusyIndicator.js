@@ -8,14 +8,14 @@ var BusyIndicator_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isTabNext } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
+import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.js";
 import BusyIndicatorTextPlacement from "./types/BusyIndicatorTextPlacement.js";
-import Label from "./Label.js";
 // Template
-import BusyIndicatorTemplate from "./generated/templates/BusyIndicatorTemplate.lit.js";
+import BusyIndicatorTemplate from "./BusyIndicatorTemplate.js";
 import { BUSY_INDICATOR_TITLE } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import busyIndicatorCss from "./generated/themes/BusyIndicator.css.js";
@@ -112,27 +112,20 @@ let BusyIndicator = BusyIndicator_1 = class BusyIndicator extends UI5Element {
         this.removeEventListener("keydown", this._keydownHandler, true);
         this.removeEventListener("keyup", this._preventEventHandler, true);
     }
-    static async onDefine() {
-        BusyIndicator_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
-    }
     get ariaTitle() {
         return BusyIndicator_1.i18nBundle.getText(BUSY_INDICATOR_TITLE);
     }
     get labelId() {
         return this.text ? `${this._id}-label` : undefined;
     }
-    get classes() {
-        return {
-            root: {
-                "ui5-busy-indicator-root": true,
-            },
-        };
-    }
     get textPosition() {
         return {
             top: this.text && this.textPlacement === BusyIndicatorTextPlacement.Top,
             bottom: this.text && this.textPlacement === BusyIndicatorTextPlacement.Bottom,
         };
+    }
+    get hasContent() {
+        return willShowContent(Array.from(this.children));
     }
     onBeforeRendering() {
         if (this.active) {
@@ -197,14 +190,16 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], BusyIndicator.prototype, "_isBusy", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], BusyIndicator, "i18nBundle", void 0);
 BusyIndicator = BusyIndicator_1 = __decorate([
     customElement({
         tag: "ui5-busy-indicator",
         languageAware: true,
         styles: busyIndicatorCss,
-        renderer: litRender,
+        renderer: jsxRenderer,
         template: BusyIndicatorTemplate,
-        dependencies: [Label],
     })
 ], BusyIndicator);
 BusyIndicator.define();

@@ -3,14 +3,17 @@ import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import "@ui5/webcomponents-icons/dist/appointment-2.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
 import DateComponentBase from "./DateComponentBase.js";
-import ResponsivePopover from "./ResponsivePopover.js";
+import type ResponsivePopover from "./ResponsivePopover.js";
+import type Calendar from "./Calendar.js";
 import type { CalendarSelectionChangeEventDetail } from "./Calendar.js";
-import Input from "./Input.js";
+import type CalendarSelectionMode from "./types/CalendarSelectionMode.js";
+import type DateTimeInput from "./DateTimeInput.js";
+import type { InputAccInfo } from "./Input.js";
 import InputType from "./types/InputType.js";
 import IconMode from "./types/IconMode.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
+type ValueStateAnnouncement = Record<Exclude<ValueState, ValueState.None>, string>;
 type DatePickerChangeEventDetail = {
     value: string;
     valid: boolean;
@@ -23,6 +26,7 @@ type DatePickerInputEventDetail = {
     value: string;
     valid: boolean;
 };
+type Picker = "day" | "month" | "year";
 /**
  * @class
  *
@@ -104,6 +108,14 @@ type DatePickerInputEventDetail = {
  * @public
  */
 declare class DatePicker extends DateComponentBase implements IFormInputElement {
+    eventDetails: DateComponentBase["eventDetails"] & {
+        change: DatePickerChangeEventDetail;
+        "value-changed": DatePickerChangeEventDetail;
+        input: DatePickerInputEventDetail;
+        "value-state-change": DatePickerValueStateChangeEventDetail;
+        open: void;
+        close: void;
+    };
     /**
      * Defines a formatted date value.
      * @default ""
@@ -187,7 +199,7 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      */
     accessibleNameRef?: string;
     _respPopoverConfig?: object;
-    _calendarCurrentPicker: string;
+    _calendarCurrentPicker: Picker;
     liveValue?: string;
     /**
      * Defines the value state message that will be displayed as pop up under the component.
@@ -195,12 +207,14 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed,
-     * when the component is in `Information`, `Warning` or `Error` value state.
+     * when the component is in `Information`, `Critical` or `Negative` value state.
      * @since 1.0.0-rc.7
      * @public
      */
     valueStateMessage: Array<HTMLElement>;
     responsivePopover?: ResponsivePopover;
+    _dateTimeInput: DateTimeInput;
+    _calendar: Calendar;
     static i18nBundle: I18nBundle;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
@@ -210,13 +224,14 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * @protected
      */
     onResponsivePopoverAfterClose(): void;
+    onResponsivePopoverAfterOpen(): void;
     onResponsivePopoverBeforeOpen(): void;
     onBeforeRendering(): void;
     /**
      * Override in derivatives to change calendar selection mode
      * @protected
      */
-    get _calendarSelectionMode(): string;
+    get _calendarSelectionMode(): `${CalendarSelectionMode}`;
     /**
      * Used to provide a timestamp to the Calendar (to focus it to a relevant date when open) based on the component's state
      * Override in derivatives to provide the calendar a timestamp based on their properties
@@ -238,9 +253,10 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * @protected
      */
     _modifyDateValue(amount: number, unit: string, preserveDate?: boolean): void;
-    _updateValueAndFireEvents(value: string, normalizeValue: boolean, events: Array<string>, updateValue?: boolean): void;
+    _updateValueAndFireEvents(value: string, normalizeValue: boolean, events: Array<"change" | "value-changed" | "input">, updateValue?: boolean): void;
     _updateValueState(): void;
-    _getInput(): Input;
+    getValueFromDisplayValue(value: string): string;
+    getDisplayValueFromValue(value: string): string;
     /**
      * The ui5-input "submit" event handler - fire change event when the user presses enter
      * @protected
@@ -255,13 +271,19 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      * The ui5-input "input" event handler - fire input even when the user types
      * @protected
      */
-    _onInputInput(e: KeyboardEvent): void;
+    _onInputInput(e: Event): void;
     /**
      * Checks if the provided value is valid and within valid range.
      * @protected
      * @param value
      */
     _checkValueValidity(value: string): boolean;
+    /**
+     * Checks if the provided value is valid and within valid range.
+     * @protected
+     * @param value
+     */
+    _checkDisplayValueValidity(value: string): boolean;
     _click(e: MouseEvent): void;
     /**
      * Checks if a value is valid against the current date format of the DatePicker.
@@ -270,31 +292,54 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
      */
     isValid(value: string): boolean;
     /**
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
+     */
+    isValidValue(value: string): boolean;
+    /**
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
+     */
+    isValidDisplayValue(value: string): boolean;
+    /**
      * Checks if a date is between the minimum and maximum date.
      * @public
      * @param value A value to be checked
      */
     isInValidRange(value: string): boolean;
+    isInValidRangeDisplayValue(value: string): boolean;
     /**
      * The parser understands many formats, but we need one format
      * @protected
      */
     normalizeValue(value: string): string;
-    get _displayFormat(): string;
+    /**
+     * The parser understands many formats, but we need one format
+     * @protected
+     */
+    normalizeFormattedValue(value: string): string;
+    /**
+     * The parser understands many formats, but we need one format
+     * @protected
+     */
+    normalizeDisplayValue(value: string): string;
+    get _lastDayOfTheYear(): string;
     /**
      * @protected
      */
     get _placeholder(): string;
     get _headerTitleText(): string;
-    get phone(): boolean;
     get showHeader(): boolean;
     get showFooter(): boolean;
-    get accInfo(): {
-        ariaRoledescription: string;
-        ariaHasPopup: string;
-        ariaRequired: boolean;
-        ariaLabel: string | undefined;
-    };
+    get displayValue(): string;
+    get accInfo(): InputAccInfo;
+    get valueStateDefaultText(): string | undefined;
+    get valueStateTextMappings(): ValueStateAnnouncement;
+    get shouldDisplayDefaultValueStateMessage(): boolean;
+    get hasValueStateText(): boolean;
+    get hasValueState(): boolean;
     get openIconTitle(): string;
     get openIconName(): string;
     get dateAriaDescription(): string;
@@ -307,13 +352,12 @@ declare class DatePicker extends DateComponentBase implements IFormInputElement 
     /**
      * Returns the first picker depending on the CalendarPickerMode
      */
-    get firstPicker(): string;
+    get firstPicker(): Picker;
     /**
      * Defines whether the value help icon is hidden
      * @private
      */
     get _iconMode(): IconMode.Decorative | IconMode.Interactive;
-    _respPopover(): ResponsivePopover;
     _canOpenPicker(): boolean;
     get _calendarPickersMode(): CalendarPickersMode;
     /**
