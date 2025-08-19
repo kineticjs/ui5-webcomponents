@@ -1,7 +1,5 @@
-commit 654306a6e78af70a118afefd24fc4ec4ab15c6e5
-Author: TeodorTaushanov <teodor.taushanov@sap.com>
-Date:   Thu Jul 11 16:29:24 2024 +0300
+commit 3beb58b0c07f4f14eacab595fff317ca9b23ff6c
+Author: Diana Pazheva <diana.pazheva@sap.com>
+Date:   Mon Aug 18 17:36:23 2025 +0300
 
-    fix(ui5-dialog): fix draggable dialog header focusing with mouse (#9420)
-    
-    fix(ui5-tabcontainer): fix selected sub items screen readers announcement
+    feat(ui5-flexible-column-layout): tmp config to allow sharing a sample

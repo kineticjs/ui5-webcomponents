@@ -67,25 +67,10 @@ declare class ProgressIndicator extends UI5Element {
     constructor();
     onBeforeRendering(): void;
     valueStateTextMappings(): Record<string, string>;
-    valueStateIconMappings(): Record<string, string>;
-    get styles(): {
-        bar: {
-            width: string;
-            "transition-duration": string;
-        };
-    };
-    get classes(): {
-        root: {
-            "ui5-progress-indicator-max-value": boolean;
-            "ui5-progress-indicator-min-value": boolean;
-        };
-    };
     get validatedValue(): number;
     get showValueInRemainingBar(): boolean;
     get shouldAnimate(): boolean;
     get valueStateText(): string;
     get showIcon(): boolean;
-    get valueStateIcon(): string;
-    static onDefine(): Promise<void>;
 }
 export default ProgressIndicator;

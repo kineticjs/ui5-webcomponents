@@ -1,27 +1,27 @@
-import type AriaHasPopup from "./types/AriaHasPopup.js";
-import type AriaRole from "./types/AriaRole.js";
-type PromiseResolve = (value: void | PromiseLike<void>) => void;
-type Timeout = ReturnType<typeof setTimeout>;
-type Interval = ReturnType<typeof setInterval>;
-type StyleDataCSP = {
-    content: string;
-    packageName: string;
-    fileName: string;
-};
-type StyleData = StyleDataCSP | string;
-type ComponentStylesData = Array<ComponentStylesData> | Array<StyleData> | StyleData;
-type ClassMapValue = Record<string, boolean>;
-type ClassMap = {
+import type { JSX } from "./jsx-runtime.d.ts";
+export type LowercaseString<T> = T extends string ? Lowercase<T> : never;
+export type PromiseResolve = (value: void | PromiseLike<void>) => void;
+export type Timeout = ReturnType<typeof setTimeout>;
+export type Interval = ReturnType<typeof setInterval>;
+export type StyleData = string;
+export type ComponentStylesData = Array<ComponentStylesData> | string;
+export type ClassMapValue = Record<string, boolean>;
+export type ClassMap = {
     [x: string]: ClassMapValue | ClassMap;
 };
-type PassiveEventListenerObject = EventListenerObject & {
+export type PassiveEventListenerObject = EventListenerObject & {
     passive: boolean;
 };
-type LowercaseString<T> = T extends string ? Lowercase<T> : never;
-type ARIARoles = LowercaseString<AriaRole>;
-type ARIAHasPopup = LowercaseString<AriaHasPopup>;
-type AccessibilityInfo = {
-    role?: ARIARoles;
+export type AriaRole = JSX.AriaRole;
+export type AriaDisabled = JSX.AriaAttributes["aria-disabled"];
+export type AriaChecked = JSX.AriaAttributes["aria-checked"];
+export type AriaReadonly = JSX.AriaAttributes["aria-readonly"];
+export type AriaHasPopup = "dialog" | "grid" | "listbox" | "menu" | "tree" | "false";
+export type AriaCurrent = "page" | "step" | "location" | "date" | "time" | "true" | "false" | boolean | undefined;
+export type AriaAutoComplete = "list" | "none" | "inline" | "both" | undefined;
+export type AriaLandmarkRole = "none" | "banner" | "main" | "region" | "navigation" | "search" | "complementary" | "form" | "contentinfo";
+export type AccessibilityInfo = {
+    role?: AriaRole;
     type?: LowercaseString<string>;
     description?: string;
     disabled?: boolean;
@@ -29,14 +29,18 @@ type AccessibilityInfo = {
     required?: boolean;
     children?: Array<HTMLElement>;
 };
-type AccessibilityAttributes = {
+export type AccessibilityAttributes = {
     ariaSetsize?: number;
     ariaPosinset?: number;
+    ariaLabel?: string;
     controls?: LowercaseString<string>;
     expanded?: "true" | "false" | boolean;
-    hasPopup?: ARIAHasPopup;
+    hasPopup?: AriaHasPopup;
     name?: string;
-    role?: ARIARoles;
+    role?: AriaRole;
     ariaKeyShortcuts?: string;
+    ariaCurrent?: AriaCurrent;
+    current?: AriaCurrent;
+    roleDescription?: string;
+    title?: string;
 };
-export type { AccessibilityInfo, AccessibilityAttributes, PromiseResolve, Timeout, Interval, StyleData, StyleDataCSP, ComponentStylesData, ClassMap, ClassMapValue, PassiveEventListenerObject, };

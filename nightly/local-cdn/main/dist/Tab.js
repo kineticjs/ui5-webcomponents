@@ -9,10 +9,10 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import executeTemplate from "@ui5/webcomponents-base/dist/renderer/executeTemplate.js";
 import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import { TAB_ARIA_DESIGN_POSITIVE, TAB_ARIA_DESIGN_NEGATIVE, TAB_ARIA_DESIGN_CRITICAL, TAB_ARIA_DESIGN_NEUTRAL, TABCONTAINER_END_OVERFLOW, TAB_SPLIT_ROLE_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
 import "@ui5/webcomponents-icons/dist/error.js";
@@ -21,13 +21,10 @@ import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import SemanticColor from "./types/SemanticColor.js";
 import ListItemType from "./types/ListItemType.js";
 import TabContainer from "./TabContainer.js";
-import Icon from "./Icon.js";
-import Button from "./Button.js";
-import ListItemCustom from "./ListItemCustom.js";
 // Templates
-import TabTemplate from "./generated/templates/TabTemplate.lit.js";
-import TabInStripTemplate from "./generated/templates/TabInStripTemplate.lit.js";
-import TabInOverflowTemplate from "./generated/templates/TabInOverflowTemplate.lit.js";
+import TabTemplate from "./TabTemplate.js";
+import TabInStripTemplate from "./TabInStripTemplate.js";
+import TabInOverflowTemplate from "./TabInOverflowTemplate.js";
 // Styles
 import css from "./generated/themes/Tab.css.js";
 import stripCss from "./generated/themes/TabInStrip.css.js";
@@ -85,7 +82,8 @@ let Tab = Tab_1 = class Tab extends UI5Element {
          * Defines if the tab is movable.
          *
          * @default false
-         * @private
+         * @public
+         * @since 2.0.0
          */
         this.movable = false;
         this._isTopLevelTab = false;
@@ -317,9 +315,6 @@ let Tab = Tab_1 = class Tab extends UI5Element {
     static get overflowTemplate() {
         return TabInOverflowTemplate;
     }
-    static async onDefine() {
-        Tab_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
-    }
     _ondragstart(e) {
         if (e.target instanceof HTMLElement) {
             e.target.setAttribute("data-moving", "");
@@ -328,6 +323,16 @@ let Tab = Tab_1 = class Tab extends UI5Element {
     _ondragend(e) {
         if (e.target instanceof HTMLElement) {
             e.target.removeAttribute("data-moving");
+        }
+    }
+    captureRef(ref) {
+        if (ref) {
+            ref.realTabReference = this;
+        }
+    }
+    captureButtonRef(ref) {
+        if (ref) {
+            ref.tab = this;
         }
     }
 };
@@ -378,18 +383,16 @@ __decorate([
         },
     })
 ], Tab.prototype, "items", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Tab, "i18nBundle", void 0);
 Tab = Tab_1 = __decorate([
     customElement({
         tag: "ui5-tab",
         languageAware: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         template: TabTemplate,
         styles: css,
-        dependencies: [
-            Icon,
-            Button,
-            ListItemCustom,
-        ],
     })
 ], Tab);
 Tab.define();

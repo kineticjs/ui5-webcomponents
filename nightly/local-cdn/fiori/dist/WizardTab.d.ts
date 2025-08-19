@@ -1,8 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
-type WizardTabInfo = {
-    [key: string]: string;
-};
+import type { AccessibilityAttributes } from "@ui5/webcomponents-base/dist/types.js";
+type WizardTabAccessibilityAttributes = Pick<AccessibilityAttributes, "ariaSetsize" | "ariaPosinset" | "ariaLabel" | "ariaCurrent">;
 /**
  * @class
  *
@@ -20,6 +19,10 @@ type WizardTabInfo = {
  * @private
  */
 declare class WizardTab extends UI5Element implements ITabbable {
+    eventDetails: {
+        "focused": void;
+        "selection-change-requested": void;
+    };
     /**
      * Defines the `icon` of the step.
      * @default undefined
@@ -82,17 +85,15 @@ declare class WizardTab extends UI5Element implements ITabbable {
      * @private
      */
     forcedTabIndex?: string;
-    _wizardTabAccInfo?: WizardTabInfo;
+    /**
+     * @private
+     */
+    _wizardTabAccInfo?: WizardTabAccessibilityAttributes;
     _onclick(): void;
     _onkeyup(e: KeyboardEvent): void;
+    get effectiveTabIndex(): 0 | -1 | undefined;
     _onfocusin(): void;
-    get tabIndex(): number;
     get hasTexts(): string | undefined;
-    get accInfo(): {
-        ariaSetsize: string | undefined;
-        ariaPosinset: string | undefined;
-        ariaLabel: string | undefined;
-        ariaCurrent: string | undefined;
-    };
+    get accInfo(): WizardTabAccessibilityAttributes;
 }
 export default WizardTab;

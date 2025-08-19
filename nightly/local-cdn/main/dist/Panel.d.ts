@@ -1,7 +1,8 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type TitleLevel from "./types/TitleLevel.js";
+import type Button from "./Button.js";
 import type PanelAccessibleRole from "./types/PanelAccessibleRole.js";
 /**
  * @class
@@ -60,6 +61,9 @@ import type PanelAccessibleRole from "./types/PanelAccessibleRole.js";
  * @csspart content - Used to style the wrapper of the content.
  */
 declare class Panel extends UI5Element {
+    eventDetails: {
+        toggle: void;
+    };
     /**
      * This property is used to set the header text of the component.
      * The text is visible in both expanded and collapsed states.
@@ -145,24 +149,16 @@ declare class Panel extends UI5Element {
     static i18nBundle: I18nBundle;
     onBeforeRendering(): void;
     shouldToggle(element: HTMLElement): boolean;
-    shouldNotAnimate(): boolean;
+    get shouldNotAnimate(): boolean;
     _headerClick(e: MouseEvent): void;
-    _toggleButtonClick(e: MouseEvent): void;
+    _toggleButtonClick(e: UI5CustomEvent<Button, "click">): void;
     _headerKeyDown(e: KeyboardEvent): void;
     _headerKeyUp(e: KeyboardEvent): void;
     _toggleOpen(): void;
     _headerOnTarget(target: HTMLElement): boolean;
-    get classes(): {
-        headerBtn: {
-            "ui5-panel-header-button-animated": boolean;
-        };
-        stickyHeaderClass: {
-            "ui5-panel-heading-wrapper-sticky": boolean;
-        };
-    };
     get toggleButtonTitle(): string;
     get expanded(): boolean;
-    get accRole(): string;
+    get accRole(): Lowercase<PanelAccessibleRole>;
     get effectiveAccessibleName(): string | undefined;
     get accInfo(): {
         button: {
@@ -175,22 +171,16 @@ declare class Panel extends UI5Element {
         ariaExpanded: boolean | undefined;
         ariaControls: string | undefined;
         ariaLabelledby: string | undefined;
-        role: string | undefined;
+        role: "button" | undefined;
     };
     get ariaLabelledbyReference(): string | undefined;
     get fixedPanelAriaLabelledbyReference(): string | undefined;
-    get headerAriaLevel(): string;
-    get headerTabIndex(): "-1" | "0";
-    get headingWrapperAriaLevel(): string | undefined;
+    get headerAriaLevel(): number;
+    get headerTabIndex(): 0 | -1;
+    get headingWrapperAriaLevel(): number | undefined;
     get headingWrapperRole(): "heading" | undefined;
     get nonFixedInternalHeader(): boolean;
     get hasHeaderOrHeaderText(): string | true | undefined;
     get nonFocusableButton(): boolean;
-    get styles(): {
-        content: {
-            display: string;
-        };
-    };
-    static onDefine(): Promise<void>;
 }
 export default Panel;

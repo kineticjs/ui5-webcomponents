@@ -5,12 +5,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import { isTabNext, isTabPrevious, isF2 } from "@ui5/webcomponents-base/dist/Keys.js";
+import { isTabNext, isTabPrevious, isF2, isDown, } from "@ui5/webcomponents-base/dist/Keys.js";
 import TreeItemBase from "./TreeItemBase.js";
 // Template
-import TreeItemCustomTemplate from "./generated/templates/TreeItemCustomTemplate.lit.js";
+import TreeItemCustomTemplate from "./TreeItemCustomTemplate.js";
 // Styles
 import treeItemCustomCss from "./generated/themes/TreeItem.css.js";
 /**
@@ -43,6 +44,10 @@ let TreeItemCustom = class TreeItemCustom extends TreeItemBase {
         this.hideSelectionElement = false;
     }
     async _onkeydown(e) {
+        if (isDown(e) && this.content?.some(el => el.contains(e.target))) {
+            e.stopPropagation();
+            return;
+        }
         const isTab = isTabNext(e) || isTabPrevious(e);
         const isFocused = this.matches(":focus");
         if (!isTab && !isFocused && !isF2(e)) {
@@ -79,6 +84,7 @@ __decorate([
 ], TreeItemCustom.prototype, "content", void 0);
 TreeItemCustom = __decorate([
     customElement({
+        renderer: jsxRenderer,
         tag: "ui5-tree-item-custom",
         template: TreeItemCustomTemplate,
         styles: [TreeItemBase.styles, treeItemCustomCss],

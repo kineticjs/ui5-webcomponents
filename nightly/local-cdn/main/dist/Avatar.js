@@ -9,22 +9,21 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 // Template
-import AvatarTemplate from "./generated/templates/AvatarTemplate.lit.js";
+import AvatarTemplate from "./AvatarTemplate.js";
 import { AVATAR_TOOLTIP } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import AvatarCss from "./generated/themes/Avatar.css.js";
-import Icon from "./Icon.js";
+import AvatarSize from "./types/AvatarSize.js";
 // Icon
 import "@ui5/webcomponents-icons/dist/employee.js";
-import "@ui5/webcomponents-icons/dist/alert.js";
 /**
  * @class
  * ### Overview
@@ -102,14 +101,16 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
         this.size = "S";
         /**
          * Defines the background color of the desired image.
-         * @default "Accent6"
+         * If `colorScheme` is set to `Auto`, the avatar will be displayed with the `Accent6` color.
+         *
+         * @default "Auto"
          * @public
          */
-        this.colorScheme = "Accent6";
+        this.colorScheme = "Auto";
         /**
          * @private
          */
-        this._colorScheme = "Accent6";
+        this._colorScheme = "Auto";
         /**
          * Defines the additional accessibility attributes that will be applied to the component.
          * The following field is supported:
@@ -122,14 +123,27 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
          * @default {}
          */
         this.accessibilityAttributes = {};
+        /**
+         * @private
+         */
         this._hasImage = false;
+        /**
+         * @private
+         */
+        this._imageLoadError = false;
         this._handleResizeBound = this.handleResize.bind(this);
+        this._onImageLoadBound = this._onImageLoad.bind(this);
+        this._onImageErrorBound = this._onImageError.bind(this);
     }
-    static async onDefine() {
-        Avatar_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    onBeforeRendering() {
+        this._attachImageEventHandlers();
+        this._hasImage = this.hasImage;
     }
     get tabindex() {
-        return this.forcedTabIndex || (this._interactive ? "0" : "-1");
+        if (this.forcedTabIndex) {
+            return parseInt(this.forcedTabIndex);
+        }
+        return this._interactive ? 0 : undefined;
     }
     /**
      * Returns the effective avatar size.
@@ -138,14 +152,14 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
      */
     get effectiveSize() {
         // we read the attribute, because the "size" property will always have a default value
-        return this.getAttribute("size");
+        return this.getAttribute("size") || AvatarSize.S;
     }
     /**
      * Returns the effective background color.
-     * @default "Accent6"
+     * @default "Auto"
      * @private
      */
-    get еffectiveBackgroundColor() {
+    get effectiveBackgroundColor() {
         // we read the attribute, because the "background-color" property will always have a default value
         return this.getAttribute("color-scheme") || this._colorScheme;
     }
@@ -170,20 +184,20 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
         if (this.accessibleName) {
             return this.accessibleName;
         }
-        return Avatar_1.i18nBundle.getText(AVATAR_TOOLTIP) || undefined;
+        const defaultLabel = Avatar_1.i18nBundle.getText(AVATAR_TOOLTIP);
+        return this.initials ? `${defaultLabel} ${this.initials}`.trim() : defaultLabel;
     }
     get hasImage() {
-        this._hasImage = !!this.image.length;
-        return this._hasImage;
+        return !!this.image.length && !this._imageLoadError;
+    }
+    get imageEl() {
+        return this.image?.[0] instanceof HTMLImageElement ? this.image[0] : null;
     }
     get initialsContainer() {
         return this.getDomRef().querySelector(".ui5-avatar-initials");
     }
     get fallBackIconDomRef() {
         return this.getDomRef().querySelector(".ui5-avatar-icon-fallback");
-    }
-    onBeforeRendering() {
-        this._onclick = this._interactive ? this._onClickHandler.bind(this) : undefined;
     }
     async onAfterRendering() {
         await renderFinished();
@@ -199,6 +213,7 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
     }
     onExitDOM() {
         this.initialsContainer && ResizeHandler.deregister(this.initialsContainer, this._handleResizeBound);
+        this._detachImageEventHandlers();
     }
     handleResize() {
         if (this.initials && !this.icon) {
@@ -223,8 +238,7 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
         this.initialsContainer?.classList.remove("ui5-avatar-initials-hidden");
         this.fallBackIconDomRef?.classList.add("ui5-avatar-fallback-icon-hidden");
     }
-    _onClickHandler(e) {
-        // prevent the native event and fire custom event to ensure the noConfict "ui5-click" is fired
+    _onclick(e) {
         e.stopPropagation();
         this._fireClick();
     }
@@ -245,7 +259,7 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
         }
     }
     _fireClick() {
-        this.fireEvent("click");
+        this.fireDecoratorEvent("click");
     }
     _getAriaHasPopup() {
         const ariaHaspopup = this.accessibilityAttributes.hasPopup;
@@ -253,6 +267,59 @@ let Avatar = Avatar_1 = class Avatar extends UI5Element {
             return;
         }
         return ariaHaspopup;
+    }
+    _attachImageEventHandlers() {
+        const imgEl = this.imageEl;
+        if (!imgEl) {
+            this._imageLoadError = false;
+            return;
+        }
+        // Remove previous handlers to avoid duplicates
+        imgEl.removeEventListener("load", this._onImageLoadBound);
+        imgEl.removeEventListener("error", this._onImageErrorBound);
+        // Attach new handlers
+        imgEl.addEventListener("load", this._onImageLoadBound);
+        imgEl.addEventListener("error", this._onImageErrorBound);
+        // Check existing image state
+        this._checkExistingImageState();
+    }
+    _checkExistingImageState() {
+        const imgEl = this.imageEl;
+        if (!imgEl) {
+            this._imageLoadError = false;
+            return;
+        }
+        if (imgEl.complete && imgEl.naturalWidth === 0) {
+            this._imageLoadError = true; // Already broken
+        }
+        else if (imgEl.complete && imgEl.naturalWidth > 0) {
+            this._imageLoadError = false; // Already loaded
+        }
+        else {
+            this._imageLoadError = false; // Pending load
+        }
+    }
+    _detachImageEventHandlers() {
+        const imgEl = this.imageEl;
+        if (!imgEl) {
+            return;
+        }
+        imgEl.removeEventListener("load", this._onImageLoadBound);
+        imgEl.removeEventListener("error", this._onImageErrorBound);
+    }
+    _onImageLoad(e) {
+        if (e.target !== this.imageEl) {
+            e.target?.removeEventListener("load", this._onImageLoadBound);
+            return;
+        }
+        this._imageLoadError = false;
+    }
+    _onImageError(e) {
+        if (e.target !== this.imageEl) {
+            e.target?.removeEventListener("error", this._onImageErrorBound);
+            return;
+        }
+        this._imageLoadError = true;
     }
 };
 __decorate([
@@ -295,30 +362,37 @@ __decorate([
     property({ type: Boolean })
 ], Avatar.prototype, "_hasImage", void 0);
 __decorate([
+    property({ type: Boolean, noAttribute: true })
+], Avatar.prototype, "_imageLoadError", void 0);
+__decorate([
     slot({ type: HTMLElement, "default": true })
 ], Avatar.prototype, "image", void 0);
 __decorate([
     slot()
 ], Avatar.prototype, "badge", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Avatar, "i18nBundle", void 0);
 Avatar = Avatar_1 = __decorate([
     customElement({
         tag: "ui5-avatar",
         languageAware: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: AvatarCss,
         template: AvatarTemplate,
-        dependencies: [Icon],
     })
     /**
      * Fired on mouseup, space and enter if avatar is interactive
      *
      * **Note:** The event will not be fired if the `disabled`
      * property is set to `true`.
-     * @private
-     * @since 1.0.0-rc.11
+     * @public
+     * @since 2.11.0
      */
     ,
-    event("click")
+    event("click", {
+        bubbles: true,
+    })
 ], Avatar);
 Avatar.define();
 export default Avatar;

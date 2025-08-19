@@ -5,18 +5,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
-import Icon from "@ui5/webcomponents/dist/Icon.js";
-import "@ui5/webcomponents-icons/dist/background.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 // Styles
 import MediaGalleryItemCss from "./generated/themes/MediaGalleryItem.css.js";
 // Template
-import MediaGalleryItemTemplate from "./generated/templates/MediaGalleryItemTemplate.lit.js";
+import MediaGalleryItemTemplate from "./MediaGalleryItemTemplate.js";
 /**
  * @class
  * ### Overview
@@ -64,7 +63,7 @@ let MediaGalleryItem = class MediaGalleryItem extends UI5Element {
         /**
          * @private
          */
-        this._interactive = false;
+        this._interactive = !isPhone();
         /**
          * @private
          */
@@ -86,7 +85,6 @@ let MediaGalleryItem = class MediaGalleryItem extends UI5Element {
     }
     onEnterDOM() {
         this._thumbnailDesign = !isPhone();
-        this._interactive = !isPhone();
         this._square = true;
     }
     get _thumbnail() {
@@ -108,7 +106,10 @@ let MediaGalleryItem = class MediaGalleryItem extends UI5Element {
         return !this._useThumbnail && this._isContentAvailable;
     }
     get effectiveTabIndex() {
-        return this.disabled ? undefined : this.forcedTabIndex;
+        if (this.disabled) {
+            return undefined;
+        }
+        return this.forcedTabIndex ? parseInt(this.forcedTabIndex) : undefined;
     }
     get _showBackgroundIcon() {
         return this._thumbnailNotFound || this._contentImageNotFound;
@@ -178,7 +179,7 @@ let MediaGalleryItem = class MediaGalleryItem extends UI5Element {
         }
     }
     _fireItemClick() {
-        this.fireEvent("click", { item: this });
+        this.fireDecoratorEvent("click", { item: this });
     }
 };
 __decorate([
@@ -220,10 +221,16 @@ __decorate([
 MediaGalleryItem = __decorate([
     customElement({
         tag: "ui5-media-gallery-item",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: MediaGalleryItemCss,
         template: MediaGalleryItemTemplate,
-        dependencies: [Icon],
+    })
+    /**
+     * @private
+     */
+    ,
+    event("click", {
+        bubbles: true,
     })
 ], MediaGalleryItem);
 MediaGalleryItem.define();

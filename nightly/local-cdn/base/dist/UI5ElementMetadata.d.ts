@@ -1,3 +1,4 @@
+import type UI5Element from "./UI5Element.js";
 type SlotInvalidation = {
     properties: boolean | Array<string>;
     slots: boolean | Array<string>;
@@ -19,7 +20,16 @@ type Property = {
     };
 };
 type PropertyValue = boolean | number | string | object | undefined | null;
-type EventData = Record<string, object>;
+type EventData = Record<string, {
+    detail?: Record<string, object>;
+    cancelable?: boolean;
+    bubbles?: boolean;
+}>;
+type I18nBundleAccessorValue = {
+    bundleName: string;
+    target: typeof UI5Element;
+};
+type I18nBundleAccessors = Record<string, I18nBundleAccessorValue>;
 type Metadata = {
     tag?: string;
     managedSlots?: boolean;
@@ -29,8 +39,11 @@ type Metadata = {
     fastNavigation?: boolean;
     themeAware?: boolean;
     languageAware?: boolean;
+    cldr?: boolean;
     formAssociated?: boolean;
     shadowRootOptions?: Partial<ShadowRootInit>;
+    features?: Array<string>;
+    i18n?: I18nBundleAccessors;
 };
 type State = Record<string, PropertyValue | Array<SlotValue>>;
 /**
@@ -122,6 +135,10 @@ declare class UI5ElementMetadata {
      * Determines whether this UI5 Element has any theme dependant carachteristics.
      */
     isThemeAware(): boolean;
+    /**
+     * Determines whether this UI5 Element needs CLDR assets to be fetched to work correctly
+     */
+    needsCLDR(): boolean;
     getShadowRootOptions(): Partial<ShadowRootInit>;
     /**
      * Determines whether this UI5 Element has any theme dependant carachteristics.
@@ -136,6 +153,7 @@ declare class UI5ElementMetadata {
      * @param name the name of the property/slot that changed
      */
     shouldInvalidateOnChildChange(slotName: string, type: "property" | "slot", name: string): boolean;
+    getI18n(): I18nBundleAccessors;
 }
 export default UI5ElementMetadata;
 export type { Property, PropertyValue, Slot, SlotValue, EventData, State, Metadata, };

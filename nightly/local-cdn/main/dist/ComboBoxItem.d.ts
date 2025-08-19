@@ -1,15 +1,15 @@
-import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IComboBoxItem } from "./ComboBox.js";
+import ListItemBase from "./ListItemBase.js";
 /**
  * @class
  * The `ui5-cb-item` represents the item for a `ui5-combobox`.
  * @constructor
- * @extends UI5Element
- * @abstract
+ * @extends ListItemBase
  * @implements {IComboBoxItem}
  * @public
  */
-declare class ComboBoxItem extends UI5Element implements IComboBoxItem {
+declare class ComboBoxItem extends ListItemBase implements IComboBoxItem {
+    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the text of the component.
      * @default undefined
@@ -38,6 +38,13 @@ declare class ComboBoxItem extends UI5Element implements IComboBoxItem {
      * @protected
      */
     selected: boolean;
-    get stableDomRef(): string;
+    /**
+     * Defines the markup text that will be displayed as suggestion.
+     * Used for highlighting the matching parts of the text.
+     *
+     * @since 2.4.0
+     * @private
+     */
+    markupText: string;
 }
 export default ComboBoxItem;

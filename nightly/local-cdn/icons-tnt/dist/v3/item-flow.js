@@ -1,7 +1,7 @@
 import { registerIcon } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 
 const name = "item-flow";
-const pathData = "M36.375 452l175-174-41-41c-5-5-8-11-8-18 0-5 0-24 23-27l122-19c7 0 5 1 8 1l137-138c3-3 7-5 12-5 4 0 8 2 11 5 7 7 7 16 0 23l-138 137c1 2 1 4 1 6v2l-18 122c-3 15-15 23-27 23-7 0-14-3-19-8l-41-41-174 175c-3 3-7 5-12 5-4 0-8-2-11-5-7-7-7-16 0-23z";
+const pathData = "M503 12q8 8 8 18t-8 18L326 225v156q0 8-4 14.5t-11 8.5q-4 2-10 2-11 0-18-7l-66-66L48 504q-7 7-19 7-11 0-18-7-7-8-7-18.5t7-17.5l171-171-58-57q-13-12-5-28 7-16 23-16h141L467 12q8-8 18-8t18 8z";
 const ltr = false;
 const accData = null;
 const collection = "tnt-v3";
