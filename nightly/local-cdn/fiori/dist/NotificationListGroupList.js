@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import List from "@ui5/webcomponents/dist/List.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import { isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
 /**
  * @class
  *
@@ -29,19 +28,8 @@ let NotificationListGroupList = class NotificationListGroupList extends List {
     }
     onItemFocused() {
     }
-    _onfocusin(e) {
-        e.stopImmediatePropagation();
-    }
-    _onkeydown() {
-    }
     focusItem(item) {
         item.focus();
-    }
-    _onLoadMoreKeydown(e) {
-        if (isSpace(e)) {
-            e.stopImmediatePropagation();
-        }
-        super._onLoadMoreKeydown(e);
     }
 };
 NotificationListGroupList = __decorate([

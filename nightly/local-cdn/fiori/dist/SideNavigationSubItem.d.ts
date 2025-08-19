@@ -1,3 +1,5 @@
+import "@ui5/webcomponents-icons/dist/circle-task-2.js";
+import "@ui5/webcomponents-icons/dist/arrow-right.js";
 import SideNavigationSelectableItemBase from "./SideNavigationSelectableItemBase.js";
 /**
  * @class
@@ -17,10 +19,9 @@ import SideNavigationSelectableItemBase from "./SideNavigationSelectableItemBase
  * @since 1.0.0-rc.8
  */
 declare class SideNavigationSubItem extends SideNavigationSelectableItemBase {
-    _onkeydown(e: KeyboardEvent): void;
-    _onkeyup(e: KeyboardEvent): void;
-    _onfocusin(e: FocusEvent): void;
-    _onclick(e: MouseEvent): void;
-    get classesArray(): string[];
+    _onkeydown: (e: KeyboardEvent) => void;
+    _onkeyup: (e: KeyboardEvent) => void;
+    _onfocusin: (e: FocusEvent) => void;
+    _onclick: (e: PointerEvent) => void;
 }
 export default SideNavigationSubItem;

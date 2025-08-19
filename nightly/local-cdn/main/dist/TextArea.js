@@ -9,19 +9,26 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import { getEffectiveAriaLabelText, getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+import { getEffectiveAriaLabelText, getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
-import TextAreaTemplate from "./TextAreaTemplate.js";
+import Popover from "./Popover.js";
+import Icon from "./Icon.js";
+import "@ui5/webcomponents-icons/dist/error.js";
+import "@ui5/webcomponents-icons/dist/alert.js";
+import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
+import "@ui5/webcomponents-icons/dist/information.js";
+import TextAreaTemplate from "./generated/templates/TextAreaTemplate.lit.js";
 import { VALUE_STATE_SUCCESS, VALUE_STATE_INFORMATION, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, TEXTAREA_CHARACTERS_LEFT, TEXTAREA_CHARACTERS_EXCEEDED, FORM_TEXTFIELD_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
 // Styles
-import textareaStyles from "./generated/themes/TextArea.css.js";
+import styles from "./generated/themes/TextArea.css.js";
 import valueStateMessageStyles from "./generated/themes/ValueStateMessage.css.js";
+import browserScrollbarCSS from "./generated/themes/BrowserScrollbar.css.js";
 /**
  * @class
  *
@@ -52,6 +59,9 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     get formFormattedValue() {
         return this.value;
+    }
+    static async onDefine() {
+        TextArea_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
     constructor() {
         super();
@@ -91,8 +101,8 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
          * Defines the value state of the component.
          *
          * **Note:** If `maxlength` property is set,
-         * the component turns into "Critical" state once the characters exceeds the limit.
-         * In this case, only the "Negative" state is considered and can be applied.
+         * the component turns into "Warning" state once the characters exceeds the limit.
+         * In this case, only the "Error" state is considered and can be applied.
          * @default "None"
          * @since 1.0.0-rc.7
          * @public
@@ -185,13 +195,9 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         this._keyDown = true;
         if (isEscape(e)) {
             const nativeTextArea = this.getInputDomRef();
-            const prevented = !this.fireDecoratorEvent("input", {
-                escapePressed: true,
-            });
-            if (!prevented) {
-                this.value = this.previousValue;
-                nativeTextArea.value = this.value;
-            }
+            this.value = this.previousValue;
+            nativeTextArea.value = this.value;
+            this.fireEvent("input");
         }
     }
     _onkeyup() {
@@ -211,13 +217,13 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         }
     }
     _onchange() {
-        this.fireDecoratorEvent("change");
+        this.fireEvent("change", {});
     }
     _onselect() {
-        this.fireDecoratorEvent("select");
+        this.fireEvent("select", {});
     }
     _onscroll() {
-        this.fireDecoratorEvent("scroll");
+        this.fireEvent("scroll", {});
     }
     _oninput(e) {
         const nativeTextArea = this.getInputDomRef();
@@ -230,9 +236,9 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         if (e.inputType === "insertFromPaste" && this.maxlength && valueLength > this.maxlength) {
             nativeTextArea.setSelectionRange(this.maxlength, valueLength);
         }
-        this.fireDecoratorEvent("input");
+        this.fireEvent("input", {});
         // Angular two way data binding
-        this.fireDecoratorEvent("value-changed");
+        this.fireEvent("value-changed");
     }
     _onResize() {
         if (this.displayValueStateMessagePopover) {
@@ -268,9 +274,12 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         return this.shadowRoot.querySelector("[ui5-popover]");
     }
     _tokenizeText(value) {
-        const tokenizedText = value.replace(/</gm, "<")
+        const tokenizedText = value.replace(/&/gm, "&amp;").replace(/"/gm, "&quot;").replace(/'/gm, "&apos;").replace(/</gm, "<")
             .replace(/>/gm, ">")
             .split("\n");
+        if (tokenizedText.length < this.rows) {
+            return this._mapTokenizedTextToObject([...tokenizedText, ...Array(this.rows - tokenizedText.length).fill("")]);
+        }
         return this._mapTokenizedTextToObject(tokenizedText);
     }
     _mapTokenizedTextToObject(tokenizedText) {
@@ -306,13 +315,20 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         return {
             root: {
                 "ui5-textarea-root": true,
-                "ui5-content-custom-scrollbars": !!getEffectiveScrollbarStyle(),
+                "ui5-content-native-scrollbars": getEffectiveScrollbarStyle(),
             },
             valueStateMsg: {
                 "ui5-valuestatemessage-header": true,
                 "ui5-valuestatemessage--error": this.valueState === ValueState.Negative,
                 "ui5-valuestatemessage--warning": this.valueState === ValueState.Critical,
                 "ui5-valuestatemessage--information": this.valueState === ValueState.Information,
+            },
+        };
+    }
+    get styles() {
+        return {
+            valueStateMsgPopover: {
+                "max-width": `${this._width}px`,
             },
         };
     }
@@ -350,8 +366,8 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         }
         return "";
     }
-    get _ariaInvalid() {
-        return this.valueState === ValueState.Negative ? "true" : undefined;
+    get ariaInvalid() {
+        return this.valueState === ValueState.Negative ? "true" : null;
     }
     get openValueStateMsgPopover() {
         return !this._firstRendering && this._openValueStateMsgPopover && this.displayValueStateMessagePopover;
@@ -367,6 +383,18 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     get _valueStatePopoverHorizontalAlign() {
         return this.effectiveDir !== "rtl" ? "Start" : "End";
+    }
+    /**
+     * This method is relevant for sap_horizon theme only
+     */
+    get _valueStateMessageIcon() {
+        const iconPerValueState = {
+            Negative: "error",
+            Critical: "alert",
+            Positive: "sys-enter-2",
+            Information: "information",
+        };
+        return this.valueState !== ValueState.None ? iconPerValueState[this.valueState] : "";
     }
     get valueStateTextMappings() {
         return {
@@ -445,50 +473,30 @@ __decorate([
 __decorate([
     slot()
 ], TextArea.prototype, "valueStateMessage", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], TextArea, "i18nBundle", void 0);
 TextArea = TextArea_1 = __decorate([
     customElement({
         tag: "ui5-textarea",
         formAssociated: true,
         languageAware: true,
-        styles: [
-            textareaStyles,
-            valueStateMessageStyles,
-            getEffectiveScrollbarStyle(),
-        ],
-        renderer: jsxRenderer,
+        styles: [browserScrollbarCSS, styles, valueStateMessageStyles],
+        renderer: litRender,
         template: TextAreaTemplate,
+        dependencies: [Popover, Icon],
     })
     /**
      * Fired when the text has changed and the focus leaves the component.
      * @public
      */
     ,
-    event("change", {
-        bubbles: true,
-    })
-    /**
-     * Fired to make Angular two way data binding work properly.
-     * @private
-     */
-    ,
-    event("value-changed", {
-        bubbles: true,
-    })
+    event("change")
     /**
      * Fired when the value of the component changes at each keystroke or when
      * something is pasted.
      * @since 1.0.0-rc.5
-     * @param {boolean} escapePressed Indicates whether the Escape key was pressed, which triggers a revert to the previous value
      * @public
      */
     ,
-    event("input", {
-        bubbles: true,
-        cancelable: true,
-    })
+    event("input")
     /**
      * Fired when some text has been selected.
      *
@@ -496,9 +504,7 @@ TextArea = TextArea_1 = __decorate([
      * @public
      */
     ,
-    event("select", {
-        bubbles: true,
-    })
+    event("select")
     /**
      * Fired when textarea is scrolled.
      *
@@ -506,9 +512,7 @@ TextArea = TextArea_1 = __decorate([
      * @public
      */
     ,
-    event("scroll", {
-        bubbles: true,
-    })
+    event("scroll")
 ], TextArea);
 TextArea.define();
 export default TextArea;

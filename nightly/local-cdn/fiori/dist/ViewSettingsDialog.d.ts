@@ -1,9 +1,9 @@
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type Dialog from "@ui5/webcomponents/dist/Dialog.js";
-import type List from "@ui5/webcomponents/dist/List.js";
-import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from "@ui5/webcomponents/dist/List.js";
+import Dialog from "@ui5/webcomponents/dist/Dialog.js";
+import List from "@ui5/webcomponents/dist/List.js";
+import type { ListItemClickEventDetail } from "@ui5/webcomponents/dist/List.js";
 import ViewSettingsDialogMode from "./types/ViewSettingsDialogMode.js";
 import "@ui5/webcomponents-icons/dist/sort.js";
 import "@ui5/webcomponents-icons/dist/filter.js";
@@ -66,13 +66,6 @@ type VSDInternalSettings = {
  * @public
  */
 declare class ViewSettingsDialog extends UI5Element {
-    eventDetails: {
-        "confirm": ViewSettingsDialogConfirmEventDetail;
-        "cancel": ViewSettingsDialogCancelEventDetail;
-        "before-open": void;
-        "open": void;
-        "close": void;
-    };
     /**
      * Defines the initial sort order.
      * @default false
@@ -139,10 +132,10 @@ declare class ViewSettingsDialog extends UI5Element {
     onBeforeRendering(): void;
     onInvalidation(changeInfo: ChangeInfo): void;
     _setAdditionalTexts(): void;
+    static onDefine(): Promise<void>;
     get _selectedFilter(): (VSDItem & {
-        filterOptions: Array<VSDItem>;
+        filterOptions: VSDItem[];
     }) | undefined;
-    _selectedFiltersLabel(item: FilterItem): string;
     get shouldBuildSort(): boolean;
     get shouldBuildFilter(): boolean;
     get hasPagination(): boolean;
@@ -156,9 +149,6 @@ declare class ViewSettingsDialog extends UI5Element {
     get _sortOrderLabel(): string;
     get _filterByLabel(): string;
     get _sortByLabel(): string;
-    get _sortButtonTooltip(): string;
-    get _filterButtonTooltip(): string;
-    get _resetButtonAction(): string;
     get _isPhone(): boolean;
     get _sortAscending(): boolean;
     get _title(): string;
@@ -195,12 +185,7 @@ declare class ViewSettingsDialog extends UI5Element {
     afterDialogOpen(): void;
     afterDialogClose(): void;
     _handleModeChange(e: CustomEvent): void;
-    _handleFilterValueItemClick(e: CustomEvent<ListSelectionChangeEventDetail>): void;
-    /**
-     * Sets the selected property of the clicked item.
-     * @private
-     */
-    _setSelectedProp(itemText: string): void;
+    _handleFilterValueItemClick(e: CustomEvent<ListItemClickEventDetail>): void;
     _navigateToFilters(): void;
     _changeCurrentFilter(e: CustomEvent<ListItemClickEventDetail>): void;
     /**
@@ -221,7 +206,6 @@ declare class ViewSettingsDialog extends UI5Element {
         sortBy: string;
         sortByItem: SortItem;
         filters: VSDFilters;
-        filterItems: FilterItem[];
     };
     get selectedFilters(): VSDFilters;
     /**
@@ -241,11 +225,11 @@ declare class ViewSettingsDialog extends UI5Element {
     /**
      * Stores `Sort Order` list as recently used control and its selected item in current state.
      */
-    _onSortOrderChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
+    _onSortOrderChange(e: CustomEvent<ListItemClickEventDetail>): void;
     /**
      * Stores `Sort By` list as recently used control and its selected item in current state.
      */
-    _onSortByChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
+    _onSortByChange(e: CustomEvent<ListItemClickEventDetail>): void;
     /**
      * Sets a JavaScript object, as settings to the `ui5-view-settings-dialog`.
      * This method can be used after the dialog is initially open, as the dialog needs

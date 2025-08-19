@@ -3,6 +3,7 @@ import defaultThemeBase from "@ui5/webcomponents-theming/dist/generated/themes/s
 import defaultTheme from "./sap_horizon/parameters-bundle.css.js";
 registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => defaultThemeBase);
 registerThemePropertiesLoader("@ui5/webcomponents-fiori", "sap_horizon", async () => defaultTheme);
-export default `:host(:not([hidden])){display:block}[ui5-notification-list-internal]{height:100%}
-`;
+const styleData = { packageName: "@ui5/webcomponents-fiori", fileName: "themes/NotificationList.css.ts", content: `:host(:not([hidden])){display:block}
+` };
+export default styleData;
 //# sourceMappingURL=NotificationList.css.js.map

@@ -1,12 +1,12 @@
-import type UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import Input from "./Input.js";
-import type Token from "./Token.js";
-import type Tokenizer from "./Tokenizer.js";
+import Token from "./Token.js";
+import Tokenizer from "./Tokenizer.js";
 import type { TokenizerTokenDeleteEventDetail } from "./Tokenizer.js";
+import "@ui5/webcomponents-icons/dist/value-help.js";
 import type { InputSelectionChangeEventDetail as MultiInputSelectionChangeEventDetail } from "./Input.js";
-interface IToken extends UI5Element, ITabbable {
+interface IToken extends HTMLElement, ITabbable {
     text?: string;
     readonly: boolean;
     selected: boolean;
@@ -36,10 +36,6 @@ type MultiInputTokenDeleteEventDetail = {
  * @public
  */
 declare class MultiInput extends Input implements IFormInputElement {
-    eventDetails: Input["eventDetails"] & {
-        "value-help-trigger": void;
-        "token-delete": MultiInputTokenDeleteEventDetail;
-    };
     /**
      * Determines whether a value help icon will be visualized in the end of the input.
      * Pressing the icon will fire `value-help-trigger` event.
@@ -95,28 +91,26 @@ declare class MultiInput extends Input implements IFormInputElement {
     get tokenizer(): Tokenizer;
     get tokenizerExpanded(): boolean;
     get _tokensCountText(): string;
-    get _valueHelpText(): string;
     get _tokensCountTextId(): string;
-    get _valueHelpTextId(): "" | "hiddenText-value-help";
     /**
      * Returns the placeholder value when there are no tokens.
      * @protected
      */
     get _placeholder(): string | undefined;
     get accInfo(): {
-        ariaRoledescription: string;
-        ariaDescribedBy: string;
-        ariaInvalid: boolean | undefined;
-        ariaHasPopup: import("@ui5/webcomponents-base/dist/types.js").AriaHasPopup | undefined;
-        ariaAutoComplete: "list" | "none" | "inline" | "both" | undefined;
-        role: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.AriaRole | undefined;
-        ariaControls: string | undefined;
-        ariaExpanded: boolean | undefined;
-        ariaDescription: string;
-        accessibleDescription: string | undefined;
-        ariaLabel: string | undefined;
+        input: {
+            ariaRoledescription: string;
+            ariaDescribedBy: string;
+            ariaInvalid: string | undefined;
+            ariaHasPopup: string | undefined;
+            ariaAutoComplete: string | undefined;
+            role: string | undefined;
+            ariaControls: string | undefined;
+            ariaExpanded: string | undefined;
+            ariaDescription: string | undefined;
+            ariaLabel: string | undefined;
+        };
     };
-    get valueHelpLabel(): string;
     get ariaRoleDescription(): string;
     get morePopoverOpener(): HTMLElement;
     get shouldDisplayOnlyValueStateMessage(): boolean;

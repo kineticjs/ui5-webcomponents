@@ -3,6 +3,7 @@ import defaultThemeBase from "@ui5/webcomponents-theming/dist/generated/themes/s
 import defaultTheme from "./sap_horizon/parameters-bundle.css.js";
 registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => defaultThemeBase);
 registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => defaultTheme);
-export default `:host{height:var(--_ui5-v2-14-0-rc-1_list_item_dropdown_base_height);--_ui5-v2-14-0-rc-1_list_item_title_size: var(--sapFontSize)}
-`;
+const styleData = { packageName: "@ui5/webcomponents", fileName: "themes/OptionBase.css.ts", content: `:host{height:var(--_ui5-v2-1-0-rc-0_list_item_dropdown_base_height)}
+` };
+export default styleData;
 //# sourceMappingURL=OptionBase.css.js.map

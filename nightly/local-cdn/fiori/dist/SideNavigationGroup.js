@@ -6,14 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var SideNavigationGroup_1;
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import { isLeft, isRight, isMinus, isPlus, } from "@ui5/webcomponents-base/dist/Keys.js";
+import { isLeft, isRight, } from "@ui5/webcomponents-base/dist/Keys.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
+import "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
+import Icon from "@ui5/webcomponents/dist/Icon.js";
 import SideNavigationItemBase from "./SideNavigationItemBase.js";
-import SideNavigationGroupTemplate from "./SideNavigationGroupTemplate.js";
-import { SIDE_NAVIGATION_ICON_COLLAPSE, SIDE_NAVIGATION_ICON_EXPAND, } from "./generated/i18n/i18n-defaults.js";
+import SideNavigationGroupTemplate from "./generated/templates/SideNavigationGroupTemplate.lit.js";
+import { SIDE_NAVIGATION_GROUP_HEADER_DESC, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import SideNavigationGroupCss from "./generated/themes/SideNavigationGroup.css.js";
 /**
@@ -44,12 +47,22 @@ let SideNavigationGroup = SideNavigationGroup_1 = class SideNavigationGroup exte
          * @default false
          */
         this.expanded = false;
-        this.belowGroup = false;
-    }
-    onBeforeRendering() {
-        this.allItems.forEach(item => {
-            item._groupDisabled = this.disabled;
-        });
+        this._onkeydown = (e) => {
+            if (isLeft(e)) {
+                this.expanded = false;
+                return;
+            }
+            if (isRight(e)) {
+                this.expanded = true;
+            }
+        };
+        this._onclick = () => {
+            this._toggle();
+        };
+        this._onfocusin = (e) => {
+            e.stopPropagation();
+            this.sideNavigation?.focusItem(this);
+        };
     }
     get overflowItems() {
         const separator1 = this.shadowRoot.querySelector(".ui5-sn-item-separator:first-child");
@@ -92,51 +105,29 @@ let SideNavigationGroup = SideNavigationGroup_1 = class SideNavigationGroup exte
         }
         return this.expanded;
     }
+    get _toggleIconName() {
+        return this.expanded ? "navigation-down-arrow" : "navigation-right-arrow";
+    }
     get belowGroupClassName() {
-        return this.belowGroup ? "ui5-sn-item-group-below-group" : "";
+        if (isInstanceOfSideNavigationGroup(this.previousElementSibling)) {
+            return "ui5-sn-item-group-below-group";
+        }
+        return "";
     }
-    get _arrowTooltip() {
-        return this.expanded ? SideNavigationGroup_1.i18nBundle.getText(SIDE_NAVIGATION_ICON_COLLAPSE)
-            : SideNavigationGroup_1.i18nBundle.getText(SIDE_NAVIGATION_ICON_EXPAND);
-    }
-    _onkeydown(e) {
-        if (this.disabled) {
-            return;
-        }
-        const isRTL = this.effectiveDir === "rtl";
-        if (isLeft(e)) {
-            e.preventDefault();
-            this.expanded = isRTL;
-            return;
-        }
-        if (isRight(e)) {
-            e.preventDefault();
-            this.expanded = !isRTL;
-        }
-        if (isMinus(e)) {
-            e.preventDefault();
-            this.expanded = false;
-            return;
-        }
-        if (isPlus(e)) {
-            e.preventDefault();
-            this.expanded = true;
-        }
-    }
-    _onclick() {
-        this._toggle();
-    }
-    _onfocusin(e) {
-        e.stopPropagation();
-        this.sideNavigation?.focusItem(this);
+    get accDescription() {
+        return SideNavigationGroup_1.i18nBundle.getText(SIDE_NAVIGATION_GROUP_HEADER_DESC);
     }
     _toggle() {
-        if (!this.disabled) {
-            this.expanded = !this.expanded;
-        }
+        this.expanded = !this.expanded;
     }
     get isSideNavigationGroup() {
         return true;
+    }
+    static async onDefine() {
+        [SideNavigationGroup_1.i18nBundle] = await Promise.all([
+            getI18nBundle("@ui5/webcomponents-fiori"),
+            super.onDefine(),
+        ]);
     }
 };
 __decorate([
@@ -145,15 +136,15 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true, "default": true })
 ], SideNavigationGroup.prototype, "items", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-fiori")
-], SideNavigationGroup, "i18nBundle", void 0);
 SideNavigationGroup = SideNavigationGroup_1 = __decorate([
     customElement({
         tag: "ui5-side-navigation-group",
-        renderer: jsxRender,
+        renderer: litRender,
         template: SideNavigationGroupTemplate,
         styles: SideNavigationGroupCss,
+        dependencies: [
+            Icon,
+        ],
     })
 ], SideNavigationGroup);
 SideNavigationGroup.define();

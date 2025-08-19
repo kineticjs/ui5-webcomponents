@@ -1,6 +1,4 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import TextEmptyIndicatorMode from "./types/TextEmptyIndicatorMode.js";
 /**
  * @class
  *
@@ -27,6 +25,7 @@ import TextEmptyIndicatorMode from "./types/TextEmptyIndicatorMode.js";
  * @constructor
  * @extends UI5Element
  * @public
+ * @slot {Array<Node>} default - Defines the text of the component.
  * @since 2.0.0
  */
 declare class Text extends UI5Element {
@@ -36,23 +35,6 @@ declare class Text extends UI5Element {
      * @public
      */
     maxLines: number;
-    /**
-     * Specifies if an empty indicator should be displayed when there is no text.
-     * @default "Off"
-     * @since 2.2.0
-     * @public
-     */
-    emptyIndicatorMode: `${TextEmptyIndicatorMode}`;
-    /**
-     * Defines the text of the component.
-     * @public
-     */
-    text: Array<Node>;
-    static i18nBundle: I18nBundle;
     onBeforeRendering(): void;
-    get hasText(): boolean;
-    get _renderEmptyIndicator(): boolean;
-    get _emptyIndicatorAriaLabel(): string;
-    get _emptyIndicatorSymbol(): string;
 }
 export default Text;

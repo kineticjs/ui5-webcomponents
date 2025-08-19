@@ -1,20 +1,24 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type { UI5CustomEvent } from "@ui5/webcomponents-base";
-import type { AriaAutoComplete, AriaRole, AriaHasPopup, ClassMap } from "@ui5/webcomponents-base/dist/types.js";
+import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
+import "@ui5/webcomponents-icons/dist/decline.js";
+import "@ui5/webcomponents-icons/dist/not-editable.js";
+import "@ui5/webcomponents-icons/dist/error.js";
+import "@ui5/webcomponents-icons/dist/alert.js";
+import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
+import "@ui5/webcomponents-icons/dist/information.js";
 import type SuggestionItem from "./SuggestionItem.js";
 import type { SuggestionComponent } from "./features/InputSuggestions.js";
 import type InputSuggestions from "./features/InputSuggestions.js";
+import type { PopupScrollEventDetail } from "./Popup.js";
 import InputType from "./types/InputType.js";
-import type Popover from "./Popover.js";
+import Popover from "./Popover.js";
 import type { IIcon } from "./Icon.js";
 import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from "./List.js";
-import type ResponsivePopover from "./ResponsivePopover.js";
-import type InputKeyHint from "./types/InputKeyHint.js";
 /**
  * Interface for components that represent a suggestion item, usable in `ui5-input`
  * @public
@@ -33,18 +37,16 @@ type NativeInputAttributes = {
     max?: number;
     step?: number;
 };
-type InputAccInfo = {
+type AccInfo = {
     ariaRoledescription?: string;
     ariaDescribedBy?: string;
-    ariaHasPopup?: AriaHasPopup;
-    ariaAutoComplete?: AriaAutoComplete;
-    role?: AriaRole;
+    ariaHasPopup?: string;
+    ariaAutoComplete?: string;
+    role?: string;
     ariaControls?: string;
-    ariaRequired?: boolean;
-    ariaExpanded?: boolean;
+    ariaExpanded?: string;
     ariaDescription?: string;
     ariaLabel?: string;
-    ariaInvalid?: boolean;
 };
 declare enum INPUT_ACTIONS {
     ACTION_ENTER = "enter",
@@ -71,9 +73,14 @@ type InputSuggestionScrollEventDetail = {
  *
  * The text field can be editable or read-only (`readonly` property),
  * and it can be enabled or disabled (`disabled` property).
- * To visualize semantic states, such as "Negative" or "Critical", the `valueState` property is provided.
+ * To visualize semantic states, such as "error" or "warning", the `valueState` property is provided.
  * When the user makes changes to the text, the change event is fired,
  * which enables you to react on any text change.
+ *
+ * **Note:** If you are using the `ui5-input` as a single npm module,
+ * don't forget to import the `InputSuggestions` module from
+ * "@ui5/webcomponents/dist/features/InputSuggestions.js"
+ * to enable the suggestions functionality.
  *
  * ### Keyboard Handling
  * The `ui5-input` provides the following keyboard shortcuts:
@@ -86,30 +93,17 @@ type InputSuggestionScrollEventDetail = {
  * - [End] - If focus is in the text input, moves caret after the last character. If focus is in the list, highlights the last item and updates the input accordingly.
  * - [Page Up] - If focus is in the list, moves highlight up by page size (10 items by default). If focus is in the input, does nothing.
  * - [Page Down] - If focus is in the list, moves highlight down by page size (10 items by default). If focus is in the input, does nothing.
- * - [Ctrl]+[Alt]+[F8] or [Command]+[Option]+[F8] - Focuses the first link in the value state message, if available. Pressing [Tab] moves the focus to the next link in the value state message, or closes the value state message if there are no more links.
  *
  * ### ES6 Module Import
  *
  * `import "@ui5/webcomponents/dist/Input.js";`
  *
+ * `import "@ui5/webcomponents/dist/features/InputSuggestions.js";` (optional - for input suggestions support)
  * @constructor
  * @extends UI5Element
  * @public
- * @csspart root - Used to style the root DOM element of the Input component
- * @csspart input - Used to style the native input element
- * @csspart clear-icon - Used to style the clear icon, which can be pressed to clear user input text
  */
 declare class Input extends UI5Element implements SuggestionComponent, IFormInputElement {
-    eventDetails: {
-        "change": InputEventDetail;
-        "input": InputEventDetail;
-        "select": void;
-        "selection-change": InputSelectionChangeEventDetail;
-        "type-ahead": void;
-        "suggestion-scroll": InputSuggestionScrollEventDetail;
-        "open": void;
-        "close": void;
-    };
     /**
      * Defines whether the component is in disabled state.
      *
@@ -206,6 +200,8 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     /**
      * Defines whether the component should show suggestions, if such are present.
      *
+     * **Note:** You need to import the `InputSuggestions` module
+     * from `"@ui5/webcomponents/dist/features/InputSuggestions.js"` to enable this functionality.
      * @default false
      * @public
      */
@@ -234,20 +230,6 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      */
     accessibleNameRef?: string;
     /**
-     * Defines the accessible description of the component.
-     * @default undefined
-     * @public
-     * @since 2.9.0
-     */
-    accessibleDescription?: string;
-    /**
-     * Receives id(or many ids) of the elements that describe the input.
-     * @default undefined
-     * @public
-     * @since 2.9.0
-     */
-    accessibleDescriptionRef?: string;
-    /**
      * Defines whether the clear icon of the input will be shown.
      * @default false
      * @public
@@ -274,15 +256,13 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * @private
      */
     focused: boolean;
+    valueStateOpen: boolean;
     /**
-     * Used to define enterkeyhint of the inner input.
-     * https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/enterkeyhint
-     *
+     * Indicates whether the visual focus is on the value state header
      * @private
      */
-    hint?: `${InputKeyHint}`;
-    valueStateOpen: boolean;
-    _inputAccInfo: InputAccInfo;
+    _isValueStateFocused: boolean;
+    _inputAccInfo: AccInfo;
     _nativeInputAttributes: NativeInputAttributes;
     _inputWidth?: number;
     _listWidth?: number;
@@ -298,19 +278,6 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      */
     _accessibleLabelsRefTexts?: string;
     /**
-     * Constantly updated value of texts collected from the associated labels
-     * @private
-     */
-    _associatedDescriptionRefTexts?: string;
-    /**
-     * @private
-     */
-    Suggestions?: InputSuggestions;
-    /**
-     * @private
-     */
-    _linksListenersArray: Array<(args: any) => void>;
-    /**
      * Defines the suggestion items.
      *
      * **Note:** The suggestions would be displayed only if the `showSuggestions`
@@ -318,6 +285,11 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      *
      * **Note:** The `<ui5-suggestion-item>`, `<ui5-suggestion-item-group>` and `ui5-suggestion-item-custom` are recommended to be used as suggestion items.
      *
+     * **Note:** Importing the Input Suggestions Support feature:
+     *
+     * `import "@ui5/webcomponents/dist/features/InputSuggestions.js";`
+     *
+     * automatically imports the `<ui5-suggestion-item>` and `<ui5-suggestion-item-group>` for your convenience.
      * @public
      */
     suggestionItems: Array<IInputSuggestionItem>;
@@ -333,7 +305,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed,
-     * when the component is in `Information`, `Critical` or `Negative` value state.
+     * when the component is in `Information`, `Warning` or `Error` value state.
      *
      * **Note:** If the component has `suggestionItems`,
      * the `valueStateMessage` would be displayed as part of the same popover, if used on desktop, or dialog - on phone.
@@ -352,27 +324,17 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     _handleResizeBound: ResizeObserverCallback;
     _keepInnerValue: boolean;
     _shouldAutocomplete?: boolean;
-    _enterKeyDown?: boolean;
+    _keyDown?: boolean;
     _isKeyNavigation?: boolean;
-    _indexOfSelectedItem: number;
+    Suggestions?: InputSuggestions;
     _selectedText?: string;
     _clearIconClicked?: boolean;
     _focusedAfterClear: boolean;
     _changeToBeFired?: boolean;
     _performTextSelection?: boolean;
     _isLatestValueFromSuggestions: boolean;
-    _isChangeTriggeredBySuggestion: boolean;
-    _valueStateLinks: Array<HTMLElement>;
     static i18nBundle: I18nBundle;
-    /**
-     * Indicates whether link navigation is being handled.
-     * @default false
-     * @private
-     * @since 2.11.0
-     */
-    _handleLinkNavigation: boolean;
     get formValidityMessage(): string;
-    get _effectiveShowSuggestions(): boolean;
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     get formFormattedValue(): FormData | string | null;
@@ -385,14 +347,10 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     onAfterRendering(): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
-    get currentItemIndex(): number;
     _handleUp(e: KeyboardEvent): void;
     _handleDown(e: KeyboardEvent): void;
     _handleSpace(e: KeyboardEvent): void;
     _handleTab(): void;
-    _handleCtrlAltF8(): void;
-    _addLinksEventListeners(): void;
-    _removeLinksEventListeners(): void;
     _handleEnter(e: KeyboardEvent): void;
     _handlePageUp(e: KeyboardEvent): void;
     _handlePageDown(e: KeyboardEvent): void;
@@ -411,15 +369,11 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     _handleChange(): void;
     _clear(): void;
     _iconMouseDown(): void;
-    _scroll(e: UI5CustomEvent<ResponsivePopover, "scroll">): void;
-    _handleSelect(): void;
-    _handleInput(e: CustomEvent<InputEventDetail>): void;
-    _handleNativeInput(e: InputEvent): void;
-    _input(e: CustomEvent<InputEventDetail> | InputEvent, eventType: string): void;
+    _scroll(e: CustomEvent<PopupScrollEventDetail>): void;
+    _handleInput(e: InputEvent | CustomEvent<InputEventDetail>): void;
     _startsWithMatchingItems(str: string): Array<IInputSuggestionItemSelectable>;
     _getFirstMatchingItem(current: string): IInputSuggestionItemSelectable | undefined;
     _handleSelectionChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
-    _selectMatchingItem(item: IInputSuggestionItemSelectable): void;
     _handleTypeAhead(item: IInputSuggestionItemSelectable): void;
     _handleResize(): void;
     _updateAssociatedLabelsTexts(): void;
@@ -478,31 +432,24 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     fireResetSelectionChange(): void;
     get _readonly(): boolean;
     get _headerTitleText(): string;
-    get _suggestionsOkButtonText(): string;
     get clearIconAccessibleName(): string;
-    get _popupLabel(): string;
-    get inputType(): `${InputType}`;
-    get inputNativeType(): Lowercase<`${InputType}`>;
+    get inputType(): string;
     get isTypeNumber(): boolean;
     get suggestionsTextId(): "" | "suggestionsText";
     get valueStateTextId(): "" | "valueStateDesc";
-    get _accInfoAriaDescription(): string;
-    get _accInfoAriaDescriptionId(): "" | "descr";
-    get ariaDescriptionText(): string | undefined;
-    get ariaDescriptionTextId(): "" | "accessibleDescription";
-    get ariaDescribedByIds(): string;
     get accInfo(): {
-        ariaRoledescription: string | undefined;
-        ariaDescribedBy: string | undefined;
-        ariaInvalid: boolean | undefined;
-        ariaHasPopup: AriaHasPopup | undefined;
-        ariaAutoComplete: "list" | "none" | "inline" | "both" | undefined;
-        role: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.AriaRole | undefined;
-        ariaControls: string | undefined;
-        ariaExpanded: boolean | undefined;
-        ariaDescription: string;
-        accessibleDescription: string | undefined;
-        ariaLabel: string | undefined;
+        input: {
+            ariaRoledescription: string | undefined;
+            ariaDescribedBy: string | undefined;
+            ariaInvalid: string | undefined;
+            ariaHasPopup: string | undefined;
+            ariaAutoComplete: string | undefined;
+            role: string | undefined;
+            ariaControls: string | undefined;
+            ariaExpanded: string | undefined;
+            ariaDescription: string | undefined;
+            ariaLabel: string | undefined;
+        };
     };
     get nativeInputAttributes(): {
         min: number | undefined;
@@ -511,16 +458,15 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
     };
     get ariaValueStateHiddenText(): string | undefined;
     get itemSelectionAnnounce(): string;
-    get linksInAriaValueStateHiddenText(): HTMLElement[];
-    get valueStateLinksShortcutsTextAcc(): string;
-    get _valueStateLinksShortcutsTextAccId(): "" | "hiddenText-value-state-link-shortcut";
     get iconsCount(): number;
     get classes(): ClassMap;
     get styles(): {
+        popoverHeader: {
+            "max-width": string;
+        };
         suggestionPopoverHeader: {
             display: string;
             width: string;
-            "max-width": string;
         };
         suggestionsPopover: {
             "min-width": string;
@@ -530,7 +476,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
             padding: string;
         };
     };
-    get suggestionSeparators(): "None";
+    get suggestionSeparators(): string;
     get shouldDisplayOnlyValueStateMessage(): boolean;
     get shouldDisplayDefaultValueStateMessage(): boolean;
     get hasValueState(): boolean;
@@ -570,7 +516,7 @@ declare class Input extends UI5Element implements SuggestionComponent, IFormInpu
      * @param value the numeric value of Input of type "Number"
      */
     removeFractionalPart(value: string): string;
-    static SuggestionsClass?: typeof InputSuggestions;
+    static onDefine(): Promise<void>;
 }
 export default Input;
-export type { InputAccInfo, IInputSuggestionItem, IInputSuggestionItemSelectable, InputSuggestionScrollEventDetail, InputSelectionChangeEventDetail, InputEventDetail, };
+export type { IInputSuggestionItem, IInputSuggestionItemSelectable, InputSuggestionScrollEventDetail, InputSelectionChangeEventDetail, InputEventDetail, };

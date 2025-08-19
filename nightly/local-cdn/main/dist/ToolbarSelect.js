@@ -4,15 +4,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import ToolbarSelectCss from "./generated/themes/ToolbarSelect.css.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import { registerToolbarItem } from "./ToolbarRegistry.js";
 // Templates
-import ToolbarSelectTemplate from "./ToolbarSelectTemplate.js";
+import ToolbarSelectTemplate from "./generated/templates/ToolbarSelectTemplate.lit.js";
+import ToolbarPopoverSelectTemplate from "./generated/templates/ToolbarPopoverSelectTemplate.lit.js";
 import ToolbarItem from "./ToolbarItem.js";
+import Select from "./Select.js";
+import Option from "./Option.js";
 /**
  * @class
  *
@@ -31,8 +33,22 @@ import ToolbarItem from "./ToolbarItem.js";
  * @since 1.17.0
  */
 let ToolbarSelect = class ToolbarSelect extends ToolbarItem {
+    static get toolbarTemplate() {
+        return ToolbarSelectTemplate;
+    }
+    static get toolbarPopoverTemplate() {
+        return ToolbarPopoverSelectTemplate;
+    }
+    get subscribedEvents() {
+        const map = new Map();
+        map.set("click", { preventClosing: true });
+        map.set("ui5-change", { preventClosing: false });
+        map.set("ui5-open", { preventClosing: true });
+        map.set("ui5-close", { preventClosing: true });
+        return map;
+    }
     constructor() {
-        super(...arguments);
+        super();
         /**
          * Defines the value state of the component.
          * @default "None"
@@ -47,46 +63,38 @@ let ToolbarSelect = class ToolbarSelect extends ToolbarItem {
          * @public
          */
         this.disabled = false;
+        this._onEvent = this._onEventHandler.bind(this);
     }
-    onClick(e) {
-        e.stopImmediatePropagation();
-        const prevented = !this.fireDecoratorEvent("click", { targetRef: e.target });
-        if (prevented && !this.preventOverflowClosing) {
-            this.fireDecoratorEvent("close-overflow");
-        }
+    onEnterDOM() {
+        this.attachEventListeners();
     }
-    onOpen(e) {
-        e.stopImmediatePropagation();
-        const prevented = !this.fireDecoratorEvent("open", { targetRef: e.target });
-        if (prevented) {
-            this.fireDecoratorEvent("close-overflow");
-        }
+    onExitDOM() {
+        this.detachEventListeners();
     }
-    onClose(e) {
-        e.stopImmediatePropagation();
-        const prevented = !this.fireDecoratorEvent("close", { targetRef: e.target });
-        if (prevented) {
-            this.fireDecoratorEvent("close-overflow");
-        }
-    }
-    onChange(e) {
-        e.stopImmediatePropagation();
-        const prevented = !this.fireDecoratorEvent("change", { ...e.detail, targetRef: e.target });
-        if (!prevented) {
-            this.fireDecoratorEvent("close-overflow");
-        }
-        this._syncOptions(e.detail.selectedOption);
-    }
-    _syncOptions(selectedOption) {
-        const selectedOptionIndex = Number(selectedOption?.getAttribute("data-ui5-external-action-item-index"));
-        this.options.forEach((option, index) => {
-            if (index === selectedOptionIndex) {
-                option.setAttribute("selected", "");
-            }
-            else {
-                option.removeAttribute("selected");
-            }
+    attachEventListeners() {
+        [...this.subscribedEvents.keys()].forEach(e => {
+            this.addEventListener(e, this._onEvent);
         });
+    }
+    detachEventListeners() {
+        [...this.subscribedEvents.keys()].forEach(e => {
+            this.removeEventListener(e, this._onEvent);
+        });
+    }
+    _onEventHandler(e) {
+        if (e.type === "ui5-change") {
+            // update options
+            const selectedOption = e.detail.selectedOption;
+            const selectedOptionIndex = Number(selectedOption?.getAttribute("data-ui5-external-action-item-index"));
+            this.options.forEach((option, index) => {
+                if (index === selectedOptionIndex) {
+                    option.setAttribute("selected", "");
+                }
+                else {
+                    option.removeAttribute("selected");
+                }
+            });
+        }
     }
     get styles() {
         return {
@@ -115,28 +123,29 @@ __decorate([
 ToolbarSelect = __decorate([
     customElement({
         tag: "ui5-toolbar-select",
-        template: ToolbarSelectTemplate,
-        renderer: jsxRenderer,
-        styles: ToolbarSelectCss,
+        dependencies: [Select, Option],
     })
     /**
      * Fired when the selected option changes.
+     * @allowPreventDefault
      * @param {HTMLElement} selectedOption the selected option.
      * @public
      */
     ,
     event("change", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+            * @public
+            */
+            selectedOption: { type: HTMLElement },
+        },
     })
     /**
      * Fired after the component's dropdown menu opens.
      * @public
      */
     ,
-    event("open", {
-        bubbles: true,
-    })
+    event("open")
     /**
      * Fired after the component's dropdown menu closes.
      * @public
@@ -144,6 +153,7 @@ ToolbarSelect = __decorate([
     ,
     event("close")
 ], ToolbarSelect);
+registerToolbarItem(ToolbarSelect);
 ToolbarSelect.define();
 export default ToolbarSelect;
 //# sourceMappingURL=ToolbarSelect.js.map

@@ -3,7 +3,6 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type Toolbar from "@ui5/webcomponents/dist/Toolbar.js";
 import type { ToolbarMinWidthChangeEventDetail } from "@ui5/webcomponents/dist/Toolbar.js";
-import type Title from "@ui5/webcomponents/dist/Title.js";
 /**
  * @class
  *
@@ -37,9 +36,6 @@ import type Title from "@ui5/webcomponents/dist/Title.js";
  * @since 2.0.0
  */
 declare class DynamicPageTitle extends UI5Element {
-    eventDetails: {
-        "toggle-title": void;
-    };
     /**
      * Defines if the title is snapped.
      *
@@ -69,18 +65,7 @@ declare class DynamicPageTitle extends UI5Element {
      */
     minActionsWidth?: number;
     /**
-     * Indicates whether the title has snapped on mobile devices.
-     * @private
-     */
-    hasSnappedTitleOnMobile: boolean;
-    /**
      * Defines the content of the Heading of the Dynamic Page.
-     *
-     * The font size of the title within the `heading` slot can be adjusted to the recommended values using the following CSS variables:
-     *
-     * **Expanded:** `var(--sapObjectHeader_Title_FontSize)`
-     *
-     * **Collapsed:** `var(--sapObjectHeader_Title_SnappedFontSize)`
      *
      * @public
      */
@@ -91,20 +76,6 @@ declare class DynamicPageTitle extends UI5Element {
      * @public
      */
     snappedHeading: HTMLElement[];
-    /**
-     * Defines the content of the snapped title on mobile devices.
-     *
-     * This slot is displayed only when the `DynamicPageTitle` is in the snapped state on mobile devices.
-     * It should be used to provide a simplified, single-line title that takes up less space on smaller screens.
-     *
-     * **Note:**
-     * - The content set in this slot **overrides** all other content set in the `DynamicPageTitle` slots when displayed.
-     * - The slot is intended for a single `ui5-title` component.
-     *
-     * @public
-     * @since 2.3.0
-     */
-    snappedTitleOnMobile: Array<Title>;
     /**
      * Defines the bar with actions in the Dynamic page title.
      *
@@ -148,18 +119,25 @@ declare class DynamicPageTitle extends UI5Element {
     static i18nBundle: I18nBundle;
     _handleResize: ResizeObserverCallback;
     constructor();
+    static onDefine(): Promise<void>;
     onEnterDOM(): void;
     onExitDOM(): void;
     onBeforeRendering(): void;
+    get styles(): {
+        content: {
+            "min-width": string | undefined;
+        };
+        actions: {
+            "min-width": string | undefined;
+        };
+    };
     get hasContent(): boolean;
     get headingSlotName(): "heading" | "snappedHeading";
     get subheadingSlotName(): "subheading" | "snappedSubheading";
-    get _tabIndex(): 0 | undefined;
+    get _tabIndex(): "0" | undefined;
     get _headerExpanded(): boolean;
     get _ariaDescribedbyText(): string;
     get _ariaLabelledBy(): string | undefined;
-    get _needsSeparator(): boolean;
-    get forAriaExpanded(): boolean | undefined;
     prepareLayoutActions(): void;
     handleResize(): void;
     onMinContentWidthChange(e: CustomEvent<ToolbarMinWidthChangeEventDetail>): void;

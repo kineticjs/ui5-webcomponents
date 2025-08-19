@@ -53,23 +53,17 @@ declare class Card extends UI5Element {
      * @public
     */
     header: Array<CardHeader>;
-    /**
-     * Defines if a loading indicator would be displayed over the card.
-     * @default false
-     * @public
-     * @since 2.1.0
-     */
-    loading: boolean;
-    /**
-     * Defines the delay in milliseconds, after which the loading indicator will show up for this card.
-     * @default 1000
-     * @public
-     * @since 2.1.0
-     */
-    loadingDelay: number;
     static i18nBundle: I18nBundle;
+    get classes(): {
+        root: {
+            "ui5-card-root": boolean;
+            "ui5-card--interactive": boolean;
+            "ui5-card--nocontent": boolean;
+        };
+    };
     get _hasHeader(): boolean;
     get _getAriaLabel(): string;
     get _ariaCardContentLabel(): string;
+    static onDefine(): Promise<void>;
 }
 export default Card;

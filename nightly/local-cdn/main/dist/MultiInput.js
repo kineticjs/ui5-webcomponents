@@ -7,16 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var MultiInput_1;
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isShow, isBackSpace, isLeft, isRight, isRightCtrl, isHome, isEnd, isDown, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
-import { MULTIINPUT_ROLEDESCRIPTION_TEXT, MULTIINPUT_VALUE_HELP_LABEL, MULTIINPUT_VALUE_HELP } from "./generated/i18n/i18n-defaults.js";
+import { MULTIINPUT_ROLEDESCRIPTION_TEXT } from "./generated/i18n/i18n-defaults.js";
 import Input from "./Input.js";
-import MultiInputTemplate from "./MultiInputTemplate.js";
+import MultiInputTemplate from "./generated/templates/MultiInputTemplate.lit.js";
 import styles from "./generated/themes/MultiInput.css.js";
-import { getTokensCountText } from "./Tokenizer.js";
+import Token from "./Token.js";
+import Tokenizer, { getTokensCountText } from "./Tokenizer.js";
+import Icon from "./Icon.js";
+import "@ui5/webcomponents-icons/dist/value-help.js";
 /**
  * @class
  * ### Overview
@@ -75,7 +78,7 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
     }
     valueHelpPress() {
         this.closeValueStatePopover();
-        this.fireDecoratorEvent("value-help-trigger");
+        this.fireEvent("value-help-trigger");
     }
     tokenDelete(e) {
         const deletedTokens = e.detail.tokens;
@@ -85,7 +88,7 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
             return;
         }
         if (deletedTokens) {
-            this.fireDecoratorEvent("token-delete", { tokens: deletedTokens });
+            this.fireEvent("token-delete", { tokens: deletedTokens });
             if (shouldFocusInput) {
                 this.focus();
             }
@@ -208,9 +211,6 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         super.onBeforeRendering();
         this.style.setProperty(getScopedVarName("--_ui5-input-icons-count"), `${this.iconsCount}`);
         this.tokenizerAvailable = this.tokens && this.tokens.length > 0;
-        if (this.tokenizer) {
-            this.tokenizer.readonly = this.readonly;
-        }
     }
     onAfterRendering() {
         super.onAfterRendering();
@@ -234,14 +234,8 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
     get _tokensCountText() {
         return getTokensCountText(this.tokens.length);
     }
-    get _valueHelpText() {
-        return MultiInput_1.i18nBundle.getText(MULTIINPUT_VALUE_HELP);
-    }
     get _tokensCountTextId() {
         return `hiddenText-nMore`;
-    }
-    get _valueHelpTextId() {
-        return this.showValueHelpIcon ? `hiddenText-value-help` : "";
     }
     /**
      * Returns the placeholder value when there are no tokens.
@@ -254,15 +248,14 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         return this.placeholder;
     }
     get accInfo() {
-        const ariaDescribedBy = `${this._tokensCountTextId} ${this.suggestionsTextId} ${this.valueStateTextId} ${this._valueStateLinksShortcutsTextAccId} ${this._valueHelpTextId}`.trim();
+        const ariaDescribedBy = `${this._tokensCountTextId} ${this.suggestionsTextId} ${this.valueStateTextId}`.trim();
         return {
-            ...super.accInfo,
-            "ariaRoledescription": this.ariaRoleDescription,
-            "ariaDescribedBy": ariaDescribedBy,
+            "input": {
+                ...super.accInfo.input,
+                "ariaRoledescription": this.ariaRoleDescription,
+                "ariaDescribedBy": ariaDescribedBy,
+            },
         };
-    }
-    get valueHelpLabel() {
-        return MultiInput_1.i18nBundle.getText(MULTIINPUT_VALUE_HELP_LABEL);
     }
     get ariaRoleDescription() {
         return MultiInput_1.i18nBundle.getText(MULTIINPUT_ROLEDESCRIPTION_TEXT);
@@ -292,10 +285,19 @@ __decorate([
 MultiInput = MultiInput_1 = __decorate([
     customElement({
         tag: "ui5-multi-input",
-        renderer: jsxRenderer,
+        renderer: litRender,
         formAssociated: true,
         template: MultiInputTemplate,
         styles: [Input.styles, styles],
+        get dependencies() {
+            return [
+                ...Input.dependencies,
+                Input,
+                Tokenizer,
+                Token,
+                Icon,
+            ];
+        },
     })
     /**
      * Fired when the value help icon is pressed
@@ -303,9 +305,7 @@ MultiInput = MultiInput_1 = __decorate([
      * @public
      */
     ,
-    event("value-help-trigger", {
-        bubbles: true,
-    })
+    event("value-help-trigger")
     /**
      * Fired when tokens are being deleted.
      * @param {Array} tokens An array containing the deleted tokens.
@@ -313,7 +313,12 @@ MultiInput = MultiInput_1 = __decorate([
      */
     ,
     event("token-delete", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            tokens: { type: Array },
+        },
     })
 ], MultiInput);
 MultiInput.define();

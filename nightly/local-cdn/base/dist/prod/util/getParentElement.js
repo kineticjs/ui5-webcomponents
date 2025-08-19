@@ -1,2 +1,2 @@
-"use strict";const e=t=>t.parentElement?t.parentElement:t.parentNode.host;export default e;
+"use strict";const t=e=>e.parentElement?e.parentNode:e.parentNode.host;export default t;
 //# sourceMappingURL=getParentElement.js.map

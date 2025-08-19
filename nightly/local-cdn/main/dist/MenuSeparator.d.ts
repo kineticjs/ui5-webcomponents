@@ -8,10 +8,9 @@ import type { IMenuItem } from "./Menu.js";
  * @extends ListItemBase
  * @implements {IMenuItem}
  * @public
- * @since 2.0.0
+ * @since 2.0
  */
 declare class MenuSeparator extends ListItemBase implements IMenuItem {
-    eventDetails: ListItemBase["eventDetails"];
     get isSeparator(): boolean;
     get classes(): ClassMap;
     /**
@@ -23,6 +22,4 @@ declare class MenuSeparator extends ListItemBase implements IMenuItem {
      */
     get _pressable(): boolean;
 }
-declare const isInstanceOfMenuSeparator: (object: any) => object is MenuSeparator;
 export default MenuSeparator;
-export { isInstanceOfMenuSeparator, };

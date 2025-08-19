@@ -6,14 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var TableGrowing_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import { customElement, property, eventStrict, i18n, } from "@ui5/webcomponents-base/dist/decorators.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { isSpace, isEnter, } from "@ui5/webcomponents-base/dist/Keys.js";
 import TableGrowingMode from "./types/TableGrowingMode.js";
-import TableGrowingTemplate from "./TableGrowingTemplate.js";
+import TableGrowingTemplate from "./generated/templates/TableGrowingTemplate.lit.js";
 import TableGrowingCss from "./generated/themes/TableGrowing.css.js";
-import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import { TABLE_MORE, TABLE_MORE_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
-import { findVerticalScrollContainer } from "./TableUtils.js";
 // The documentation should be similar to the Table.ts class documentation!
 // Please only use that style where it uses markdown and the documentation is more readable.
 /**
@@ -36,13 +38,9 @@ import { findVerticalScrollContainer } from "./TableUtils.js";
  *
  * ```html
  * <ui5-table>
- * 	<ui5-table-growing mode="Button" text="More" slot="features"></ui5-table-growing>
+ * 	<ui5-table-growing type="Button" growing-text="More" slot="features"></ui5-table-growing>
  * </ui5-table>
  * ```
- *
- * **Notes**:
- * * When the `ui5-table-growing` component is used with the `Scroll` mode and the table is currently not scrollable,
- * the component will render a growing button instead to ensure growing capabilities until the table becomes scrollable.
  *
  * ### ES6 Module Import
  *
@@ -50,8 +48,9 @@ import { findVerticalScrollContainer } from "./TableUtils.js";
  *
  * @constructor
  * @extends UI5Element
- * @since 2.0.0
+ * @since 2.0
  * @public
+ * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
     constructor() {
@@ -63,27 +62,34 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
          *
          * Button - Shows a More button at the bottom of the table, pressing it will load more rows.
          *
-         * Scroll - The rows are loaded automatically by scrolling to the bottom of the table. If the table is not scrollable,
-         * a growing button will be rendered instead to ensure growing functionality.
+         * Scroll - The rows are loaded automatically by scrolling to the bottom of the table. If the table is not scrollable, this option is the same as the Button.
          * @default "Button"
          * @public
          */
-        this.mode = "Button";
+        this.type = "Button";
+        /**
+         * Disables the growing feature.
+         */
+        this.disabled = false;
         /**
          * Defines the active state of the growing button.
          * Used for keyboard interaction.
          * @private
          */
         this._activeState = false;
-        this._invalidate = 0;
         this.identifier = "TableGrowing";
-        this._renderContent = true;
+    }
+    static async onDefine() {
+        TableGrowing_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
     onTableActivate(table) {
         this._table = table;
         this._shouldFocusRow = false;
+        if (this._hasScrollToLoad()) {
+            this._observeTableEnd();
+        }
     }
-    onTableAfterRendering() {
+    onTableRendered() {
         // Focus the first row after growing, when the growing button is used
         if (this._shouldFocusRow) {
             this._shouldFocusRow = false;
@@ -94,11 +100,10 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
             focusRow ||= this._table?.rows[0];
             focusRow?.focus();
         }
-        if (this._renderContent !== this.hasGrowingComponent()) {
-            this._invalidate++;
+        if (this.disabled) {
             return;
         }
-        if (this._hasScrollToLoad() && !this.hasGrowingComponent() && !this._observer) {
+        if (this._hasScrollToLoad()) {
             this._observeTableEnd();
         }
     }
@@ -111,14 +116,14 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
     onBeforeRendering() {
         this._observer?.disconnect();
         this._observer = undefined;
-        this._renderContent = this.hasGrowingComponent();
+        this._currentLastRow = undefined;
         this._invalidateTable();
     }
     hasGrowingComponent() {
-        if (this.mode === TableGrowingMode.Scroll) {
-            return !!this._table && this._table._scrollContainer.clientHeight >= this._table._tableElement.scrollHeight;
+        if (this._hasScrollToLoad()) {
+            return !(this._table && this._table._scrollContainer.scrollHeight > this._table._scrollContainer.clientHeight) ?? true;
         }
-        return this.mode === `${TableGrowingMode.Button}`;
+        return this.type === TableGrowingMode.Button && !this.disabled;
     }
     /**
      * An event handler that can be used by the Table to notify the TableGrowing that
@@ -128,12 +133,12 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
         // remembers the last row. only do this when the table has a growing component rendered.
         if (this._table && this.hasGrowingComponent()) {
             this._currentLastRow = this._table.rows[this._table.rows.length - 1];
-            this._shouldFocusRow = true;
         }
-        this.fireDecoratorEvent("load-more");
+        this._shouldFocusRow = true;
+        this.fireEvent("load-more");
     }
     _hasScrollToLoad() {
-        return this.mode === TableGrowingMode.Scroll;
+        return this.type === TableGrowingMode.Scroll;
     }
     /**
      * Observes the end of the table.
@@ -143,7 +148,10 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
         if (!this._table) {
             return;
         }
-        this._getIntersectionObserver().observe(this._table._endRow);
+        const lastElement = this._table.shadowRoot?.querySelector("#table-end-row");
+        if (lastElement) {
+            this._getIntersectionObserver().observe(lastElement);
+        }
     }
     /**
      * Returns the IntersectionObserver instance. If it does not exist, it will be created.
@@ -153,8 +161,9 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
     _getIntersectionObserver() {
         if (!this._observer) {
             this._observer = new IntersectionObserver(this._onIntersection.bind(this), {
-                root: findVerticalScrollContainer(this._table ?? document.body),
-                rootMargin: "5px",
+                root: document,
+                rootMargin: "10px",
+                threshold: 1.0,
             });
         }
         return this._observer;
@@ -195,38 +204,35 @@ let TableGrowing = TableGrowing_1 = class TableGrowing extends UI5Element {
     _onFocusout() {
         this._activeState = false;
     }
-    get _buttonText() {
-        return this.text || TableGrowing_1.i18nBundle.getText(TABLE_MORE);
+    get _growingButtonText() {
+        return this.growingText || TableGrowing_1.i18nBundle.getText(TABLE_MORE);
     }
-    get _buttonDescription() {
+    get _growingButtonDescription() {
         return TableGrowing_1.i18nBundle.getText(TABLE_MORE_DESCRIPTION);
     }
-    get _hasButton() {
+    get _hasGrowingButton() {
         return this.hasGrowingComponent();
     }
 };
 __decorate([
     property()
-], TableGrowing.prototype, "mode", void 0);
+], TableGrowing.prototype, "type", void 0);
 __decorate([
     property()
-], TableGrowing.prototype, "text", void 0);
+], TableGrowing.prototype, "growingText", void 0);
 __decorate([
     property()
-], TableGrowing.prototype, "subtext", void 0);
+], TableGrowing.prototype, "growingSubText", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
+    property({ type: Boolean })
+], TableGrowing.prototype, "disabled", void 0);
+__decorate([
+    property({ type: Boolean })
 ], TableGrowing.prototype, "_activeState", void 0);
-__decorate([
-    property({ type: Number, noAttribute: true })
-], TableGrowing.prototype, "_invalidate", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], TableGrowing, "i18nBundle", void 0);
 TableGrowing = TableGrowing_1 = __decorate([
     customElement({
         tag: "ui5-table-growing",
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: TableGrowingTemplate,
         styles: TableGrowingCss,
     })
@@ -236,9 +242,7 @@ TableGrowing = TableGrowing_1 = __decorate([
      * @public
      */
     ,
-    eventStrict("load-more", {
-        bubbles: false,
-    })
+    event("load-more")
 ], TableGrowing);
 TableGrowing.define();
 export default TableGrowing;

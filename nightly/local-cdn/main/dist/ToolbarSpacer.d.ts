@@ -1,3 +1,4 @@
+import ToolbarSpacerTemplate from "./generated/templates/ToolbarSpacerTemplate.lit.js";
 import ToolbarItem from "./ToolbarItem.js";
 /**
  * @class
@@ -29,6 +30,8 @@ declare class ToolbarSpacer extends ToolbarItem {
     };
     get ignoreSpace(): boolean;
     get hasFlexibleWidth(): boolean;
+    static get toolbarTemplate(): typeof ToolbarSpacerTemplate;
+    static get toolbarPopoverTemplate(): typeof ToolbarSpacerTemplate;
     get isInteractive(): boolean;
 }
 export default ToolbarSpacer;

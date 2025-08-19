@@ -7,18 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var TreeItemBase_1;
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import { isLeft, isRight } from "@ui5/webcomponents-base/dist/Keys.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 import ListItem from "./ListItem.js";
+import Icon from "./Icon.js";
 import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
 import "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
 import { TREE_ITEM_ARIA_LABEL, TREE_ITEM_EXPAND_NODE, TREE_ITEM_COLLAPSE_NODE, } from "./generated/i18n/i18n-defaults.js";
 // Template
-import TreeItemBaseTemplate from "./TreeItemBaseTemplate.js";
+import TreeItemBaseTemplate from "./generated/templates/TreeItemBaseTemplate.lit.js";
 // Styles
 import treeItemCss from "./generated/themes/TreeItem.css.js";
 /**
@@ -93,14 +93,9 @@ let TreeItemBase = TreeItemBase_1 = class TreeItemBase extends ListItem {
          * @since 1.10.0
          */
         this._fixed = false;
-        /**
-         * @private
-         */
-        this._hasImage = false;
     }
     onBeforeRendering() {
         this.showToggleButton = this.requiresToggleButton;
-        this._hasImage = this.hasImage;
     }
     get classes() {
         const allClasses = super.classes;
@@ -122,9 +117,6 @@ let TreeItemBase = TreeItemBase_1 = class TreeItemBase extends ListItem {
     }
     get hasParent() {
         return this.level > 1;
-    }
-    get hasImage() {
-        return !!this.image.length;
     }
     get _toggleIconName() {
         return this.expanded ? "navigation-down-arrow" : "navigation-right-arrow";
@@ -163,29 +155,35 @@ let TreeItemBase = TreeItemBase_1 = class TreeItemBase extends ListItem {
     }
     _toggleClick(e) {
         e.stopPropagation();
-        this.fireDecoratorEvent("toggle", { item: this });
+        this.fireEvent("toggle", { item: this });
     }
     async _onkeydown(e) {
         await super._onkeydown(e);
         if (!this._fixed && this.showToggleButton && isRight(e)) {
             if (!this.expanded) {
-                this.fireDecoratorEvent("toggle", { item: this });
+                this.fireEvent("toggle", { item: this });
             }
             else {
-                this.fireDecoratorEvent("step-in", { item: this });
+                this.fireEvent("step-in", { item: this });
             }
         }
         if (!this._fixed && isLeft(e)) {
             if (this.expanded) {
-                this.fireDecoratorEvent("toggle", { item: this });
+                this.fireEvent("toggle", { item: this });
             }
             else if (this.hasParent) {
-                this.fireDecoratorEvent("step-out", { item: this });
+                this.fireEvent("step-out", { item: this });
             }
         }
     }
     get iconAccessibleName() {
         return this.expanded ? TreeItemBase_1.i18nBundle.getText(TREE_ITEM_COLLAPSE_NODE) : TreeItemBase_1.i18nBundle.getText(TREE_ITEM_EXPAND_NODE);
+    }
+    static async onDefine() {
+        [TreeItemBase_1.i18nBundle] = await Promise.all([
+            getI18nBundle("@ui5/webcomponents"),
+            super.onDefine(),
+        ]);
     }
 };
 __decorate([
@@ -225,9 +223,6 @@ __decorate([
     property({ type: Boolean })
 ], TreeItemBase.prototype, "_fixed", void 0);
 __decorate([
-    property({ type: Boolean })
-], TreeItemBase.prototype, "_hasImage", void 0);
-__decorate([
     slot({
         type: HTMLElement,
         invalidateOnChildChange: {
@@ -237,20 +232,17 @@ __decorate([
         "default": true,
     })
 ], TreeItemBase.prototype, "items", void 0);
-__decorate([
-    slot()
-], TreeItemBase.prototype, "image", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], TreeItemBase, "i18nBundle", void 0);
 TreeItemBase = TreeItemBase_1 = __decorate([
     customElement({
         languageAware: true,
-        renderer: jsxRenderer,
         template: TreeItemBaseTemplate,
         styles: [
             ListItem.styles,
             treeItemCss,
+        ],
+        dependencies: [
+            ...ListItem.dependencies,
+            Icon,
         ],
     })
     /**
@@ -260,7 +252,9 @@ TreeItemBase = TreeItemBase_1 = __decorate([
      */
     ,
     event("toggle", {
-        bubbles: true,
+        detail: {
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when the user drills down into the tree hierarchy by pressing the right arrow on the tree node.
@@ -269,7 +263,9 @@ TreeItemBase = TreeItemBase_1 = __decorate([
      */
     ,
     event("step-in", {
-        bubbles: true,
+        detail: {
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when the user goes up the tree hierarchy by pressing the left arrow on the tree node.
@@ -278,7 +274,9 @@ TreeItemBase = TreeItemBase_1 = __decorate([
      */
     ,
     event("step-out", {
-        bubbles: true,
+        detail: {
+            item: { type: HTMLElement },
+        },
     })
 ], TreeItemBase);
 export default TreeItemBase;

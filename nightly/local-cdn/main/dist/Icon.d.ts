@@ -29,7 +29,7 @@ interface IIcon extends HTMLElement {
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons).
  * - [@ui5/webcomponents-icons-tnt](https://www.npmjs.com/package/@ui5/webcomponents-icons-tnt) represents the "tnt" collection and includes the following
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons-TNT).
- * - [@ui5/webcomponents-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
+ * - [@ui5/webcomponents-icons-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
  * [icons](https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/BusinessSuiteInAppSymbols).
  *
  * 2. **After exploring the icons collections, add one or more of the packages as dependencies to your project.**
@@ -79,9 +79,6 @@ interface IIcon extends HTMLElement {
  * @public
  */
 declare class Icon extends UI5Element implements IIcon {
-    eventDetails: {
-        click: void;
-    };
     /**
      * Defines the component semantic design.
      * @default "Default"
@@ -135,7 +132,7 @@ declare class Icon extends UI5Element implements IIcon {
     showTooltip: boolean;
     /**
      * Defines the mode of the component.
-     * @default "Decorative"
+     * @default "Image"
      * @public
      * @since 2.0.0
      */
@@ -167,7 +164,7 @@ declare class Icon extends UI5Element implements IIcon {
     */
     get _dir(): "ltr" | undefined;
     get effectiveAriaHidden(): "true" | undefined;
-    get _tabIndex(): 0 | undefined;
+    get _tabIndex(): "0" | undefined;
     get effectiveAccessibleRole(): "button" | "presentation" | "img";
     onEnterDOM(): void;
     onBeforeRendering(): Promise<void>;

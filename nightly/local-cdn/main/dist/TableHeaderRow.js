@@ -4,11 +4,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { customElement, slot, property } from "@ui5/webcomponents-base/dist/decorators.js";
+import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import TableRowBase from "./TableRowBase.js";
-import TableHeaderRowTemplate from "./TableHeaderRowTemplate.js";
+import TableHeaderRowTemplate from "./generated/templates/TableHeaderRowTemplate.lit.js";
 import TableHeaderRowStyles from "./generated/themes/TableHeaderRow.css.js";
-import { TABLE_SELECTION, TABLE_ROW_POPIN, TABLE_ROW_ACTIONS, TABLE_COLUMN_HEADER_ROW, TABLE_SELECT_ALL_ROWS, TABLE_DESELECT_ALL_ROWS, } from "./generated/i18n/i18n-defaults.js";
+import TableHeaderCell from "./TableHeaderCell.js";
+import { TABLE_SELECTION, TABLE_ROW_POPIN, } from "./generated/i18n/i18n-defaults.js";
 /**
  * @class
  *
@@ -25,8 +28,9 @@ import { TABLE_SELECTION, TABLE_ROW_POPIN, TABLE_ROW_ACTIONS, TABLE_COLUMN_HEADE
  *
  * @constructor
  * @extends TableRowBase
- * @since 2.0.0
+ * @since 2.0
  * @public
+ * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 let TableHeaderRow = 
 /**
@@ -41,17 +45,10 @@ class TableHeaderRow extends TableRowBase {
         /**
          * Sticks the `ui5-table-header-row` to the top of a table.
          *
-         * Note: If used in combination with overflowMode "Scroll", the table needs a defined height for the sticky header to work as expected.
-         *
          * @default false
          * @public
          */
         this.sticky = false;
-    }
-    onEnterDOM() {
-        super.onEnterDOM();
-        this.ariaRowIndex = "1";
-        this.ariaRoleDescription = TableRowBase.i18nBundle.getText(TABLE_COLUMN_HEADER_ROW);
     }
     onBeforeRendering() {
         super.onBeforeRendering();
@@ -65,14 +62,8 @@ class TableHeaderRow extends TableRowBase {
     get _isSelectable() {
         return this._isMultiSelect;
     }
-    get _hasSelectedRows() {
-        return this._tableSelection.getSelectedRows().length > 0;
-    }
-    get _shouldRenderClearAll() {
-        return this._tableSelection.headerSelector === "ClearAll";
-    }
-    get _selectionCellAriaDescription() {
-        return this._tableSelection?.getAriaDescriptionForColumnHeader();
+    get _isSelected() {
+        return this._tableSelection?.areAllRowsSelected();
     }
     get _i18nSelection() {
         return TableRowBase.i18nBundle.getText(TABLE_SELECTION);
@@ -80,22 +71,13 @@ class TableHeaderRow extends TableRowBase {
     get _i18nRowPopin() {
         return TableRowBase.i18nBundle.getText(TABLE_ROW_POPIN);
     }
-    get _i18nRowActions() {
-        return TableRowBase.i18nBundle.getText(TABLE_ROW_ACTIONS);
-    }
-    get _i18nSelectAllRows() {
-        return TableRowBase.i18nBundle.getText(TABLE_SELECT_ALL_ROWS);
-    }
-    get _i18nDeselectAllRows() {
-        return TableRowBase.i18nBundle.getText(TABLE_DESELECT_ALL_ROWS);
-    }
 };
 __decorate([
     slot({
         type: HTMLElement,
         "default": true,
         invalidateOnChildChange: {
-            properties: ["width", "_popin", "horizontalAlign", "popinHidden"],
+            properties: ["width", "_popin"],
             slots: false,
         },
         individualSlots: true,
@@ -110,6 +92,7 @@ TableHeaderRow = __decorate([
         languageAware: true,
         styles: [TableRowBase.styles, TableHeaderRowStyles],
         template: TableHeaderRowTemplate,
+        dependencies: [...TableRowBase.dependencies, TableHeaderCell],
     })
     /**
      * Example custom event.

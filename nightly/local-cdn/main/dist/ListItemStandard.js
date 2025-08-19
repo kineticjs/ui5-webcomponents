@@ -4,23 +4,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var ListItemStandard_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import ListItem from "./ListItem.js";
-import ListItemStandardTemplate from "./ListItemStandardTemplate.js";
-/**
- * Maximum number of characters to display for small screens (Size S)
- * @private
- */
-const MAX_CHARACTERS_SIZE_S = 100;
-/**
- * Maximum number of characters to display for medium and larger screens (Size M and above)
- * @private
- */
-const MAX_CHARACTERS_SIZE_M = 300;
+import Icon from "./Icon.js";
+import Avatar from "./Avatar.js";
+import ListItemStandardTemplate from "./generated/templates/ListItemStandardTemplate.lit.js";
 /**
  * @class
  * The `ui5-li` represents the simplest type of item for a `ui5-list`.
@@ -39,11 +29,14 @@ const MAX_CHARACTERS_SIZE_M = 300;
  * @csspart delete-button - Used to style the button rendered when the list item is in delete mode
  * @csspart radio - Used to style the radio button rendered when the list item is in single selection mode
  * @csspart checkbox - Used to style the checkbox rendered when the list item is in multiple selection mode
+ * @slot {Node[]} default - Defines the text of the component.
+ *
+ * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  * @constructor
  * @extends ListItem
  * @public
  */
-let ListItemStandard = ListItemStandard_1 = class ListItemStandard extends ListItem {
+let ListItemStandard = class ListItemStandard extends ListItem {
     constructor() {
         super(...arguments);
         /**
@@ -70,21 +63,12 @@ let ListItemStandard = ListItemStandard_1 = class ListItemStandard extends ListI
          */
         this.movable = false;
         /**
-         * Defines if the text of the component should wrap when it's too long.
-         * When set to "Normal", the content (title, description) will be wrapped
-         * using the `ui5-expandable-text` component.<br/>
+         * Defines if the text of the component should wrap, they truncate by default.
          *
-         * The text can wrap up to 100 characters on small screens (size S) and
-         * up to 300 characters on larger screens (size M and above). When text exceeds
-         * these limits, it truncates with an ellipsis followed by a text expansion trigger.
-         *
-         * Available options are:
-         * - `None` (default) - The text will truncate with an ellipsis.
-         * - `Normal` - The text will wrap (without truncation).
-         *
+         * **Note:** this property takes affect only if text node is provided to default slot of the component
          * @default "None"
-         * @public
-         * @since 2.10.0
+         * @private
+         * @since 1.5.0
          */
         this.wrappingType = "None";
         /**
@@ -96,37 +80,8 @@ let ListItemStandard = ListItemStandard_1 = class ListItemStandard extends ListI
     }
     onBeforeRendering() {
         super.onBeforeRendering();
-        this.hasTitle = !!(this.text || this.textContent);
+        this.hasTitle = !!this.textContent;
         this._hasImage = this.hasImage;
-        // Only load ExpandableText if "Normal" wrapping is used
-        if (this.wrappingType === "Normal") {
-            // If feature is already loaded (preloaded by the user via importing ListItemStandardExpandableText.js), the template is already available
-            if (ListItemStandard_1.ExpandableTextTemplate) {
-                this.expandableTextTemplate = ListItemStandard_1.ExpandableTextTemplate;
-                // If feature is not preloaded, load the template dynamically
-            }
-            else {
-                import("./features/ListItemStandardExpandableTextTemplate.js").then(module => {
-                    this.expandableTextTemplate = module.default;
-                });
-            }
-        }
-    }
-    /**
-     * Returns the content text, either from text property or from the default slot
-     * @private
-     */
-    get _textContent() {
-        return this.text || this.textContent || "";
-    }
-    /**
-     * Determines the maximum characters to display based on the current media range.
-     * - Size S: 100 characters
-     * - Size M and larger: 300 characters
-     * @private
-     */
-    get _maxCharacters() {
-        return this.mediaRange === "S" ? MAX_CHARACTERS_SIZE_S : MAX_CHARACTERS_SIZE_M;
     }
     get displayIconBegin() {
         return !!(this.icon && !this.iconEnd);
@@ -138,9 +93,6 @@ let ListItemStandard = ListItemStandard_1 = class ListItemStandard extends ListI
         return !!this.image.length;
     }
 };
-__decorate([
-    property()
-], ListItemStandard.prototype, "text", void 0);
 __decorate([
     property()
 ], ListItemStandard.prototype, "description", void 0);
@@ -172,19 +124,17 @@ __decorate([
     property({ type: Boolean })
 ], ListItemStandard.prototype, "_hasImage", void 0);
 __decorate([
-    property({ noAttribute: true })
-], ListItemStandard.prototype, "expandableTextTemplate", void 0);
-__decorate([
-    slot({ type: Node, "default": true })
-], ListItemStandard.prototype, "content", void 0);
-__decorate([
     slot()
 ], ListItemStandard.prototype, "image", void 0);
-ListItemStandard = ListItemStandard_1 = __decorate([
+ListItemStandard = __decorate([
     customElement({
         tag: "ui5-li",
-        renderer: jsxRenderer,
         template: ListItemStandardTemplate,
+        dependencies: [
+            ...ListItem.dependencies,
+            Icon,
+            Avatar,
+        ],
     })
 ], ListItemStandard);
 ListItemStandard.define();

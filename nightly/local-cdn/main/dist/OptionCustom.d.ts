@@ -19,7 +19,6 @@ import ListItemBase from "./ListItemBase.js";
  * @public
  */
 declare class OptionCustom extends ListItemBase implements IOption {
-    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the text, displayed inside the `ui5-select` input filed
      * when the option gets selected.
@@ -35,7 +34,9 @@ declare class OptionCustom extends ListItemBase implements IOption {
      */
     value?: string;
     /**
-     * Defines the content of the component.
+     * Defines the text of the component.
+     *
+     * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
      * @public
      */
     content: Array<Node>;

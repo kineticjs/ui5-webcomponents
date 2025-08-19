@@ -1,6 +1,8 @@
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import Popup from "./Popup.js";
+import type { PopupBeforeCloseEventDetail as DialogBeforeCloseEventDetail } from "./Popup.js";
+import "@ui5/webcomponents-icons/dist/resize-corner.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
@@ -27,7 +29,8 @@ import "@ui5/webcomponents-icons/dist/information.js";
 
  *
  * ### Responsive Behavior
- * The `stretch` property can be used to stretch the `ui5-dialog` to full screen. For better usability, it's recommended to stretch the dialog to full screen on phone devices.
+ * The `stretch` property can be used to stretch the
+ * `ui5-dialog` on full screen.
  *
  * **Note:** When a `ui5-bar` is used in the header or in the footer, you should remove the default dialog's paddings.
  *
@@ -61,7 +64,6 @@ import "@ui5/webcomponents-icons/dist/information.js";
  * @csspart footer - Used to style the footer of the component
  */
 declare class Dialog extends Popup {
-    eventDetails: Popup["eventDetails"];
     /**
      * Defines the header text.
      *
@@ -71,10 +73,10 @@ declare class Dialog extends Popup {
      */
     headerText?: string;
     /**
-     * Determines if the dialog will be stretched to full screen on mobile. On desktop,
-     * the dialog will be stretched to approximately 90% of the viewport.
+     * Determines whether the component should be stretched to fullscreen.
      *
-     * **Note:** For better usability of the component it is recommended to set this property to "true" when the dialog is opened on phone.
+     * **Note:** The component will be stretched to approximately
+     * 90% of the viewport.
      * @default false
      * @public
      */
@@ -154,6 +156,7 @@ declare class Dialog extends Popup {
     footer: Array<HTMLElement>;
     static i18nBundle: I18nBundle;
     constructor();
+    static onDefine(): Promise<void>;
     static _isHeader(element: HTMLElement): boolean;
     get isModal(): boolean;
     get _ariaLabelledBy(): string | undefined;
@@ -167,12 +170,12 @@ declare class Dialog extends Popup {
      */
     get _displayHeader(): string | number | boolean;
     get _movable(): boolean;
-    get _headerTabIndex(): 0 | undefined;
+    get _headerTabIndex(): "0" | undefined;
     get _showResizeHandle(): boolean;
     get _minHeight(): number;
     get hasValueState(): boolean;
     get _dialogStateIcon(): string;
-    get _role(): "dialog" | "alertdialog" | undefined;
+    get _role(): string | undefined;
     _show(): void;
     onBeforeRendering(): void;
     onEnterDOM(): void;
@@ -189,7 +192,7 @@ declare class Dialog extends Popup {
     /**
      * Event handlers
      */
-    _onDragMouseDown(e: MouseEvent): void;
+    _onDragMouseDown(e: DragEvent): void;
     _onDragMouseMove(e: MouseEvent): void;
     _onDragMouseUp(): void;
     _onDragOrResizeKeyDown(e: KeyboardEvent): void;
@@ -205,3 +208,4 @@ declare class Dialog extends Popup {
     _detachMouseResizeHandlers(): void;
 }
 export default Dialog;
+export type { DialogBeforeCloseEventDetail, };

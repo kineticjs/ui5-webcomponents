@@ -1,18 +1,18 @@
+import { registerFeature } from "@ui5/webcomponents-base/dist/FeaturesRegistry.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import generateHighlightedMarkup from "@ui5/webcomponents-base/dist/util/generateHighlightedMarkup.js";
-import "../SuggestionItem.js";
-import "../SuggestionItemGroup.js";
-import InputSuggestionsTemplate from "./InputSuggestionsTemplate.js";
-import Input from "../Input.js";
+import List from "../List.js";
+import SuggestionItem from "../SuggestionItem.js";
+import Button from "../Button.js";
+import Icon from "../Icon.js";
 import { LIST_ITEM_POSITION, LIST_ITEM_GROUP_HEADER, } from "../generated/i18n/i18n-defaults.js";
+import SuggestionItemGroup from "../SuggestionItemGroup.js";
 /**
  * A class to manage the `Input` suggestion items.
  * @class
  * @private
  */
 class Suggestions {
-    get template() {
-        return InputSuggestionsTemplate;
-    }
     constructor(component, slotName, highlight, handleFocus) {
         // The component, that the suggestion would plug into.
         this.component = component;
@@ -26,16 +26,14 @@ class Suggestions {
         // that changes due to user interaction.
         this.selectedItemIndex = -1;
     }
-    onUp(e, indexOfItem) {
+    onUp(e) {
         e.preventDefault();
-        const index = !this.isOpened && this._hasValueState && indexOfItem === -1 ? 0 : indexOfItem;
-        this._handleItemNavigation(false /* forward */, index);
+        this._handleItemNavigation(false /* forward */);
         return true;
     }
-    onDown(e, indexOfItem) {
+    onDown(e) {
         e.preventDefault();
-        const index = !this.isOpened && this._hasValueState && indexOfItem === -1 ? 0 : indexOfItem;
-        this._handleItemNavigation(true /* forward */, index);
+        this._handleItemNavigation(true /* forward */);
         return true;
     }
     onSpace(e) {
@@ -60,29 +58,39 @@ class Suggestions {
     onPageUp(e) {
         e.preventDefault();
         const isItemIndexValid = this.selectedItemIndex - 10 > -1;
+        if (this._hasValueState && !isItemIndexValid) {
+            this._focusValueState();
+            return true;
+        }
         this._moveItemSelection(this.selectedItemIndex, isItemIndexValid ? this.selectedItemIndex -= 10 : this.selectedItemIndex = 0);
         return true;
     }
     onPageDown(e) {
         e.preventDefault();
         const items = this._getItems();
-        if (!items) {
-            return true;
-        }
         const lastItemIndex = items.length - 1;
         const isItemIndexValid = this.selectedItemIndex + 10 <= lastItemIndex;
+        if (this._hasValueState && !items) {
+            this._focusValueState();
+            return true;
+        }
         this._moveItemSelection(this.selectedItemIndex, isItemIndexValid ? this.selectedItemIndex += 10 : this.selectedItemIndex = lastItemIndex);
         return true;
     }
     onHome(e) {
         e.preventDefault();
+        if (this._hasValueState) {
+            this._focusValueState();
+            return true;
+        }
         this._moveItemSelection(this.selectedItemIndex, this.selectedItemIndex = 0);
         return true;
     }
     onEnd(e) {
         e.preventDefault();
         const lastItemIndex = this._getItems().length - 1;
-        if (!lastItemIndex) {
+        if (this._hasValueState && !lastItemIndex) {
+            this._focusValueState();
             return true;
         }
         this._moveItemSelection(this.selectedItemIndex, this.selectedItemIndex = lastItemIndex);
@@ -138,6 +146,8 @@ class Suggestions {
             additionalText: item.additionalText,
         };
         this._getComponent().onItemSelected(item, keyboardUsed);
+        item.selected = false;
+        item.focused = false;
         this._getComponent().open = false;
     }
     onItemSelect(item) {
@@ -162,8 +172,16 @@ class Suggestions {
         }
         this.onItemSelected(pressedItem, false /* keyboardUsed */);
     }
+    _onOpen() {
+        this._applyFocus();
+    }
     _onClose() {
         this._handledPress = false;
+    }
+    _applyFocus() {
+        if (this.selectedItemIndex) {
+            this._getItems()[this.selectedItemIndex]?.focus();
+        }
     }
     _isItemOnTarget() {
         return this.isOpened() && this.selectedItemIndex !== null && this.selectedItemIndex !== -1 && !this._isGroupItem;
@@ -178,8 +196,7 @@ class Suggestions {
     isOpened() {
         return !!(this._getPicker()?.open);
     }
-    _handleItemNavigation(forward, index) {
-        this.selectedItemIndex = index;
+    _handleItemNavigation(forward) {
         if (!this._getItems().length) {
             return;
         }
@@ -193,6 +210,14 @@ class Suggestions {
     _selectNextItem() {
         const itemsCount = this._getItems().length;
         const previousSelectedIdx = this.selectedItemIndex;
+        if (this._hasValueState && previousSelectedIdx === -1 && !this.component._isValueStateFocused) {
+            this._focusValueState();
+            return;
+        }
+        if ((previousSelectedIdx === -1 && !this._hasValueState) || this.component._isValueStateFocused) {
+            this._clearValueStateFocus();
+            this.selectedItemIndex = -1;
+        }
         if (previousSelectedIdx !== -1 && previousSelectedIdx + 1 > itemsCount - 1) {
             return;
         }
@@ -201,6 +226,22 @@ class Suggestions {
     _selectPreviousItem() {
         const items = this._getItems();
         const previousSelectedIdx = this.selectedItemIndex;
+        if (this._hasValueState && previousSelectedIdx === 0 && !this.component._isValueStateFocused) {
+            this.component.hasSuggestionItemSelected = false;
+            this.component._isValueStateFocused = true;
+            this.selectedItemIndex = 0;
+            items[0].focused = false;
+            if (items[0].hasAttribute("ui5-suggestion-item")) {
+                items[0].selected = false;
+            }
+            return;
+        }
+        if (this.component._isValueStateFocused) {
+            this.component.focused = true;
+            this.component._isValueStateFocused = false;
+            this.selectedItemIndex = 0;
+            return;
+        }
         if (previousSelectedIdx === -1 || previousSelectedIdx === null) {
             return;
         }
@@ -226,6 +267,7 @@ class Suggestions {
             return;
         }
         this.component.focused = false;
+        this._clearValueStateFocus();
         const selectedItem = this._getItems()[this.selectedItemIndex];
         this.accInfo = {
             isGroup: isGroupItem,
@@ -278,12 +320,7 @@ class Suggestions {
         const rectItem = item.getDomRef().getBoundingClientRect();
         const rectInput = this._getComponent().getDomRef().getBoundingClientRect();
         const windowHeight = (window.innerHeight || document.documentElement.clientHeight);
-        let headerHeight = 0;
-        if (this._hasValueState) {
-            const valueStateHeader = this._getPicker().querySelector("[slot=header]");
-            headerHeight = valueStateHeader.getBoundingClientRect().height;
-        }
-        return (rectItem.top + Suggestions.SCROLL_STEP <= windowHeight) && (rectItem.top >= rectInput.top + headerHeight);
+        return (rectItem.top + Suggestions.SCROLL_STEP <= windowHeight) && (rectItem.top >= rectInput.top);
     }
     _scrollItemIntoView(item) {
         item.scrollIntoView({
@@ -303,13 +340,10 @@ class Suggestions {
      *
      */
     _getItems() {
-        const suggestionComponent = this._getComponent();
-        return suggestionComponent.getSlottedNodes("suggestionItems").flatMap(item => {
-            return item.hasAttribute("ui5-suggestion-item-group") ? [item, ...item.items] : [item];
-        });
+        return Array.from(this._getComponent().querySelectorAll("[ui5-suggestion-item], [ui5-suggestion-item-group], [ui5-suggestion-item-custom]"));
     }
     _getNonGroupItems() {
-        return this._getItems().filter(item => !item.hasAttribute("ui5-suggestion-item-group"));
+        return Array.from(this._getComponent().querySelectorAll("[ui5-suggestion-item], [ui5-suggestion-item-custom]"));
     }
     _getComponent() {
         return this.component;
@@ -339,12 +373,36 @@ class Suggestions {
     get _hasValueState() {
         return this.component.hasValueStateMessage;
     }
+    _focusValueState() {
+        this.component._isValueStateFocused = true;
+        this.component.focused = false;
+        this.component.hasSuggestionItemSelected = false;
+        this.selectedItemIndex = 0;
+        this.component.value = this.component.typedInValue;
+        this._deselectItems();
+    }
+    _clearValueStateFocus() {
+        this.component._isValueStateFocused = false;
+    }
     _clearSelectedSuggestionAndaccInfo() {
         this.accInfo = undefined;
         this.selectedItemIndex = 0;
     }
+    static get dependencies() {
+        return [
+            SuggestionItem,
+            SuggestionItemGroup,
+            List,
+            Button,
+            Icon,
+        ];
+    }
+    static async init() {
+        Suggestions.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    }
 }
 Suggestions.SCROLL_STEP = 60;
-Input.SuggestionsClass = Suggestions;
+// Add suggestions support to the global features registry so that Input.js can use it
+registerFeature("InputSuggestions", Suggestions);
 export default Suggestions;
 //# sourceMappingURL=InputSuggestions.js.map

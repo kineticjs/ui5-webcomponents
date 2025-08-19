@@ -5,9 +5,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import Icon from "@ui5/webcomponents/dist/Icon.js";
+import "@ui5/webcomponents-icons/dist/circle-task-2.js";
+import "@ui5/webcomponents-icons/dist/arrow-right.js";
 import SideNavigationSelectableItemBase from "./SideNavigationSelectableItemBase.js";
-import SideNavigationSubItemTemplate from "./SideNavigationSubItemTemplate.js";
+import SideNavigationSubItemTemplate from "./generated/templates/SideNavigationSubItemTemplate.lit.js";
 // Styles
 import SideNavigationSubItemCss from "./generated/themes/SideNavigationSubItem.css.js";
 /**
@@ -28,35 +31,31 @@ import SideNavigationSubItemCss from "./generated/themes/SideNavigationSubItem.c
  * @since 1.0.0-rc.8
  */
 let SideNavigationSubItem = class SideNavigationSubItem extends SideNavigationSelectableItemBase {
-    _onkeydown(e) {
-        super._onkeydown(e);
-    }
-    _onkeyup(e) {
-        super._onkeyup(e);
-    }
-    _onfocusin(e) {
-        super._onfocusin(e);
-    }
-    _onclick(e) {
-        super._onclick(e);
-    }
-    get classesArray() {
-        const classes = super.classesArray;
-        if (this.icon) {
-            classes.push("ui5-sn-item-has-icon");
-        }
-        if (this.effectiveDisabled) {
-            classes.push("ui5-sn-item-disabled");
-        }
-        return classes;
+    constructor() {
+        super(...arguments);
+        this._onkeydown = (e) => {
+            super._onkeydown(e);
+        };
+        this._onkeyup = (e) => {
+            super._onkeyup(e);
+        };
+        this._onfocusin = (e) => {
+            super._onfocusin(e);
+        };
+        this._onclick = (e) => {
+            super._onclick(e);
+        };
     }
 };
 SideNavigationSubItem = __decorate([
     customElement({
         tag: "ui5-side-navigation-sub-item",
-        renderer: jsxRender,
+        renderer: litRender,
         template: SideNavigationSubItemTemplate,
         styles: SideNavigationSubItemCss,
+        dependencies: [
+            Icon,
+        ],
     })
 ], SideNavigationSubItem);
 SideNavigationSubItem.define();

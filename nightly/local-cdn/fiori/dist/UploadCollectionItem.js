@@ -6,13 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var UploadCollectionItem_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItemType from "@ui5/webcomponents/dist/types/ListItemType.js";
+import Button from "@ui5/webcomponents/dist/Button.js";
+import Input from "@ui5/webcomponents/dist/Input.js";
+import Label from "@ui5/webcomponents/dist/Label.js";
+import Link from "@ui5/webcomponents/dist/Link.js";
+import ProgressIndicator from "@ui5/webcomponents/dist/ProgressIndicator.js";
 import ListItem from "@ui5/webcomponents/dist/ListItem.js";
 import getFileExtension from "@ui5/webcomponents-base/dist/util/getFileExtension.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
@@ -23,7 +27,7 @@ import "@ui5/webcomponents-icons/dist/stop.js";
 import "@ui5/webcomponents-icons/dist/edit.js";
 import { UPLOADCOLLECTIONITEM_CANCELBUTTON_TEXT, UPLOADCOLLECTIONITEM_RENAMEBUTTON_TEXT, UPLOADCOLLECTIONITEM_ERROR_STATE, UPLOADCOLLECTIONITEM_UPLOADING_STATE, UPLOADCOLLECTIONITEM_READY_STATE, UPLOADCOLLECTIONITEM_RETRY_BUTTON_TEXT, UPLOADCOLLECTIONITEM_TERMINATE_BUTTON_TEXT, UPLOADCOLLECTIONITEM_EDIT_BUTTON_TEXT, } from "./generated/i18n/i18n-defaults.js";
 // Template
-import UploadCollectionItemTemplate from "./UploadCollectionItemTemplate.js";
+import UploadCollectionItemTemplate from "./generated/templates/UploadCollectionItemTemplate.lit.js";
 // Styles
 import UploadCollectionItemCss from "./generated/themes/UploadCollectionItem.css.js";
 /**
@@ -62,12 +66,6 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
          * @public
          */
         this.fileNameClickable = false;
-        /**
-         * Disables the delete button.
-         * @default false
-         * @public
-         */
-        this.disableDeleteButton = false;
         /**
          * Hides the delete button.
          * @default false
@@ -115,6 +113,12 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
          */
         this._editing = false;
     }
+    static async onDefine() {
+        [UploadCollectionItem_1.i18nFioriBundle] = await Promise.all([
+            getI18nBundle("@ui5/webcomponents-fiori"),
+            super.onDefine(),
+        ]);
+    }
     /**
      * @override
      */
@@ -125,24 +129,17 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
     }
     async _initInputField() {
         await renderFinished();
-        if (this.editInpElement) {
-            this.editInpElement.value = this._fileNameWithoutExtension;
-        }
+        const inp = this.shadowRoot.querySelector("#ui5-uci-edit-input");
+        inp.value = this._fileNameWithoutExtension;
         await renderFinished();
-        const inpFocusDomRef = this.editInpElement?.getFocusDomRef();
+        const inpFocusDomRef = inp.getFocusDomRef();
         if (inpFocusDomRef) {
             inpFocusDomRef.focus();
             inpFocusDomRef.setSelectionRange(0, this._fileNameWithoutExtension.length);
         }
     }
-    get editInpElement() {
-        return this.shadowRoot.querySelector("#ui5-uci-edit-input");
-    }
     _onkeyup(e) {
         super._onkeyup(e);
-        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
-            return;
-        }
         if (isDelete(e) && !this.disableDeleteButton && !this.hideDeleteButton && !this.disabled) {
             this._onDelete();
         }
@@ -170,7 +167,7 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
     _onRename() {
         const inp = this.shadowRoot.querySelector("#ui5-uci-edit-input");
         this.fileName = inp.value + this._fileExtension;
-        this.fireDecoratorEvent("rename");
+        this.fireEvent("rename");
         this._editing = false;
         this._focus();
     }
@@ -195,13 +192,13 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
         }
     }
     _focus() {
-        this.fireDecoratorEvent("focus-requested");
+        this.fireEvent("_focus-requested");
     }
     _onFileNameClick() {
-        this.fireDecoratorEvent("file-name-click");
+        this.fireEvent("file-name-click");
     }
     _onRetry() {
-        this.fireDecoratorEvent("retry");
+        this.fireEvent("retry");
     }
     _onRetryKeyup(e) {
         if (isSpace(e)) {
@@ -209,7 +206,7 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
         }
     }
     _onTerminate() {
-        this.fireDecoratorEvent("terminate");
+        this.fireEvent("terminate");
     }
     _onTerminateKeyup(e) {
         if (isSpace(e)) {
@@ -217,7 +214,7 @@ let UploadCollectionItem = UploadCollectionItem_1 = class UploadCollectionItem e
         }
     }
     _onDelete() {
-        this.fireDecoratorEvent("request-delete");
+        this.fireEvent("_uci-delete");
     }
     getFocusDomRef() {
         return this.getDomRef();
@@ -327,16 +324,20 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement })
 ], UploadCollectionItem.prototype, "thumbnail", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-fiori")
-], UploadCollectionItem, "i18nFioriBundle", void 0);
 UploadCollectionItem = UploadCollectionItem_1 = __decorate([
     customElement({
         tag: "ui5-upload-collection-item",
         languageAware: true,
-        renderer: jsxRenderer,
         styles: [ListItem.styles, UploadCollectionItemCss],
         template: UploadCollectionItemTemplate,
+        dependencies: [
+            ...ListItem.dependencies,
+            Button,
+            Input,
+            Link,
+            Label,
+            ProgressIndicator,
+        ],
     })
     /**
      * Fired when the file name is clicked.
@@ -345,9 +346,7 @@ UploadCollectionItem = UploadCollectionItem_1 = __decorate([
      * @public
      */
     ,
-    event("file-name-click", {
-        bubbles: true,
-    })
+    event("file-name-click")
     /**
      * Fired when the `fileName` property gets changed.
      *
@@ -356,9 +355,7 @@ UploadCollectionItem = UploadCollectionItem_1 = __decorate([
      * @public
      */
     ,
-    event("rename", {
-        bubbles: true,
-    })
+    event("rename")
     /**
      * Fired when the terminate button is pressed.
      *
@@ -366,9 +363,7 @@ UploadCollectionItem = UploadCollectionItem_1 = __decorate([
      * @public
      */
     ,
-    event("terminate", {
-        bubbles: true,
-    })
+    event("terminate")
     /**
      * Fired when the retry button is pressed.
      *
@@ -376,24 +371,18 @@ UploadCollectionItem = UploadCollectionItem_1 = __decorate([
      * @public
      */
     ,
-    event("retry", {
-        bubbles: true,
-    })
+    event("retry")
     /**
      * @since 1.0.0-rc.8
      * @private
      */
     ,
-    event("focus-requested", {
-        bubbles: true,
-    })
+    event("_focus-requested")
     /**
      * @private
      */
     ,
-    event("request-delete", {
-        bubbles: true,
-    })
+    event("_uci-delete")
 ], UploadCollectionItem);
 UploadCollectionItem.define();
 export default UploadCollectionItem;

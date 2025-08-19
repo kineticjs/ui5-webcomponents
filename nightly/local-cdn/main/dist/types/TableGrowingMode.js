@@ -2,7 +2,6 @@
  * Growing mode of the &lt;ui5-table&gt; component.
  *
  * @public
- * @experimental
  */
 var TableGrowingMode;
 (function (TableGrowingMode) {
@@ -13,8 +12,6 @@ var TableGrowingMode;
     TableGrowingMode["Button"] = "Button";
     /**
      * Scroll to load more data.
-     *
-     * **Note:** If the table is not scrollable, a growing button will be rendered instead to ensure growing functionality.
      * @public
      */
     TableGrowingMode["Scroll"] = "Scroll";

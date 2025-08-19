@@ -5,16 +5,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
-import { getAnimationMode } from "@ui5/webcomponents-base/dist/config/AnimationMode.js";
-import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScopeUtils.js";
-import AnimationMode from "@ui5/webcomponents-base/dist/types/AnimationMode.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
+import MediaRange from "@ui5/webcomponents-base/dist/MediaRange.js";
+import browserScrollbarCSS from "@ui5/webcomponents/dist/generated/themes/BrowserScrollbar.css.js";
 // Template
-import PageTemplate from "./PageTemplate.js";
+import PageTemplate from "./generated/templates/PageTemplate.lit.js";
 // Styles
 import PageCss from "./generated/themes/Page.css.js";
 /**
@@ -29,7 +28,7 @@ import PageCss from "./generated/themes/Page.css.js";
  * The top most area of the page is occupied by the header. The standard header includes a navigation button and a title.
  * #### Content
  * The content occupies the main part of the page. Only the content area is scrollable by default.
- * This can be prevented by setting `noScrolling` to `true`.
+ * This can be prevented by setting  `enableScrolling` to `false`.
  * #### Footer
  * The footer is optional and occupies the part above the bottom part of the content. Alternatively, the footer can be fixed at the bottom of the page by enabling the `fixedFooter` property.
  *
@@ -78,9 +77,22 @@ let Page = class Page extends UI5Element {
          * @public
          */
         this.hideFooter = false;
+        /**
+         * Defines the current media query size.
+         * @private
+         * @since 1.0.0-rc.15
+         */
+        this.mediaRange = "S";
+        this._updateMediaRange = this.updateMediaRange.bind(this);
     }
     onEnterDOM() {
-        this.style.setProperty(getScopedVarName("--_ui5-page-animation-duration"), getAnimationMode() === AnimationMode.None ? "0s" : "0.35s");
+        ResizeHandler.register(this, this._updateMediaRange);
+    }
+    onExitDOM() {
+        ResizeHandler.deregister(this, this._updateMediaRange);
+    }
+    updateMediaRange() {
+        this.mediaRange = MediaRange.getCurrentRange(MediaRange.RANGESETS.RANGE_4STEPS, this.getDomRef().offsetWidth);
     }
     get _contentBottom() {
         return this.fixedFooter && !this.hideFooter ? "2.75rem" : "0";
@@ -90,6 +102,16 @@ let Page = class Page extends UI5Element {
     }
     get _contentTop() {
         return this.header.length ? "2.75rem" : "0rem";
+    }
+    get styles() {
+        return {
+            content: {
+                "padding-bottom": this.footer.length && this._contentPaddingBottom,
+                "bottom": this.footer.length && this._contentBottom,
+                "top": this._contentTop,
+            },
+            footer: {},
+        };
     }
 };
 __decorate([
@@ -105,6 +127,9 @@ __decorate([
     property({ type: Boolean })
 ], Page.prototype, "hideFooter", void 0);
 __decorate([
+    property()
+], Page.prototype, "mediaRange", void 0);
+__decorate([
     slot()
 ], Page.prototype, "header", void 0);
 __decorate([
@@ -117,10 +142,10 @@ Page = __decorate([
     customElement({
         tag: "ui5-page",
         languageAware: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: [
+            browserScrollbarCSS,
             PageCss,
-            getEffectiveScrollbarStyle(),
         ],
         template: PageTemplate,
     })

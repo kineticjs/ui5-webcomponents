@@ -3,22 +3,8 @@ import { fireLanguageChange } from "../locale/languageChange.js";
 import { reRenderAllUI5Elements } from "../Render.js";
 import { DEFAULT_LANGUAGE } from "../generated/AssetParameters.js";
 import { isBooted } from "../Boot.js";
-import { attachConfigurationReset } from "./ConfigurationReset.js";
 let curLanguage;
 let fetchDefaultLanguage;
-attachConfigurationReset(() => {
-    curLanguage = undefined;
-    fetchDefaultLanguage = undefined;
-});
-// Flag indicating that a language change is in progress and not yet complete.
-// While this flag is true, language-aware components will not re-render.
-// These components may rely on language-specific data (e.g., CLDR, language bundles),
-// which might be unavailable during the loading phase.
-// During this phase, all re-rendering is postponed.
-// Once all necessary language data has been loaded, the language change
-// will trigger a re-render of all language-aware components.
-let languageChangePending = false;
-const getLanguageChangePending = () => languageChangePending;
 /**
  * Returns the currently configured language, or the browser language as a fallback.
  * @public
@@ -42,11 +28,9 @@ const setLanguage = async (language) => {
     if (curLanguage === language) {
         return;
     }
-    languageChangePending = true;
     curLanguage = language;
-    await fireLanguageChange(language);
-    languageChangePending = false;
     if (isBooted()) {
+        await fireLanguageChange(language);
         await reRenderAllUI5Elements({ languageAware: true });
     }
 };
@@ -79,9 +63,9 @@ const setFetchDefaultLanguage = (fetchDefaultLang) => {
  */
 const getFetchDefaultLanguage = () => {
     if (fetchDefaultLanguage === undefined) {
-        fetchDefaultLanguage = getConfiguredFetchDefaultLanguage();
+        setFetchDefaultLanguage(getConfiguredFetchDefaultLanguage());
     }
     return fetchDefaultLanguage;
 };
-export { getLanguage, setLanguage, getDefaultLanguage, setFetchDefaultLanguage, getFetchDefaultLanguage, getLanguageChangePending, };
+export { getLanguage, setLanguage, getDefaultLanguage, setFetchDefaultLanguage, getFetchDefaultLanguage, };
 //# sourceMappingURL=Language.js.map
