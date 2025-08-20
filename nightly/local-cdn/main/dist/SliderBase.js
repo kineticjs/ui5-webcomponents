@@ -7,14 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var SliderBase_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { isPhone, supportsTouch } from "@ui5/webcomponents-base/dist/Device.js";
-import { isEscape, isHome, isEnd, isUp, isDown, isRight, isLeft, isUpCtrl, isDownCtrl, isRightCtrl, isLeftCtrl, isPlus, isMinus, isPageUp, isPageDown, isF2, } from "@ui5/webcomponents-base/dist/Keys.js";
+import "@ui5/webcomponents-icons/dist/direction-arrows.js";
+import { isEscape, isHome, isEnd, isUp, isDown, isRight, isLeft, isUpCtrl, isDownCtrl, isRightCtrl, isLeftCtrl, isPlus, isMinus, isPageUp, isPageDown, } from "@ui5/webcomponents-base/dist/Keys.js";
 // Styles
 import sliderBaseStyles from "./generated/themes/SliderBase.css.js";
-import { getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
 /**
  * Fired when the value changes and the user has finished interacting with the slider.
  * @public
@@ -79,16 +79,6 @@ class SliderBase extends UI5Element {
          */
         this.showTooltip = false;
         /**
-         *
-         * Indicates whether input fields should be used as tooltips for the handles.
-         *
-         * **Note:** Setting this option to true will only work if showTooltip is set to true.
-         * **Note:** In order for the component to comply with the accessibility standard, it is recommended to set the editableTooltip property to true.
-         * @default false
-         * @public
-         */
-        this.editableTooltip = false;
-        /**
          * Defines whether the slider is in disabled state.
          * @default false
          * @public
@@ -97,14 +87,9 @@ class SliderBase extends UI5Element {
         /**
          * @private
          */
-        this.value = 0;
-        /**
-         * @private
-         */
-        this._tooltipsOpen = false;
+        this._tooltipVisibility = "hidden";
         this._labelsOverlapping = false;
         this._hiddenTickmarks = false;
-        this._isInputValueValid = false;
         this.notResized = false;
         this._isUserInteraction = false;
         this._isInnerElementFocusing = false;
@@ -118,9 +103,16 @@ class SliderBase extends UI5Element {
             max: undefined,
             labelInterval: undefined,
         };
+        const handleTouchStartEvent = (e) => {
+            this._onmousedown(e);
+        };
+        this._ontouchstart = {
+            handleEvent: handleTouchStartEvent,
+            passive: true,
+        };
     }
     _handleMove(e) { } // eslint-disable-line
-    _handleUp(e) { } // eslint-disable-line
+    _handleUp() { }
     _onmousedown(e) { } // eslint-disable-line
     _handleActionKeyPress(e) { } // eslint-disable-line
     static get ACTION_KEYS() {
@@ -152,7 +144,7 @@ class SliderBase extends UI5Element {
         };
     }
     static get renderer() {
-        return jsxRender;
+        return litRender;
     }
     static get styles() {
         return sliderBaseStyles;
@@ -184,7 +176,9 @@ class SliderBase extends UI5Element {
      * @private
      */
     _onmouseover() {
-        this._tooltipsOpen = this.showTooltip;
+        if (this.showTooltip) {
+            this._tooltipVisibility = SliderBase_1.TOOLTIP_VISIBILITY.VISIBLE;
+        }
     }
     /**
      * Hides the tooltip(s) if the `showTooltip` property is set to true
@@ -192,37 +186,20 @@ class SliderBase extends UI5Element {
      */
     _onmouseout() {
         if (this.showTooltip && !this.shadowRoot.activeElement) {
-            this._tooltipsOpen = false;
+            this._tooltipVisibility = SliderBase_1.TOOLTIP_VISIBILITY.HIDDEN;
         }
     }
     _onkeydown(e) {
-        const target = e.target;
-        if (isF2(e) && target.classList.contains("ui5-slider-handle")) {
-            target.parentNode.querySelector("[ui5-slider-tooltip]").focus();
-        }
-        if (this.disabled || this._effectiveStep === 0 || target.hasAttribute("ui5-slider-handle")) {
+        if (this.disabled || this._effectiveStep === 0) {
             return;
         }
-        if (SliderBase_1._isActionKey(e) && target && !target.hasAttribute("ui5-slider-tooltip")) {
+        if (SliderBase_1._isActionKey(e)) {
             e.preventDefault();
             this._isUserInteraction = true;
             this._handleActionKeyPress(e);
         }
     }
-    _onTooltipChange(e) {
-        const value = e.detail.value;
-        this._updateValueFromInput(value);
-    }
-    _updateValueFromInput(fieldValue) {
-        const value = parseFloat(fieldValue);
-        this._isInputValueValid = value >= this._effectiveMin && value <= this._effectiveMax;
-        if (!this._isInputValueValid) {
-            return;
-        }
-        this.value = value;
-        this.fireDecoratorEvent("change");
-    }
-    _onKeyupBase() {
+    _onkeyup() {
         if (this.disabled) {
             return;
         }
@@ -273,22 +250,18 @@ class SliderBase extends UI5Element {
         // In such case the labels must correspond to the tickmarks, only the first and the last one should exist.
         if (spaceBetweenTickmarks < SliderBase_1.MIN_SPACE_BETWEEN_TICKMARKS) {
             this._hiddenTickmarks = true;
+            this._labelsOverlapping = true;
         }
         else {
             this._hiddenTickmarks = false;
         }
         if (this.labelInterval <= 0 || this._hiddenTickmarks) {
-            this._labelsOverlapping = true;
             return;
         }
         // Check if there are any overlapping labels.
         // If so - only the first and the last one should be visible
-        const remInPx = parseFloat(getComputedStyle(document.documentElement).fontSize); // calculate 1 rem in pixels
-        const childWidthPx = 2 * remInPx; // as specified label must be 2 rems so calculate one child width in pixels
-        const labelItemsParent = this.shadowRoot.querySelector(".ui5-slider-labels");
-        const labelItemsSumWidth = this._labels.length * childWidthPx; // all labels width
-        const labelItemsParentWidth = labelItemsParent.clientWidth; // label parent width
-        this._labelsOverlapping = labelItemsParentWidth < labelItemsSumWidth;
+        const labelItems = this.shadowRoot.querySelectorAll(".ui5-slider-labels li");
+        this._labelsOverlapping = [...labelItems].some(label => label.scrollWidth > label.clientWidth);
     }
     /**
      * Called when the user starts interacting with the slider.
@@ -322,9 +295,8 @@ class SliderBase extends UI5Element {
      * @private
      */
     _handleFocusOnMouseDown(e) {
-        const currentlyFocusedElement = this.shadowRoot.activeElement;
-        const elementToBeFocused = e.target;
-        if ((!currentlyFocusedElement || currentlyFocusedElement !== elementToBeFocused) && !elementToBeFocused.hasAttribute("ui5-input")) {
+        const focusedElement = this.shadowRoot.activeElement;
+        if (!focusedElement || focusedElement !== e.target) {
             this._preserveFocus(true);
             this.focusInnerElement();
         }
@@ -351,7 +323,7 @@ class SliderBase extends UI5Element {
     updateStateStorageAndFireInputEvent(valueType) {
         this.storePropertyState(valueType);
         if (this._isUserInteraction) {
-            this.fireDecoratorEvent("input");
+            this.fireEvent("input");
         }
     }
     /**
@@ -514,12 +486,14 @@ class SliderBase extends UI5Element {
         }
     }
     _handleActionKeyPressBase(e, affectedPropName) {
-        const isUpAction = SliderBase_1._isIncreaseValueAction(e, this.directionStart);
+        const isUpAction = SliderBase_1._isIncreaseValueAction(e);
         const isBigStep = SliderBase_1._isBigStepAction(e);
         const currentValue = this[affectedPropName];
         const min = this._effectiveMin;
         const max = this._effectiveMax;
-        let step = this._effectiveStep;
+        // We need to take into consideration the effective direction of the slider - rtl or ltr.
+        // While in ltr, the left arrow key decreases the value, in rtl it should actually increase it.
+        let step = this.effectiveDir === "rtl" ? -this._effectiveStep : this._effectiveStep;
         // If the action key corresponds to a long step and the slider has more than 10 normal steps,
         // make a jump of 1/10th of the Slider's length, otherwise just use the normal step property.
         step = isBigStep && ((max - min) / step > 10) ? (max - min) / 10 : step;
@@ -531,10 +505,10 @@ class SliderBase extends UI5Element {
         }
         return isUpAction ? step : step * -1;
     }
-    static _isIncreaseValueAction(e, directionStart) {
-        if (directionStart === "right") {
-            return isUp(e) || isUpCtrl(e) || isLeft(e) || isLeftCtrl(e) || isPlus(e) || isPageUp(e);
-        }
+    static _isDecreaseValueAction(e) {
+        return isDown(e) || isDownCtrl(e) || isLeft(e) || isLeftCtrl(e) || isMinus(e) || isPageDown(e);
+    }
+    static _isIncreaseValueAction(e) {
         return isUp(e) || isUpCtrl(e) || isRight(e) || isRightCtrl(e) || isPlus(e) || isPageUp(e);
     }
     static _isBigStepAction(e) {
@@ -590,30 +564,10 @@ class SliderBase extends UI5Element {
         return Math.max(this.min, this.max);
     }
     get _tabIndex() {
-        return this.disabled ? -1 : 0;
+        return this.disabled ? "-1" : "0";
     }
-    get _ariaKeyshortcuts() {
-        return this.editableTooltip ? "F2" : undefined;
-    }
-    get _ariaDescribedByHandleText() {
-        return this.editableTooltip ? "ui5-slider-InputDesc" : undefined;
-    }
-    get _ariaLabel() {
-        const associatedLabelText = getAssociatedLabelForTexts(this);
-        const hasAccessibleName = !!this.accessibleName;
-        let labelText = hasAccessibleName
-            ? `${this.accessibleName} ${this._ariaLabelledByText}`
-            : this._ariaLabelledByText;
-        if (!hasAccessibleName && associatedLabelText) {
-            labelText = `${associatedLabelText} ${labelText}`;
-        }
-        return labelText;
-    }
-    get _ariaDescribedByInputText() {
-        return "";
-    }
-    get _ariaLabelledByInputText() {
-        return "";
+    get _ariaLabelledByHandleRefs() {
+        return [`${this._id}-accName`, `${this._id}-sliderDesc`].join(" ").trim();
     }
 };
 __decorate([
@@ -639,40 +593,27 @@ __decorate([
 ], SliderBase.prototype, "showTooltip", void 0);
 __decorate([
     property({ type: Boolean })
-], SliderBase.prototype, "editableTooltip", void 0);
-__decorate([
-    property({ type: Boolean })
 ], SliderBase.prototype, "disabled", void 0);
 __decorate([
     property()
 ], SliderBase.prototype, "accessibleName", void 0);
 __decorate([
-    property({ type: Number })
-], SliderBase.prototype, "value", void 0);
-__decorate([
-    property({ type: Boolean })
-], SliderBase.prototype, "_tooltipsOpen", void 0);
+    property()
+], SliderBase.prototype, "_tooltipVisibility", void 0);
 __decorate([
     property({ type: Boolean })
 ], SliderBase.prototype, "_labelsOverlapping", void 0);
 __decorate([
     property({ type: Boolean })
 ], SliderBase.prototype, "_hiddenTickmarks", void 0);
-__decorate([
-    property({ type: Boolean })
-], SliderBase.prototype, "_isInputValueValid", void 0);
 SliderBase = SliderBase_1 = __decorate([
-    event("change", {
-        bubbles: true,
-    })
+    event("change")
     /**
      * Fired when the value changes due to user interaction that is not yet finished - during mouse/touch dragging.
      * @public
      */
     ,
-    event("input", {
-        bubbles: true,
-    })
+    event("input")
     /**
      * @class
      *

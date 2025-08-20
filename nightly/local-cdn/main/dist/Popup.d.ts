@@ -35,13 +35,6 @@ type PopupBeforeCloseEventDetail = {
  * @public
  */
 declare abstract class Popup extends UI5Element {
-    eventDetails: {
-        "before-open": void;
-        "open": void;
-        "before-close": PopupBeforeCloseEventDetail;
-        "close": void;
-        "scroll": PopupScrollEventDetail;
-    };
     /**
      * Defines the ID of the HTML Element, which will get the initial focus.
      *
@@ -80,25 +73,6 @@ declare abstract class Popup extends UI5Element {
      * @since 1.10.0
      */
     accessibleRole: `${PopupAccessibleRole}`;
-    /**
-     * Defines the accessible description of the component.
-     * @default undefined
-     * @public
-     * @since 2.11.0
-     */
-    accessibleDescription?: string;
-    /**
-     * Receives id(or many ids) of the elements that describe the component.
-     * @default undefined
-     * @public
-     * @since 2.11.0
-     */
-    accessibleDescriptionRef?: string;
-    /**
-     * Constantly updated value of texts collected from the associated labels.
-     * @private
-     */
-    _associatedDescriptionRefTexts?: string;
     /**
      * Defines the current media query size.
      * @private
@@ -196,7 +170,6 @@ declare abstract class Popup extends UI5Element {
     applyFocus(): Promise<void>;
     isFocusWithin(): boolean;
     _updateMediaRange(): void;
-    _updateAssociatedLabelsTexts(): void;
     /**
      * Adds the popup to the "opened popups registry"
      * @protected
@@ -241,13 +214,9 @@ declare abstract class Popup extends UI5Element {
      * @protected
      */
     get _ariaLabel(): string | undefined;
-    get _accInfoAriaDescription(): string;
-    get ariaDescriptionText(): string | undefined;
-    get ariaDescriptionTextId(): "" | "accessibleDescription";
-    get ariaDescribedByIds(): string;
     get _root(): HTMLElement;
-    get _role(): "dialog" | "alertdialog" | undefined;
-    get _ariaModal(): "true" | undefined;
+    get _role(): string | undefined;
+    get _ariaModal(): string | undefined;
     get contentDOM(): HTMLElement;
     get styles(): {
         root: {};
@@ -256,4 +225,4 @@ declare abstract class Popup extends UI5Element {
     get classes(): ClassMap;
 }
 export default Popup;
-export type { PopupScrollEventDetail, PopupBeforeCloseEventDetail };
+export type { PopupScrollEventDetail, PopupBeforeCloseEventDetail, };

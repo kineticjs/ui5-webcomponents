@@ -7,21 +7,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var DynamicSideContent_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import SideContentPosition from "./types/SideContentPosition.js";
 import SideContentVisibility from "./types/SideContentVisibility.js";
 import SideContentFallDown from "./types/SideContentFallDown.js";
-import DynamicSideContentTemplate from "./DynamicSideContentTemplate.js";
+import DynamicSideContentTemplate from "./generated/templates/DynamicSideContentTemplate.lit.js";
 // Styles
 import DynamicSideContentCss from "./generated/themes/DynamicSideContent.css.js";
 // Texts
-import { DSC_MAIN_ARIA_LABEL, DSC_SIDE_ARIA_LABEL, } from "./generated/i18n/i18n-defaults.js";
+import { DSC_SIDE_ARIA_LABEL, } from "./generated/i18n/i18n-defaults.js";
 // Breakpoint-related constants
 const S_M_BREAKPOINT = 720, // Breakpoint between S and M screen sizes
 M_L_BREAKPOINT = 1024, // Breakpoint between M and L screen sizes
@@ -150,19 +149,6 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
          */
         this.equalSplit = false;
         /**
-        * Defines additional accessibility attributes on different areas of the component.
-        *
-        * The accessibilityAttributes object has the following fields:
-        *
-        *  - **mainContent**: `mainContent.ariaLabel` defines the aria-label of the main content area. Accepts any string.
-        *  - **sideContent**: `sideContent.ariaLabel` defines the aria-label of the side content area. Accepts any string.
-        *
-        * @default {}
-        * @public
-        * @since 2.6.0
-        */
-        this.accessibilityAttributes = {};
-        /**
          * @private
          */
         this._mcSpan = "0";
@@ -175,6 +161,9 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
          */
         this._toggled = false;
         this._handleResizeBound = this.handleResize.bind(this);
+    }
+    static async onDefine() {
+        DynamicSideContent_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
     }
     onAfterRendering() {
         this._resizeContents();
@@ -195,17 +184,17 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
         }
     }
     get classes() {
-        const gridPrefix = "ui5-dsc-span", mcSpan = this._toggled ? this._scSpan : this._mcSpan, scSpan = this._toggled ? this._mcSpan : this._scSpan;
-        return {
+        const gridPrefix = "ui5-dsc-span", mcSpan = this._toggled ? this._scSpan : this._mcSpan, scSpan = this._toggled ? this._mcSpan : this._scSpan, classes = {
             main: {
                 "ui5-dsc-main": true,
-                [`${gridPrefix}-${mcSpan}`]: true,
             },
             side: {
                 "ui5-dsc-side": true,
-                [`${gridPrefix}-${scSpan}`]: true,
             },
         };
+        classes.main[`${gridPrefix}-${mcSpan}`] = true;
+        classes.side[`${gridPrefix}-${scSpan}`] = true;
+        return classes;
     }
     get styles() {
         const isToggled = this.breakpoint === this.sizeS && this._toggled, mcSpan = isToggled ? this._scSpan : this._mcSpan, scSpan = isToggled ? this._mcSpan : this._scSpan, contentHeight = this.breakpoint === this.sizeS && this.sideContentVisibility !== SideContentVisibility.AlwaysShow ? "100%" : "auto";
@@ -223,12 +212,7 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
     }
     get accInfo() {
         return {
-            mainContent: {
-                ariaLabel: this.accessibilityAttributes.mainContent?.ariaLabel || DynamicSideContent_1.i18nBundle.getText(DSC_MAIN_ARIA_LABEL),
-            },
-            sideContent: {
-                ariaLabel: this.accessibilityAttributes.sideContent?.ariaLabel || DynamicSideContent_1.i18nBundle.getText(DSC_SIDE_ARIA_LABEL),
-            },
+            "label": DynamicSideContent_1.i18nBundle.getText(DSC_SIDE_ARIA_LABEL),
         };
     }
     get sizeS() {
@@ -268,7 +252,7 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
         return "fixed";
     }
     get containerWidth() {
-        return this.parentElement.getBoundingClientRect().width;
+        return this.parentElement.clientWidth;
     }
     get breakpoint() {
         let size;
@@ -359,7 +343,7 @@ let DynamicSideContent = DynamicSideContent_1 = class DynamicSideContent extends
                 mainContentVisible: mainSize !== this.span0,
                 sideContentVisible: sideSize !== this.span0,
             };
-            this.fireDecoratorEvent("layout-change", eventParams);
+            this.fireEvent("layout-change", eventParams);
             this._currentBreakpoint = this.breakpoint;
         }
         // update contents sizes
@@ -392,9 +376,6 @@ __decorate([
     property({ type: Boolean })
 ], DynamicSideContent.prototype, "equalSplit", void 0);
 __decorate([
-    property({ type: Object })
-], DynamicSideContent.prototype, "accessibilityAttributes", void 0);
-__decorate([
     property({ noAttribute: true })
 ], DynamicSideContent.prototype, "_mcSpan", void 0);
 __decorate([
@@ -409,14 +390,11 @@ __decorate([
 __decorate([
     slot()
 ], DynamicSideContent.prototype, "sideContent", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-fiori")
-], DynamicSideContent, "i18nBundle", void 0);
 DynamicSideContent = DynamicSideContent_1 = __decorate([
     customElement({
         tag: "ui5-dynamic-side-content",
-        renderer: jsxRenderer,
-        styles: [DynamicSideContentCss, getEffectiveScrollbarStyle()],
+        renderer: litRender,
+        styles: DynamicSideContentCss,
         template: DynamicSideContentTemplate,
     })
     /**
@@ -429,7 +407,32 @@ DynamicSideContent = DynamicSideContent_1 = __decorate([
      */
     ,
     event("layout-change", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            currentBreakpoint: {
+                type: String,
+            },
+            /**
+             * @public
+             */
+            previousBreakpoint: {
+                type: String,
+            },
+            /**
+             * @public
+             */
+            mainContentVisible: {
+                type: Boolean,
+            },
+            /**
+             * @public
+             */
+            sideContentVisible: {
+                type: Boolean,
+            },
+        },
     })
 ], DynamicSideContent);
 DynamicSideContent.define();

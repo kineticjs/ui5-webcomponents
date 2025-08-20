@@ -24,7 +24,7 @@ declare class SuggestionListItem extends ListItemStandard {
     titleText: Array<Node>;
     onBeforeRendering(): void;
     get effectiveTitle(): string;
-    get hasDescription(): string | true | undefined;
+    get hasDescription(): string | number | undefined;
     get groupItem(): boolean;
 }
 export default SuggestionListItem;

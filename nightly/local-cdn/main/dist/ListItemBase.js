@@ -6,13 +6,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import { isEnter, isSpace, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
+import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 // Styles
 import styles from "./generated/themes/ListItemBase.css.js";
 import draggableElementStyles from "./generated/themes/DraggableElement.css.js";
@@ -75,11 +76,11 @@ let ListItemBase = class ListItemBase extends UI5Element {
         this.actionable = true;
     }
     _onfocusin(e) {
-        this.fireDecoratorEvent("request-tabindex-change", e);
+        this.fireEvent("_request-tabindex-change", e);
         if (e.target !== this.getFocusDomRef()) {
             return;
         }
-        this.fireDecoratorEvent("_focused", e);
+        this.fireEvent("_focused", e);
     }
     _onkeydown(e) {
         if (isTabNext(e)) {
@@ -88,41 +89,29 @@ let ListItemBase = class ListItemBase extends UI5Element {
         if (isTabPrevious(e)) {
             return this._handleTabPrevious(e);
         }
-        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
+        if (getEventMark(e) === "button") {
             return;
         }
-        if (this._isSpace(e)) {
+        if (isSpace(e)) {
             e.preventDefault();
         }
-        if (this._isEnter(e)) {
+        if (isEnter(e)) {
             this.fireItemPress(e);
         }
     }
     _onkeyup(e) {
-        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
+        if (getEventMark(e) === "button") {
             return;
         }
-        if (this._isSpace(e)) {
+        if (isSpace(e)) {
             this.fireItemPress(e);
         }
     }
     _onclick(e) {
-        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
+        if (getEventMark(e) === "button") {
             return;
         }
         this.fireItemPress(e);
-    }
-    /**
-     * Override from subcomponent, if needed
-     */
-    _isSpace(e) {
-        return isSpace(e);
-    }
-    /**
-     * Override from subcomponent, if needed
-     */
-    _isEnter(e) {
-        return isEnter(e);
     }
     fireItemPress(e) {
         if (this.disabled || !this._pressable) {
@@ -131,11 +120,11 @@ let ListItemBase = class ListItemBase extends UI5Element {
         if (isEnter(e)) {
             e.preventDefault();
         }
-        this.fireDecoratorEvent("_press", { item: this, selected: this.selected, key: e.key });
+        this.fireEvent("_press", { item: this, selected: this.selected, key: e.key });
     }
     _handleTabNext(e) {
         if (this.shouldForwardTabAfter()) {
-            if (!this.fireDecoratorEvent("forward-after")) {
+            if (!this.fireEvent("_forward-after", {}, true)) {
                 e.preventDefault();
             }
         }
@@ -143,7 +132,7 @@ let ListItemBase = class ListItemBase extends UI5Element {
     _handleTabPrevious(e) {
         const target = e.target;
         if (this.shouldForwardTabBefore(target)) {
-            this.fireDecoratorEvent("forward-before");
+            this.fireEvent("_forward-before");
         }
     }
     /**
@@ -187,10 +176,7 @@ let ListItemBase = class ListItemBase extends UI5Element {
         if (this.selected) {
             return 0;
         }
-        return this.forcedTabIndex ? parseInt(this.forcedTabIndex) : undefined;
-    }
-    get isListItemBase() {
-        return true;
+        return this.forcedTabIndex;
     }
 };
 __decorate([
@@ -216,25 +202,14 @@ __decorate([
 ], ListItemBase.prototype, "actionable", void 0);
 ListItemBase = __decorate([
     customElement({
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: [styles, draggableElementStyles],
     }),
-    event("request-tabindex-change", {
-        bubbles: true,
-    }),
-    event("_press", {
-        bubbles: true,
-    }),
-    event("_focused", {
-        bubbles: true,
-    }),
-    event("forward-after", {
-        bubbles: true,
-        cancelable: true,
-    }),
-    event("forward-before", {
-        bubbles: true,
-    })
+    event("_request-tabindex-change"),
+    event("_press"),
+    event("_focused"),
+    event("_forward-after"),
+    event("_forward-before")
 ], ListItemBase);
 export default ListItemBase;
 //# sourceMappingURL=ListItemBase.js.map

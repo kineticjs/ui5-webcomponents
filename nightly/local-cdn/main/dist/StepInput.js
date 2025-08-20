@@ -9,16 +9,18 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import { isUp, isDown, isUpCtrl, isDownCtrl, isUpShift, isDownShift, isUpShiftCtrl, isDownShiftCtrl, isPageUpShift, isPageDownShift, isEscape, isEnter, } from "@ui5/webcomponents-base/dist/Keys.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
-import StepInputTemplate from "./StepInputTemplate.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import StepInputTemplate from "./generated/templates/StepInputTemplate.lit.js";
 import { STEPINPUT_DEC_ICON_TITLE, STEPINPUT_INC_ICON_TITLE } from "./generated/i18n/i18n-defaults.js";
 import "@ui5/webcomponents-icons/dist/less.js";
 import "@ui5/webcomponents-icons/dist/add.js";
+import Icon from "./Icon.js";
+import Input from "./Input.js";
 import InputType from "./types/InputType.js";
 // Styles
 import StepInputCss from "./generated/themes/StepInput.css.js";
@@ -117,6 +119,7 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
         this._incIconDisabled = false;
         this.focused = false;
         this._inputFocused = false;
+        this._previousValue = this.value;
         this._waitTimeout = INITIAL_WAIT_TIMEOUT;
         this._speed = INITIAL_SPEED;
         this._spinStarted = false;
@@ -127,6 +130,9 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
     get formFormattedValue() {
         return this.value.toString();
     }
+    static async onDefine() {
+        StepInput_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    }
     get type() {
         return InputType.Number;
     }
@@ -134,8 +140,14 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
     get decIconTitle() {
         return StepInput_1.i18nBundle.getText(STEPINPUT_DEC_ICON_TITLE);
     }
+    get decIconName() {
+        return "less";
+    }
     get incIconTitle() {
         return StepInput_1.i18nBundle.getText(STEPINPUT_INC_ICON_TITLE);
+    }
+    get incIconName() {
+        return "add";
     }
     get _decIconClickable() {
         return !this._decIconDisabled && !this.readonly && !this.disabled;
@@ -170,6 +182,9 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
     }
     onBeforeRendering() {
         this._setButtonState();
+        if (this._previousValue === undefined) {
+            this._previousValue = this.value;
+        }
     }
     get input() {
         return this.shadowRoot.querySelector("[ui5-input]");
@@ -187,14 +202,11 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
             }
         }, 0);
     }
-    _onInput(e) {
-        const prevented = !this.fireDecoratorEvent("input", { inputType: e.detail.inputType });
-        if (prevented) {
-            e.preventDefault();
-        }
-    }
     _onInputFocusIn() {
         this._inputFocused = true;
+        if (this.value !== this._previousValue) {
+            this._previousValue = this.value;
+        }
     }
     _onInputFocusOut() {
         this._inputFocused = false;
@@ -217,10 +229,10 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
         const previousValueState = this.valueState;
         const isValid = isWithinRange && isValueWithCorrectPrecision;
         this.valueState = isValid ? ValueState.None : ValueState.Negative;
-        const eventPrevented = !this.fireDecoratorEvent("value-state-change", {
+        const eventPrevented = !this.fireEvent("value-state-change", {
             valueState: this.valueState,
             valid: isValid,
-        });
+        }, true);
         if (eventPrevented) {
             this.valueState = previousValueState;
         }
@@ -232,7 +244,7 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
     _fireChangeEvent() {
         if (this._previousValue !== this.value) {
             this._previousValue = this.value;
-            this.fireDecoratorEvent("change");
+            this.fireEvent("change", { value: this.value });
         }
     }
     /**
@@ -267,14 +279,14 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
             }
         }
     }
-    _incValue() {
-        if (this._incIconClickable && !this.disabled && !this.readonly) {
+    _incValue(e) {
+        if (this._incIconClickable && e.isTrusted && !this.disabled && !this.readonly) {
             this._modifyValue(this.step, true);
             this._previousValue = this.value;
         }
     }
-    _decValue() {
-        if (this._decIconClickable && !this.disabled && !this.readonly) {
+    _decValue(e) {
+        if (this._decIconClickable && e.isTrusted && !this.disabled && !this.readonly) {
             this._modifyValue(-this.step, true);
             this._previousValue = this.value;
         }
@@ -319,11 +331,9 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
     }
     _onfocusin() {
         this.focused = true;
-        this._previousValue = this.value;
     }
     _onfocusout() {
         this.focused = false;
-        this._previousValue = undefined;
     }
     _onkeydown(e) {
         let preventDefault = true;
@@ -344,9 +354,6 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
         }
         else if (isEscape(e)) {
             // return previous value
-            if (this._previousValue === undefined) {
-                this._previousValue = this.value;
-            }
             this.value = this._previousValue;
             this.input.value = this.value.toFixed(this.valuePrecision);
         }
@@ -500,39 +507,29 @@ __decorate([
 __decorate([
     slot()
 ], StepInput.prototype, "valueStateMessage", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], StepInput, "i18nBundle", void 0);
 StepInput = StepInput_1 = __decorate([
     customElement({
         tag: "ui5-step-input",
         formAssociated: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: StepInputCss,
         template: StepInputTemplate,
+        dependencies: [
+            Icon,
+            Input,
+        ],
     })
     /**
      * Fired when the input operation has finished by pressing Enter or on focusout.
      * @public
      */
     ,
-    event("change", {
-        bubbles: true,
-    })
-    /**
-     * Fired when the value of the component changes at each keystroke.
-     * @public
-     * @since 2.6.0
-     */
-    ,
-    event("input", {
-        cancelable: true,
-        bubbles: true,
-    })
+    event("change")
     /**
      * Fired before the value state of the component is updated internally.
      * The event is preventable, meaning that if it's default action is
      * prevented, the component will not update the value state.
+     * @allowPreventDefault
      * @since 1.23.0
      * @public
      * @param {string} valueState The new `valueState` that will be set.
@@ -540,8 +537,20 @@ StepInput = StepInput_1 = __decorate([
      */
     ,
     event("value-state-change", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            valueState: {
+                type: String,
+            },
+            /**
+             * @public
+             */
+            valid: {
+                type: Boolean,
+            },
+        },
     })
 ], StepInput);
 StepInput.define();

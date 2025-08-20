@@ -10,7 +10,6 @@ import ListItemBase from "./ListItemBase.js";
  * @public
  */
 declare class SuggestionItem extends ListItemBase implements IInputSuggestionItemSelectable {
-    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the text of the component.
      * @default undefined
@@ -33,6 +32,5 @@ declare class SuggestionItem extends ListItemBase implements IInputSuggestionIte
      */
     markupText: string;
     onEnterDOM(): void;
-    get _effectiveTabIndex(): number;
 }
 export default SuggestionItem;

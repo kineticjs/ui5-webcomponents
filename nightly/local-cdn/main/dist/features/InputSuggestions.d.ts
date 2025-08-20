@@ -1,14 +1,15 @@
 import type UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import type List from "../List.js";
+import List from "../List.js";
 import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from "../List.js";
 import type ResponsivePopover from "../ResponsivePopover.js";
-import "../SuggestionItem.js";
-import "../SuggestionItemGroup.js";
-import type SuggestionItem from "../SuggestionItem.js";
-import InputSuggestionsTemplate from "./InputSuggestionsTemplate.js";
+import SuggestionItem from "../SuggestionItem.js";
+import Button from "../Button.js";
+import Icon from "../Icon.js";
+import SuggestionItemGroup from "../SuggestionItemGroup.js";
 import type { IInputSuggestionItem, IInputSuggestionItemSelectable } from "../Input.js";
 interface SuggestionComponent extends UI5Element {
+    _isValueStateFocused: boolean;
     focused: boolean;
     hasSuggestionItemSelected: boolean;
     value: string;
@@ -44,10 +45,9 @@ declare class Suggestions {
     attachedAfterClose?: boolean;
     static i18nBundle: I18nBundle;
     static SCROLL_STEP: number;
-    get template(): typeof InputSuggestionsTemplate;
     constructor(component: SuggestionComponent, slotName: string, highlight: boolean, handleFocus: boolean);
-    onUp(e: KeyboardEvent, indexOfItem: number): boolean;
-    onDown(e: KeyboardEvent, indexOfItem: number): boolean;
+    onUp(e: KeyboardEvent): boolean;
+    onDown(e: KeyboardEvent): boolean;
     onSpace(e: KeyboardEvent): boolean;
     onEnter(e: KeyboardEvent): boolean;
     onPageUp(e: KeyboardEvent): boolean;
@@ -65,11 +65,13 @@ declare class Suggestions {
     onItemSelected(selectedItem: IInputSuggestionItemSelectable | null, keyboardUsed: boolean): void;
     onItemSelect(item: IInputSuggestionItem): void;
     onItemPress(e: CustomEvent<ListItemClickEventDetail | ListSelectionChangeEventDetail>): void;
+    _onOpen(): void;
     _onClose(): void;
+    _applyFocus(): void;
     _isItemOnTarget(): boolean;
     get _isGroupItem(): boolean;
     isOpened(): boolean;
-    _handleItemNavigation(forward: boolean, index: number): void;
+    _handleItemNavigation(forward: boolean): void;
     _selectNextItem(): void;
     _selectPreviousItem(): void;
     _moveItemSelection(previousIdx: number, nextIdx: number): void;
@@ -91,7 +93,11 @@ declare class Suggestions {
     get itemSelectionAnnounce(): string;
     hightlightInput(text: string, input: string): string;
     get _hasValueState(): boolean;
+    _focusValueState(): void;
+    _clearValueStateFocus(): void;
     _clearSelectedSuggestionAndaccInfo(): void;
+    static get dependencies(): (typeof Button | typeof Icon | typeof List | typeof SuggestionItem | typeof SuggestionItemGroup)[];
+    static init(): Promise<void>;
 }
 export default Suggestions;
 export type { SuggestionComponent, };

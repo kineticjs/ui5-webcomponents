@@ -54,6 +54,7 @@ declare class ColorPaletteItem extends UI5Element implements IColorPaletteItem {
      */
     _disabled: boolean;
     static i18nBundle: I18nBundle;
+    static onDefine(): Promise<void>;
     constructor();
     onBeforeRendering(): void;
     get colorLabel(): string;

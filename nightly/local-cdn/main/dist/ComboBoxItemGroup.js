@@ -5,41 +5,58 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import ListItemGroup from "./ListItemGroup.js";
-import ComboBoxItemGroupTemplate from "./ComboBoxItemGroupTemplate.js";
+import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 /**
  * @class
  * The `ui5-cb-group-item` is type of suggestion item,
  * that can be used to split the `ui5-combobox` suggestions into groups.
  * @constructor
- * @extends ListItemGroup
+ * @extends UI5Element
  * @abstract
  * @public
  * @implements {IComboBoxItem}
  * @since 1.0.0-rc.15
  */
-let ComboBoxItemGroup = class ComboBoxItemGroup extends ListItemGroup {
+let ComboBoxItemGroup = class ComboBoxItemGroup extends UI5Element {
+    constructor() {
+        super(...arguments);
+        /**
+         * Indicates whether the item is focused
+         * @protected
+         */
+        this.focused = false;
+    }
+    /**
+     * Used to avoid tag name checks
+     * @protected
+     */
     get isGroupItem() {
         return true;
+    }
+    get stableDomRef() {
+        return this.getAttribute("stable-dom-ref") || `${this._id}-stable-dom-ref`;
     }
     get _isVisible() {
         return this.items.some(item => item._isVisible);
     }
 };
 __decorate([
+    property()
+], ComboBoxItemGroup.prototype, "headerText", void 0);
+__decorate([
+    property({ type: Boolean })
+], ComboBoxItemGroup.prototype, "focused", void 0);
+__decorate([
     slot({
         "default": true,
         invalidateOnChildChange: true,
-        individualSlots: true,
         type: HTMLElement,
     })
 ], ComboBoxItemGroup.prototype, "items", void 0);
 ComboBoxItemGroup = __decorate([
-    customElement({
-        tag: "ui5-cb-item-group",
-        template: ComboBoxItemGroupTemplate,
-    })
+    customElement("ui5-cb-item-group")
 ], ComboBoxItemGroup);
 ComboBoxItemGroup.define();
 const isInstanceOfComboBoxItemGroup = (object) => {

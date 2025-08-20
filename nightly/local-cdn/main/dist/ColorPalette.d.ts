@@ -2,15 +2,16 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
-import type { JsxTemplate } from "@ui5/webcomponents-base/dist/index.js";
-import type ColorPaletteItem from "./ColorPaletteItem.js";
-import type Button from "./Button.js";
-import "./ColorPaletteItem.js";
+import ColorPaletteItem from "./ColorPaletteItem.js";
+import Button from "./Button.js";
+import type Dialog from "./Dialog.js";
+import type ColorPaletteMoreColors from "./features/ColorPaletteMoreColors.js";
+import type ColorPicker from "./ColorPicker.js";
 /**
  * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
  * @public
  */
-interface IColorPaletteItem extends UI5Element, ITabbable {
+interface IColorPaletteItem extends HTMLElement, ITabbable {
     value?: string;
     index?: number;
     selected?: boolean;
@@ -39,9 +40,6 @@ type ColorPaletteItemClickEventDetail = {
  * @public
  */
 declare class ColorPalette extends UI5Element {
-    eventDetails: {
-        "item-click": ColorPaletteItemClickEventDetail;
-    };
     /**
      * Defines whether the user can see the last used colors in the bottom of the component
      * @private
@@ -51,6 +49,7 @@ declare class ColorPalette extends UI5Element {
     /**
      * Defines whether the user can choose a custom color from a color picker
      *
+     * **Note:** In order to use this property you need to import the following module: `"@ui5/webcomponents/dist/features/ColorPaletteMoreColors.js"`
      * @private
      * @since 1.0.0-rc.15
      */
@@ -86,20 +85,6 @@ declare class ColorPalette extends UI5Element {
      */
     onPhone: boolean;
     /**
-
-     * The showMoreColors template.
-     * @private
-     */
-    showMoreColorsTemplate?: JsxTemplate;
-    /**
-     * @private
-     */
-    dialogOpen: boolean;
-    /**
-     * @private
-     */
-    colorPickerValue: string;
-    /**
      * Defines the `ui5-color-palette-item` elements.
      * @public
      */
@@ -107,9 +92,11 @@ declare class ColorPalette extends UI5Element {
     _itemNavigation: ItemNavigation;
     _itemNavigationRecentColors: ItemNavigation;
     _recentColors: Array<string>;
+    moreColorsFeature: ColorPaletteMoreColors | Record<string, any>;
     _currentlySelected?: ColorPaletteItem;
     _shouldFocusRecentColors: boolean;
     static i18nBundle: I18nBundle;
+    static onDefine(): Promise<void>;
     constructor();
     onBeforeRendering(): void;
     onAfterRendering(): void;
@@ -125,7 +112,6 @@ declare class ColorPalette extends UI5Element {
     _onkeyup(e: KeyboardEvent): void;
     _onkeydown(e: KeyboardEvent): void;
     handleSelection(target: ColorPaletteItem): void;
-    getFocusDomRef(): HTMLElement | undefined;
     _handleDefaultColorClick(e: KeyboardEvent): void;
     _onDefaultColorKeyUp(e: KeyboardEvent): void;
     _onDefaultColorKeyDown(e: KeyboardEvent): void;
@@ -135,7 +121,6 @@ declare class ColorPalette extends UI5Element {
     _onRecentColorsContainerKeyDown(e: KeyboardEvent): void;
     focusColorElement(element: ColorPaletteNavigationItem, itemNavigation: ItemNavigation): void;
     get firstFocusableElement(): ColorPaletteNavigationItem;
-    onColorPickerChange(e: Event): void;
     _chooseCustomColor(): void;
     _addRecentColor(color: string): void;
     _closeDialog(): void;
@@ -144,11 +129,8 @@ declare class ColorPalette extends UI5Element {
     /**
      * Returns the selected item.
      */
-    get selectedItem(): ColorPaletteItem | IColorPaletteItem | undefined;
-    get allColorsInPalette(): (ColorPaletteItem | IColorPaletteItem)[];
-    get colorPaletteDialogTitle(): string;
-    get colorPaletteDialogOKButton(): string;
-    get colorPaletteCancelButton(): string;
+    get selectedItem(): IColorPaletteItem | undefined;
+    get allColorsInPalette(): IColorPaletteItem[];
     /**
      * Returns the selected color.
      */
@@ -157,6 +139,7 @@ declare class ColorPalette extends UI5Element {
     get colorContainerLabel(): string;
     get colorPaletteMoreColorsText(): string;
     get colorPaletteDefaultColorText(): string;
+    get _showMoreColors(): false | ColorPaletteMoreColors | Record<string, any>;
     get rowSize(): number;
     get hasRecentColors(): string | false;
     get recentColors(): string[];
@@ -168,7 +151,8 @@ declare class ColorPalette extends UI5Element {
             "ui5-cp-root-phone": boolean;
         };
     };
-    static ColorPaletteMoreColorsTemplate?: JsxTemplate;
+    _getDialog(): Dialog;
+    getColorPicker(): ColorPicker;
 }
 export default ColorPalette;
 export type { ColorPaletteItemClickEventDetail, IColorPaletteItem, };

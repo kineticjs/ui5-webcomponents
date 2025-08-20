@@ -8,13 +8,17 @@ var PromptInput_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import "@ui5/webcomponents-icons/dist/paper-plane.js";
+import Input from "@ui5/webcomponents/dist/Input.js";
+import Label from "@ui5/webcomponents/dist/Label.js";
+import Button from "@ui5/webcomponents/dist/Button.js";
 import { isEnter, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { PROMPT_INPUT_CHARACTERS_LEFT, PROMPT_INPUT_CHARACTERS_EXCEEDED, } from "./generated/i18n/i18n-defaults.js";
-import PromptInputTemplate from "./PromptInputTemplate.js";
+import PromptInputTemplate from "./generated/templates/PromptInputTemplate.lit.js";
 // Styles
 import PromptInputCss from "./generated/themes/PromptInput.css.js";
 /**
@@ -27,7 +31,7 @@ import PromptInputCss from "./generated/themes/PromptInput.css.js";
  *
  * ### ES6 Module Import
  *
- * `import "@ui5/webcomponents-ai/dist/PromptInput.js"`
+ * `import "@ui5/webcomponents-ai/dist/PromptInput.js
  * @class
  * @constructor
  * @public
@@ -35,8 +39,11 @@ import PromptInputCss from "./generated/themes/PromptInput.css.js";
  * @experimental The **@ui5/webcomponents-ai** package is under development and considered experimental - components' APIs are subject to change.
  */
 let PromptInput = PromptInput_1 = class PromptInput extends UI5Element {
+    static async onDefine() {
+        PromptInput_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-ai");
+    }
     constructor() {
-        super(...arguments);
+        super();
         /**
          * Defines the value of the component.
          *
@@ -91,31 +98,21 @@ let PromptInput = PromptInput_1 = class PromptInput extends UI5Element {
          * @public
          */
         this.valueState = "None";
-        /**
-         * Defines whether the component should show suggestions, if such are present.
-         *
-         * @default false
-         * @public
-         */
-        this.showSuggestions = false;
     }
     _onkeydown(e) {
         if (isEnter(e)) {
-            this.fireDecoratorEvent("submit");
+            this.fireEvent("submit");
         }
     }
     _onInnerInput(e) {
-        this.value = e.currentTarget.value;
-        this.fireDecoratorEvent("input");
+        this.value = e.target.value;
+        this.fireEvent("input");
     }
     _onInnerChange() {
-        this.fireDecoratorEvent("change");
+        this.fireEvent("change");
     }
     _onButtonClick() {
-        this.fireDecoratorEvent("submit");
-    }
-    _onTypeAhead(e) {
-        this.value = e.currentTarget.value;
+        this.fireEvent("submit");
     }
     get _exceededText() {
         if (this.showExceededText) {
@@ -165,26 +162,22 @@ __decorate([
     property()
 ], PromptInput.prototype, "valueState", void 0);
 __decorate([
-    property({ type: Boolean })
-], PromptInput.prototype, "showSuggestions", void 0);
-__decorate([
-    slot({ type: HTMLElement, "default": true })
-], PromptInput.prototype, "suggestionItems", void 0);
-__decorate([
     slot({
         type: HTMLElement,
         invalidateOnChildChange: true,
     })
 ], PromptInput.prototype, "valueStateMessage", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-ai")
-], PromptInput, "i18nBundle", void 0);
 PromptInput = PromptInput_1 = __decorate([
     customElement({
         tag: "ui5-ai-prompt-input",
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: PromptInputCss,
         template: PromptInputTemplate,
+        dependencies: [
+            Input,
+            Label,
+            Button,
+        ],
     })
     /**
      * Fired when the input operation has finished by pressing Enter
@@ -194,9 +187,7 @@ PromptInput = PromptInput_1 = __decorate([
      * @public
      */
     ,
-    event("submit", {
-        bubbles: true,
-    })
+    event("submit")
     /**
      * Fired when the value of the component changes at each keystroke,
      * and when a suggestion item has been selected.
@@ -205,9 +196,7 @@ PromptInput = PromptInput_1 = __decorate([
      * @public
      */
     ,
-    event("input", {
-        bubbles: true,
-    })
+    event("input")
     /**
      * Fired when the input operation has finished by pressing Enter
      * or on focusout.
@@ -216,9 +205,7 @@ PromptInput = PromptInput_1 = __decorate([
      * @public
      */
     ,
-    event("change", {
-        bubbles: true,
-    })
+    event("change")
 ], PromptInput);
 PromptInput.define();
 export default PromptInput;

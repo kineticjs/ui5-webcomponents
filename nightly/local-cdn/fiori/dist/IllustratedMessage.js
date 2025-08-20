@@ -9,18 +9,19 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { getIllustrationDataSync, getIllustrationData } from "@ui5/webcomponents-base/dist/asset-registries/Illustrations.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import Title from "@ui5/webcomponents/dist/Title.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import IllustrationMessageDesign from "./types/IllustrationMessageDesign.js";
 import IllustrationMessageType from "./types/IllustrationMessageType.js";
 import "./illustrations/BeforeSearch.js";
 // Styles
 import IllustratedMessageCss from "./generated/themes/IllustratedMessage.css.js";
 // Template
-import IllustratedMessageTemplate from "./IllustratedMessageTemplate.js";
+import IllustratedMessageTemplate from "./generated/templates/IllustratedMessageTemplate.lit.js";
 const getEffectiveIllustrationName = (name) => {
     if (name.startsWith("Tnt")) {
         return name.replace("Tnt", "tnt/");
@@ -111,21 +112,15 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
         * @since 2.0.0
         */
         this.design = "Auto";
-        /**
-        * Defines whether the illustration is decorative.
-        *
-        * When set to `true`, the attributes `role="presentation"` and `aria-hidden="true"` are applied to the SVG element.
-        * @default false
-        * @public
-        * @since 2.10.0
-        */
-        this.decorative = false;
         this._handleResize = this.handleResize.bind(this);
         // this will store the last known offsetWidth of the IllustratedMessage DOM node for a given media (e.g. "Spot")
         this._lastKnownOffsetWidthForMedia = {};
         this._lastKnownOffsetHeightForMedia = {};
         // this will store the last known media, in order to detect if IllustratedMessage has been hidden by expand/collapse container
         this._lastKnownMedia = "base";
+    }
+    static async onDefine() {
+        IllustratedMessage_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
     }
     static get BREAKPOINTS() {
         return {
@@ -222,18 +217,7 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
     }
     _setSVGAccAttrs() {
         const svg = this.shadowRoot.querySelector(".ui5-illustrated-message-illustration svg");
-        if (!svg) {
-            return;
-        }
-        if (this.decorative) {
-            svg.setAttribute("role", "presentation");
-            svg.setAttribute("aria-hidden", "true");
-            svg.removeAttribute("aria-label");
-        }
-        else {
-            svg.removeAttribute("role");
-            svg.removeAttribute("aria-hidden");
-            // Set aria-label only when not decorative and text exists
+        if (svg) {
             if (this.ariaLabelText) {
                 svg.setAttribute("aria-label", this.ariaLabelText);
             }
@@ -273,15 +257,6 @@ let IllustratedMessage = IllustratedMessage_1 = class IllustratedMessage extends
                 this.media = IllustratedMessage_1.MEDIA.SPOT;
                 return;
             case IllustrationMessageDesign.Dialog:
-                this.media = IllustratedMessage_1.MEDIA.DIALOG;
-                return;
-            case IllustrationMessageDesign.ExtraSmall:
-                this.media = IllustratedMessage_1.MEDIA.DOT;
-                return;
-            case IllustrationMessageDesign.Small:
-                this.media = IllustratedMessage_1.MEDIA.SPOT;
-                return;
-            case IllustrationMessageDesign.Medium:
                 this.media = IllustratedMessage_1.MEDIA.DIALOG;
                 return;
             default:
@@ -362,9 +337,6 @@ __decorate([
     property()
 ], IllustratedMessage.prototype, "media", void 0);
 __decorate([
-    property({ type: Boolean })
-], IllustratedMessage.prototype, "decorative", void 0);
-__decorate([
     slot({ type: HTMLElement })
 ], IllustratedMessage.prototype, "title", void 0);
 __decorate([
@@ -373,17 +345,15 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement, "default": true })
 ], IllustratedMessage.prototype, "actions", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-fiori")
-], IllustratedMessage, "i18nBundle", void 0);
 IllustratedMessage = IllustratedMessage_1 = __decorate([
     customElement({
         tag: "ui5-illustrated-message",
         languageAware: true,
         themeAware: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: IllustratedMessageCss,
         template: IllustratedMessageTemplate,
+        dependencies: [Title],
     })
 ], IllustratedMessage);
 IllustratedMessage.define();

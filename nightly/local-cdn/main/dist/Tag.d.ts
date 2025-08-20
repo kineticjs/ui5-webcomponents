@@ -26,16 +26,12 @@ import type TagSize from "./types/TagSize.js";
  * ### ES6 Module Import
  *
  * `import "@ui5/webcomponents/dist/Tag.js";`
- * @csspart root - Used to style the root element.
  * @constructor
  * @extends UI5Element
  * @since 2.0.0
  * @public
  */
 declare class Tag extends UI5Element {
-    eventDetails: {
-        click: void;
-    };
     /**
      * Defines the design type of the component.
      * @default "Neutral"
@@ -106,6 +102,7 @@ declare class Tag extends UI5Element {
      */
     icon: Array<IIcon>;
     static i18nBundle: I18nBundle;
+    static onDefine(): Promise<void>;
     onEnterDOM(): void;
     onBeforeRendering(): void;
     get _roleDescription(): string;
@@ -115,7 +112,7 @@ declare class Tag extends UI5Element {
     get iconOnly(): boolean;
     get _title(): string | undefined;
     get tagDescription(): string | undefined;
-    get _semanticIconName(): "alert" | "sys-help-2" | "sys-enter-2" | "error" | "information" | null;
-    _onclick(e: Event): void;
+    get _semanticIconName(): "error" | "alert" | "sys-enter-2" | "information" | "sys-help-2" | null;
+    _onclick(): void;
 }
 export default Tag;

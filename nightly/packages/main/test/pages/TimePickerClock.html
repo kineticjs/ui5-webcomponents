@@ -10,6 +10,7 @@
 	</script>
 
 
+	
 
 
 	<script data-id="sap-ui-config" type="application/json">
@@ -21,9 +22,10 @@
 		}
 	</script>
 
+	
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-DREhKolk.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/TimePickerClock-B92jHxaa.css">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-e7500efa.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TimePickerClock-9c31b552.css">
 </head>
 <body>
 
@@ -33,7 +35,7 @@
 			<ui5-time-picker-clock id="myHours12" label="myHours12" item-min="1" item-max="12" display-step="1" selected-value="12" active></ui5-time-picker-clock>
 		</div>
 		<div class="clock-wrapper">
-			<ui5-time-picker-clock id="myHours24" label="myHours00" item-min="1" item-max="24" display-step="1" selected-value="1" prepend-zero last-item-replacement="0" active></ui5-time-picker-clock>
+			<ui5-time-picker-clock id="myHours24" label="myHours00" item-min="1" item-max="12" display-step="1" selected-value="1" show-inner-circle prepend-zero last-item-replacement="0" active></ui5-time-picker-clock>
 		</div>
 		<div class="clock-wrapper">
 			<ui5-time-picker-clock id="myHours12Disabled" label="myHours12 (disabled)" item-min="1" item-max="12" display-step="1" selected-value="12" active disabled></ui5-time-picker-clock>
@@ -73,9 +75,9 @@
 			var clock = event.target;
 			event.detail.finalChange && eventCount++;
 			clockChangeId.value = clock.id;
-			clockChangeValue.value = `${clock.selectedValue}`;
-			clockChangeStringValue.value = `${clock._getStringValue(clock.selectedValue)}`;
-			clockChangeEvent.value = `${eventCount}`;
+			clockChangeValue.value = clock.selectedValue;
+			clockChangeStringValue.value = clock._getStringValue(clock.selectedValue);
+			clockChangeEvent.value = eventCount;
 		}
 
 	</script>

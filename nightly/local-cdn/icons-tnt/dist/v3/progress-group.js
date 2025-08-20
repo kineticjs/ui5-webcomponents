@@ -1,7 +1,7 @@
 import { registerIcon } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 
 const name = "progress-group";
-const pathData = "M53 458h406V53H53v405zm108-133h158q3 0 5-2l44-67-44-68q-2-2-5-2H161l37 55q10 14 0 29zm158 54H111q-14 0-23-14-7-13 1-28l55-81-55-82q-8-13-1-28 9-14 23-14h208q32 0 49 27l54 82q11 14 0 29l-54 82q-17 27-49 27zm166 132H27q-11 0-19-7.5T0 485V26Q0 15 8 7.5T27 0h458q11 0 19 7.5t8 18.5v459q0 11-8 18.5t-19 7.5z";
+const pathData = "M64 32h384c17 0 32 15 32 32v384c0 19-15 33-32 33H64c-19 0-33-14-33-33V64c0-17 14-32 33-32zm384 416V64H64v384h384zM348 168l63 76c3 5 5 9 5 13s-2 8-5 11l-63 77c-5 5-10 7-16 7H106c-4 0-7-2-9-5-1-1-2-3-2-4 0-2 1-4 3-6l57-69c3-3 5-7 5-11s-2-8-5-13l-57-68c-2-2-3-4-3-6 0-1 1-3 2-4 2-4 5-6 9-6h226c5 0 11 3 16 8zm-22 152l53-64-53-64H153l27 32c8 10 12 21 12 33s-4 23-13 33l-26 30h173z";
 const ltr = false;
 const accData = null;
 const collection = "tnt-v3";

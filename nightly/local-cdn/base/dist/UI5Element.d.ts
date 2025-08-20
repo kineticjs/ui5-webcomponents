@@ -1,12 +1,17 @@
 import "@ui5/webcomponents-base/dist/ssr-dom.js";
-import type { JSX } from "./jsx-runtime.js";
 import UI5ElementMetadata from "./UI5ElementMetadata.js";
 import type { Slot, SlotValue, State, PropertyValue, Metadata } from "./UI5ElementMetadata.js";
 import EventProvider from "./EventProvider.js";
-import type { TemplateFunction } from "./renderer/executeTemplate.js";
+import type { TemplateFunction, TemplateFunctionResult } from "./renderer/executeTemplate.js";
 import type { AccessibilityInfo, PromiseResolve, ComponentStylesData, ClassMap } from "./types.js";
-import type I18nBundle from "./i18nBundle.js";
-type Renderer = (instance: UI5Element, container: HTMLElement | DocumentFragment) => void;
+type Renderer = (templateResult: TemplateFunctionResult, container: HTMLElement | DocumentFragment, options: RendererOptions) => void;
+type RendererOptions = {
+    /**
+     * An object to use as the `this` value for event listeners. It's often
+     * useful to set this to the host component rendering a template.
+     */
+    host?: object;
+};
 type ChangeInfo = {
     type: "property" | "slot";
     name: string;
@@ -21,23 +26,6 @@ type InvalidationInfo = ChangeInfo & {
 };
 type ChildChangeListener = (param: InvalidationInfo) => void;
 type SlotChangeListener = (this: HTMLSlotElement, ev: Event) => void;
-type SlottedChild = Record<string, any>;
-type NotEqual<X, Y> = true extends Equal<X, Y> ? false : true;
-type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) ? true : false;
-type IsAny<T, Y, N> = 0 extends (1 & T) ? Y : N;
-type KebabToCamel<T extends string> = T extends `${infer H}-${infer J}${infer K}` ? `${Uncapitalize<H>}${Capitalize<J>}${KebabToCamel<K>}` : T;
-type KebabToPascal<T extends string> = Capitalize<KebabToCamel<T>>;
-type GlobalHTMLAttributeNames = "accesskey" | "autocapitalize" | "autofocus" | "autocomplete" | "contenteditable" | "contextmenu" | "class" | "dir" | "draggable" | "enterkeyhint" | "hidden" | "id" | "inputmode" | "lang" | "nonce" | "part" | "exportparts" | "pattern" | "slot" | "spellcheck" | "style" | "tabIndex" | "tabindex" | "title" | "translate" | "ref" | "inert";
-type ElementProps<I> = Partial<Omit<I, keyof HTMLElement>>;
-type TargetedCustomEvent<D, T> = Omit<CustomEvent<D>, "currentTarget"> & {
-    currentTarget: T;
-};
-type TargetedEventHandler<D, T> = {
-    asMethod(e: TargetedCustomEvent<D, T>): void;
-}["asMethod"];
-type Convert<T, K extends UI5Element> = {
-    [Property in keyof T as `on${KebabToPascal<string & Property>}`]: IsAny<T[Property], any, TargetedEventHandler<T[Property], K>>;
-};
 /**
  * @class
  * Base class for all UI5 Web Components
@@ -46,13 +34,6 @@ type Convert<T, K extends UI5Element> = {
  * @public
  */
 declare abstract class UI5Element extends HTMLElement {
-    eventDetails: NotEqual<this, UI5Element> extends true ? object : {
-        [k: string]: any;
-    };
-    _jsxEvents: Omit<JSX.DOMAttributes<this>, keyof Convert<this["eventDetails"], this> | "onClose" | "onToggle" | "onChange" | "onSelect" | "onInput"> & Convert<this["eventDetails"], this>;
-    _jsxProps: Pick<JSX.AllHTMLAttributes<HTMLElement>, GlobalHTMLAttributeNames> & ElementProps<this> & Partial<this["_jsxEvents"]> & {
-        key?: any;
-    };
     __id?: string;
     _suppressInvalidation: boolean;
     _changedState: Array<ChangeInfo>;
@@ -67,10 +48,8 @@ declare abstract class UI5Element extends HTMLElement {
         _deferredResolve?: PromiseResolve;
     };
     _doNotSyncAttributes: Set<string>;
-    __shouldHydrate: boolean;
     _state: State;
-    _internals: ElementInternals;
-    _individualSlot?: string;
+    _internals?: ElementInternals;
     _getRealDomRef?: () => HTMLElement;
     static template?: TemplateFunction;
     static _metadata: UI5ElementMetadata;
@@ -248,7 +227,7 @@ declare abstract class UI5Element extends HTMLElement {
      * @private
      */
     _waitForDomRef(): Promise<void> & {
-        _deferredResolve?: PromiseResolve;
+        _deferredResolve?: PromiseResolve | undefined;
     };
     /**
      * Returns the DOM Element inside the Shadow Root that corresponds to the opening tag in the UI5 Web Component's template
@@ -284,23 +263,9 @@ declare abstract class UI5Element extends HTMLElement {
      * @param cancelable - true, if the user can call preventDefault on the event object
      * @param bubbles - true, if the event bubbles
      * @returns false, if the event was cancelled (preventDefault called), true otherwise
-     * @deprecated use fireDecoratorEvent instead
      */
     fireEvent<T>(name: string, data?: T, cancelable?: boolean, bubbles?: boolean): boolean;
-    /**
-     * Fires a custom event, configured via the "event" decorator.
-     * @public
-     * @param name - name of the event
-     * @param data - additional data for the event
-     * @returns false, if the event was cancelled (preventDefault called), true otherwise
-     */
-    fireDecoratorEvent<N extends keyof this["eventDetails"]>(name: N, data?: this["eventDetails"][N] | undefined): boolean;
     _fireEvent<T>(name: string, data?: T, cancelable?: boolean, bubbles?: boolean): boolean;
-    getEventData(name: string): {
-        detail?: Record<string, object>;
-        cancelable?: boolean;
-        bubbles?: boolean;
-    };
     /**
      * Returns the actual children, associated with a slot.
      * Useful when there are transitive slots in nested component scenarios and you don't want to get a list of the slots, but rather of their content.
@@ -335,7 +300,6 @@ declare abstract class UI5Element extends HTMLElement {
      * @default true
      */
     get isUI5Element(): boolean;
-    get isUI5AbstractElement(): boolean;
     get classes(): ClassMap;
     /**
      * Returns the component accessibility info.
@@ -347,12 +311,6 @@ declare abstract class UI5Element extends HTMLElement {
      * @private
      */
     static get observedAttributes(): string[];
-    /**
-     * Returns all tags, used inside component's template subject to scoping.
-     * returns {Array[]} // TODO add @
-     * @private
-     */
-    static get tagsToScope(): Array<string>;
     /**
      * @private
      */
@@ -373,14 +331,12 @@ declare abstract class UI5Element extends HTMLElement {
     static styles: ComponentStylesData;
     /**
      * Returns an array with the dependencies for this UI5 Web Component, which could be:
-     *  - composed components (used in its shadow root)
+     *  - composed components (used in its shadow root or static area item)
      *  - slotted components that the component may need to communicate with
      *
-     * @deprecated no longer necessary for jsxRenderer-enabled components
      * @protected
      */
     static get dependencies(): Array<typeof UI5Element>;
-    static cacheUniqueDependencies(this: typeof UI5Element): void;
     /**
      * Returns a list of the unique dependencies for this UI5 Web Component
      *
@@ -388,33 +344,30 @@ declare abstract class UI5Element extends HTMLElement {
      */
     static getUniqueDependencies(this: typeof UI5Element): Array<typeof UI5Element>;
     /**
+     * Returns a promise that resolves whenever all dependencies for this UI5 Web Component have resolved
+     */
+    static whenDependenciesDefined(): Promise<Array<typeof UI5Element>>;
+    /**
      * Hook that will be called upon custom element definition
      *
      * @protected
-     * @deprecated use the "i18n" decorator for fetching message bundles and the "cldr" option in the "customElements" decorator for fetching CLDR
      */
     static onDefine(): Promise<void>;
-    static fetchI18nBundles(): Promise<I18nBundle[]>;
-    static fetchCLDR(): Promise<void>;
-    static asyncFinished: boolean;
-    static definePromise: Promise<void> | undefined;
-    static i18nBundleStorage: Record<string, I18nBundle>;
-    static get i18nBundles(): Record<string, I18nBundle>;
     /**
      * Registers a UI5 Web Component in the browser window object
      * @public
      */
-    static define(): typeof UI5Element;
+    static define(): Promise<typeof UI5Element>;
     /**
      * Returns an instance of UI5ElementMetadata.js representing this UI5 Web Component's full metadata (its and its parents')
      * Note: not to be confused with the "get metadata()" method, which returns an object for this class's metadata only
      * @public
      */
     static getMetadata(): UI5ElementMetadata;
-    get validity(): ValidityState;
-    get validationMessage(): string;
-    checkValidity(): boolean;
-    reportValidity(): boolean;
+    get validity(): ValidityState | undefined;
+    get validationMessage(): string | undefined;
+    checkValidity(): boolean | undefined;
+    reportValidity(): boolean | undefined;
 }
 /**
  * Always use duck-typing to cover all runtimes on the page.
@@ -422,4 +375,4 @@ declare abstract class UI5Element extends HTMLElement {
 declare const instanceOfUI5Element: (object: any) => object is UI5Element;
 export default UI5Element;
 export { instanceOfUI5Element, };
-export type { ChangeInfo, InvalidationInfo, Renderer, SlottedChild, };
+export type { ChangeInfo, Renderer, RendererOptions, };

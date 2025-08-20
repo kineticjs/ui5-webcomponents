@@ -1,6 +1,12 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import type MessageStripDesign from "./types/MessageStripDesign.js";
+import "@ui5/webcomponents-icons/dist/decline.js";
+import "@ui5/webcomponents-icons/dist/information.js";
+import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
+import "@ui5/webcomponents-icons/dist/error.js";
+import "@ui5/webcomponents-icons/dist/alert.js";
+import MessageStripDesign from "./types/MessageStripDesign.js";
 import type { IIcon } from "./Icon.js";
 declare enum DesignClassesMapping {
     Information = "ui5-message-strip-root--info",
@@ -11,7 +17,6 @@ declare enum DesignClassesMapping {
     ColorSet2 = "ui5-message-strip-root--color-set-2"
 }
 type DesignTypeAnnouncemnt = Record<MessageStripDesign, string>;
-type DesignCloseButtonTooltip = Record<MessageStripDesign, string>;
 /**
  * @class
  *
@@ -48,9 +53,6 @@ type DesignCloseButtonTooltip = Record<MessageStripDesign, string>;
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  */
 declare class MessageStrip extends UI5Element {
-    eventDetails: {
-        close: void;
-    };
     /**
      * Defines the component type.
      * @default "Information"
@@ -97,13 +99,15 @@ declare class MessageStrip extends UI5Element {
     icon: Array<IIcon>;
     static i18nBundle: I18nBundle;
     _closeClick(): void;
+    static onDefine(): Promise<void>;
     static designAnnouncementMappings(): DesignTypeAnnouncemnt;
     get hiddenText(): string;
     get shouldHideIcon(): boolean;
-    static closeButtonMappings(): DesignCloseButtonTooltip;
     get _closeButtonText(): string;
     get _closableText(): string;
+    get classes(): ClassMap;
     get iconProvided(): boolean;
+    get standardIconName(): "error" | "alert" | "sys-enter-2" | "information" | null;
     get designClasses(): DesignClassesMapping;
 }
 export default MessageStrip;

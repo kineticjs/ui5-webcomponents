@@ -61,6 +61,7 @@ declare class ProductSwitch extends UI5Element {
         ONE_COLUMN: number;
         THREE_COLUMN: number;
     };
+    static onDefine(): Promise<void>;
     get _ariaLabelText(): string;
     onEnterDOM(): void;
     onExitDOM(): void;
@@ -72,7 +73,6 @@ declare class ProductSwitch extends UI5Element {
     _onkeydown(e: KeyboardEvent): void;
     _handleDown(e: KeyboardEvent): void;
     _handleUp(e: KeyboardEvent): void;
-    getFocusDomRef(): HTMLElement | undefined;
 }
 export default ProductSwitch;
 export type { IProductSwitchItem, };

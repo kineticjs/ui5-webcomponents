@@ -4,14 +4,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { customElement, slot, property } from "@ui5/webcomponents-base/dist/decorators.js";
+import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import { isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
+import { isIOS, isSafari } from "@ui5/webcomponents-base/dist/Device.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
-import { toggleAttribute } from "./TableUtils.js";
-import TableRowTemplate from "./TableRowTemplate.js";
+import TableRowTemplate from "./generated/templates/TableRowTemplate.lit.js";
 import TableRowBase from "./TableRowBase.js";
 import TableRowCss from "./generated/themes/TableRow.css.js";
-import "@ui5/webcomponents-icons/dist/overflow.js";
+import TableCell from "./TableCell.js";
+import RadioButton from "./RadioButton.js";
 /**
  * @class
  *
@@ -25,12 +28,20 @@ import "@ui5/webcomponents-icons/dist/overflow.js";
  *
  * @constructor
  * @extends TableRowBase
- * @since 2.0.0
+ * @since 2.0
  * @public
+ * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 let TableRow = class TableRow extends TableRowBase {
     constructor() {
         super(...arguments);
+        /**
+         * Unique identifier of the row.
+         *
+         * @default ""
+         * @public
+         */
+        this.rowKey = "";
         /**
          * Defines the interactive state of the row.
          *
@@ -45,21 +56,24 @@ let TableRow = class TableRow extends TableRowBase {
          * @public
          */
         this.navigated = false;
-        /**
-         * Defines whether the row is movable.
-         *
-         * @default false
-         * @since 2.6.0
-         * @public
-         */
-        this.movable = false;
+        this._renderNavigated = false;
+    }
+    static async onDefine() {
+        await super.onDefine();
+        if (isSafari() && isIOS()) {
+            // Safari on iOS does not use the :active state unless there is a touchstart event handler on the <body> element
+            document.body.addEventListener("touchstart", () => { });
+        }
     }
     onBeforeRendering() {
         super.onBeforeRendering();
-        toggleAttribute(this, "aria-current", this._renderNavigated && this.navigated, "true");
-        toggleAttribute(this, "_interactive", this._isInteractive);
-        toggleAttribute(this, "draggable", this.movable, "true");
-        this.ariaRowIndex = `${this._rowIndex + 2}`;
+        this.toggleAttribute("_interactive", this._isInteractive);
+        if (this._renderNavigated && this.navigated) {
+            this.setAttribute("aria-current", "true");
+        }
+        else {
+            this.removeAttribute("aria-current");
+        }
     }
     async focus(focusOptions) {
         this.setAttribute("tabindex", "-1");
@@ -73,17 +87,12 @@ let TableRow = class TableRow extends TableRowBase {
         }
         if (eventOrigin === this && this._isInteractive && isEnter(e)) {
             this.toggleAttribute("_active", true);
-            this._onclick();
+            this._table?._onRowPress(this);
         }
     }
     _onclick() {
-        if (this === getActiveElement()) {
-            if (this._isSelectable && !this._hasSelector) {
-                this._onSelectionChange();
-            }
-            else if (this.interactive) {
-                this._table?._onRowClick(this);
-            }
+        if (this._isInteractive && this === getActiveElement()) {
+            this._table?._onRowPress(this);
         }
     }
     _onkeyup() {
@@ -92,66 +101,8 @@ let TableRow = class TableRow extends TableRowBase {
     _onfocusout() {
         this.removeAttribute("_active");
     }
-    _onOverflowButtonClick(e) {
-        const ctor = this.actions[0].constructor;
-        ctor.showMenu(this._overflowActions, e.target);
-        e.stopPropagation();
-    }
     get _isInteractive() {
-        return this.interactive || (this._isSelectable && !this._hasSelector);
-    }
-    get _rowIndex() {
-        if (this.position !== undefined) {
-            return this.position;
-        }
-        if (this._table) {
-            return this._table.rows.indexOf(this);
-        }
-        return -1;
-    }
-    get _hasOverflowActions() {
-        let renderedActionsCount = 0;
-        return this.actions.some(action => {
-            if (action.isFixedAction() || !action.invisible) {
-                renderedActionsCount++;
-            }
-            return renderedActionsCount > this._rowActionCount;
-        });
-    }
-    get _flexibleActions() {
-        const flexibleActions = this.actions.filter(action => !action.isFixedAction());
-        const fixedActionsCount = this.actions.length - flexibleActions.length;
-        let maxFlexibleActionsCount = this._rowActionCount - fixedActionsCount;
-        if (maxFlexibleActionsCount < 1) {
-            return []; // fixed actions occupy all the available space
-        }
-        if (flexibleActions.length <= maxFlexibleActionsCount) {
-            return flexibleActions; // all actions fit the available space
-        }
-        const visibleFlexibleActions = flexibleActions.filter(action => !action.invisible);
-        if (visibleFlexibleActions.length > maxFlexibleActionsCount) {
-            maxFlexibleActionsCount--; // preserve space for the overflow button
-        }
-        return visibleFlexibleActions.slice(0, maxFlexibleActionsCount);
-    }
-    get _fixedActions() {
-        let maxFixedActionsCount = this._rowActionCount;
-        if (this._hasOverflowActions) {
-            maxFixedActionsCount--;
-        }
-        const fixedActions = this.actions.filter(action => action.isFixedAction());
-        return fixedActions.slice(0, maxFixedActionsCount);
-    }
-    get _overflowActions() {
-        const fixedActions = this._fixedActions;
-        const flexibleActions = this._flexibleActions;
-        const overflowActions = [];
-        this.actions.forEach(action => {
-            if (!action.invisible && !fixedActions.includes(action) && !flexibleActions.includes(action)) {
-                overflowActions.push(action);
-            }
-        });
-        return overflowActions;
+        return this.interactive;
     }
 };
 __decorate([
@@ -160,23 +111,14 @@ __decorate([
         "default": true,
         individualSlots: true,
         invalidateOnChildChange: {
-            properties: ["_popin", "_popinHidden"],
+            properties: ["_popin"],
             slots: false,
         },
     })
 ], TableRow.prototype, "cells", void 0);
 __decorate([
-    slot({
-        type: HTMLElement,
-        individualSlots: true,
-    })
-], TableRow.prototype, "actions", void 0);
-__decorate([
     property()
 ], TableRow.prototype, "rowKey", void 0);
-__decorate([
-    property({ type: Number })
-], TableRow.prototype, "position", void 0);
 __decorate([
     property({ type: Boolean })
 ], TableRow.prototype, "interactive", void 0);
@@ -184,13 +126,14 @@ __decorate([
     property({ type: Boolean })
 ], TableRow.prototype, "navigated", void 0);
 __decorate([
-    property({ type: Boolean })
-], TableRow.prototype, "movable", void 0);
+    property({ type: Boolean, noAttribute: true })
+], TableRow.prototype, "_renderNavigated", void 0);
 TableRow = __decorate([
     customElement({
         tag: "ui5-table-row",
         styles: [TableRowBase.styles, TableRowCss],
         template: TableRowTemplate,
+        dependencies: [...TableRowBase.dependencies, RadioButton, TableCell],
     })
 ], TableRow);
 TableRow.define();

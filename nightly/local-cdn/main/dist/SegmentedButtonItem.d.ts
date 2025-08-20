@@ -115,5 +115,6 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
     get tabIndexValue(): string | undefined;
     get ariaLabelText(): string | undefined;
     get showIconTooltip(): boolean;
+    static onDefine(): Promise<void>;
 }
 export default SegmentedButtonItem;

@@ -1,4 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import "@ui5/webcomponents-icons/dist/background.js";
 import type MediaGalleryItemLayout from "./types/MediaGalleryItemLayout.js";
 import type { IMediaGalleryItem } from "./MediaGallery.js";
 /**
@@ -25,11 +26,6 @@ import type { IMediaGalleryItem } from "./MediaGallery.js";
  * @since 1.1.0
  */
 declare class MediaGalleryItem extends UI5Element implements IMediaGalleryItem {
-    eventDetails: {
-        click: {
-            item: MediaGalleryItem;
-        };
-    };
     /**
      * Defines the selected state of the component.
      * @default false
@@ -96,7 +92,7 @@ declare class MediaGalleryItem extends UI5Element implements IMediaGalleryItem {
     get _isContentAvailable(): boolean | null;
     get _useThumbnail(): boolean | null;
     get _useContent(): boolean | null;
-    get effectiveTabIndex(): number | undefined;
+    get effectiveTabIndex(): string | undefined;
     get _showBackgroundIcon(): boolean;
     get styles(): {
         wrapper: {
