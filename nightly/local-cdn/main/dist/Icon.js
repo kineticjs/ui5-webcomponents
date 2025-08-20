@@ -5,16 +5,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import { getIconData, getIconDataSync } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import executeTemplate from "@ui5/webcomponents-base/dist/renderer/executeTemplate.js";
-import IconTemplate from "./generated/templates/IconTemplate.lit.js";
+import IconTemplate from "./IconTemplate.js";
 import IconMode from "./types/IconMode.js";
 // Styles
 import iconCss from "./generated/themes/Icon.css.js";
@@ -40,7 +40,7 @@ const ICON_NOT_FOUND = "ICON_NOT_FOUND";
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons).
  * - [@ui5/webcomponents-icons-tnt](https://www.npmjs.com/package/@ui5/webcomponents-icons-tnt) represents the "tnt" collection and includes the following
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons-TNT).
- * - [@ui5/webcomponents-icons-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
+ * - [@ui5/webcomponents-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
  * [icons](https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/BusinessSuiteInAppSymbols).
  *
  * 2. **After exploring the icons collections, add one or more of the packages as dependencies to your project.**
@@ -109,11 +109,11 @@ let Icon = class Icon extends UI5Element {
         this.showTooltip = false;
         /**
          * Defines the mode of the component.
-         * @default "Image"
+         * @default "Decorative"
          * @public
          * @since 2.0.0
          */
-        this.mode = "Image";
+        this.mode = "Decorative";
         /**
          * @private
          */
@@ -128,7 +128,7 @@ let Icon = class Icon extends UI5Element {
             return;
         }
         if (isEnter(e)) {
-            this.fireEvent("click");
+            this.fireDecoratorEvent("click");
         }
         if (isSpace(e)) {
             e.preventDefault(); // prevent scrolling
@@ -136,7 +136,7 @@ let Icon = class Icon extends UI5Element {
     }
     _onkeyup(e) {
         if (this.mode === IconMode.Interactive && isSpace(e)) {
-            this.fireEvent("click");
+            this.fireDecoratorEvent("click");
         }
     }
     /**
@@ -149,7 +149,7 @@ let Icon = class Icon extends UI5Element {
         return this.mode === IconMode.Decorative ? "true" : undefined;
     }
     get _tabIndex() {
-        return this.mode === IconMode.Interactive ? "0" : undefined;
+        return this.mode === IconMode.Interactive ? 0 : undefined;
     }
     get effectiveAccessibleRole() {
         switch (this.mode) {
@@ -169,8 +169,7 @@ let Icon = class Icon extends UI5Element {
     async onBeforeRendering() {
         const name = this.name;
         if (!name) {
-            /* eslint-disable-next-line */
-            return console.warn("Icon name property is required", this);
+            return;
         }
         let iconData = getIconDataSync(name);
         if (!iconData) {
@@ -244,7 +243,7 @@ Icon = __decorate([
         tag: "ui5-icon",
         languageAware: true,
         themeAware: true,
-        renderer: litRender,
+        renderer: jsxRender,
         template: IconTemplate,
         styles: iconCss,
     })
@@ -252,11 +251,13 @@ Icon = __decorate([
      * Fired on mouseup, `SPACE` and `ENTER`.
      * - on mouse click, the icon fires native `click` event
      * - on `SPACE` and `ENTER`, the icon fires custom `click` event
-     * @private
-     * @since 1.0.0-rc.8
+     * @public
+     * @since 2.11.0
      */
     ,
-    event("click")
+    event("click", {
+        bubbles: true,
+    })
 ], Icon);
 Icon.define();
 export default Icon;

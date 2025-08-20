@@ -5,10 +5,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { isTabNext, isTabPrevious, isF2 } from "@ui5/webcomponents-base/dist/Keys.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import ListItem from "./ListItem.js";
-import ListItemCustomTemplate from "./generated/templates/ListItemCustomTemplate.lit.js";
+import ListItemCustomTemplate from "./ListItemCustomTemplate.js";
 // Styles
 import ListItemCustomCss from "./generated/themes/ListItemCustom.css.js";
 /**
@@ -72,6 +73,7 @@ ListItemCustom = __decorate([
     customElement({
         tag: "ui5-li-custom",
         template: ListItemCustomTemplate,
+        renderer: jsxRenderer,
         styles: [ListItem.styles, ListItemCustomCss],
     })
 ], ListItemCustom);

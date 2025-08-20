@@ -8,16 +8,16 @@ var TableGroupRow_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import CheckBox from "@ui5/webcomponents/dist/CheckBox.js";
-import TableGroupRowTemplate from "./generated/templates/TableGroupRowTemplate.lit.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import TableGroupRowTemplate from "./TableGroupRowTemplate.js";
 import TableMode from "./types/TableMode.js";
 // Texts
 import { TABLE_GROUP_ROW_ARIA_LABEL, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import tableGroupRowStyles from "./generated/themes/TableGroupRow.css.js";
+import { patchScopingSuffix } from "./utils/CompatCustomElementsScope.js";
 /**
  * @class
  *
@@ -33,6 +33,7 @@ import tableGroupRowStyles from "./generated/themes/TableGroupRow.css.js";
  *
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  * @csspart group-row - Used to style the native `tr` element
+ * @deprecated Deprecated as of version 2.12.0, use `@ui5/webcomponents/dist/Table.js` instead.
  */
 let TableGroupRow = TableGroupRow_1 = class TableGroupRow extends UI5Element {
     constructor() {
@@ -53,7 +54,7 @@ let TableGroupRow = TableGroupRow_1 = class TableGroupRow extends UI5Element {
         return this._colSpan;
     }
     get ariaLabelText() {
-        return `${TableGroupRow_1.i18nBundle.getText(TABLE_GROUP_ROW_ARIA_LABEL)} ${this.innerText}. ${this.forcedAriaPosition}`;
+        return `${TableGroupRow_1.i18nBundle.getText(TABLE_GROUP_ROW_ARIA_LABEL)} ${this.textContent}. ${this.forcedAriaPosition}`;
     }
     visibleColCount() {
         let count = this._columnsInfo?.reduce((acc, column) => {
@@ -71,10 +72,7 @@ let TableGroupRow = TableGroupRow_1 = class TableGroupRow extends UI5Element {
         this._colSpan = this.visibleColCount();
     }
     _onfocusin(e) {
-        this.fireEvent("_focused", e);
-    }
-    static async onDefine() {
-        TableGroupRow_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+        this.fireDecoratorEvent("_focused", e);
     }
 };
 __decorate([
@@ -92,18 +90,21 @@ __decorate([
 __decorate([
     property()
 ], TableGroupRow.prototype, "forcedAriaPosition", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], TableGroupRow, "i18nBundle", void 0);
 TableGroupRow = TableGroupRow_1 = __decorate([
     customElement({
         tag: "ui5-table-group-row",
         styles: tableGroupRowStyles,
-        renderer: litRender,
+        renderer: jsxRenderer,
         template: TableGroupRowTemplate,
-        dependencies: [
-            CheckBox,
-        ],
     }),
-    event("_focused")
+    event("_focused", {
+        bubbles: true,
+    })
 ], TableGroupRow);
+patchScopingSuffix(TableGroupRow);
 TableGroupRow.define();
 export default TableGroupRow;
 //# sourceMappingURL=TableGroupRow.js.map

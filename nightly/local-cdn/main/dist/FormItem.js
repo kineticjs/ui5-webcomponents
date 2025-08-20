@@ -7,10 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 // Template
-import FormItemTemplate from "./generated/templates/FormItemTemplate.lit.js";
+import FormItemTemplate from "./FormItemTemplate.js";
 // Styles
 import FormItemCss from "./generated/themes/FormItem.css.js";
 /**
@@ -37,16 +37,11 @@ import FormItemCss from "./generated/themes/FormItem.css.js";
  * @implements {IFormItem}
  * @public
  * @since 2.0.0
- * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 let FormItem = class FormItem extends UI5Element {
     constructor() {
         super(...arguments);
-        /**
-         * @private
-         */
-        this.labelSpan = "S12 M4 L4 XL4";
         /**
          * @private
          */
@@ -71,14 +66,11 @@ __decorate([
 ], FormItem.prototype, "content", void 0);
 __decorate([
     property()
-], FormItem.prototype, "labelSpan", void 0);
-__decorate([
-    property()
 ], FormItem.prototype, "itemSpacing", void 0);
 FormItem = __decorate([
     customElement({
         tag: "ui5-form-item",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: FormItemCss,
         template: FormItemTemplate,
     })

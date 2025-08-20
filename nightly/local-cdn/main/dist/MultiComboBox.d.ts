@@ -2,11 +2,9 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ClassMap, Timeout } from "@ui5/webcomponents-base/dist/types.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
-import "@ui5/webcomponents-icons/dist/multiselect-all.js";
-import "@ui5/webcomponents-icons/dist/not-editable.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
@@ -20,8 +18,8 @@ import Popover from "./Popover.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import List from "./List.js";
 import type { ListSelectionChangeEventDetail } from "./List.js";
+import ToggleButton from "./ToggleButton.js";
 import type ComboBoxFilter from "./types/ComboBoxFilter.js";
-import type ListItemBase from "./ListItemBase.js";
 import type { InputEventDetail } from "./Input.js";
 import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 /**
@@ -30,10 +28,10 @@ import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
  */
 interface IMultiComboBoxItem extends UI5Element {
     text?: string;
+    additionalText?: string;
     headerText?: string;
     selected: boolean;
     isGroupItem?: boolean;
-    stableDomRef: string;
     _isVisible?: boolean;
     items?: Array<IMultiComboBoxItem>;
 }
@@ -72,6 +70,7 @@ type MultiComboboxItemWithSelection = {
  * you can open or close the drop-down by pressing [F4], [Alt] + [Up] or [Alt] + [Down] keys.
  * Once the drop-down is opened, you can use the `UP` and `DOWN` arrow keys
  * to navigate through the available options and select one by pressing the `Space` or `Enter` keys.
+ * [Ctrl]+[Alt]+[F8] or [Command]+[Option]+[F8] - Focuses the first link in the value state message, if available. Pressing [Tab] moves the focus to the next link in the value state message, or closes the value state message if there are no more links.
  *
  * #### Tokens
  *
@@ -89,6 +88,13 @@ type MultiComboboxItemWithSelection = {
  * @csspart token-\{index\} - Used to style each token(where `token-0` corresponds to the first item)
  */
 declare class MultiComboBox extends UI5Element implements IFormInputElement {
+    eventDetails: {
+        change: void;
+        input: void;
+        open: void;
+        close: void;
+        "selection-change": MultiComboBoxSelectionChangeEventDetail;
+    };
     /**
      * Defines the value of the component.
      *
@@ -206,9 +212,10 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     tokenizerOpen: boolean;
     /**
      * Indicates whether the items picker is open.
-     * @private
+     * @public
+     * @since 2.9.0
      */
-    _open: boolean;
+    open: boolean;
     _valueBeforeOpen: string;
     _filteredItems: Array<IMultiComboBoxItem>;
     _previouslySelectedItems: Array<IMultiComboBoxItem>;
@@ -228,6 +235,17 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
      */
     tokenizerAvailable: boolean;
     /**
+     * Indicates whether link navigation is being handled.
+     * @private
+     * @since 2.11.0
+     * @default false
+     */
+    _handleLinkNavigation: boolean;
+    /**
+     * @private
+     */
+    _linksListenersArray: Array<(args: any) => void>;
+    /**
      * Defines the component items.
      * @public
      */
@@ -245,7 +263,7 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed,
-     * when the component is in `Information`, `Warning` or `Error` value state.
+     * when the component is in `Information`, `Critical` or `Negative` value state.
      * @since 1.0.0-rc.9
      * @public
      */
@@ -269,6 +287,7 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _itemToFocus?: IMultiComboBoxItem;
     _itemsBeforeOpen: Array<MultiComboboxItemWithSelection>;
     selectedItems: Array<IMultiComboBoxItem>;
+    _valueStateLinks: Array<HTMLElement>;
     static i18nBundle: I18nBundle;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
@@ -284,19 +303,16 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _toggleTokenizerPopover(): void;
     togglePopoverByDropdownIcon(): void;
     _showFilteredItems(): void;
-    filterSelectedItems(e: MouseEvent): void;
-    /**
-     * Indicates whether the dropdown is open. True if the dropdown is open, false otherwise.
-     * @default false
-     * @public
-     */
-    get open(): boolean;
+    filterSelectedItems(e: UI5CustomEvent<ToggleButton, "click">): void;
     get _showAllItemsButtonPressed(): boolean;
     get _inputDom(): HTMLInputElement;
     _inputLiveChange(e: InputEvent): void;
     _tokenDelete(e: CustomEvent<TokenizerTokenDeleteEventDetail>): void;
     get _getPlaceholder(): string;
+    get _shouldFocusLastToken(): boolean;
+    _handleArrowKey(direction: string): void;
     _handleArrowLeft(): void;
+    _handleArrowRight(): void;
     _onPopoverFocusOut(): void;
     _tokenizerFocusOut(e: FocusEvent): void;
     _tokenizerFocusIn(): void;
@@ -314,13 +330,14 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _handleEnd(e: KeyboardEvent): void;
     _handleTab(): void;
     _handleSelectAll(): void;
-    _onListHeaderKeydown(e: KeyboardEvent): Promise<void>;
+    _onListHeaderKeydown(e: KeyboardEvent): void | Promise<void>;
     _handleSelectAllCheckboxClick(e: CustomEvent): void;
     _onItemKeydown(e: KeyboardEvent): void;
     _handleArrowCtrl(e: KeyboardEvent): void;
     _onItemTab(): void;
     _handleArrowNavigation(e: KeyboardEvent, isDownControl: boolean): void;
     _handleArrowDown(): Promise<void>;
+    _handleCtrlALtF8(): void;
     _handleItemRangeSelection(e: KeyboardEvent): void;
     _navigateToNextItem(): void;
     _navigateToPrevItem(): void;
@@ -342,7 +359,6 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _getItems(): Array<IMultiComboBoxItem>;
     _getSelectedItems(): Array<MultiComboBoxItem>;
     _listSelectionChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
-    syncItems(listItems: Array<ListItemBase>): void;
     fireSelectionChange(): boolean;
     _getList(): List;
     _click(): void;
@@ -350,6 +366,8 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     _beforeClose(): void;
     _afterClose(): void;
     _beforeOpen(): void;
+    _addLinksEventListeners(): void;
+    _removeLinksEventListeners(): void;
     _handleTypeAhead(item: IMultiComboBoxItem, filterValue: string): void;
     _getFirstMatchingItem(current: string): IMultiComboBoxItem | undefined;
     _startsWithMatchingItems(str: string): IMultiComboBoxItem[];
@@ -379,12 +397,15 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     get hasValueStateMessage(): boolean;
     get ariaValueStateHiddenText(): string | undefined;
     get valueStateDefaultText(): string;
-    get valueStateTextId(): "ui5-multi-combobox-valueStateDesc" | undefined;
+    get valueStateTextId(): "" | "ui5-multi-combobox-valueStateDesc";
     get ariaLabelText(): string | undefined;
     /**
      * This method is relevant for sap_horizon theme only
      */
     get _valueStateMessageIcon(): string;
+    get linksInAriaValueStateHiddenText(): HTMLElement[];
+    get getValueStateLinksShortcutsTextAcc(): string;
+    get _valueStateLinksShortcutsTextAccId(): "" | "hiddenText-value-state-link-shortcut";
     get _tokensCountText(): string | undefined;
     get _tokensCountTextId(): string;
     get _selectedTokensCount(): number;
@@ -403,6 +424,8 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
     get iconsCount(): number;
     get clearIconAccessibleName(): string;
     get selectAllCheckboxLabel(): string;
+    get _popupLabel(): string;
+    get responsivePopoverId(): string;
     get classes(): ClassMap;
     get styles(): {
         popoverValueStateMessage: {
@@ -417,7 +440,6 @@ declare class MultiComboBox extends UI5Element implements IFormInputElement {
             "max-width": string;
         };
     };
-    static onDefine(): Promise<void>;
 }
 export default MultiComboBox;
 export type { IMultiComboBoxItem, MultiComboBoxSelectionChangeEventDetail, };

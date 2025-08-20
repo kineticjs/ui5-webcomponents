@@ -13,7 +13,7 @@ import type MediaGalleryMenuVerticalAlign from "./types/MediaGalleryMenuVertical
  * Interface for components that can be slotted inside `ui5-media-gallery` as items.
  * @public
  */
-interface IMediaGalleryItem extends HTMLElement, ITabbable {
+interface IMediaGalleryItem extends UI5Element, ITabbable {
     selected: boolean;
     disabled: boolean;
     displayedContent: HTMLElement | null;
@@ -58,6 +58,11 @@ type MediaGallerySelectionChangeEventDetail = {
  * @since 1.1.0
  */
 declare class MediaGallery extends UI5Element {
+    eventDetails: {
+        "selection-change": MediaGallerySelectionChangeEventDetail;
+        "overflow-click": void;
+        "display-area-click": void;
+    };
     /**
      * If set to `true`, all thumbnails are rendered in a scrollable container.
      * If `false`, only up to five thumbnails are rendered, followed by
@@ -142,6 +147,7 @@ declare class MediaGallery extends UI5Element {
     _getMaxAllowedThumbnailsInColumn(columnHeight: number): number;
     _getOverflowSize(columnHeight: number, columnsCount: number): number;
     _getFocusableItems(): ITabbable[];
+    getFocusDomRef(): HTMLElement | undefined;
     _selectItem(item: IMediaGalleryItem, userInteraction?: boolean): void;
     _updateSelectedFlag(itemToSelect: IMediaGalleryItem): void;
     _selectItemOnPhone(item: IMediaGalleryItem): void;

@@ -1,9 +1,8 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type AriaLandmarkRole from "@ui5/webcomponents-base/dist/types/AriaLandmarkRole.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import type { PassiveEventListenerObject } from "@ui5/webcomponents-base/dist/types.js";
+import "@ui5/webcomponents-icons/dist/vertical-grip.js";
+import type { PassiveEventListenerObject, AriaLandmarkRole } from "@ui5/webcomponents-base";
 import FCLLayout from "./types/FCLLayout.js";
-import type { LayoutConfiguration } from "./fcl-utils/FCLLayout.js";
 declare enum MEDIA {
     PHONE = "phone",
     TABLET = "tablet",
@@ -19,7 +18,19 @@ type SeparatorMovementSession = {
     cursorPositionX: number;
     tmpFCLLayout: FCLLayout;
 };
-type FlexibleColumnLayoutColumnLayout = Array<string | number>;
+type FlexibleColumnLayoutColumnLayout = Array<string | 0>;
+type LayoutConfiguration = {
+    "tablet"?: {
+        [layoutName in FCLLayout]?: {
+            layout: FlexibleColumnLayoutColumnLayout;
+        };
+    };
+    "desktop"?: {
+        [layoutName in FCLLayout]?: {
+            layout: FlexibleColumnLayoutColumnLayout;
+        };
+    };
+};
 type FlexibleColumnLayoutLayoutChangeEventDetail = {
     layout: `${FCLLayout}`;
     columnLayout: FlexibleColumnLayoutColumnLayout;
@@ -29,7 +40,12 @@ type FlexibleColumnLayoutLayoutChangeEventDetail = {
     separatorsUsed: boolean;
     resized: boolean;
 };
-type FCLAccessibilityRoles = Extract<Lowercase<AriaLandmarkRole>, "none" | "complementary" | "contentinfo" | "main" | "region">;
+type FlexibleColumnLayoutLayoutConfigurationChangeEventDetail = {
+    layout: `${FCLLayout}`;
+    media: `${MEDIA}`;
+    columnLayout: FlexibleColumnLayoutColumnLayout;
+};
+type FCLAccessibilityRoles = Extract<AriaLandmarkRole, "none" | "complementary" | "contentinfo" | "main" | "region">;
 type FCLAccessibilityAttributes = {
     startColumn?: {
         role: FCLAccessibilityRoles;
@@ -52,14 +68,6 @@ type FCLAccessibilityAttributes = {
         name: string;
     };
 };
-type UserDefinedColumnLayouts = {
-    "tablet": {
-        [layoutName in FCLLayout]?: FlexibleColumnLayoutColumnLayout;
-    };
-    "desktop": {
-        [layoutName in FCLLayout]?: FlexibleColumnLayoutColumnLayout;
-    };
-};
 /**
  * @class
  *
@@ -79,7 +87,7 @@ type UserDefinedColumnLayouts = {
  * The component would display 1 column for window size smaller than 599px, up to two columns between 599px and 1023px,
  * and 3 columns for sizes bigger than 1023px.
  *
- * **Note:** When the component displays more than one column, the minimal width of each column is 312px. Consequently, when the user drags a column separator to resize the columns, the minimal allowed width of any resized column is 312px.
+ * **Note:** When the component displays more than one column, the minimal width of each column is 248px. Consequently, when the user drags a column separator to resize the columns, the minimal allowed width of any resized column is 248px.
  *
  * ### Keyboard Handling
  *
@@ -110,6 +118,10 @@ type UserDefinedColumnLayouts = {
  * @since 1.0.0-rc.8
  */
 declare class FlexibleColumnLayout extends UI5Element {
+    eventDetails: {
+        "layout-change": FlexibleColumnLayoutLayoutChangeEventDetail;
+        "layout-configuration-change": FlexibleColumnLayoutLayoutConfigurationChangeEventDetail;
+    };
     /**
     * Defines the columns layout and their proportion.
     *
@@ -175,10 +187,28 @@ declare class FlexibleColumnLayout extends UI5Element {
     */
     _visibleColumns: number;
     /**
-    * Allows the user to replace the whole layouts configuration
+    * Defines if the user is currently resizing the columns by dragging their separator.
+    * @default false
     * @private
     */
-    _layoutsConfiguration?: LayoutConfiguration;
+    _resizing: boolean;
+    /**
+    * Allows to customize the proportions of the column widts per screen size and layout.
+    * If no custom proportion provided for a specific layout, the default will be used.
+    *
+    * **Notes:**
+    *
+    * - The proportions should be given in percentages. For example ["30%", "40%", "30%"], ["70%", "30%", 0], etc.
+    * - The proportions should add up to 100%.
+    * - Hidden columns are marked as "0px", e.g. ["0px", "70%", "30%"]. Specifying 0 or "0%" for hidden columns is also valid.
+    * - If the proportions do not match the layout (e.g. if provided proportions ["70%", "30%", "0px"] for "OneColumn" layout), then the default proportions will be used instead.
+    * - Whenever the user drags the columns separator to resize the columns, the `layoutsConfiguration` object will be updated with the user-specified proportions for the given layout (and the `layout-configuration-change` event will be fired).
+    * - No custom configuration available for the phone screen size, as the default of 100% column width is always used there.
+    * @public
+    * @since 2.0.0
+    * @default {}
+    */
+    layoutsConfiguration: LayoutConfiguration;
     /**
     * Defines the content in the start column.
     * @public
@@ -198,13 +228,13 @@ declare class FlexibleColumnLayout extends UI5Element {
     _handleResize: () => void;
     _onSeparatorMove: (e: TouchEvent | MouseEvent) => void;
     _onSeparatorMoveEnd: (e: TouchEvent | MouseEvent) => void;
+    onColumnCollapseAnimationEndRef: (e: TransitionEvent) => void;
     static i18nBundle: I18nBundle;
     _prevLayout: `${FCLLayout}` | null;
-    _userDefinedColumnLayouts: UserDefinedColumnLayouts;
+    _prevLayoutsConfiguration: LayoutConfiguration | null;
     _ontouchstart: PassiveEventListenerObject;
     separatorMovementSession?: SeparatorMovementSession | null;
     constructor();
-    static onDefine(): Promise<void>;
     static get ANIMATION_DURATION(): 0 | 560;
     onEnterDOM(): void;
     onExitDOM(): void;
@@ -213,12 +243,20 @@ declare class FlexibleColumnLayout extends UI5Element {
     handleResize(): void;
     updateLayout(): void;
     syncLayout(): void;
+    syncLayoutsConfiguration(): void;
     toggleColumns(): void;
     toggleColumn(column: string): void;
-    columnResizeHandler: (e: Event) => void;
-    nextColumnLayout(layout: `${FCLLayout}`): FlexibleColumnLayoutColumnLayout;
+    expandColumn(columnDOM: HTMLElement, columnWidth: string | number): void;
+    collapseColumn(columnDOM: HTMLElement): void;
+    onColumnCollapseAnimationEnd: (e: Event) => void;
+    nextColumnLayout(layout: `${FCLLayout}`): string[];
+    getCustomColumnLayout(layout: `${FCLLayout}`): string[] | undefined;
+    setCustomColumnLayout(layout: `${FCLLayout}`, columnLayout: string[]): void;
+    getDefaultColumnLayout(layout: `${FCLLayout}`): string[];
+    mediaAllowsCustomConfiguration(media: MEDIA): media is MEDIA.TABLET | MEDIA.DESKTOP;
     calcVisibleColumns(colLayout: FlexibleColumnLayoutColumnLayout): number;
     fireLayoutChange(separatorUsed: boolean, resized: boolean): void;
+    fireLayoutConfigurationChange(): void;
     onSeparatorPress(e: TouchEvent | MouseEvent): void;
     onSeparatorMove(e: TouchEvent | MouseEvent): void;
     private onSeparatorMoveEnd;
@@ -228,20 +266,28 @@ declare class FlexibleColumnLayout extends UI5Element {
         tmpFCLLayout: FCLLayout;
     };
     exitSeparatorMovementSession(): void;
-    saveUserDefinedColumnLayout(newLayout: FCLLayout, newColumnLayout: FlexibleColumnLayoutColumnLayout): void;
+    saveUserDefinedColumnLayout(newLayout: FCLLayout, newColumnLayout: string[]): void;
     private isSeparatorAheadOfCursor;
     calculateNewColumnWidth(columnToResize: typeof COLUMN.START | typeof COLUMN.END, widthDelta: number): number;
     moveSeparator(separator: HTMLElement, offsetX: number, fclLayoutBeforeMove: FCLLayout): FCLLayout;
     adjustColumnLayout(columnToResize: typeof COLUMN.START | typeof COLUMN.END, newSize: number, createNewArray?: boolean): FlexibleColumnLayoutColumnLayout | undefined;
-    _onkeydown(e: KeyboardEvent): Promise<void>;
-    _onkeyup(): void;
+    _onArrowKeydown(e: KeyboardEvent): void;
+    _onSeparatorKeydown(e: KeyboardEvent): Promise<void>;
+    _onSeparatorKeyUp(): void;
     private attachMoveListeners;
     private detachMoveListeners;
     private toggleSideAnimations;
     private getPageXValueFromEvent;
     convertColumnWidthToPixels(width: string | number): number;
     convertToRelativeColumnWidth(pxWidth: string | number): string;
+    isValidColumnLayout(columnLayout: (string | 0)[]): boolean;
+    normalizeColumnWidths(columnLayout: (string | 0)[]): string[];
+    adjustWidthsToMinWidth(pxWidths: number[]): void;
+    getIndicesOfColumnsBelowMinWidth(columnLayout: number[]): number[];
+    getIndexOfWidestColumn(columnLayout: number[]): number;
+    verifyColumnWidthsMatchLayout(pxWidths: number[]): boolean;
     getNextLayoutOnSeparatorMovement(separator: HTMLElement, isStartToEndDirection: boolean, fclLayoutBeforeMove: FCLLayout, columnLayoutAfterMove: FlexibleColumnLayoutColumnLayout): FCLLayout;
+    switchLayoutOnArrowPress(): void;
     get _availableWidthForColumns(): number;
     /**
      * Checks if a column is hidden based on its width.
@@ -280,69 +326,40 @@ declare class FlexibleColumnLayout extends UI5Element {
     * @public
     */
     get visibleColumns(): number;
-    get classes(): {
-        root: {
-            "ui5-fcl-root": boolean;
-        };
-        columns: {
-            start: {
-                "ui5-fcl-column": boolean;
-                "ui5-fcl-column-animation": boolean;
-                "ui5-fcl-column--start": boolean;
-            };
-            middle: {
-                "ui5-fcl-column": boolean;
-                "ui5-fcl-column-animation": boolean;
-                "ui5-fcl-column--middle": boolean;
-            };
-            end: {
-                "ui5-fcl-column": boolean;
-                "ui5-fcl-column-animation": boolean;
-                "ui5-fcl-column--end": boolean;
-            };
-        };
-    };
-    get styles(): {
-        separator: {
-            start: {
-                display: string;
-            };
-            end: {
-                display: string;
-            };
-        };
-        grip: {
-            start: {
-                display: string;
-            };
-            end: {
-                display: string;
-            };
-        };
-    };
-    get startColumnWidth(): string | number;
-    get midColumnWidth(): string | number;
-    get endColumnWidth(): string | number;
+    get startColumnWidth(): string | 0;
+    get midColumnWidth(): string | 0;
+    get endColumnWidth(): string | 0;
     get showStartSeparator(): boolean;
     get showEndSeparator(): boolean;
     get showStartSeparatorGrip(): boolean | undefined;
+    get showStartSeparatorArrow(): boolean | undefined;
     get showEndSeparatorGrip(): boolean | undefined;
     get startSeparatorGripVisibility(): boolean | undefined;
     get endSeparatorGripVisibility(): boolean | undefined;
+    get startSeparatorArrowVisibility(): boolean | undefined;
+    get startSeparatorValue(): number;
+    get endSeparatorValue(): number;
+    get startArrowDirection(): "forward" | "backward" | undefined;
+    get startArrowDOM(): HTMLElement;
     get effectiveSeparatorsInfo(): {
         visible: boolean;
-        gripVisible?: boolean | undefined;
+        gripVisible?: boolean;
+        arrowVisible?: boolean;
+        arrowDirection?: "forward" | "backward";
     }[];
-    get effectiveLayout(): "OneColumn" | "TwoColumnsStartExpanded" | "TwoColumnsMidExpanded" | "ThreeColumnsMidExpanded" | "ThreeColumnsEndExpanded" | "ThreeColumnsStartExpandedEndHidden" | "ThreeColumnsMidExpandedEndHidden" | "MidColumnFullScreen" | "EndColumnFullScreen" | FCLLayout;
+    get effectiveLayout(): "OneColumn" | "TwoColumnsStartExpanded" | "TwoColumnsMidExpanded" | "ThreeColumnsMidExpanded" | "ThreeColumnsEndExpanded" | "ThreeColumnsStartExpandedEndHidden" | "ThreeColumnsMidExpandedEndHidden" | "ThreeColumnsStartHiddenMidExpanded" | "ThreeColumnsStartHiddenEndExpanded" | "MidColumnFullScreen" | "EndColumnFullScreen" | FCLLayout;
     get startSeparatorDOM(): HTMLElement;
     get endSeparatorDOM(): HTMLElement;
     get startSeparatorTabIndex(): 0 | undefined;
-    get endSeparatorTabIndex(): -1 | 0;
+    get endSeparatorTabIndex(): 0 | undefined;
     get media(): MEDIA;
     get widthDOM(): number;
     get startColumnDOM(): HTMLElement;
     get midColumnDOM(): HTMLElement;
     get endColumnDOM(): HTMLElement;
+    get isStartColumnCollapsing(): boolean;
+    get isMidColumnCollapsing(): boolean;
+    get isEndColumnCollapsing(): boolean;
     get accStartColumnText(): string;
     get accMiddleColumnText(): string;
     get accEndColumnText(): string;
@@ -351,9 +368,8 @@ declare class FlexibleColumnLayout extends UI5Element {
     get accStartColumnRole(): FCLAccessibilityRoles | undefined;
     get accMiddleColumnRole(): FCLAccessibilityRoles | undefined;
     get accEndColumnRole(): FCLAccessibilityRoles | undefined;
-    get accStartSeparatorRole(): FCLAccessibilityRoles | "separator";
-    get accEndSeparatorRole(): FCLAccessibilityRoles | "separator";
-    get _effectiveLayoutsByMedia(): LayoutConfiguration;
+    get accStartSeparatorRole(): "separator" | FCLAccessibilityRoles;
+    get accEndSeparatorRole(): "separator" | FCLAccessibilityRoles;
     get _accAttributes(): {
         columns: {
             start: {
@@ -372,4 +388,4 @@ declare class FlexibleColumnLayout extends UI5Element {
     };
 }
 export default FlexibleColumnLayout;
-export type { MEDIA, FlexibleColumnLayoutLayoutChangeEventDetail, FCLAccessibilityAttributes, FlexibleColumnLayoutColumnLayout, };
+export type { MEDIA, FlexibleColumnLayoutLayoutChangeEventDetail, FlexibleColumnLayoutLayoutConfigurationChangeEventDetail, FCLAccessibilityAttributes, FlexibleColumnLayoutColumnLayout, LayoutConfiguration, };

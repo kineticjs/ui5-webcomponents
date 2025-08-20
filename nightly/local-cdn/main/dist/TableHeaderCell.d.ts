@@ -1,4 +1,6 @@
 import TableCellBase from "./TableCellBase.js";
+import SortOrder from "@ui5/webcomponents-base/dist/types/SortOrder.js";
+import type TableHeaderCellActionBase from "./TableHeaderCellActionBase.js";
 /**
  * @class
  *
@@ -15,35 +17,39 @@ import TableCellBase from "./TableCellBase.js";
  *
  * @constructor
  * @extends TableCellBase
- * @since 2.0
+ * @since 2.0.0
  * @public
- * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 declare class TableHeaderCell extends TableCellBase {
     /**
-     * Defines the width of column.
+     * Defines the width of the column.
      *
-     * @default "auto"
+     * By default, the column will grow and shrink according to the available space.
+     * This will distribute the space proportionally among all columns with no specific width set.
+     *
+     * See [\<length\>](https://developer.mozilla.org/en-US/docs/Web/CSS/length) and
+     * [\<percentage\>](https://developer.mozilla.org/en-US/docs/Web/CSS/percentage) for possible width values.
+     *
+     * @default undefined
      * @public
      */
-    width: string;
+    width?: string;
     /**
      * Defines the minimum width of the column.
      *
-     * If the table is in `Popin` mode, the column will move into the popin when
-     * when the minimum width does not fit anymore.
+     * If the table is in `Popin` mode and the minimum width does not fit anymore,
+     * the column will move into the popin.
      *
-     * @default "auto"
-     * @public
-     */
-    minWidth: string;
-    /**
-     * Defines the maximum width of the column.
+     * By default, the table prevents the column from becoming too small.
+     * Changing this value to a small value might lead to accessibility issues.
      *
-     * @default "auto"
+     * **Note:** This property only takes effect for columns with a [\<percentage\>](https://developer.mozilla.org/en-US/docs/Web/CSS/percentage) value
+     * or the default width.
+     *
      * @public
+     * @default undefined
      */
-    maxWidth: string;
+    minWidth?: string;
     /**
      * Defines the importance of the column.
      *
@@ -55,9 +61,45 @@ declare class TableHeaderCell extends TableCellBase {
      * @public
      */
     importance: number;
+    /**
+     * The text for the column when it pops in.
+     *
+     * @default undefined
+     * @since 2.7.0
+     * @public
+     */
+    popinText?: string;
+    /**
+     * Defines the sort indicator of the column.
+     *
+     * @default "None"
+     * @since 2.8.0
+     * @public
+     */
+    sortIndicator: `${SortOrder}`;
+    /**
+     * Defines if the column is hidden in the popin.
+     *
+     * **Note:** Please be aware that hiding the column in the popin might lead to accessibility issues as
+     * users might not be able to access the content of the column on small screens.
+     *
+     * @default false
+     * @since 2.8.0
+     * @public
+     */
+    popinHidden: boolean;
+    /**
+     * Defines the action of the column.
+     *
+     * **Note:** While multiple actions are technically possible, this is not supported.
+     *
+     * @public
+     * @since 2.8.0
+     */
+    action: Array<TableHeaderCellActionBase>;
     _popin: boolean;
     protected ariaRole: string;
     _popinWidth: number;
-    onEnterDOM(): void;
+    onBeforeRendering(): void;
 }
 export default TableHeaderCell;

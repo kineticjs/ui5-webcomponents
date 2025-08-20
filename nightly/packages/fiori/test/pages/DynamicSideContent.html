@@ -10,12 +10,10 @@
 	</script>
 
 
-	
 
 
-	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-6ff2cdf6.js"></script>
-  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/DynamicSideContent-85d5302a.css">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-8w-b3BWb.js"></script>
+  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/DynamicSideContent-BucF0VgI.css">
 </head>
 
 <body class="page1auto">
@@ -128,6 +126,15 @@
 			mainVisible.value = event.detail.mainContentVisible ? "1" : "0"
 			sideVisible.value = event.detail.sideContentVisible ? "1" : "0"
 		});
+
+		dynamicSideContent.accessibilityAttributes = {
+			mainContent: {
+				ariaLabel: "Main Content Area",
+			},
+			sideContent: {
+				ariaLabel: "Side Content Area",
+			}
+		};
 	</script>
 
 </body>

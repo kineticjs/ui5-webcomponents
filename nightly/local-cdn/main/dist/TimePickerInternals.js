@@ -6,16 +6,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var TimePickerInternals_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import getLocale from "@ui5/webcomponents-base/dist/locale/getLocale.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import getCachedLocaleDataInstance from "@ui5/webcomponents-localization/dist/getCachedLocaleDataInstance.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js"; // default calendar for bundling
-import { fetchCldr } from "@ui5/webcomponents-base/dist/asset-registries/LocaleData.js";
 import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
 import { getHoursConfigByFormat, getTimeControlsByFormat } from "./timepicker-utils/TimeSlider.js";
 import { TIMEPICKER_HOURS_LABEL, TIMEPICKER_MINUTES_LABEL, TIMEPICKER_SECONDS_LABEL, TIMEPICKER_CLOCK_DIAL_LABEL, } from "./generated/i18n/i18n-defaults.js";
@@ -57,12 +56,6 @@ let TimePickerInternals = TimePickerInternals_1 = class TimePickerInternals exte
          * @private
          */
         this._keyboardBuffer = "";
-    }
-    static async onDefine() {
-        [TimePickerInternals_1.i18nBundle] = await Promise.all([
-            getI18nBundle("@ui5/webcomponents"),
-            fetchCldr(getLocale().getLanguage(), getLocale().getRegion(), getLocale().getScript()),
-        ]);
     }
     get _hoursConfiguration() {
         // @ts-ignore aFormatArray is a private API of DateFormat
@@ -170,7 +163,7 @@ let TimePickerInternals = TimePickerInternals_1 = class TimePickerInternals exte
         const value = this.formatValue(date);
         if (this.isValid(value)) {
             this.value = this.normalizeValue(value);
-            this.fireEvent("change", { value: this.value, valid: true });
+            this.fireDecoratorEvent("change", { value: this.value, valid: true });
         }
     }
     isValid(value) {
@@ -364,19 +357,20 @@ __decorate([
 __decorate([
     property({ noAttribute: true })
 ], TimePickerInternals.prototype, "_keyboardBuffer", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], TimePickerInternals, "i18nBundle", void 0);
 TimePickerInternals = TimePickerInternals_1 = __decorate([
     customElement({
-        renderer: litRender,
+        cldr: true,
+        renderer: jsxRenderer,
     })
     /**
      * Fired when the value changes due to user interaction with the sliders.
      */
     ,
     event("change", {
-        detail: {
-            value: { type: String },
-            valid: { type: Boolean },
-        },
+        bubbles: true,
     })
 ], TimePickerInternals);
 export default TimePickerInternals;

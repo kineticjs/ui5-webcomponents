@@ -1,8 +1,11 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import DragAndDropHandler from "./delegate/DragAndDropHandler.js";
 import MovePlacement from "@ui5/webcomponents-base/dist/types/MovePlacement.js";
-import DropIndicator from "./DropIndicator.js";
+import type DropIndicator from "./DropIndicator.js";
+import "./TreeItem.js";
 import type TreeItemBase from "./TreeItemBase.js";
-import TreeList from "./TreeList.js";
+import "./TreeItemCustom.js";
+import type TreeList from "./TreeList.js";
 import type ListSelectionMode from "./types/ListSelectionMode.js";
 import ListAccessibleRole from "./types/ListAccessibleRole.js";
 import type { TreeItemBaseToggleEventDetail, TreeItemBaseStepInEventDetail, TreeItemBaseStepOutEventDetail } from "./TreeItemBase.js";
@@ -75,6 +78,17 @@ type WalkCallback = (item: TreeItemBase, level: number, index: number) => void;
  * @since 1.0.0-rc.8
  */
 declare class Tree extends UI5Element {
+    eventDetails: {
+        "item-toggle": TreeItemToggleEventDetail;
+        "item-mouseover": TreeItemMouseoverEventDetail;
+        "item-mouseout": TreeItemMouseoutEventDetail;
+        "item-click": TreeItemClickEventDetail;
+        "item-delete": TreeItemDeleteEventDetail;
+        "item-focus": TreeItemFocusEventDetail;
+        "selection-change": TreeSelectionChangeEventDetail;
+        "move": TreeMoveEventDetail;
+        "move-over": TreeMoveEventDetail;
+    };
     /**
      * Defines the selection mode of the component. Since the tree uses a `ui5-list` to display its structure,
      * the tree modes are exactly the same as the list modes, and are all applicable.
@@ -117,6 +131,20 @@ declare class Tree extends UI5Element {
      */
     accessibleNameRef?: string;
     /**
+     * Defines the accessible description of the component.
+     * @default undefined
+     * @public
+     * @since 2.5.0
+     */
+    accessibleDescription?: string;
+    /**
+     * Defines the IDs of the elements that describe the component.
+     * @default undefined
+     * @public
+     * @since 2.5.0
+     */
+    accessibleDescriptionRef?: string;
+    /**
      * Defines the items of the component. Tree items may have other tree items as children.
      *
      * **Note:** Use `ui5-tree-item` for the intended design.
@@ -131,6 +159,8 @@ declare class Tree extends UI5Element {
      * @public
      */
     header: Array<HTMLElement>;
+    _dragAndDropHandler: DragAndDropHandler;
+    constructor();
     onEnterDOM(): void;
     onExitDOM(): void;
     onBeforeRendering(): void;
@@ -138,7 +168,6 @@ declare class Tree extends UI5Element {
     get dropIndicatorDOM(): DropIndicator | null;
     get list(): TreeList;
     get _role(): ListAccessibleRole;
-    get _label(): string | undefined;
     get _hasHeader(): boolean;
     _ondragenter(e: DragEvent): void;
     _ondragleave(e: DragEvent): void;
@@ -178,6 +207,10 @@ declare class Tree extends UI5Element {
      * @param callback function to execute on each node of the tree with 3 arguments: the node, the level and the index
      */
     walk(callback: WalkCallback): void;
+    _getItems(): Array<HTMLElement>;
+    _transformElement(element: HTMLElement): HTMLElement;
+    _validateDraggedElement(draggedElement: HTMLElement, targetElement: HTMLElement): boolean;
+    _filterPlacements(placements: MovePlacement[], draggedElement: HTMLElement, targetElement: HTMLElement): MovePlacement[];
     _isInstanceOfTreeItemBase(object: any): object is TreeItemBase;
 }
 export default Tree;

@@ -7,14 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var Slider_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
 import SliderBase from "./SliderBase.js";
-import Icon from "./Icon.js";
 // Template
-import SliderTemplate from "./generated/templates/SliderTemplate.lit.js";
+import SliderTemplate from "./SliderTemplate.js";
 // Texts
-import { SLIDER_ARIA_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
+import { SLIDER_ARIA_DESCRIPTION, SLIDER_TOOLTIP_INPUT_DESCRIPTION, SLIDER_TOOLTIP_INPUT_LABEL, } from "./generated/i18n/i18n-defaults.js";
 /**
  * @class
  *
@@ -85,7 +84,10 @@ let Slider = Slider_1 = class Slider extends SliderBase {
         this.value = 0;
         this._progressPercentage = 0;
         this._handlePositionFromStart = 0;
+        this._tooltipInputValue = this.value.toString();
+        this._tooltipInputValueState = "None";
         this._stateStorage.value = undefined;
+        this._lastValidInputValue = this.min.toString();
     }
     /**
      *
@@ -138,7 +140,7 @@ let Slider = Slider_1 = class Slider extends SliderBase {
     _onmousedown(e) {
         // If step is 0 no interaction is available because there is no constant
         // (equal for all user environments) quantitative representation of the value
-        if (this.disabled || this.step === 0) {
+        if (this.disabled || this.step === 0 || e.target.hasAttribute("ui5-slider-tooltip")) {
             return;
         }
         const newValue = this.handleDownBase(e);
@@ -163,10 +165,10 @@ let Slider = Slider_1 = class Slider extends SliderBase {
             this._valueInitial = this.value;
         }
         if (this.showTooltip) {
-            this._tooltipVisibility = SliderBase.TOOLTIP_VISIBILITY.VISIBLE;
+            this._tooltipsOpen = true;
         }
     }
-    _onfocusout() {
+    _onfocusout(e) {
         // Prevent focusout when the focus is getting set within the slider internal
         // element (on the handle), before the Slider' customElement itself is finished focusing
         if (this._isFocusing()) {
@@ -176,8 +178,8 @@ let Slider = Slider_1 = class Slider extends SliderBase {
         // Reset focus state and the stored Slider's initial
         // value that was saved when it was first focused in
         this._valueInitial = undefined;
-        if (this.showTooltip) {
-            this._tooltipVisibility = SliderBase.TOOLTIP_VISIBILITY.HIDDEN;
+        if (this.showTooltip && !e.relatedTarget?.hasAttribute("ui5-slider-tooltip")) {
+            this._tooltipsOpen = false;
         }
     }
     /**
@@ -202,10 +204,18 @@ let Slider = Slider_1 = class Slider extends SliderBase {
      */
     _handleUp() {
         if (this._valueOnInteractionStart !== this.value) {
-            this.fireEvent("change");
+            this.fireDecoratorEvent("change");
         }
         this.handleUpBase();
         this._valueOnInteractionStart = undefined;
+    }
+    _onkeyup(e) {
+        const isActionKey = SliderBase._isActionKey(e);
+        this._onKeyupBase();
+        if (isActionKey && this._valueOnInteractionStart !== this.value) {
+            this.fireDecoratorEvent("change");
+        }
+        this._valueOnInteractionStart = this.value;
     }
     /** Determines if the press is over the handle
      * @private
@@ -237,6 +247,13 @@ let Slider = Slider_1 = class Slider extends SliderBase {
             this.updateStateStorageAndFireInputEvent("value");
         }
     }
+    _onTooltopForwardFocus(e) {
+        const tooltip = e.target;
+        tooltip.followRef?.focus();
+    }
+    get inputValue() {
+        return this.value.toString();
+    }
     get styles() {
         return {
             progress: {
@@ -245,16 +262,6 @@ let Slider = Slider_1 = class Slider extends SliderBase {
             },
             handle: {
                 [this.directionStart]: `${this._handlePositionFromStart}%`,
-            },
-            label: {
-                "width": `${this._labelWidth}%`,
-            },
-            labelContainer: {
-                "width": `100%`,
-                [this.directionStart]: `-${this._labelWidth / 2}%`,
-            },
-            tooltip: {
-                "visibility": `${this._tooltipVisibility}`,
             },
         };
     }
@@ -272,8 +279,11 @@ let Slider = Slider_1 = class Slider extends SliderBase {
     get _ariaLabelledByText() {
         return Slider_1.i18nBundle.getText(SLIDER_ARIA_DESCRIPTION);
     }
-    static async onDefine() {
-        Slider_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    get _ariaDescribedByInputText() {
+        return Slider_1.i18nBundle.getText(SLIDER_TOOLTIP_INPUT_DESCRIPTION);
+    }
+    get _ariaLabelledByInputText() {
+        return Slider_1.i18nBundle.getText(SLIDER_TOOLTIP_INPUT_LABEL);
     }
     get tickmarksObject() {
         const count = this._tickmarksCount;
@@ -290,13 +300,15 @@ let Slider = Slider_1 = class Slider extends SliderBase {
 __decorate([
     property({ type: Number })
 ], Slider.prototype, "value", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Slider, "i18nBundle", void 0);
 Slider = Slider_1 = __decorate([
     customElement({
         tag: "ui5-slider",
         languageAware: true,
         formAssociated: true,
         template: SliderTemplate,
-        dependencies: [Icon],
     })
 ], Slider);
 Slider.define();

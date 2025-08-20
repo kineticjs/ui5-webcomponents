@@ -1,5 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type BarDesign from "./types/BarDesign.js";
+import type BarAccessibleRole from "./types/BarAccessibleRole.js";
 /**
  * @class
  *
@@ -29,6 +30,9 @@ import type BarDesign from "./types/BarDesign.js";
  *
  * `import "@ui5/webcomponents/dist/Bar.js";`
  * @csspart bar - Used to style the wrapper of the content of the component
+ * @csspart startContent - Used to style the wrapper of the start content of the component
+ * @csspart midContent - Used to style the wrapper of the middle content of the component
+ * @csspart endContent - Used to style the wrapper of the end content of the component
  * @constructor
  * @extends UI5Element
  * @public
@@ -41,6 +45,21 @@ declare class Bar extends UI5Element {
      * @public
      */
     design: `${BarDesign}`;
+    /**
+     * Specifies the ARIA role applied to the component for accessibility purposes.
+     *
+     * **Note:**
+     *
+     * - Set accessibleRole to "toolbar" only when the component contains two or more active, interactive elements (such as buttons, links, or input fields) within the bar.
+     *
+     * - If there is only one or no active element, it is recommended to avoid using the "toolbar" role, as it implies a grouping of multiple interactive controls.
+     *
+     * @public
+     * @default "Toolbar"
+     * @since 2.10.0
+     *
+     */
+    accessibleRole: `${BarAccessibleRole}`;
     /**
     * Defines the content at the start of the bar.
     * @public
@@ -59,15 +78,12 @@ declare class Bar extends UI5Element {
     _handleResizeBound: () => void;
     get accInfo(): {
         label: "Header" | "Subheader" | "Footer" | "FloatingFooter";
+        role: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.AriaRole | undefined;
     };
     constructor();
     handleResize(): void;
-    get classes(): {
-        root: {
-            "ui5-bar-root": boolean;
-        };
-    };
     onEnterDOM(): void;
     onExitDOM(): void;
+    get effectiveRole(): import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.AriaRole | undefined;
 }
 export default Bar;

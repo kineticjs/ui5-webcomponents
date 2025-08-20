@@ -30,8 +30,16 @@ class SideNavigationItemBase extends UI5Element {
          * @since 1.19.0
          */
         this.disabled = false;
+        this.forcedTabIndex = "-1";
         this.sideNavCollapsed = false;
         this.inPopover = false;
+        /**
+         * Defines if the item's group is disabled.
+         * @private
+         * @default false
+         * @since 2.10.0
+         */
+        this._groupDisabled = false;
     }
     onEnterDOM() {
         if (isDesktop()) {
@@ -41,9 +49,15 @@ class SideNavigationItemBase extends UI5Element {
     get _tooltip() {
         return this.tooltip || undefined;
     }
+    get hasSubItems() {
+        return false;
+    }
+    get effectiveDisabled() {
+        return this.disabled;
+    }
     get classesArray() {
         const classes = [];
-        if (this.disabled) {
+        if (this.effectiveDisabled) {
             classes.push("ui5-sn-item-disabled");
         }
         return classes;
@@ -52,10 +66,7 @@ class SideNavigationItemBase extends UI5Element {
         return this.classesArray.join(" ");
     }
     get effectiveTabIndex() {
-        if (this.disabled) {
-            return undefined;
-        }
-        return this.forcedTabIndex;
+        return this.forcedTabIndex !== undefined ? parseInt(this.forcedTabIndex) : undefined;
     }
     get sideNavigation() {
         return this._sideNavigation;
@@ -78,6 +89,11 @@ class SideNavigationItemBase extends UI5Element {
     get isSideNavigationItemBase() {
         return true;
     }
+    /**
+     * @private
+     */
+    applyInitialFocusInPopover() {
+    }
 }
 __decorate([
     property()
@@ -97,6 +113,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], SideNavigationItemBase.prototype, "inPopover", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], SideNavigationItemBase.prototype, "_groupDisabled", void 0);
 const isInstanceOfSideNavigationItemBase = (object) => {
     return "isSideNavigationItemBase" in object;
 };

@@ -9,19 +9,16 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import DOMReferenceConverter from "@ui5/webcomponents-base/dist/converters/DOMReference.js";
-import ColorPalettePopoverTemplate from "./generated/templates/ColorPalettePopoverTemplate.lit.js";
+import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScopeUtils.js";
+import ColorPalettePopoverTemplate from "./ColorPalettePopoverTemplate.js";
 // Styles
 import ColorPalettePopoverCss from "./generated/themes/ColorPalettePopover.css.js";
 import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverCommon.css.js";
 import { COLORPALETTE_POPOVER_TITLE, COLOR_PALETTE_DIALOG_CANCEL_BUTTON, } from "./generated/i18n/i18n-defaults.js";
-import Button from "./Button.js";
-import Title from "./Title.js";
-import ResponsivePopover from "./ResponsivePopover.js";
-import ColorPalette from "./ColorPalette.js";
 /**
  * @class
  *
@@ -48,9 +45,6 @@ import ColorPalette from "./ColorPalette.js";
  * @since 1.0.0-rc.16
  */
 let ColorPalettePopover = ColorPalettePopover_1 = class ColorPalettePopover extends UI5Element {
-    static async onDefine() {
-        ColorPalettePopover_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
-    }
     constructor() {
         super();
         /**
@@ -62,7 +56,6 @@ let ColorPalettePopover = ColorPalettePopover_1 = class ColorPalettePopover exte
         /**
          * Defines whether the user can choose a custom color from a component.
          *
-         * **Note:** In order to use this property you need to import the following module: `"@ui5/webcomponents/dist/features/ColorPaletteMoreColors.js"`
          * @default false
          * @public
          */
@@ -92,23 +85,28 @@ let ColorPalettePopover = ColorPalettePopover_1 = class ColorPalettePopover exte
     }
     onAfterClose() {
         this.closePopover();
-        this.fireEvent("close");
+        this.fireDecoratorEvent("close");
     }
     onAfterOpen() {
         const colorPalette = this._colorPalette;
-        if (colorPalette.showDefaultColor && !colorPalette._currentlySelected) {
-            colorPalette.colorPaletteNavigationElements[0].focus();
-        }
-        else if (colorPalette._shouldFocusRecentColors && colorPalette.showRecentColors) {
-            colorPalette.recentColorsElements[0].focus();
-        }
-        else {
+        if (colorPalette._currentlySelected) {
             colorPalette._currentlySelected?.focus();
         }
+        else if (colorPalette.showRecentColors && colorPalette.recentColorsElements.length) {
+            colorPalette.recentColorsElements[0].focus();
+        }
+        else if (colorPalette.showDefaultColor) {
+            colorPalette.colorPaletteNavigationElements[0].focus();
+        }
+        // since height is dynamically determined by padding-block-start
+        colorPalette.allColorsInPalette.forEach((item) => {
+            const itemHeight = item.offsetHeight + 4; // adding 4px for the offsets on top and bottom
+            item.style.setProperty(getScopedVarName("--_ui5_color_palette_item_height"), `${itemHeight}px`);
+        });
     }
     onSelectedColor(e) {
         this.closePopover();
-        this.fireEvent("item-click", e.detail);
+        this.fireDecoratorEvent("item-click", e.detail);
     }
     get _colorPalette() {
         return this.responsivePopover.content[0].querySelector("[ui5-color-palette]");
@@ -155,18 +153,15 @@ __decorate([
 __decorate([
     slot({ "default": true, type: HTMLElement, individualSlots: true })
 ], ColorPalettePopover.prototype, "colors", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], ColorPalettePopover, "i18nBundle", void 0);
 ColorPalettePopover = ColorPalettePopover_1 = __decorate([
     customElement({
         tag: "ui5-color-palette-popover",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: [ResponsivePopoverCommonCss, ColorPalettePopoverCss],
         template: ColorPalettePopoverTemplate,
-        dependencies: [
-            ResponsivePopover,
-            Button,
-            Title,
-            ColorPalette,
-        ],
     })
     /**
      * Fired when the user selects a color.
@@ -175,14 +170,7 @@ ColorPalettePopover = ColorPalettePopover_1 = __decorate([
      */
     ,
     event("item-click", {
-        detail: {
-            /**
-             * @public
-             */
-            color: {
-                type: String,
-            },
-        },
+        bubbles: true,
     })
     /**
      * Fired when the `ui5-color-palette-popover` is closed due to user interaction.
@@ -190,7 +178,9 @@ ColorPalettePopover = ColorPalettePopover_1 = __decorate([
      * @public
      */
     ,
-    event("close")
+    event("close", {
+        bubbles: true,
+    })
 ], ColorPalettePopover);
 ColorPalettePopover.define();
 export default ColorPalettePopover;

@@ -1,6 +1,6 @@
+import type NotificationListGrowingMode from "@ui5/webcomponents/dist/types/NotificationListGrowingMode.js";
 import NotificationListItemBase from "./NotificationListItemBase.js";
-import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
-import "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
+import type NotificationListItem from "./NotificationListItem.js";
 type NotificationListGroupItemToggleEventDetail = {
     item: NotificationListGroupItem;
 };
@@ -18,7 +18,7 @@ type NotificationListGroupItemToggleEventDetail = {
  * - Items of the group
  *
  * ### Usage
- * The component can be used in a standard `ui5-list`.
+ * The component should be used inside a `ui5-notification-list`.
  *
  * ### Keyboard Handling
  * The `ui5-li-notification-group` provides advanced keyboard handling.
@@ -39,6 +39,10 @@ type NotificationListGroupItemToggleEventDetail = {
  * @public
  */
 declare class NotificationListGroupItem extends NotificationListItemBase {
+    eventDetails: NotificationListItemBase["eventDetails"] & {
+        toggle: NotificationListGroupItemToggleEventDetail;
+        "load-more": void;
+    };
     /**
      * Defines if the group is collapsed or expanded.
      * @default false
@@ -46,11 +50,19 @@ declare class NotificationListGroupItem extends NotificationListItemBase {
      */
     collapsed: boolean;
     /**
+     * Defines whether the component will have growing capability by pressing a `More` button.
+     * When button is pressed `load-more` event will be fired.
+     * @default "None"
+     * @public
+     * @since 2.2.0
+     */
+    growing: `${NotificationListGrowingMode}`;
+    /**
      * Defines the items of the `ui5-li-notification-group`,
      * usually `ui5-li-notification` items.
      * @public
      */
-    items: Array<NotificationListItemBase>;
+    items: Array<NotificationListItem>;
     onBeforeRendering(): void;
     /**
      * Clears child items loading state to show a single loading over the entire group,
@@ -62,7 +74,7 @@ declare class NotificationListGroupItem extends NotificationListItemBase {
     get expandText(): string;
     get groupText(): string;
     get ariaLabelledBy(): string;
-    get _ariaExpanded(): boolean;
+    get _expanded(): boolean;
     get _pressable(): boolean;
     get groupCollapsedIcon(): "navigation-right-arrow" | "navigation-down-arrow";
     toggleCollapsed(): void;
@@ -71,6 +83,8 @@ declare class NotificationListGroupItem extends NotificationListItemBase {
      *
      */
     _onHeaderToggleClick(): void;
+    _onLoadMore(): void;
+    getGrowingButton(): HTMLElement;
     _onkeydown(e: KeyboardEvent): Promise<void>;
     getHeaderDomRef(): HTMLElement;
 }

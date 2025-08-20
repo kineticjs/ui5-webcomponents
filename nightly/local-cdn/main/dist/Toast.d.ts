@@ -36,6 +36,9 @@ import type ToastPlacement from "./types/ToastPlacement.js";
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  */
 declare class Toast extends UI5Element {
+    eventDetails: {
+        "close": void;
+    };
     /**
      * Defines the duration in milliseconds for which component
      * remains on the screen before it's automatically closed.
@@ -84,6 +87,7 @@ declare class Toast extends UI5Element {
     _ontransitionendFn: () => void;
     constructor();
     onBeforeRendering(): void;
+    onAfterRendering(): void;
     _onfocusin(): void;
     _onfocusout(): void;
     /**
@@ -96,7 +100,7 @@ declare class Toast extends UI5Element {
     _onmouseover(): void;
     _onmouseleave(): void;
     _onkeydown(e: KeyboardEvent): void;
-    get _tabindex(): "-1" | "0";
+    get _tabindex(): 0 | -1;
     onEnterDOM(): void;
     onExitDOM(): void;
 }

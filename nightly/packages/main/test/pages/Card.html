@@ -5,12 +5,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Card</title>
-	
 
 
-	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-e7500efa.js"></script>
-  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/Card-7c4d9a54.css">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-BfyHtEuZ.js"></script>
+  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/Card-DLCytinE.css">
 </head>
 
 <body class="card1auto">
@@ -56,7 +54,7 @@
 			class="myCardHeader--ar-he-ch"
 			title-text="مرحبًا שלום"
 			subtitle-text="Quick Links">
-			<img src="/ui5-webcomponents/nightly/assets/John Miller-fc9d0d73.png" alt="John Miller" slot="avatar">
+			<img src="/ui5-webcomponents/nightly/assets/John%20Miller-CXQXuWG-.png" alt="John Miller" slot="avatar">
 		</ui5-card-header>
 		<div class="myTextContent">
 			<span>
@@ -71,7 +69,7 @@
 			slot="header"
 			title-text="Quick Links"
 			subtitle-text="Quick Links">
-			<img src="/ui5-webcomponents/nightly/assets/John Miller-fc9d0d73.png" alt="John Miller" slot="avatar">
+			<img src="/ui5-webcomponents/nightly/assets/John%20Miller-CXQXuWG-.png" alt="John Miller" slot="avatar">
 			<ui5-button slot="action" design="Transparent">Some Action</ui5-button>
 		</ui5-card-header>
 		<div class="myTextContent">
@@ -87,7 +85,7 @@
 			slot="header"
 			title-text="Quick Links"
 			subtitle-text="Long long long long long long long long subtitle">
-			<img src="/ui5-webcomponents/nightly/assets/John Miller-fc9d0d73.png" alt="John Miller" slot="avatar">
+			<img src="/ui5-webcomponents/nightly/assets/John%20Miller-CXQXuWG-.png" alt="John Miller" slot="avatar">
 			<ui5-button slot="action" design="Transparent">Some Action</ui5-button>
 		</ui5-card-header>
 		<div class="myTextContent">
@@ -103,7 +101,7 @@
 			slot="header"
 			additional-text="4 of 10"
 			title-text="Quick Links">
-			<img src="/ui5-webcomponents/nightly/assets/John Miller-fc9d0d73.png" alt="John Miller" slot="avatar">
+			<img src="/ui5-webcomponents/nightly/assets/John%20Miller-CXQXuWG-.png" alt="John Miller" slot="avatar">
 		</ui5-card-header>
 		<div class="myTextContent">
 			<span>
@@ -118,7 +116,7 @@
 			slot="header"
 			additional-text="4 of 10"
 			title-text="Long Long Long Long Long Long Title">
-			<img src="/ui5-webcomponents/nightly/assets/John Miller-fc9d0d73.png" alt="John Miller" slot="avatar">
+			<img src="/ui5-webcomponents/nightly/assets/John%20Miller-CXQXuWG-.png" alt="John Miller" slot="avatar">
 		</ui5-card-header>
 		<div class="myTextContent">
 			<span>
@@ -134,7 +132,7 @@
 			additional-text="4 of 10"
 			title-text="Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Title"
 			subtitle-text="Long long long long long long long long long long long long long subtitle">
-			<img src="/ui5-webcomponents/nightly/assets/John Miller-fc9d0d73.png" alt="John Miller" slot="avatar">
+			<img src="/ui5-webcomponents/nightly/assets/John%20Miller-CXQXuWG-.png" alt="John Miller" slot="avatar">
 		</ui5-card-header>
 		<div class="myTextContent">
 			<span>
@@ -333,13 +331,30 @@
 		<div id="cont" class="myContent">I am the content</div>
 	</ui5-card>
 
+	<ui5-card
+		id="loadingCard"
+		loading
+		loading-delay="500"
+		accessible-name="My Card">
+		<ui5-card-header
+			id="loadingCardHeader"
+			slot="header"
+			interactive
+			title-text="Interactive Header">
+			<ui5-button slot="action">Header Button</ui5-button>
+		</ui5-card-header>
+		<div class="myContent">
+			<ui5-button>Content Button</ui5-button>
+		</div>
+	</ui5-card>
+
 	<script>
 		function onClick(event) {
 			console.log(event);
 			field.value = `${parseInt(field.value) + 1}`;
 		}
 
-		[cardHeader, cardHeader2, cardHeader3].forEach(function (el) {
+		[cardHeader, cardHeader2, cardHeader3, loadingCardHeader].forEach(function (el) {
 			el.addEventListener("ui5-click", onClick);
 		});
 	</script>

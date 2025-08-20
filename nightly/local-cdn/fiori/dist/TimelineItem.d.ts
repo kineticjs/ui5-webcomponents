@@ -1,6 +1,10 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { I18nText } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ITimelineItem } from "./Timeline.js";
-import TimelineLayout from "./types/TimelineLayout.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type TimelineLayout from "./types/TimelineLayout.js";
+type TimelineItemRole = "listitem" | "treeitem";
 /**
  * @class
  *
@@ -11,9 +15,11 @@ import TimelineLayout from "./types/TimelineLayout.js";
  * @extends UI5Element
  * @implements { ITimelineItem }
  * @public
- * @slot {Node[]} default - Determines the description of the `ui5-timeline-item`.
  */
 declare class TimelineItem extends UI5Element implements ITimelineItem {
+    eventDetails: {
+        "name-click": void;
+    };
     /**
      * Defines the icon to be displayed as graphical element within the `ui5-timeline-item`.
      * SAP-icons font provides numerous options.
@@ -47,7 +53,27 @@ declare class TimelineItem extends UI5Element implements ITimelineItem {
      * @public
      */
     subtitleText?: string;
-    forcedTabIndex?: string;
+    /**
+     * Defines the state of the icon displayed in the `ui5-timeline-item`.
+     * @default "None"
+     * @public
+     * @since 2.7.0
+     */
+    state: `${ValueState}`;
+    /**
+     * Defines the content of the `ui5-timeline-item`.
+     * @public
+     */
+    content: Array<Node>;
+    /**
+     * @private
+     */
+    firstItemInTimeline: boolean;
+    /**
+     * @private
+     */
+    isNextItemGroup: boolean;
+    forcedTabIndex: string;
     /**
      * Defines the items orientation.
      * @default "Vertical"
@@ -59,23 +85,38 @@ declare class TimelineItem extends UI5Element implements ITimelineItem {
      * @private
      */
     forcedLineWidth?: string;
+    /**
+     * @private
+     */
+    hideBubble: boolean;
+    /**
+     * Marks the last `<ui5-timeline-item>`
+     * @private
+     */
+    lastItem: boolean;
+    /**
+     * @private
+     */
+    hidden: boolean;
+    /**
+     * @private
+     */
+    effectiveRole: `${TimelineItemRole}`;
+    /**
+     * Defines the position of the item in a group.
+     * @private
+     */
+    positionInGroup?: number;
+    static i18nBundle: I18nBundle;
     constructor();
     onNamePress(): void;
     /**
      * Focus the internal link.
      */
     focusLink(): void;
-    get classes(): {
-        indicator: {
-            "ui5-tli-indicator": boolean;
-            "ui5-tli-indicator-short-line": boolean;
-            "ui5-tli-indicator-large-line": boolean;
-        };
-        bubbleArrowPosition: {
-            "ui5-tli-bubble-arrow": boolean;
-            "ui5-tli-bubble-arrow--left": boolean;
-            "ui5-tli-bubble-arrow--top": boolean;
-        };
-    };
+    static typeTextMappings(): Record<string, I18nText>;
+    get timelineItemStateText(): string | undefined;
+    get isGroupItem(): boolean;
+    get _getAccessibleLabel(): string;
 }
 export default TimelineItem;

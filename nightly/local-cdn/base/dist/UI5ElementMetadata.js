@@ -157,6 +157,12 @@ class UI5ElementMetadata {
     isThemeAware() {
         return !!this.metadata.themeAware;
     }
+    /**
+     * Determines whether this UI5 Element needs CLDR assets to be fetched to work correctly
+     */
+    needsCLDR() {
+        return !!this.metadata.cldr;
+    }
     getShadowRootOptions() {
         return this.metadata.shadowRootOptions || {};
     }
@@ -220,6 +226,12 @@ class UI5ElementMetadata {
             }
         }
         throw new Error("Wrong format for invalidateOnChildChange: boolean or object is expected");
+    }
+    getI18n() {
+        if (!this.metadata.i18n) {
+            this.metadata.i18n = {};
+        }
+        return this.metadata.i18n;
     }
 }
 const validateSingleSlot = (value, slotData) => {

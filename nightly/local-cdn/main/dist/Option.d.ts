@@ -16,6 +16,7 @@ import ListItemBase from "./ListItemBase.js";
  * @public
  */
 declare class Option extends ListItemBase implements IOption {
+    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the text of the component.
      *
@@ -51,7 +52,7 @@ declare class Option extends ListItemBase implements IOption {
      * Defines the tooltip of the option.
      * @default undefined
      * @public
-     * @since 1.23.0
+     * @since 2.0.0
      */
     tooltip?: string;
     /**

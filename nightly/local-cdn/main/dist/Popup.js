@@ -7,21 +7,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var Popup_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import { isChrome, isDesktop, isPhone, } from "@ui5/webcomponents-base/dist/Device.js";
 import { getFirstFocusableElement, getLastFocusableElement } from "@ui5/webcomponents-base/dist/util/FocusableElements.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
-import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
+import { registerUI5Element, getEffectiveAriaLabelText, getEffectiveAriaDescriptionText, getAllAccessibleDescriptionRefTexts, deregisterUI5Element, } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
 import { hasStyle, createStyle } from "@ui5/webcomponents-base/dist/ManagedStyles.js";
 import { isEnter, isTabPrevious } from "@ui5/webcomponents-base/dist/Keys.js";
 import { getFocusedElement, isFocusedElementWithinNode } from "@ui5/webcomponents-base/dist/util/PopupUtils.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import MediaRange from "@ui5/webcomponents-base/dist/MediaRange.js";
-import PopupTemplate from "./generated/templates/PopupTemplate.lit.js";
+import toLowercaseEnumValue from "@ui5/webcomponents-base/dist/util/toLowercaseEnumValue.js";
+import PopupTemplate from "./PopupTemplate.js";
 import PopupAccessibleRole from "./types/PopupAccessibleRole.js";
 import { addOpenedPopup, removeOpenedPopup } from "./popup-utils/OpenedPopupsRegistry.js";
 // Styles
@@ -124,6 +124,12 @@ let Popup = Popup_1 = class Popup extends UI5Element {
             this.setAttribute("desktop", "");
         }
         this.tabIndex = -1;
+        if (this.open) {
+            this.showPopover();
+            this.openPopup();
+        }
+        this.setAttribute("data-sap-ui-fastnavgroup-container", "true");
+        registerUI5Element(this, this._updateAssociatedLabelsTexts.bind(this));
     }
     onExitDOM() {
         if (this._opened) {
@@ -131,6 +137,7 @@ let Popup = Popup_1 = class Popup extends UI5Element {
             this._removeOpenedPopup();
         }
         ResizeHandler.deregister(this, this._resizeHandler);
+        deregisterUI5Element(this);
     }
     /**
      * Indicates if the element is open
@@ -157,16 +164,17 @@ let Popup = Popup_1 = class Popup extends UI5Element {
         if (this._opened) {
             return;
         }
-        const prevented = !this.fireEvent("before-open", {}, true, false);
-        if (prevented || this._opened) {
+        const prevented = !this.fireDecoratorEvent("before-open");
+        if (prevented) {
+            this.open = false;
             return;
         }
-        this._opened = true;
         if (this.isModal) {
             Popup_1.blockPageScrolling(this);
         }
         this._focusedElementBeforeOpen = getFocusedElement();
         this._show();
+        this._opened = true;
         if (this.getDomRef()) {
             this._updateMediaRange();
         }
@@ -175,10 +183,8 @@ let Popup = Popup_1 = class Popup extends UI5Element {
         // initial focus, if focused element is statically created
         await this.applyInitialFocus();
         await renderFinished();
-        // initial focus, if focused element is dynamically created
-        await this.applyInitialFocus();
         if (this.isConnected) {
-            this.fireEvent("open", {}, false, false);
+            this.fireDecoratorEvent("open");
         }
     }
     _resize() {
@@ -213,7 +219,7 @@ let Popup = Popup_1 = class Popup extends UI5Element {
         document.documentElement.classList.remove("ui5-popup-scroll-blocker");
     }
     _scroll(e) {
-        this.fireEvent("scroll", {
+        this.fireDecoratorEvent("scroll", {
             scrollTop: e.target.scrollTop,
             targetRef: e.target,
         });
@@ -319,6 +325,9 @@ let Popup = Popup_1 = class Popup extends UI5Element {
     _updateMediaRange() {
         this.mediaRange = MediaRange.getCurrentRange(MediaRange.RANGESETS.RANGE_4STEPS, this.getDomRef().offsetWidth);
     }
+    _updateAssociatedLabelsTexts() {
+        this._associatedDescriptionRefTexts = getAllAccessibleDescriptionRefTexts(this);
+    }
     /**
      * Adds the popup to the "opened popups registry"
      * @protected
@@ -333,8 +342,9 @@ let Popup = Popup_1 = class Popup extends UI5Element {
         if (!this._opened) {
             return;
         }
-        const prevented = !this.fireEvent("before-close", { escPressed }, true, false);
+        const prevented = !this.fireDecoratorEvent("before-close", { escPressed });
         if (prevented) {
+            this.open = true;
             return;
         }
         this._opened = false;
@@ -349,7 +359,7 @@ let Popup = Popup_1 = class Popup extends UI5Element {
         if (!this.preventFocusRestore && !preventFocusRestore) {
             this.resetFocus();
         }
-        this.fireEvent("close", {}, false, false);
+        this.fireDecoratorEvent("close");
     }
     /**
      * Removes the popup from the "opened popups registry"
@@ -363,10 +373,7 @@ let Popup = Popup_1 = class Popup extends UI5Element {
      * @protected
      */
     resetFocus() {
-        if (!this._focusedElementBeforeOpen) {
-            return;
-        }
-        this._focusedElementBeforeOpen.focus();
+        this._focusedElementBeforeOpen?.focus();
         this._focusedElementBeforeOpen = null;
     }
     /**
@@ -393,11 +400,25 @@ let Popup = Popup_1 = class Popup extends UI5Element {
     get _ariaLabel() {
         return getEffectiveAriaLabelText(this);
     }
+    get _accInfoAriaDescription() {
+        return this.ariaDescriptionText || "";
+    }
+    get ariaDescriptionText() {
+        return this._associatedDescriptionRefTexts || getEffectiveAriaDescriptionText(this);
+    }
+    get ariaDescriptionTextId() {
+        return this.ariaDescriptionText ? "accessibleDescription" : "";
+    }
+    get ariaDescribedByIds() {
+        return [
+            this.ariaDescriptionTextId,
+        ].filter(Boolean).join(" ");
+    }
     get _root() {
         return this.shadowRoot.querySelector(".ui5-popup-root");
     }
     get _role() {
-        return (this.accessibleRole === PopupAccessibleRole.None) ? undefined : this.accessibleRole.toLowerCase();
+        return (this.accessibleRole === PopupAccessibleRole.None) ? undefined : toLowercaseEnumValue(this.accessibleRole);
     }
     get _ariaModal() {
         return this.accessibleRole === PopupAccessibleRole.None ? undefined : "true";
@@ -415,7 +436,6 @@ let Popup = Popup_1 = class Popup extends UI5Element {
         return {
             root: {
                 "ui5-popup-root": true,
-                "ui5-content-native-scrollbars": getEffectiveScrollbarStyle(),
             },
             content: {
                 "ui5-popup-content": true,
@@ -440,6 +460,15 @@ __decorate([
 ], Popup.prototype, "accessibleRole", void 0);
 __decorate([
     property()
+], Popup.prototype, "accessibleDescription", void 0);
+__decorate([
+    property()
+], Popup.prototype, "accessibleDescriptionRef", void 0);
+__decorate([
+    property({ noAttribute: true })
+], Popup.prototype, "_associatedDescriptionRefTexts", void 0);
+__decorate([
+    property()
 ], Popup.prototype, "mediaRange", void 0);
 __decorate([
     property({ type: Boolean })
@@ -461,42 +490,35 @@ __decorate([
 ], Popup.prototype, "open", null);
 Popup = Popup_1 = __decorate([
     customElement({
-        renderer: litRender,
+        renderer: jsxRender,
         styles: [popupStlyes, popupBlockLayerStyles],
         template: PopupTemplate,
     })
     /**
-     * Fired before the component is opened. This event can be cancelled, which will prevent the popup from opening. **This event does not bubble.**
+     * Fired before the component is opened. This event can be cancelled, which will prevent the popup from opening.
      * @public
-     * @allowPreventDefault
      */
     ,
-    event("before-open")
+    event("before-open", {
+        cancelable: true,
+    })
     /**
-     * Fired after the component is opened. **This event does not bubble.**
+     * Fired after the component is opened.
      * @public
      */
     ,
     event("open")
     /**
-     * Fired before the component is closed. This event can be cancelled, which will prevent the popup from closing. **This event does not bubble.**
+     * Fired before the component is closed. This event can be cancelled, which will prevent the popup from closing.
      * @public
-     * @allowPreventDefault
      * @param {boolean} escPressed Indicates that `ESC` key has triggered the event.
      */
     ,
     event("before-close", {
-        detail: {
-            /**
-             * @public
-             */
-            escPressed: {
-                type: Boolean,
-            },
-        },
+        cancelable: true,
     })
     /**
-     * Fired after the component is closed. **This event does not bubble.**
+     * Fired after the component is closed.
      * @public
      */
     ,
@@ -506,7 +528,9 @@ Popup = Popup_1 = __decorate([
      * @private
      */
     ,
-    event("scroll")
+    event("scroll", {
+        bubbles: true,
+    })
 ], Popup);
 export default Popup;
 //# sourceMappingURL=Popup.js.map

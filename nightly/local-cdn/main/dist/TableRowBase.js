@@ -6,14 +6,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var TableRowBase_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import { customElement, property, i18n } from "@ui5/webcomponents-base/dist/decorators.js";
 import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
-import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { isInstanceOfTable, toggleAttribute } from "./TableUtils.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import TableRowBaseCss from "./generated/themes/TableRowBase.css.js";
-import CheckBox from "./CheckBox.js";
-import { isInstanceOfTable } from "./TableUtils.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
 import { TABLE_ROW_SELECTOR, } from "./generated/i18n/i18n-defaults.js";
 /**
  * @class
@@ -21,41 +19,37 @@ import { TABLE_ROW_SELECTOR, } from "./generated/i18n/i18n-defaults.js";
  * @constructor
  * @abstract
  * @extends UI5Element
- * @since 2.0
+ * @since 2.0.0
  * @public
  */
 let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
     constructor() {
         super(...arguments);
         this._invalidate = 0;
-    }
-    static async onDefine() {
-        TableRowBase_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+        this._rowActionCount = 0;
+        this._renderNavigated = false;
     }
     onEnterDOM() {
         this.setAttribute("role", "row");
         this.toggleAttribute("ui5-table-row-base", true);
     }
     onBeforeRendering() {
-        if (this._isSelectable) {
-            this.setAttribute("aria-selected", `${this._isSelected}`);
-        }
-        else {
-            this.removeAttribute("aria-selected");
-        }
+        toggleAttribute(this, "aria-selected", this._isSelectable, `${this._isSelected}`);
     }
     getFocusDomRef() {
         return this;
     }
-    _informSelectionChange() {
-        this._tableSelection?.informSelectionChange(this);
-    }
     isHeaderRow() {
         return false;
     }
+    _onSelectionChange() {
+        const tableSelection = this._tableSelection;
+        const selected = tableSelection.isMultiSelectable() ? !this._isSelected : true;
+        tableSelection.setSelected(this, selected, true);
+    }
     _onkeydown(e, eventOrigin) {
         if ((eventOrigin === this && this._isSelectable && isSpace(e)) || (eventOrigin === this._selectionCell && (isSpace(e) || isEnter(e)))) {
-            this._informSelectionChange();
+            this._onSelectionChange();
             e.preventDefault();
         }
     }
@@ -76,35 +70,46 @@ let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
         return this._tableSelection?.isSelectable();
     }
     get _isMultiSelect() {
-        return this._tableSelection?.isMultiSelect();
+        return !!this._tableSelection?.isMultiSelectable();
     }
-    get _hasRowSelector() {
-        return this._tableSelection?.hasRowSelector();
-    }
-    get _selectionCell() {
-        return this.shadowRoot.getElementById("selection-cell");
+    get _hasSelector() {
+        return this._table?._isRowSelectorRequired;
     }
     get _visibleCells() {
         return this.cells.filter(c => !c._popin);
     }
     get _popinCells() {
-        return this.cells.filter(c => c._popin);
+        return this.cells.filter(c => c._popin && !c._popinHidden);
+    }
+    get _stickyCells() {
+        return [this._selectionCell, ...this.cells, this._navigatedCell].filter(cell => cell?.hasAttribute("fixed"));
     }
     get _i18nRowSelector() {
         return TableRowBase_1.i18nBundle.getText(TABLE_ROW_SELECTOR);
-    }
-    get isTableRowBase() {
-        return true;
     }
 };
 __decorate([
     property({ type: Number, noAttribute: true })
 ], TableRowBase.prototype, "_invalidate", void 0);
+__decorate([
+    property({ type: Number, noAttribute: true })
+], TableRowBase.prototype, "_rowActionCount", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], TableRowBase.prototype, "_renderNavigated", void 0);
+__decorate([
+    query("#selection-cell")
+], TableRowBase.prototype, "_selectionCell", void 0);
+__decorate([
+    query("#navigated-cell")
+], TableRowBase.prototype, "_navigatedCell", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], TableRowBase, "i18nBundle", void 0);
 TableRowBase = TableRowBase_1 = __decorate([
     customElement({
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: TableRowBaseCss,
-        dependencies: [CheckBox],
     })
 ], TableRowBase);
 export default TableRowBase;

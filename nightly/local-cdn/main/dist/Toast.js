@@ -5,14 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRendererer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isMac } from "@ui5/webcomponents-base/dist/Device.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 // Template
-import ToastTemplate from "./generated/templates/ToastTemplate.lit.js";
+import ToastTemplate from "./ToastTemplate.js";
 // Styles
 import ToastCss from "./generated/themes/Toast.css.js";
 // Constants
@@ -144,6 +144,14 @@ let Toast = class Toast extends UI5Element {
             globalListenerAdded = true;
         }
     }
+    onAfterRendering() {
+        if (!this.hasAttribute("popover")) {
+            this.setAttribute("popover", "manual");
+        }
+        if (this.open) {
+            this.showPopover();
+        }
+    }
     _onfocusin() {
         if (this.focusable) {
             this.focused = true;
@@ -167,7 +175,8 @@ let Toast = class Toast extends UI5Element {
         this.open = false;
         this.focusable = false;
         this.focused = false;
-        this.fireEvent("close");
+        this.fireDecoratorEvent("close");
+        this.hidePopover();
     }
     _onmouseover() {
         this.hover = true;
@@ -182,7 +191,7 @@ let Toast = class Toast extends UI5Element {
         }
     }
     get _tabindex() {
-        return this.focused ? "0" : "-1";
+        return this.focused ? 0 : -1;
     }
     onEnterDOM() {
         this.addEventListener("focusin", this._onfocusinFn);
@@ -224,7 +233,7 @@ __decorate([
 Toast = __decorate([
     customElement({
         tag: "ui5-toast",
-        renderer: litRender,
+        renderer: jsxRendererer,
         styles: ToastCss,
         template: ToastTemplate,
     })

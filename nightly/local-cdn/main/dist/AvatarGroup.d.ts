@@ -1,9 +1,10 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { AccessibilityAttributes } from "@ui5/webcomponents-base/dist/types.js";
-import Button from "./Button.js";
+import type Button from "./Button.js";
 import AvatarSize from "./types/AvatarSize.js";
 import AvatarGroupType from "./types/AvatarGroupType.js";
 import AvatarColorScheme from "./types/AvatarColorScheme.js";
@@ -13,7 +14,7 @@ import type { IButton } from "./Button.js";
  * @public
  */
 interface IAvatarGroupItem extends HTMLElement, ITabbable {
-    еffectiveBackgroundColor: AvatarColorScheme;
+    effectiveBackgroundColor: AvatarColorScheme;
     size: `${AvatarSize}`;
     effectiveSize: AvatarSize;
     interactive: boolean;
@@ -85,6 +86,10 @@ type AvatarGroupClickEventDetail = {
  * @public
  */
 declare class AvatarGroup extends UI5Element {
+    eventDetails: {
+        "click": AvatarGroupClickEventDetail;
+        "overflow": void;
+    };
     /**
      * Defines the mode of the `AvatarGroup`.
      * @default "Group"
@@ -107,6 +112,22 @@ declare class AvatarGroup extends UI5Element {
      * @private
      */
     _overflowButtonText?: string;
+    /**
+    * Defines the accessible name of the AvatarGroup.
+    * When provided, this will override the default aria-label text.
+    * @default undefined
+    * @public
+    * @since 2.12.0
+    */
+    accessibleName?: string;
+    /**
+    * Receives id(s) of the elements that describe the AvatarGroup.
+    * When provided, this will be used as aria-labelledby instead of aria-label.
+    * @default undefined
+    * @public
+    * @since 2.12.0
+    */
+    accessibleNameRef?: string;
     /**
      * Defines the items of the component. Use the `ui5-avatar` component as an item.
      *
@@ -133,7 +154,6 @@ declare class AvatarGroup extends UI5Element {
     _hiddenItems: number;
     _itemNavigation: ItemNavigation;
     constructor();
-    static onDefine(): Promise<void>;
     /**
      * Returns an array containing the `ui5-avatar` instances that are currently not displayed due to lack of space.
      * @default []
@@ -147,18 +167,18 @@ declare class AvatarGroup extends UI5Element {
      */
     get colorScheme(): AvatarColorScheme[];
     get _customOverflowButton(): IButton | undefined;
-    get _ariaLabelText(): string;
+    get _ariaLabelText(): string | undefined;
     get _overflowButtonAriaLabelText(): string | undefined;
-    get _containerAriaHasPopup(): ("dialog" | "grid" | "listbox" | "menu" | "tree") | undefined;
+    get _containerAriaHasPopup(): import("@ui5/webcomponents-base/dist/types.js").AriaHasPopup | undefined;
     get _overflowButtonAccAttributes(): {
-        hasPopup: ("dialog" | "grid" | "listbox" | "menu" | "tree") | undefined;
+        hasPopup: import("@ui5/webcomponents-base/dist/types.js").AriaHasPopup | undefined;
     };
     get _role(): "button" | "group";
     get _hiddenStartIndex(): number;
     get _overflowBtnHidden(): boolean;
     get _isGroup(): boolean;
     get _itemsCount(): number;
-    get _groupTabIndex(): "-1" | "0";
+    get _groupTabIndex(): 0 | -1;
     get _overflowButton(): Button | null;
     /**
      * Return the effective overflow button width
@@ -169,17 +189,7 @@ declare class AvatarGroup extends UI5Element {
      * @private
      */
     get _overflowButtonEffectiveWidth(): number;
-    get firstAvatarSize(): "XS" | "S" | "M" | "L" | "XL";
-    get classes(): {
-        overflowButton: {
-            "ui5-avatar-group-overflow-btn": boolean;
-            "ui5-avatar-group-overflow-btn-xs": boolean;
-            "ui5-avatar-group-overflow-btn-s": boolean;
-            "ui5-avatar-group-overflow-btn-m": boolean;
-            "ui5-avatar-group-overflow-btn-l": boolean;
-            "ui5-avatar-group-overflow-btn-xl": boolean;
-        };
-    };
+    get firstAvatarSize(): "S" | "L" | "M" | "XS" | "XL";
     onAfterRendering(): void;
     onBeforeRendering(): void;
     onEnterDOM(): void;
@@ -189,7 +199,9 @@ declare class AvatarGroup extends UI5Element {
     _onkeyup(e: KeyboardEvent): void;
     _fireGroupEvent(targetRef: HTMLElement): void;
     _onClick(e: MouseEvent): void;
-    _onUI5Click(e: MouseEvent): void;
+    onAvatarClick(e: MouseEvent): void;
+    onAvatarUI5Click(e: MouseEvent): void;
+    onOverflowButtonClick(e: UI5CustomEvent<Button, "click">): void;
     /**
      * Modifies avatars to the needs of avatar group properties. Respects already set size and background color.
      * Set the margins (offsets) based on RTL/LTR.
@@ -197,6 +209,7 @@ declare class AvatarGroup extends UI5Element {
      */
     _prepareAvatars(): void;
     _onfocusin(e: FocusEvent): void;
+    getFocusDomRef(): HTMLElement | undefined;
     /**
      * Returns the total width to item excluding the item width
      * RTL/LTR aware
@@ -211,7 +224,7 @@ declare class AvatarGroup extends UI5Element {
     _overflowItems(): void;
     _getNextBackgroundColor(): number;
     _setHiddenItems(hiddenItems: number): void;
-    _getAriaHasPopup(): ("dialog" | "grid" | "listbox" | "menu" | "tree") | undefined;
+    _getAriaHasPopup(): import("@ui5/webcomponents-base/dist/types.js").AriaHasPopup | undefined;
 }
 export default AvatarGroup;
 export type { AvatarGroupClickEventDetail, AvatarGroupAccessibilityAttributes, IAvatarGroupItem, };

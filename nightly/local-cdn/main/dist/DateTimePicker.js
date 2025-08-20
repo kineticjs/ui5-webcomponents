@@ -15,20 +15,18 @@ import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDat
 import "@ui5/webcomponents-icons/dist/date-time.js";
 import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
 import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
-import Button from "./Button.js";
-import ToggleButton from "./ToggleButton.js";
-import SegmentedButton from "./SegmentedButton.js";
-import Calendar from "./Calendar.js";
 import DatePicker from "./DatePicker.js";
-import TimeSelectionClocks from "./TimeSelectionClocks.js";
+import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 // i18n texts
 import { TIMEPICKER_SUBMIT_BUTTON, TIMEPICKER_CANCEL_BUTTON, DATETIME_DESCRIPTION, DATETIME_PICKER_DATE_BUTTON, DATETIME_PICKER_TIME_BUTTON, DATETIMEPICKER_POPOVER_ACCESSIBLE_NAME, } from "./generated/i18n/i18n-defaults.js";
 // Template
-import DateTimePickerTemplate from "./generated/templates/DateTimePickerTemplate.lit.js";
+import DateTimePickerTemplate from "./DateTimePickerTemplate.js";
 // Styles
 import DateTimePickerCss from "./generated/themes/DateTimePicker.css.js";
 import DateTimePickerPopoverCss from "./generated/themes/DateTimePickerPopover.css.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
+import { renderFinished } from "@ui5/webcomponents-base";
 const PHONE_MODE_BREAKPOINT = 640; // px
 /**
  * @class
@@ -146,26 +144,9 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
         if (this.open) {
             this._previewValues = {
                 ...this._previewValues,
-                timeSelectionValue: this.value || this.getFormat().format(UI5Date.getInstance()),
+                timeSelectionValue: this.value || this.getValueFormat().format(UI5Date.getInstance()),
             };
         }
-    }
-    /**
-     * Read-only getters
-     */
-    get classes() {
-        return {
-            picker: {
-                "ui5-dt-picker-content--phone": this.phone,
-            },
-            dateTimeView: {
-                "ui5-dt-cal--hidden": this.phone && this.showTimeView,
-                "ui5-dt-time--hidden": this.phone && this.showDateView,
-            },
-            footer: {
-                "ui5-dt-picker-footer-time-hidden": (this.phone && this.showTimeView) || (this.phone && this.showDateView),
-            },
-        };
     }
     get _formatPattern() {
         const hasHours = !!(this.formatPattern || "").match(/H/i);
@@ -201,13 +182,13 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
         return true;
     }
     get showDateView() {
-        return this.phone ? !this._showTimeView : true;
+        return this._phoneView ? !this._showTimeView : true;
     }
     get showTimeView() {
-        return this.phone ? this._showTimeView : true;
+        return this._phoneView ? this._showTimeView : true;
     }
-    get phone() {
-        return super.phone || this._phoneMode;
+    get _phoneView() {
+        return isPhone() || this._phoneMode;
     }
     /**
      * @override
@@ -234,7 +215,7 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
     /**
      * @override
      */
-    onSelectedDatesChange(e) {
+    async onSelectedDatesChange(e) {
         e.preventDefault();
         // @ts-ignore Needed for FF
         const dateTimePickerContent = e.path ? e.path[1] : e.composedPath()[1];
@@ -244,6 +225,12 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
             calendarValue: e.detail.selectedValues[0],
             timeSelectionValue: dateTimePickerContent.lastChild.value,
         };
+        this._showTimeView = true;
+        if (this.showDateView) {
+            return;
+        }
+        await renderFinished();
+        this._clocks.focus();
     }
     onTimeSelectionChange(e) {
         this._previewValues = {
@@ -270,7 +257,7 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
      */
     _submitClick() {
         const selectedDate = this.getSelectedDateTime();
-        const value = this.getFormat().format(selectedDate);
+        const value = this.getValueFormat().format(selectedDate);
         if (this.value !== value) {
             this._updateValueAndFireEvents(value, true, ["change", "value-changed"]);
         }
@@ -289,8 +276,8 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
      * @param e
      */
     _dateTimeSwitchChange(e) {
-        const target = e.target;
-        this._showTimeView = target.getAttribute("key") === "Time";
+        const selectedItem = e.detail.selectedItems[0];
+        this._showTimeView = selectedItem.getAttribute("data-ui5-key") === "Time";
     }
     /**
      * @override
@@ -307,12 +294,20 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
         const newValue = this.formatValue(modifiedLocalDate);
         this._updateValueAndFireEvents(newValue, true, ["change", "value-changed"]);
     }
-    getPicker() {
-        return this.shadowRoot.querySelector("[ui5-responsive-popover]");
+    /**
+     * Checks if the provided value is valid and within valid range.
+     * @override
+     * @param value
+     */
+    _checkValueValidity(value) {
+        if (value === "") {
+            return true;
+        }
+        return this.isValidValue(value);
     }
     getSelectedDateTime() {
-        const selectedDate = this.getFormat().parse(this._calendarSelectedDates[0]);
-        const selectedTime = this.getFormat().parse(this._timeSelectionValue);
+        const selectedDate = this.getValueFormat().parse(this._calendarSelectedDates[0]);
+        const selectedTime = this.getValueFormat().parse(this._timeSelectionValue);
         if (selectedTime) {
             selectedDate.setHours(selectedTime.getHours());
             selectedDate.setMinutes(selectedTime.getMinutes());
@@ -333,6 +328,45 @@ let DateTimePicker = DateTimePicker_1 = class DateTimePicker extends DatePicker 
                 calendarType: this._primaryCalendarType,
             });
     }
+    getDisplayFormat() {
+        return this._isDisplayFormatPattern
+            ? DateFormat.getDateTimeInstance({
+                strictParsing: true,
+                pattern: this._displayFormat,
+                calendarType: this._primaryCalendarType,
+            })
+            : DateFormat.getDateTimeInstance({
+                strictParsing: true,
+                style: this._displayFormat,
+                calendarType: this._primaryCalendarType,
+            });
+    }
+    getValueFormat() {
+        if (!this._valueFormat) {
+            return this.getISOFormat();
+        }
+        return this._isValueFormatPattern
+            ? DateFormat.getDateTimeInstance({
+                strictParsing: true,
+                pattern: this._valueFormat,
+                calendarType: this._primaryCalendarType,
+            })
+            : DateFormat.getDateTimeInstance({
+                strictParsing: true,
+                style: this._valueFormat,
+                calendarType: this._primaryCalendarType,
+            });
+    }
+    getISOFormat() {
+        if (!this._isoFormatInstance) {
+            this._isoFormatInstance = DateFormat.getDateTimeInstance({
+                strictParsing: true,
+                pattern: "YYYY-MM-dd hh:mm:ss",
+                calendarType: this._primaryCalendarType,
+            });
+        }
+        return this._isoFormatInstance;
+    }
     /**
      * @override
      */
@@ -349,6 +383,9 @@ __decorate([
 __decorate([
     property({ type: Object })
 ], DateTimePicker.prototype, "_previewValues", void 0);
+__decorate([
+    query("[ui5-time-selection-clocks]")
+], DateTimePicker.prototype, "_clocks", void 0);
 DateTimePicker = DateTimePicker_1 = __decorate([
     customElement({
         tag: "ui5-datetime-picker",
@@ -357,14 +394,6 @@ DateTimePicker = DateTimePicker_1 = __decorate([
             DatePicker.styles,
             DateTimePickerCss,
             DateTimePickerPopoverCss,
-        ],
-        dependencies: [
-            ...DatePicker.dependencies,
-            Calendar,
-            Button,
-            ToggleButton,
-            SegmentedButton,
-            TimeSelectionClocks,
         ],
     })
 ], DateTimePicker);

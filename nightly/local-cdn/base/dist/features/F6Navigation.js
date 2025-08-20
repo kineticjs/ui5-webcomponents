@@ -1,9 +1,18 @@
-import { registerFeature } from "../FeaturesRegistry.js";
+import { getFeature, registerFeature } from "../FeaturesRegistry.js";
 import { isF6Next, isF6Previous } from "../Keys.js";
-import { instanceOfUI5Element } from "../UI5Element.js";
 import { getFirstFocusableElement } from "../util/FocusableElements.js";
 import getFastNavigationGroups from "../util/getFastNavigationGroups.js";
 import isElementClickable from "../util/isElementClickable.js";
+import { getCurrentRuntimeIndex, compareRuntimes } from "../Runtimes.js";
+import getSharedResource from "../getSharedResource.js";
+import getParentElement from "../util/getParentElement.js";
+const currentRuntimeINdex = getCurrentRuntimeIndex();
+const shouldUpdate = (runtimeIndex) => {
+    if (runtimeIndex === undefined) {
+        return true;
+    }
+    return compareRuntimes(currentRuntimeINdex, runtimeIndex) === 1; // 1 means the current is newer, 0 means the same, -1 means the resource's runtime is newer
+};
 class F6Navigation {
     constructor() {
         this.selectedGroup = null;
@@ -14,13 +23,15 @@ class F6Navigation {
     attachEventListeners() {
         document.addEventListener("keydown", this.keydownHandler);
     }
+    removeEventListeners() {
+        document.removeEventListener("keydown", this.keydownHandler);
+    }
     async groupElementToFocus(nextElement) {
-        const nextElementDomRef = instanceOfUI5Element(nextElement) ? nextElement.getDomRef() : nextElement;
-        if (nextElementDomRef) {
-            if (isElementClickable(nextElementDomRef)) {
-                return nextElementDomRef;
+        if (nextElement) {
+            if (isElementClickable(nextElement)) {
+                return nextElement;
             }
-            const elementToFocus = await getFirstFocusableElement(nextElementDomRef);
+            const elementToFocus = await getFirstFocusableElement(nextElement);
             if (elementToFocus) {
                 return elementToFocus;
             }
@@ -88,6 +99,12 @@ class F6Navigation {
         return elementToFocus;
     }
     async _keydownHandler(event) {
+        const openUI5Support = getFeature("OpenUI5Support");
+        const isOpenUI5Detected = openUI5Support && openUI5Support.isOpenUI5Detected();
+        if (isOpenUI5Detected) {
+            this.destroy();
+            return;
+        }
         const forward = isF6Next(event);
         const backward = isF6Previous(event);
         if (!(forward || backward)) {
@@ -115,18 +132,28 @@ class F6Navigation {
         }
         elementToFocus?.focus();
     }
-    removeEventListeners() {
-        document.removeEventListener("keydown", this.keydownHandler);
-    }
     updateGroups() {
+        const container = this.findContainer();
         this.setSelectedGroup();
-        this.groups = getFastNavigationGroups(document.body);
+        this.groups = getFastNavigationGroups(container);
+    }
+    findContainer() {
+        const htmlElement = window.document.querySelector("html");
+        let element = this.deepActive(window.document);
+        while (element && element !== htmlElement) {
+            const closestScopeEl = element.closest("[data-sap-ui-fastnavgroup-container='true']");
+            if (closestScopeEl) {
+                return closestScopeEl;
+            }
+            element = getParentElement(element);
+        }
+        return document.body;
     }
     setSelectedGroup(root = window.document) {
         const htmlElement = window.document.querySelector("html");
         let element = this.deepActive(root);
         while (element && element.getAttribute("data-sap-ui-fastnavgroup") !== "true" && element !== htmlElement) {
-            element = element.parentElement ? element.parentNode : element.parentNode.host;
+            element = getParentElement(element);
         }
         this.selectedGroup = element;
     }
@@ -139,11 +166,18 @@ class F6Navigation {
     destroy() {
         this.removeEventListeners();
     }
+    get _ui5RuntimeIndex() {
+        return currentRuntimeINdex;
+    }
     static init() {
-        if (!this._instance) {
-            this._instance = new F6Navigation();
+        const f6Registry = getSharedResource("F6Registry", {});
+        if (!f6Registry.instance) {
+            f6Registry.instance = new F6Navigation();
         }
-        return this._instance;
+        else if (shouldUpdate(f6Registry.instance?._ui5RuntimeIndex)) {
+            f6Registry.instance?.destroy();
+            f6Registry.instance = new F6Navigation();
+        }
     }
 }
 registerFeature("F6Navigation", F6Navigation);
