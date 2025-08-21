@@ -1,5 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { PassiveEventListenerObject } from "@ui5/webcomponents-base/dist/types.js";
 import type TableCell from "./TableCell.js";
 import type { ITableRow, TableColumnInfo } from "./Table.js";
 import TableMode from "./types/TableMode.js";
@@ -31,17 +32,8 @@ type TableRowF7PressEventDetail = {
  * @public
  * @csspart row - Used to style the native `tr` element
  * @csspart popin-row - Used to style the `tr` element when a row pops in
- * @deprecated Deprecated as of version 2.12.0, use `@ui5/webcomponents/dist/TableRow.js` instead.
  */
 declare class TableRow extends UI5Element implements ITableRow {
-    eventDetails: {
-        "row-click": TableRowClickEventDetail;
-        "_focused": FocusEvent;
-        "forward-before": TableRowForwardBeforeEventDetail;
-        "forward-after": TableRowForwardAfterEventDetail;
-        "selection-requested": TableRowSelectionRequestedEventDetail;
-        "f7-pressed": TableRowF7PressEventDetail;
-    };
     /**
      * Defines the visual indication and behavior of the component.
      *
@@ -94,9 +86,10 @@ declare class TableRow extends UI5Element implements ITableRow {
     static i18nBundle: I18nBundle;
     visibleCells: Array<TableCell>;
     popinCells: Array<TableColumnInfo>;
+    _ontouchstart: PassiveEventListenerObject;
     tabbableElements: Array<HTMLElement>;
     _columnsInfoString: string;
-    _ontouchstart(): void;
+    constructor();
     _onmouseup(): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
@@ -109,7 +102,7 @@ declare class TableRow extends UI5Element implements ITableRow {
     get _ariaCurrent(): true | undefined;
     activate(): void;
     deactivate(): void;
-    get shouldPopin(): boolean;
+    get shouldPopin(): number | undefined;
     get allColumnsPoppedIn(): boolean | undefined;
     onBeforeRendering(): void;
     get visibleCellsCount(): number;
@@ -121,6 +114,7 @@ declare class TableRow extends UI5Element implements ITableRow {
     getCellText(cell: TableCell): string;
     getColumnTextByIdx(index: number): string;
     getNormilzedTextContent(textContent: string): string;
+    static onDefine(): Promise<void>;
 }
 export default TableRow;
 export type { TableRowClickEventDetail, TableRowSelectionRequestedEventDetail, TableRowForwardBeforeEventDetail, TableRowForwardAfterEventDetail, TableRowF7PressEventDetail, };

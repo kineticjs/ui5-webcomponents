@@ -13,9 +13,7 @@ const importMessageBundle = async (localeId) => {
         case "el": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-el" */ "../assets/i18n/messagebundle_el.json")).default;
         case "en": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-en" */ "../assets/i18n/messagebundle_en.json")).default;
         case "en_GB": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-en_GB" */ "../assets/i18n/messagebundle_en_GB.json")).default;
-        case "en_US_sappsd": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-en_US_sappsd" */ "../assets/i18n/messagebundle_en_US_sappsd.json")).default;
         case "en_US_saprigi": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-en_US_saprigi" */ "../assets/i18n/messagebundle_en_US_saprigi.json")).default;
-        case "en_US_saptrc": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-en_US_saptrc" */ "../assets/i18n/messagebundle_en_US_saptrc.json")).default;
         case "es": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-es" */ "../assets/i18n/messagebundle_es.json")).default;
         case "es_MX": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-es_MX" */ "../assets/i18n/messagebundle_es_MX.json")).default;
         case "et": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-et" */ "../assets/i18n/messagebundle_et.json")).default;
@@ -25,7 +23,6 @@ const importMessageBundle = async (localeId) => {
         case "hi": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-hi" */ "../assets/i18n/messagebundle_hi.json")).default;
         case "hr": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-hr" */ "../assets/i18n/messagebundle_hr.json")).default;
         case "hu": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-hu" */ "../assets/i18n/messagebundle_hu.json")).default;
-        case "id": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-id" */ "../assets/i18n/messagebundle_id.json")).default;
         case "it": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-it" */ "../assets/i18n/messagebundle_it.json")).default;
         case "iw": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-iw" */ "../assets/i18n/messagebundle_iw.json")).default;
         case "ja": return (await import(/* webpackChunkName: "ui5-webcomponents-ai-messagebundle-ja" */ "../assets/i18n/messagebundle_ja.json")).default;
@@ -74,9 +71,7 @@ const localeIds = ["ar",
     "el",
     "en",
     "en_GB",
-    "en_US_sappsd",
     "en_US_saprigi",
-    "en_US_saptrc",
     "es",
     "es_MX",
     "et",
@@ -86,7 +81,6 @@ const localeIds = ["ar",
     "hi",
     "hr",
     "hu",
-    "id",
     "it",
     "iw",
     "ja",

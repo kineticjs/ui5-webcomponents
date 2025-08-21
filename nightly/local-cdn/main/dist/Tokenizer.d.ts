@@ -3,15 +3,12 @@ import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delega
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import ScrollEnablement from "@ui5/webcomponents-base/dist/delegate/ScrollEnablement.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import type { UI5CustomEvent } from "@ui5/webcomponents-base";
-import type ResponsivePopover from "./ResponsivePopover.js";
-import type List from "./List.js";
-import type { ListItemDeleteEventDetail } from "./List.js";
+import ResponsivePopover from "./ResponsivePopover.js";
+import List from "./List.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
 import type Token from "./Token.js";
 import type { IToken } from "./MultiInput.js";
 import type { TokenDeleteEventDetail } from "./Token.js";
-import type Button from "./Button.js";
 type TokenizerTokenDeleteEventDetail = {
     tokens: Token[];
 };
@@ -64,12 +61,6 @@ declare enum ClipboardDataOperation {
  * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  */
 declare class Tokenizer extends UI5Element {
-    eventDetails: {
-        "token-delete": TokenizerTokenDeleteEventDetail;
-        "selection-change": TokenizerSelectionChangeEventDetail;
-        "show-more-items-press": void;
-        "before-more-popover-open": void;
-    };
     /**
      * Defines whether the component is read-only.
      *
@@ -79,24 +70,6 @@ declare class Tokenizer extends UI5Element {
      * @public
      */
     readonly: boolean;
-    /**
-     * Defines whether tokens are displayed on multiple lines.
-     *
-     * **Note:** The `multiLine` property is in an experimental state and is a subject to change.
-     * @default false
-     * @since 2.5.0
-     * @public
-     */
-    multiLine: boolean;
-    /**
-     * Defines whether "Clear All" button is present. Ensure `multiLine` is enabled, otherwise `showClearAll` will have no effect.
-     *
-     * **Note:** The `showClearAll` property is in an experimental state and is a subject to change.
-     * @default false
-     * @since 2.5.0
-     * @public
-     */
-    showClearAll: boolean;
     /**
      * Defines whether the component is disabled.
      *
@@ -139,7 +112,7 @@ declare class Tokenizer extends UI5Element {
      * @private
      * @default undefined
      */
-    opener?: HTMLElement | string | null;
+    opener?: HTMLElement;
     /**
      * Sets the min-width of the nMore Popover.
      * **Note:** Used inside MultiInput and MultiComboBox components.
@@ -169,15 +142,11 @@ declare class Tokenizer extends UI5Element {
     hidePopoverArrow: boolean;
     _nMoreCount: number;
     _tokensCount: number;
-    /**
-     * Defines the tokens to be displayed.
-     * @public
-     */
     tokens: Array<Token>;
     static i18nBundle: I18nBundle;
     _resizeHandler: ResizeObserverCallback;
     _itemNav: ItemNavigation;
-    _scrollEnablement: ScrollEnablement | undefined;
+    _scrollEnablement: ScrollEnablement;
     _expandedScrollWidth?: number;
     _tokenDeleting: boolean;
     _preventCollapse: boolean;
@@ -187,13 +156,12 @@ declare class Tokenizer extends UI5Element {
     _deletedDialogItems: Token[];
     _handleResize(): void;
     constructor();
-    handleClearAll(): void;
     onBeforeRendering(): void;
     onEnterDOM(): void;
     onExitDOM(): void;
     _handleNMoreClick(): void;
     _onmousedown(e: MouseEvent): void;
-    onTokenSelect(e: CustomEvent): void;
+    onTokenSelect(): void;
     _getVisibleTokens(): Token[];
     onAfterRendering(): void;
     _delete(e: CustomEvent<TokenDeleteEventDetail>): void;
@@ -207,11 +175,11 @@ declare class Tokenizer extends UI5Element {
      * @param forwardFocusToPrevious Indicates whether the focus will be forwarded to previous or next token after deletion.
      */
     deleteToken(token: Token, forwardFocusToPrevious?: boolean): void;
-    itemDelete(e: CustomEvent<ListItemDeleteEventDetail>): Promise<void>;
+    itemDelete(e: CustomEvent): Promise<void>;
     handleBeforeClose(): void;
     handleBeforeOpen(): void;
     handleAfterClose(): void;
-    handleDialogButtonPress(e: UI5CustomEvent<Button, "click">): void;
+    handleDialogButtonPress(e: MouseEvent): void;
     _onkeydown(e: KeyboardEvent): void;
     _onPopoverListKeydown(e: KeyboardEvent): void;
     _handleItemNavigation(e: KeyboardEvent, tokens: Array<Token>): void | -1;
@@ -226,8 +194,6 @@ declare class Tokenizer extends UI5Element {
     _onfocusout(e: FocusEvent): void;
     _toggleTokenSelection(tokens: Array<Token>): void;
     _handleTokenSelection(e: KeyboardEvent | MouseEvent, deselectAll?: boolean): void;
-    get hasTokens(): boolean;
-    get showEffectiveClearAll(): boolean;
     _fillClipboard(shortcutName: ClipboardDataOperation, tokens: Array<IToken>): void;
     /**
      * Scrolls the container of the tokens to its beginning.
@@ -249,15 +215,12 @@ declare class Tokenizer extends UI5Element {
     _scrollToToken(token: IToken): void;
     _getList(): List;
     get _tokens(): Token[];
-    get morePopoverOpener(): HTMLElement | string | null;
+    get morePopoverOpener(): HTMLElement;
     get _nMoreText(): string | undefined;
-    get _clearAllText(): string;
     get showNMore(): boolean;
     get contentDom(): HTMLElement;
     get moreLink(): HTMLElement | null;
     get tokenizerLabel(): string;
-    get _okButtonText(): string;
-    get _cancelButtonText(): string;
     get tokenizerAriaDescription(): string | undefined;
     get _ariaDisabled(): true | undefined;
     get _ariaReadonly(): true | undefined;
@@ -275,8 +238,8 @@ declare class Tokenizer extends UI5Element {
      * @protected
      */
     _focusLastToken(): void;
+    static onDefine(): Promise<void>;
     getPopover(): ResponsivePopover;
-    getTokenByRefId(refId: string): Token;
 }
 declare const getTokensCountText: (iTokenCount: number) => string;
 export default Tokenizer;

@@ -1,4 +1,4 @@
-type Control = {
+type Element = {
     getDomRef: () => HTMLElement | null;
 };
 type OpenUI5Popup = {
@@ -6,13 +6,10 @@ type OpenUI5Popup = {
         open: (...args: any[]) => void;
         _closed: (...args: any[]) => void;
         getOpenState: () => "CLOSED" | "CLOSING" | "OPEN" | "OPENING";
-        getContent: () => Control | HTMLElement | null;
+        getContent: () => Element;
         onFocusEvent: (e: FocusEvent) => void;
     };
 };
-declare const addOpenedPopup: (popup: object) => void;
-declare const removeOpenedPopup: (popup: object) => void;
-declare const getTopmostPopup: () => object;
 declare const patchPopup: (Popup: OpenUI5Popup) => void;
-export { patchPopup, addOpenedPopup, removeOpenedPopup, getTopmostPopup, };
+export default patchPopup;
 export type { OpenUI5Popup };

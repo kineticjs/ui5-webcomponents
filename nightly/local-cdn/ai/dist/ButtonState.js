@@ -16,8 +16,8 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
  *
  * ### Usage
  *
- * `ui5-ai-button-state` is an abstract element, representing a state of `ui5-ai-button`. It is meant to be used in the `default` slot
- * of `ui5-ai-button` and should not be used as standalone component.
+ * `ui5-si-button-state` is an abstract element, representing a state of `ui5-ai-button`. It is meant to be used in the `states` slot
+ * of `ui5-ai-button` and should be used as standalone component.
  *
  * ### ES6 Module Import
  *
@@ -25,21 +25,11 @@ import property from "@ui5/webcomponents-base/dist/decorators/property.js";
  * @constructor
  * @extends UI5Element
  * @abstract
- * @since 2.0.0
+ * @since 2.0
  * @public
- * @experimental The Button and ButtonState web components are available since 2.0 under an experimental flag and their API and behaviour are subject to change.
+ * @experimental The Button and ButtonState web components are availabe since 2.0 under an experimental flag and their API and behaviour are subject to change.
  */
 let ButtonState = class ButtonState extends UI5Element {
-    constructor() {
-        super(...arguments);
-        /**
-         * Defines if the component is in split button mode.
-         * @default false
-         * @since 2.6.0
-         * @public
-         */
-        this.showArrowButton = false;
-    }
 };
 __decorate([
     property()
@@ -53,9 +43,6 @@ __decorate([
 __decorate([
     property()
 ], ButtonState.prototype, "endIcon", void 0);
-__decorate([
-    property({ type: Boolean })
-], ButtonState.prototype, "showArrowButton", void 0);
 ButtonState = __decorate([
     customElement("ui5-ai-button-state")
 ], ButtonState);

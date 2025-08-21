@@ -5,14 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isSpace, isEnter, isSpaceShift } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
+import Icon from "@ui5/webcomponents/dist/Icon.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import ProductSwitchItemTemplate from "./ProductSwitchItemTemplate.js";
+import ProductSwitchItemTemplate from "./generated/templates/ProductSwitchItemTemplate.lit.js";
 // Styles
 import ProductSwitchItemCss from "./generated/themes/ProductSwitchItem.css.js";
 /**
@@ -97,11 +97,11 @@ let ProductSwitchItem = class ProductSwitchItem extends UI5Element {
     _onfocusout() {
         this.active = false;
     }
-    _onfocusin() {
-        this.fireDecoratorEvent("_focused");
+    _onfocusin(e) {
+        this.fireEvent("_focused", e);
     }
     _fireItemClick() {
-        this.fireDecoratorEvent("click", { item: this });
+        this.fireEvent("click", { item: this });
     }
 };
 __decorate([
@@ -128,15 +128,13 @@ __decorate([
 __decorate([
     property({ noAttribute: true })
 ], ProductSwitchItem.prototype, "forcedTabIndex", void 0);
-__decorate([
-    slot({ type: HTMLElement })
-], ProductSwitchItem.prototype, "image", void 0);
 ProductSwitchItem = __decorate([
     customElement({
         tag: "ui5-product-switch-item",
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: ProductSwitchItemCss,
         template: ProductSwitchItemTemplate,
+        dependencies: [Icon],
     })
     /**
      * Fired when the `ui5-product-switch-item` is activated either with a
@@ -144,12 +142,8 @@ ProductSwitchItem = __decorate([
      * @public
      */
     ,
-    event("click", {
-        bubbles: true,
-    }),
-    event("_focused", {
-        bubbles: true,
-    })
+    event("click"),
+    event("_focused")
 ], ProductSwitchItem);
 ProductSwitchItem.define();
 export default ProductSwitchItem;

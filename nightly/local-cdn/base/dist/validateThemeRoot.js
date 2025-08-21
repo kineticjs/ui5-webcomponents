@@ -1,15 +1,10 @@
-import { getLocationHref } from "./Location.js";
 const getMetaTagValue = (metaTagName) => {
     const metaTag = document.querySelector(`META[name="${metaTagName}"]`), metaTagContent = metaTag && metaTag.getAttribute("content");
     return metaTagContent;
 };
 const validateThemeOrigin = (origin) => {
-    const allowedOrigins = getMetaTagValue("sap-allowed-theme-origins") ?? getMetaTagValue("sap-allowedThemeOrigins"); // Prioritize the new meta tag name
-    // If no allowed origins are specified, block.
-    if (!allowedOrigins) {
-        return false;
-    }
-    return allowedOrigins.split(",").some(allowedOrigin => {
+    const allowedOrigins = getMetaTagValue("sap-allowedThemeOrigins");
+    return allowedOrigins && allowedOrigins.split(",").some(allowedOrigin => {
         return allowedOrigin === "*" || origin === allowedOrigin.trim();
     });
 };
@@ -25,7 +20,7 @@ const validateThemeRoot = (themeRoot) => {
             // new URL("/newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
             // new URL("./newExmPath", "http://example.com/exmPath") => http://example.com/exmPath/newExmPath
             // new URL("../newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
-            resultUrl = new URL(themeRoot, getLocationHref()).toString();
+            resultUrl = new URL(themeRoot, window.location.href).toString();
         }
         else {
             const themeRootURL = new URL(themeRoot);
@@ -37,7 +32,7 @@ const validateThemeRoot = (themeRoot) => {
             else {
                 // If origin is not allow and the URL is not relative, we have to replace the origin
                 // with current location
-                resultUrl = buildCorrectUrl(themeRootURL.toString(), getLocationHref());
+                resultUrl = buildCorrectUrl(themeRootURL.toString(), window.location.href);
             }
         }
         if (!resultUrl.endsWith("/")) {

@@ -1,6 +1,9 @@
 import type { ButtonAccessibilityAttributes } from "./Button.js";
 import type ButtonDesign from "./types/ButtonDesign.js";
 import ToolbarItem from "./ToolbarItem.js";
+import type { IEventOptions } from "./ToolbarItem.js";
+import ToolbarButtonTemplate from "./generated/templates/ToolbarButtonTemplate.lit.js";
+import ToolbarPopoverButtonTemplate from "./generated/templates/ToolbarPopoverButtonTemplate.lit.js";
 type ToolbarButtonAccessibilityAttributes = ButtonAccessibilityAttributes;
 /**
  * @class
@@ -111,17 +114,10 @@ declare class ToolbarButton extends ToolbarItem {
         width: string | undefined;
         display: string;
     };
-    onClick(e: Event): void;
-    /**
-     * @override
-     */
-    get classes(): {
-        root: {
-            "ui5-tb-button": boolean;
-            "ui5-tb-popover-item": boolean;
-            "ui5-tb-item": boolean;
-        };
-    };
+    get containsText(): boolean;
+    static get toolbarTemplate(): typeof ToolbarButtonTemplate;
+    static get toolbarPopoverTemplate(): typeof ToolbarPopoverButtonTemplate;
+    get subscribedEvents(): Map<string, IEventOptions>;
 }
 export default ToolbarButton;
 export type { ToolbarButtonAccessibilityAttributes, };

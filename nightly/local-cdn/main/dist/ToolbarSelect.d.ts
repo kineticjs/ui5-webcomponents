@@ -1,9 +1,10 @@
 import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import ToolbarSelectTemplate from "./generated/templates/ToolbarSelectTemplate.lit.js";
+import ToolbarPopoverSelectTemplate from "./generated/templates/ToolbarPopoverSelectTemplate.lit.js";
 import ToolbarItem from "./ToolbarItem.js";
-import type { ToolbarItemEventDetail } from "./ToolbarItem.js";
 import type ToolbarSelectOption from "./ToolbarSelectOption.js";
 import type { SelectChangeEventDetail } from "./Select.js";
-type ToolbarSelectChangeEventDetail = ToolbarItemEventDetail & SelectChangeEventDetail;
+type ToolbarSelectChangeEventDetail = SelectChangeEventDetail;
 /**
  * @class
  *
@@ -22,11 +23,6 @@ type ToolbarSelectChangeEventDetail = ToolbarItemEventDetail & SelectChangeEvent
  * @since 1.17.0
  */
 declare class ToolbarSelect extends ToolbarItem {
-    eventDetails: ToolbarItem["eventDetails"] & {
-        change: ToolbarSelectChangeEventDetail;
-        open: ToolbarItemEventDetail;
-        close: ToolbarItemEventDetail;
-    };
     /**
      * Defines the width of the select.
      *
@@ -71,11 +67,16 @@ declare class ToolbarSelect extends ToolbarItem {
      * @public
      */
     accessibleNameRef?: string;
-    onClick(e: Event): void;
-    onOpen(e: Event): void;
-    onClose(e: Event): void;
-    onChange(e: CustomEvent<SelectChangeEventDetail>): void;
-    _syncOptions(selectedOption: HTMLElement): void;
+    _onEvent: EventListener;
+    static get toolbarTemplate(): typeof ToolbarSelectTemplate;
+    static get toolbarPopoverTemplate(): typeof ToolbarPopoverSelectTemplate;
+    get subscribedEvents(): Map<any, any>;
+    constructor();
+    onEnterDOM(): void;
+    onExitDOM(): void;
+    attachEventListeners(): void;
+    detachEventListeners(): void;
+    _onEventHandler(e: Event): void;
     get styles(): {
         width: string | undefined;
     };

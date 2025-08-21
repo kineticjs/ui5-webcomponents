@@ -1,10 +1,12 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import "@ui5/webcomponents-icons/dist/decline.js";
+import "@ui5/webcomponents-icons/dist/sys-cancel.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IIcon } from "./Icon.js";
 import type { IToken } from "./MultiInput.js";
 type TokenDeleteEventDetail = {
-    backSpace?: boolean;
-    delete?: boolean;
+    backSpace: boolean;
+    delete: boolean;
 };
 /**
  * @class
@@ -23,10 +25,6 @@ type TokenDeleteEventDetail = {
  * @public
  */
 declare class Token extends UI5Element implements IToken {
-    eventDetails: {
-        "select": void;
-        "delete": TokenDeleteEventDetail;
-    };
     /**
      * Defines the text of the token.
      * @default undefined
@@ -74,6 +72,11 @@ declare class Token extends UI5Element implements IToken {
      */
     forcedTabIndex: string;
     /**
+     * Indicates whether the token is visible or not.
+     * @private
+     */
+    _isVisible: boolean;
+    /**
      * Defines the close icon for the token. If nothing is provided to this slot, the default close icon will be used.
      * Accepts `ui5-icon`.
      * @public
@@ -85,13 +88,13 @@ declare class Token extends UI5Element implements IToken {
     _focusin(): void;
     _focusout(): void;
     _delete(): void;
-    _onmousedown(e: MouseEvent): void;
     _keydown(e: KeyboardEvent): void;
     onBeforeRendering(): void;
     get tokenDeletableText(): string;
     get textDom(): Element | null | undefined;
     get isTruncatable(): boolean;
     get ariaDescription(): string;
+    static onDefine(): Promise<void>;
 }
 export default Token;
 export type { TokenDeleteEventDetail };

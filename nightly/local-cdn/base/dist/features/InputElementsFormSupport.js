@@ -1,4 +1,5 @@
-const updateFormValue = (element) => {
+const attachFormElementInternals = (element) => {
+    element._internals = element.attachInternals();
     if (isInputElement(element)) {
         setFormValue(element);
     }
@@ -35,5 +36,5 @@ const resetForm = (element) => {
 const isInputElement = (element) => {
     return "formFormattedValue" in element && "name" in element;
 };
-export { updateFormValue, setFormValue, setFormValidity, submitForm, resetForm, };
+export { attachFormElementInternals, setFormValue, setFormValidity, submitForm, resetForm, };
 //# sourceMappingURL=InputElementsFormSupport.js.map

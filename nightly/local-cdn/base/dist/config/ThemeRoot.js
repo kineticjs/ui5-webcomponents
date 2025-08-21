@@ -2,11 +2,7 @@ import createLinkInHead from "../util/createLinkInHead.js";
 import validateThemeRoot from "../validateThemeRoot.js";
 import { getThemeRoot as getConfiguredThemeRoot } from "../InitialConfiguration.js";
 import { getTheme } from "./Theme.js";
-import { attachConfigurationReset } from "./ConfigurationReset.js";
 let currThemeRoot;
-attachConfigurationReset(() => {
-    currThemeRoot = undefined;
-});
 /**
  * Returns the current theme root.
  *
@@ -29,9 +25,7 @@ const getThemeRoot = () => {
  *
  * **Note:** Certain security restrictions will apply before fetching the theme assets.
  * Absolute URLs to a different origin than the current page will result in using the current page as an origin.
- *
- * **Important:** To use this feature you must explicitly allow specific origins by using &lt;meta name="sap-allowed-theme-origins" content="https://my-example-host.com/"&gt; tag inside the &lt;head&gt; of the page.
- * Failing to do so will result in a warning in the console and the theme root will not be set.
+ * To allow specific origins, use &lt;meta name="sap-allowedThemeOrigins" content="https://my-example-host.com/"&gt; tag inside the &lt;head&gt; of the page.
  *
  * @public
  * @since 1.14.0

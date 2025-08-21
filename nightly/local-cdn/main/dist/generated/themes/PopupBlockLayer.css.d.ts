@@ -1,2 +1,3 @@
-declare const _default: ".ui5-block-layer{position:fixed;z-index:-1;display:none;inset:-500px;outline:none;pointer-events:all}\n";
-export default _default;
+import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
+declare const styleData: StyleData;
+export default styleData;

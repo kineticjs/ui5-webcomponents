@@ -1,17 +1,12 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import "@ui5/webcomponents-icons/dist/accept.js";
+import "@ui5/webcomponents-icons/dist/complete.js";
+import "@ui5/webcomponents-icons/dist/border.js";
+import "@ui5/webcomponents-icons/dist/tri-state.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import type WrappingType from "./types/WrappingType.js";
-import type { AriaRole, AriaChecked, AriaDisabled, AriaReadonly } from "@ui5/webcomponents-base/dist/types.js";
-type CheckBoxAccInfo = {
-    role?: AriaRole;
-    ariaChecked?: AriaChecked;
-    ariaReadonly?: AriaReadonly;
-    ariaDisabled?: AriaDisabled;
-    ariaRequired?: boolean;
-    tabindex?: number | undefined;
-};
 /**
  * @class
  *
@@ -55,10 +50,6 @@ type CheckBoxAccInfo = {
  * @csspart icon - Used to style the icon of the `ui5-checkbox`
  */
 declare class CheckBox extends UI5Element implements IFormInputElement {
-    eventDetails: {
-        "change": void;
-        "value-changed": void;
-    };
     /**
      * Receives id(or many ids) of the elements that label the component
      * @default undefined
@@ -104,9 +95,6 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
     displayOnly: boolean;
     /**
      * Defines whether the component is required.
-     *
-     * **Note:** We advise against using the text property of the checkbox when there is a
-     * label associated with it to avoid having two required asterisks.
      * @default false
      * @public
      * @since 1.3.0
@@ -169,34 +157,16 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
      */
     name?: string;
     /**
-     * Defines the form value of the component that is submitted when the checkbox is checked.
-     *
-     * When a form containing `ui5-checkbox` elements is submitted, only the values of the
-     * **checked** checkboxes are included in the form data sent to the server. Unchecked
-     * checkboxes do not contribute any data to the form submission.
-     *
-     * This property is particularly useful for **checkbox groups**, where multiple checkboxes with the same `name` but different `value` properties can be used to represent a set of related options.
-     *
-     * @default "on"
-     * @public
-     */
-    value: string;
-    /**
      * Defines the active state (pressed or not) of the component.
      * @private
      */
     active: boolean;
-    /**
-     * Defines custom aria implementation object.
-     * @private
-     */
-    _accInfo?: CheckBoxAccInfo;
     static i18nBundle: I18nBundle;
     _deactivate: () => void;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
-    get formFormattedValue(): string | null;
+    get formFormattedValue(): "on" | null;
     constructor();
     onEnterDOM(): void;
     _onclick(): void;
@@ -225,17 +195,10 @@ declare class CheckBox extends UI5Element implements IFormInputElement {
     get ariaDescribedBy(): string | undefined;
     get hasValueState(): boolean;
     get valueStateText(): string | undefined;
-    get effectiveTabIndex(): number | undefined;
-    get tabbable(): boolean;
+    get effectiveTabIndex(): string | undefined;
     get isCompletelyChecked(): boolean;
     get isDisplayOnly(): boolean;
-    get accInfo(): {
-        role: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.AriaRole | undefined;
-        ariaChecked: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.Signalish<import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").Booleanish | "mixed" | undefined>;
-        ariaReadonly: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.Signalish<import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").Booleanish | undefined>;
-        ariaDisabled: import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").JSXInternal.Signalish<import("@ui5/webcomponents-base/dist/thirdparty/preact/jsx.js").Booleanish | undefined>;
-        ariaRequired: boolean | undefined;
-        tabindex: number | undefined;
-    };
+    get displayOnlyIcon(): "complete" | "tri-state" | "border";
+    static onDefine(): Promise<void>;
 }
 export default CheckBox;

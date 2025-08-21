@@ -1,14 +1,13 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import "@ui5/webcomponents-icons/dist/overflow.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type ToolbarAlign from "./types/ToolbarAlign.js";
 import type ToolbarDesign from "./types/ToolbarDesign.js";
 import type ToolbarItem from "./ToolbarItem.js";
-import type Button from "./Button.js";
-import type Popover from "./Popover.js";
+import Button from "./Button.js";
+import Popover from "./Popover.js";
 type ToolbarMinWidthChangeEventDetail = {
     minWidth: number;
 };
@@ -34,9 +33,6 @@ type ToolbarMinWidthChangeEventDetail = {
  * @since 1.17.0
  */
 declare class Toolbar extends UI5Element {
-    eventDetails: {
-        "_min-content-width-change": ToolbarMinWidthChangeEventDetail;
-    };
     static i18nBundle: I18nBundle;
     /**
      * Indicated the direction in which the Toolbar items will be aligned.
@@ -80,7 +76,6 @@ declare class Toolbar extends UI5Element {
      * @since 2.0.0
      */
     design: `${ToolbarDesign}`;
-    popoverOpen: boolean;
     /**
      * Defines the items of the component.
      *
@@ -89,24 +84,49 @@ declare class Toolbar extends UI5Element {
      */
     items: Array<ToolbarItem>;
     _onResize: ResizeObserverCallback;
-    _onCloseOverflow: EventListener;
+    _onInteract: EventListener;
     itemsToOverflow: Array<ToolbarItem>;
     itemsWidth: number;
     minContentWidth: number;
+    popoverOpen: boolean;
+    itemsWidthMeasured: boolean;
     ITEMS_WIDTH_MAP: Map<string, number>;
-    static get styles(): string[];
+    static get styles(): (string | import("@ui5/webcomponents-base/dist/types.js").StyleDataCSP | import("@ui5/webcomponents-base/dist/types.js").ComponentStylesData[])[];
+    static get dependencies(): (typeof UI5Element)[];
+    static onDefine(): Promise<void>;
     constructor();
     /**
      * Read-only members
      */
     get overflowButtonSize(): number;
     get padding(): number;
+    get subscribedEvents(): string[];
     get alwaysOverflowItems(): ToolbarItem[];
     get movableItems(): ToolbarItem[];
-    get overflowItems(): ToolbarItem[];
-    get standardItems(): ToolbarItem[];
+    get overflowItems(): ({
+        toolbarTemplate: object;
+        toolbarPopoverTemplate: object;
+    } | null)[];
+    get standardItems(): ({
+        toolbarTemplate: object;
+        toolbarPopoverTemplate: object;
+    } | null)[];
     get hideOverflowButton(): boolean;
-    get interactiveItems(): ToolbarItem[];
+    get classes(): {
+        items: {
+            "ui5-tb-items": boolean;
+            "ui5-tb-items-full-width": boolean;
+        };
+        overflow: {
+            "ui5-overflow-list--alignleft": boolean;
+        };
+        overflowButton: {
+            "ui5-tb-item": boolean;
+            "ui5-tb-overflow-btn": boolean;
+            "ui5-tb-overflow-btn-hidden": boolean;
+        };
+    };
+    get interactiveItemsCount(): number;
     /**
      * Accessibility
      */
@@ -115,25 +135,24 @@ declare class Toolbar extends UI5Element {
     get ariaLabelText(): string | undefined;
     get accInfo(): {
         root: {
-            role: "toolbar" | undefined;
+            role: string | undefined;
             accessibleName: string | undefined;
         };
         overflowButton: {
             accessibleName: string;
             tooltip: string;
             accessibilityAttributes: {
-                expanded: boolean;
-                hasPopup: "menu";
+                expanded: boolean | "true" | "false" | undefined;
+                hasPopup: string;
             };
-        };
-        popover: {
-            accessibleName: string;
         };
     };
     /**
      * Toolbar Overflow Popover
      */
     get overflowButtonDOM(): Button | null;
+    get itemsDOM(): Element | null;
+    get hasItemWithText(): boolean;
     get hasFlexibleSpacers(): boolean;
     /**
      * Lifecycle methods
@@ -151,7 +170,7 @@ declare class Toolbar extends UI5Element {
     openOverflow(): void;
     closeOverflow(): void;
     toggleOverflow(): void;
-    getOverflowPopover(): Popover;
+    getOverflowPopover(): Popover | null;
     /**
      * Layout management
      */
@@ -165,17 +184,23 @@ declare class Toolbar extends UI5Element {
      * Event Handlers
      */
     onOverflowPopoverClosed(): void;
-    onBeforeClose(e: UI5CustomEvent<Popover, "before-close">): void;
     onOverflowPopoverOpened(): void;
     onResize(): void;
+    onInteract(e: CustomEvent): void;
     /**
      * Private members
      */
     attachListeners(): void;
     detachListeners(): void;
     onToolbarItemChange(): void;
+    getItemsInfo(items: Array<ToolbarItem>): ({
+        toolbarTemplate: object;
+        toolbarPopoverTemplate: object;
+    } | null)[];
     getItemWidth(item: ToolbarItem): number;
     getCachedItemWidth(id: string): number | undefined;
+    getItemByID(id: string): ToolbarItem | undefined;
+    getRegisteredToolbarItemByID(id: string): HTMLElement | null;
 }
 export default Toolbar;
 export type { ToolbarMinWidthChangeEventDetail, };

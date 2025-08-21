@@ -2,6 +2,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 import "@ui5/webcomponents-icons/dist/decline.js";
+import "@ui5/webcomponents-icons/dist/not-editable.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
@@ -9,13 +10,11 @@ import "@ui5/webcomponents-icons/dist/information.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import type { IIcon } from "./Icon.js";
-import "./ComboBoxItem.js";
-import type ComboBoxItem from "./ComboBoxItem.js";
-import type Popover from "./Popover.js";
-import type ResponsivePopover from "./ResponsivePopover.js";
-import type List from "./List.js";
+import ComboBoxItem from "./ComboBoxItem.js";
+import Popover from "./Popover.js";
+import ResponsivePopover from "./ResponsivePopover.js";
+import List from "./List.js";
 import type { ListItemClickEventDetail } from "./List.js";
-import "./ComboBoxItemGroup.js";
 import type ComboBoxFilter from "./types/ComboBoxFilter.js";
 import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
 import type { InputEventDetail } from "./Input.js";
@@ -30,13 +29,14 @@ interface IComboBoxItem extends UI5Element {
     isGroupItem?: boolean;
     selected?: boolean;
     additionalText?: string;
+    stableDomRef: string;
     _isVisible?: boolean;
     items?: Array<IComboBoxItem>;
 }
 type ValueStateAnnouncement = Record<Exclude<ValueState, ValueState.None>, string>;
 type ValueStateTypeAnnouncement = Record<Exclude<ValueState, ValueState.None>, string>;
 type ComboBoxSelectionChangeEventDetail = {
-    item: ComboBoxItem | null;
+    item: ComboBoxItem;
 };
 /**
  * @class
@@ -67,7 +67,6 @@ type ComboBoxSelectionChangeEventDetail = {
  * - [Page Up] - Moves selection up by page size (10 items by default).
  * - [Home] - If focus is in the ComboBox, moves cursor at the beginning of text. If focus is in the picker, selects the first item.
  * - [End] - If focus is in the ComboBox, moves cursor at the end of text. If focus is in the picker, selects the last item.
- * - [Ctrl]+[Alt]+[F8] or [Command]+[Option]+[F8] - Focuses the first link in the value state message, if available. Pressing [Tab] moves the focus to the next link in the value state message, or closes the value state message if there are no more links.
  *
  * ### ES6 Module Import
  *
@@ -78,13 +77,6 @@ type ComboBoxSelectionChangeEventDetail = {
  * @since 1.0.0-rc.6
  */
 declare class ComboBox extends UI5Element implements IFormInputElement {
-    eventDetails: {
-        "change": void;
-        "input": void;
-        "open": void;
-        "close": void;
-        "selection-change": ComboBoxSelectionChangeEventDetail;
-    };
     /**
      * Defines the value of the component.
      * @default ""
@@ -175,10 +167,15 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
      */
     showClearIcon: boolean;
     /**
-     * Indicates whether the input is focused
+     * Indicates whether the input is focssed
      * @private
      */
     focused: boolean;
+    /**
+     * Indicates whether the visual focus is on the value state header
+     * @private
+     */
+    _isValueStateFocused: boolean;
     /**
      * Defines the accessible ARIA name of the component.
      * @default undefined
@@ -205,21 +202,10 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     valueStateOpen: boolean;
     /**
      * Indicates whether the items picker is open.
-     * @public
-     * @since 2.9.0
+     * @private
+     * @since 2.0.0
      */
     open: boolean;
-    /**
-     * Indicates whether link navigation is being handled.
-     * @default false
-     * @since 2.11.0
-     * @private
-     */
-    _handleLinkNavigation: boolean;
-    /**
-     * @private
-     */
-    _linksListenersArray: Array<(args: any) => void>;
     /**
      * Defines the component items.
      * @public
@@ -232,7 +218,7 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed,
-     * when the `ui5-combobox` is in `Information`, `Critical` or `Negative` value state.
+     * when the `ui5-combobox` is in `Information`, `Warning` or `Error` value state.
      * @since 1.0.0-rc.9
      * @public
      */
@@ -251,7 +237,6 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     _lastValue: string;
     _selectedItemText: string;
     _userTypedValue: string;
-    _valueStateLinks: Array<HTMLElement>;
     static i18nBundle: I18nBundle;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
@@ -261,7 +246,6 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     onBeforeRendering(): void;
     get iconsCount(): number;
     onAfterRendering(): void;
-    onExitDOM(): void;
     _focusin(e: FocusEvent): void;
     _focusout(e: FocusEvent): void;
     _beforeOpenPopover(): void;
@@ -285,7 +269,7 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     _getItems(): IComboBoxItem[];
     handleNavKeyPress(e: KeyboardEvent): void;
     _handleItemNavigation(e: KeyboardEvent, indexOfItem: number, isForward: boolean): void;
-    _handleTypeAhead(value: string, filterValue: string): void;
+    _handleTypeAhead(value: string, filterValue: string, checkForGroupItem: boolean): void;
     _handleArrowDown(e: KeyboardEvent, indexOfItem: number): void;
     _handleArrowUp(e: KeyboardEvent, indexOfItem: number): void;
     _handlePageUp(e: KeyboardEvent, indexOfItem: number): void;
@@ -294,9 +278,6 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     _handleEnd(e: KeyboardEvent): void;
     _keyup(): void;
     _keydown(e: KeyboardEvent): void;
-    _addLinksEventListeners(): void;
-    _removeLinksEventListeners(): void;
-    _handleCtrlALtF8(): void;
     _handlePopoverKeydown(e: KeyboardEvent): void;
     _handlePopoverFocusout(): void;
     _click(): void;
@@ -314,12 +295,10 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     _announceSelectedItem(indexOfItem: number): void;
     _clear(): void;
     _makeAllVisible(item: IComboBoxItem): void;
-    _scrollToItem(indexOfItem: number): void;
+    _scrollToItem(indexOfItem: number, forward: boolean): void;
     _announceValueStateText(): void;
     get _headerTitleText(): string;
     get _iconAccessibleNameText(): string;
-    get _popupLabel(): string;
-    get _dialogOkButtonText(): string;
     get inner(): HTMLInputElement;
     _getPicker(): ResponsivePopover;
     _getPickerInput(): HTMLInputElement;
@@ -328,6 +307,7 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
     get hasValueStateText(): boolean;
     get ariaValueStateHiddenText(): string;
     get valueStateDefaultText(): string | undefined;
+    get valueStateMessageText(): Array<Node>;
     get valueStateTextMappings(): ValueStateAnnouncement;
     get valueStateTypeMappings(): ValueStateTypeAnnouncement;
     get shouldOpenValueStateMessagePopover(): boolean;
@@ -337,21 +317,18 @@ declare class ComboBox extends UI5Element implements IFormInputElement {
      * This method is relevant for sap_horizon theme only
      */
     get _valueStateMessageIcon(): string;
-    get linksInAriaValueStateHiddenText(): HTMLElement[];
-    get valueStateLinksShortcutsTextAcc(): string;
-    get ariaDescribedByText(): string;
-    get _valueStateLinksShortcutsTextAccId(): "" | "hiddenText-value-state-link-shortcut";
-    get valueStateTextId(): "" | "value-state-description";
     get _isPhone(): boolean;
     get itemTabIndex(): undefined;
     get ariaLabelText(): string | undefined;
     get clearIconAccessibleName(): string;
-    get responsivePopoverId(): string;
+    static onDefine(): Promise<void>;
     get styles(): {
+        popoverHeader: {
+            width: string;
+        };
         suggestionPopoverHeader: {
             display: string;
             width: string;
-            "max-width": string;
         };
         suggestionsPopover: {
             "min-width": string;

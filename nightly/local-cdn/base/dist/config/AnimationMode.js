@@ -1,10 +1,6 @@
 import { getAnimationMode as getConfiguredAnimationMode } from "../InitialConfiguration.js";
 import AnimationMode from "../types/AnimationMode.js";
-import { attachConfigurationReset } from "./ConfigurationReset.js";
 let curAnimationMode;
-attachConfigurationReset(() => {
-    curAnimationMode = undefined;
-});
 /**
  * Returns the animation mode - "full", "basic", "minimal" or "none".
  * @public

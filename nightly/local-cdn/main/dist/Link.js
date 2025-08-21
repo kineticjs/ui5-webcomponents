@@ -7,21 +7,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var Link_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
-import toLowercaseEnumValue from "@ui5/webcomponents-base/dist/util/toLowercaseEnumValue.js";
-import { getLocationHostname, getLocationPort, getLocationProtocol } from "@ui5/webcomponents-base/dist/Location.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { markEvent } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import LinkDesign from "./types/LinkDesign.js";
 // Template
-import LinkTemplate from "./LinkTemplate.js";
+import LinkTemplate from "./generated/templates/LinkTemplate.lit.js";
 import { LINK_SUBTLE, LINK_EMPHASIZED } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import linkCss from "./generated/themes/Link.css.js";
+import Icon from "./Icon.js";
 /**
  * @class
  *
@@ -82,20 +81,6 @@ let Link = Link_1 = class Link extends UI5Element {
          */
         this.design = "Default";
         /**
-         * Defines the target area size of the link:
-         * - **InteractiveAreaSize.Normal**: The default target area size.
-         * - **InteractiveAreaSize.Large**: The target area size is enlarged to 24px in height.
-         *
-         * **Note:**The property is designed to make links easier to activate and helps meet the WCAG 2.2 Target Size requirement. It is applicable only for the SAP Horizon themes.
-         * **Note:**To improve <code>ui5-link</code>'s reliability and usability, it is recommended to use the <code>InteractiveAreaSize.Large</code> value in scenarios where the <code>ui5-link</code> component is placed inside another interactive component, such as a list item or a table cell.
-         * Setting the <code>interactiveAreaSize</code> property to <code>InteractiveAreaSize.Large</code> increases the <code>ui5-link</code>'s invisible touch area. As a result, the user's intended one-time selection command is more likely to activate the desired <code>ui5-link</code>, with minimal chance of unintentionally activating the underlying component.
-         *
-         * @public
-         * @since 2.8.0
-         * @default "Normal"
-         */
-        this.interactiveAreaSize = "Normal";
-        /**
          * Defines how the text of a component will be displayed when there is not enough space.
          *
          * **Note:** By default the text will wrap. If "None" is set - the text will truncate.
@@ -127,12 +112,12 @@ let Link = Link_1 = class Link extends UI5Element {
          * @default {}
          */
         this.accessibilityAttributes = {};
+        /**
+         * Indicates if the element is on focus.
+         * @private
+         */
+        this.focused = false;
         this._dummyAnchor = document.createElement("a");
-    }
-    onEnterDOM() {
-        if (isDesktop()) {
-            this.setAttribute("desktop", "");
-        }
     }
     onBeforeRendering() {
         const needsNoReferrer = this.target !== "_self"
@@ -141,16 +126,17 @@ let Link = Link_1 = class Link extends UI5Element {
         this._rel = needsNoReferrer ? "noreferrer noopener" : undefined;
     }
     _isCrossOrigin(href) {
+        const loc = window.location;
         this._dummyAnchor.href = href;
-        return !(this._dummyAnchor.hostname === getLocationHostname()
-            && this._dummyAnchor.port === getLocationPort()
-            && this._dummyAnchor.protocol === getLocationProtocol());
+        return !(this._dummyAnchor.hostname === loc.hostname
+            && this._dummyAnchor.port === loc.port
+            && this._dummyAnchor.protocol === loc.protocol);
     }
     get effectiveTabIndex() {
         if (this.forcedTabIndex) {
-            return Number.parseInt(this.forcedTabIndex);
+            return this.forcedTabIndex;
         }
-        return (this.disabled || !this.textContent?.length) ? -1 : 0;
+        return (this.disabled || !this.textContent?.length) ? "-1" : "0";
     }
     get ariaLabelText() {
         return getEffectiveAriaLabelText(this);
@@ -171,38 +157,47 @@ let Link = Link_1 = class Link extends UI5Element {
         return (this.href && this.href.length > 0) ? this.href : undefined;
     }
     get effectiveAccRole() {
-        return toLowercaseEnumValue(this.accessibleRole);
-    }
-    get ariaDescriptionText() {
-        return this.accessibleDescription === "" ? undefined : this.accessibleDescription;
+        return this.accessibleRole.toLowerCase();
     }
     get _hasPopup() {
         return this.accessibilityAttributes.hasPopup;
     }
+    static async onDefine() {
+        Link_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    }
     _onclick(e) {
         const { altKey, ctrlKey, metaKey, shiftKey, } = e;
         e.stopImmediatePropagation();
-        const executeEvent = this.fireDecoratorEvent("click", {
+        markEvent(e, "link");
+        const executeEvent = this.fireEvent("click", {
             altKey,
             ctrlKey,
             metaKey,
             shiftKey,
-        });
+        }, true);
         if (!executeEvent) {
             e.preventDefault();
         }
     }
+    _onfocusin(e) {
+        markEvent(e, "link");
+        this.focused = true;
+    }
+    _onfocusout() {
+        this.focused = false;
+    }
     _onkeydown(e) {
         if (isEnter(e) && !this.href) {
             this._onclick(e);
-            e.preventDefault();
         }
         else if (isSpace(e)) {
             e.preventDefault();
         }
+        markEvent(e, "link");
     }
     _onkeyup(e) {
         if (!isSpace(e)) {
+            markEvent(e, "link");
             return;
         }
         this._onclick(e);
@@ -230,9 +225,6 @@ __decorate([
 ], Link.prototype, "design", void 0);
 __decorate([
     property()
-], Link.prototype, "interactiveAreaSize", void 0);
-__decorate([
-    property()
 ], Link.prototype, "wrappingType", void 0);
 __decorate([
     property()
@@ -248,9 +240,6 @@ __decorate([
 ], Link.prototype, "accessibilityAttributes", void 0);
 __decorate([
     property()
-], Link.prototype, "accessibleDescription", void 0);
-__decorate([
-    property()
 ], Link.prototype, "icon", void 0);
 __decorate([
     property()
@@ -262,20 +251,22 @@ __decorate([
     property({ noAttribute: true })
 ], Link.prototype, "forcedTabIndex", void 0);
 __decorate([
-    i18n("@ui5/webcomponents")
-], Link, "i18nBundle", void 0);
+    property({ type: Boolean })
+], Link.prototype, "focused", void 0);
 Link = Link_1 = __decorate([
     customElement({
         tag: "ui5-link",
         languageAware: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: LinkTemplate,
         styles: linkCss,
+        dependencies: [Icon],
     })
     /**
      * Fired when the component is triggered either with a mouse/tap
      * or by using the Enter key.
      * @public
+     * @allowPreventDefault
      * @param {boolean} altKey Returns whether the "ALT" key was pressed when the event was triggered.
      * @param {boolean} ctrlKey Returns whether the "CTRL" key was pressed when the event was triggered.
      * @param {boolean} metaKey Returns whether the "META" key was pressed when the event was triggered.
@@ -283,8 +274,24 @@ Link = Link_1 = __decorate([
      */
     ,
     event("click", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            altKey: { type: Boolean },
+            /**
+             * @public
+             */
+            ctrlKey: { type: Boolean },
+            /**
+             * @public
+             */
+            metaKey: { type: Boolean },
+            /**
+             * @public
+             */
+            shiftKey: { type: Boolean },
+        },
     })
 ], Link);
 Link.define();

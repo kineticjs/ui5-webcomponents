@@ -6,18 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import ListItemBase from "./ListItemBase.js";
-import ComboBoxItemTemplate from "./ComboBoxItemTemplate.js";
-import ComboboxItemCss from "./generated/themes/ComboBoxItem.css.js";
+import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 /**
  * @class
  * The `ui5-cb-item` represents the item for a `ui5-combobox`.
  * @constructor
- * @extends ListItemBase
+ * @extends UI5Element
+ * @abstract
  * @implements {IComboBoxItem}
  * @public
  */
-let ComboBoxItem = class ComboBoxItem extends ListItemBase {
+let ComboBoxItem = class ComboBoxItem extends UI5Element {
     constructor() {
         super(...arguments);
         /**
@@ -35,14 +34,9 @@ let ComboBoxItem = class ComboBoxItem extends ListItemBase {
          * @protected
          */
         this.selected = false;
-        /**
-         * Defines the markup text that will be displayed as suggestion.
-         * Used for highlighting the matching parts of the text.
-         *
-         * @since 2.4.0
-         * @private
-         */
-        this.markupText = "";
+    }
+    get stableDomRef() {
+        return this.getAttribute("stable-dom-ref") || `${this._id}-stable-dom-ref`;
     }
 };
 __decorate([
@@ -60,15 +54,8 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], ComboBoxItem.prototype, "selected", void 0);
-__decorate([
-    property()
-], ComboBoxItem.prototype, "markupText", void 0);
 ComboBoxItem = __decorate([
-    customElement({
-        tag: "ui5-cb-item",
-        template: ComboBoxItemTemplate,
-        styles: [ListItemBase.styles, ComboboxItemCss],
-    })
+    customElement("ui5-cb-item")
 ], ComboBoxItem);
 ComboBoxItem.define();
 export default ComboBoxItem;

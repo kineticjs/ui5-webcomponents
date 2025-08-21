@@ -1,8 +1,8 @@
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import DatePicker from "./DatePicker.js";
+import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import type { DatePickerChangeEventDetail as DateRangePickerChangeEventDetail, DatePickerInputEventDetail as DateRangePickerInputEventDetail } from "./DatePicker.js";
 import type { CalendarSelectionChangeEventDetail } from "./Calendar.js";
-import type CalendarSelectionMode from "./types/CalendarSelectionMode.js";
 /**
  * @class
  *
@@ -70,7 +70,7 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
      * Required by DatePicker.js
      * @override
      */
-    get _calendarSelectionMode(): `${CalendarSelectionMode}`;
+    get _calendarSelectionMode(): string;
     /**
      * Required by DatePicker.js - set the calendar focus on the first selected date (or today if not set)
      * @override
@@ -95,7 +95,6 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
     get endDateValue(): Date | null;
     get startValue(): string;
     get endValue(): string;
-    get _lastDateRangeForTheCurrentYear(): string;
     /**
      * @override
      */
@@ -117,27 +116,11 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
      */
     onResponsivePopoverAfterClose(): void;
     /**
-     * Checks if a value is valid against the current date format of the DatePicker.
-     * @public
-     * @param value A value to be tested against the current date format
+     * @override
      */
     isValid(value: string): boolean;
     /**
-     * Checks if a value is valid against the current date format of the DatePicker.
-     * @public
-     * @param value A value to be tested against the current date format
-     */
-    isValidValue(value: string): boolean;
-    /**
-     * Checks if a value is valid against the current date format of the DatePicker.
-     * @public
-     * @param value A value to be tested against the current date format
-     */
-    isValidDisplayValue(value: string): boolean;
-    /**
-     * Checks if a date is between the minimum and maximum date.
-     * @public
-     * @param value A value to be checked
+     * @override
      */
     isInValidRange(value: string): boolean;
     /**
@@ -145,16 +128,6 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
      * @override
      */
     normalizeValue(value: string): string;
-    /**
-     * The parser understands many formats, but we need one format
-     * @override
-     * @protected
-     */
-    normalizeDisplayValue(value: string): string;
-    /**
-     * @override
-     */
-    getValueFromDisplayValue(value: string): string;
     /**
      * @override
      */
@@ -166,11 +139,6 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
     get _effectiveDelimiter(): string;
     _splitValueByDelimiter(value: string): string[];
     /**
-     * The parser understands many formats, but we need one format
-     * @protected
-     */
-    normalizeFormattedValue(value: string): string;
-    /**
      * Returns a UTC timestamp, representing the first date in the value string or undefined if the value is empty
      * @private
      */
@@ -180,19 +148,15 @@ declare class DateRangePicker extends DatePicker implements IFormInputElement {
      * @private
      */
     _extractLastTimestamp(value: string): number | undefined;
-    _exctractDisplayTimestamp(value: string): number | undefined;
     /**
      * Builds a string value out of two UTC timestamps - this method is the counterpart to _extractFirstTimestamp/_extractLastTimestamp
      * @private
      */
     _buildValue(firstDateTimestamp: number | undefined, lastDateTimestamp: number | undefined): string;
     /**
-     * Builds a string value out of two UTC timestamps - this method is the counterpart to _extractFirstTimestamp/_extractLastTimestamp
-     * @private
+     * @override
      */
-    _buildDisplayValue(firstDateTimestamp: number | undefined, lastDateTimestamp: number | undefined): string;
-    getDisplayValueFromValue(value: string): string;
-    get displayValue(): string;
+    get _calendarPickersMode(): CalendarPickersMode;
 }
 export default DateRangePicker;
 export type { DateRangePickerChangeEventDetail, DateRangePickerInputEventDetail, };

@@ -27,11 +27,5 @@ declare class SpecialCalendarDate extends UI5Element {
      * @public
      */
     type: `${CalendarLegendItemType}`;
-    /**
-     * Defines a tooltip text for the special date.
-     * @default ""
-     * @private
-     */
-    _tooltip: string;
 }
 export default SpecialCalendarDate;

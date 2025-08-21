@@ -1,4 +1,3 @@
-import type { AriaRole } from "@ui5/webcomponents-base";
 import ToggleButton from "./ToggleButton.js";
 /**
  * @class
@@ -41,6 +40,6 @@ declare class ToggleSpinButton extends ToggleButton {
     /**
      * Override
      */
-    get effectiveAccRole(): AriaRole;
+    get effectiveAccRole(): string;
 }
 export default ToggleSpinButton;

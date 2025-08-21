@@ -5,10 +5,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRendererer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
-import menuSeparatorTemplate from "./MenuSeparatorTemplate.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import menuSeparatorTemplate from "./generated/templates/MenuSeparatorTemplate.lit.js";
 import menuSeparatorCss from "./generated/themes/MenuSeparator.css.js";
 import ListItemBase from "./ListItemBase.js";
+import ListItemCustom from "./ListItemCustom.js";
 /**
  * @class
  * The `ui5-menu-separator` represents a horizontal line to separate menu items inside a `ui5-menu`.
@@ -16,7 +17,7 @@ import ListItemBase from "./ListItemBase.js";
  * @extends ListItemBase
  * @implements {IMenuItem}
  * @public
- * @since 2.0.0
+ * @since 2.0
  */
 let MenuSeparator = class MenuSeparator extends ListItemBase {
     get isSeparator() {
@@ -45,15 +46,14 @@ let MenuSeparator = class MenuSeparator extends ListItemBase {
 MenuSeparator = __decorate([
     customElement({
         tag: "ui5-menu-separator",
-        renderer: jsxRendererer,
+        renderer: litRender,
         styles: [menuSeparatorCss],
         template: menuSeparatorTemplate,
+        dependencies: [
+            ListItemCustom,
+        ],
     })
 ], MenuSeparator);
-const isInstanceOfMenuSeparator = (object) => {
-    return "isSeparator" in object;
-};
 MenuSeparator.define();
 export default MenuSeparator;
-export { isInstanceOfMenuSeparator, };
 //# sourceMappingURL=MenuSeparator.js.map

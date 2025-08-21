@@ -5,10 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Input Quick View</title>
 
+	
 
 	<script>// delete Document.prototype.adoptedStyleSheets;</script>
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-BfyHtEuZ.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/Input_quickview-CU6XDvr1.css">
+	
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-33bc4d11.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/Input_quickview-fa68e418.css">
 </head>
 
 <body class="input_quickview1auto">
@@ -190,7 +192,7 @@
 
 		[].slice.call(document.querySelectorAll("#inputPreview2 .suggestionItem")).forEach(function(el) {
 			el.addEventListener("mouseover", function (event) {
-				const item = event.currentTarget;
+				const item = event.detail.item;
 				quickViewCard2.open = false;
 				quickViewCard2.opener = item;
 				quickViewCard2.open = true;

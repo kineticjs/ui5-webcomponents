@@ -8,42 +8,49 @@ var ComboBox_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import { isPhone, isAndroid, isMac } from "@ui5/webcomponents-base/dist/Device.js";
+import { isPhone, isAndroid } from "@ui5/webcomponents-base/dist/Device.js";
 import InvisibleMessageMode from "@ui5/webcomponents-base/dist/types/InvisibleMessageMode.js";
-import { getEffectiveAriaLabelText, getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import announce from "@ui5/webcomponents-base/dist/util/InvisibleMessage.js";
 import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 import "@ui5/webcomponents-icons/dist/decline.js";
+import "@ui5/webcomponents-icons/dist/not-editable.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import "@ui5/webcomponents-icons/dist/information.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { submitForm } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import { isBackSpace, isDelete, isShow, isUp, isDown, isEnter, isEscape, isTabNext, isTabPrevious, isPageUp, isPageDown, isHome, isEnd, isCtrlAltF8, } from "@ui5/webcomponents-base/dist/Keys.js";
-import { attachListeners } from "@ui5/webcomponents-base/dist/util/valueStateNavigation.js";
-import arraysAreEqual from "@ui5/webcomponents-base/dist/util/arraysAreEqual.js";
+import { isBackSpace, isDelete, isShow, isUp, isDown, isEnter, isEscape, isTabNext, isTabPrevious, isPageUp, isPageDown, isHome, isEnd, } from "@ui5/webcomponents-base/dist/Keys.js";
 import * as Filters from "./Filters.js";
-import { VALUE_STATE_SUCCESS, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_INFORMATION, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, VALUE_STATE_LINK, VALUE_STATE_LINKS, VALUE_STATE_LINK_MAC, VALUE_STATE_LINKS_MAC, INPUT_SUGGESTIONS_TITLE, COMBOBOX_AVAILABLE_OPTIONS, COMBOBOX_DIALOG_OK_BUTTON, SELECT_OPTIONS, LIST_ITEM_POSITION, LIST_ITEM_GROUP_HEADER, INPUT_CLEAR_ICON_ACC_NAME, FORM_TEXTFIELD_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
+import { VALUE_STATE_SUCCESS, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_INFORMATION, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, INPUT_SUGGESTIONS_TITLE, SELECT_OPTIONS, LIST_ITEM_POSITION, LIST_ITEM_GROUP_HEADER, INPUT_CLEAR_ICON_ACC_NAME, FORM_TEXTFIELD_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
 // Templates
-import ComboBoxTemplate from "./ComboBoxTemplate.js";
+import ComboBoxTemplate from "./generated/templates/ComboBoxTemplate.lit.js";
 // Styles
 import ComboBoxCss from "./generated/themes/ComboBox.css.js";
 import ComboBoxPopoverCss from "./generated/themes/ComboBoxPopover.css.js";
 import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverCommon.css.js";
 import ValueStateMessageCss from "./generated/themes/ValueStateMessage.css.js";
 import SuggestionsCss from "./generated/themes/Suggestions.css.js";
-import "./ComboBoxItem.js";
-// eslint-disable-next-line
-import "./ComboBoxItemGroup.js";
-// eslint-disable-next-line
-import { isInstanceOfComboBoxItemGroup } from "./ComboBoxItemGroup.js";
+import ComboBoxItem from "./ComboBoxItem.js";
+import Icon from "./Icon.js";
+import Popover from "./Popover.js";
+import ResponsivePopover from "./ResponsivePopover.js";
+import List from "./List.js";
+import BusyIndicator from "./BusyIndicator.js";
+import Button from "./Button.js";
+import ListItemStandard from "./ListItemStandard.js";
+import ComboBoxItemGroup, { isInstanceOfComboBoxItemGroup } from "./ComboBoxItemGroup.js";
+import ListItemGroup from "./ListItemGroup.js";
+import ListItemGroupHeader from "./ListItemGroupHeader.js";
 import PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
+import Input from "./Input.js";
+import SuggestionItem from "./SuggestionItem.js";
 const SKIP_ITEMS_SIZE = 10;
 var ValueStateIconMapping;
 (function (ValueStateIconMapping) {
@@ -81,7 +88,6 @@ var ValueStateIconMapping;
  * - [Page Up] - Moves selection up by page size (10 items by default).
  * - [Home] - If focus is in the ComboBox, moves cursor at the beginning of text. If focus is in the picker, selects the first item.
  * - [End] - If focus is in the ComboBox, moves cursor at the end of text. If focus is in the picker, selects the last item.
- * - [Ctrl]+[Alt]+[F8] or [Command]+[Option]+[F8] - Focuses the first link in the value state message, if available. Pressing [Tab] moves the focus to the next link in the value state message, or closes the value state message if there are no more links.
  *
  * ### ES6 Module Import
  *
@@ -180,10 +186,15 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
          */
         this.showClearIcon = false;
         /**
-         * Indicates whether the input is focused
+         * Indicates whether the input is focssed
          * @private
          */
         this.focused = false;
+        /**
+         * Indicates whether the visual focus is on the value state header
+         * @private
+         */
+        this._isValueStateFocused = false;
         this._iconPressed = false;
         this._filteredItems = [];
         this._effectiveShowClearIcon = false;
@@ -195,21 +206,10 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         this.valueStateOpen = false;
         /**
          * Indicates whether the items picker is open.
-         * @public
-         * @since 2.9.0
+         * @private
+         * @since 2.0.0
          */
         this.open = false;
-        /**
-         * Indicates whether link navigation is being handled.
-         * @default false
-         * @since 2.11.0
-         * @private
-         */
-        this._handleLinkNavigation = false;
-        /**
-         * @private
-         */
-        this._linksListenersArray = [];
         this._initialRendering = true;
         this._itemFocused = false;
         // used only for Safari fix (check onAfterRendering)
@@ -218,7 +218,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         this._selectionPerformed = false;
         this._selectedItemText = "";
         this._userTypedValue = "";
-        this._valueStateLinks = [];
         // when an initial value is set it should be considered as a _lastValue
         this._lastValue = this.getAttribute("value") || "";
     }
@@ -258,21 +257,13 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             this.value = this.inner.value;
         }
         this.storeResponsivePopoverWidth();
-        if (!arraysAreEqual(this._valueStateLinks, this.linksInAriaValueStateHiddenText)) {
-            this._removeLinksEventListeners();
-            this._addLinksEventListeners();
-            this._valueStateLinks = this.linksInAriaValueStateHiddenText;
-        }
-    }
-    onExitDOM() {
-        this._removeLinksEventListeners();
+        this.items.forEach(item => {
+            item._getRealDomRef = () => this._getPicker().querySelector(`*[data-ui5-stable=${item.stableDomRef}]`);
+        });
     }
     _focusin(e) {
         this.focused = true;
         this._autocomplete = false;
-        if (!e.relatedTarget || (e.relatedTarget !== this.shadowRoot.querySelector(".ui5-input-clear-icon"))) {
-            this._lastValue = this.value;
-        }
         !isPhone() && e.target.setSelectionRange(0, this.value.length);
     }
     _focusout(e) {
@@ -284,8 +275,8 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         }
         this._fireChangeEvent();
         const focusedOutToItemsPicker = this.open && this._getPicker().contains(toBeFocused);
-        const focusedOutToValueState = this.valueStateOpen && this.contains(toBeFocused);
-        if (focusedOutToItemsPicker || focusedOutToValueState || this._handleLinkNavigation) {
+        const focusedOutToValueState = this.valueStateOpen && this._getValueStatePopover().contains(toBeFocused);
+        if (focusedOutToItemsPicker || focusedOutToValueState) {
             e.stopImmediatePropagation();
             return;
         }
@@ -301,14 +292,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     _afterOpenPopover() {
         this._iconPressed = true;
         this.inner.focus();
-        this.fireDecoratorEvent("open");
-        const allItems = this._getItems();
-        const currentItem = allItems.find(item => {
-            return item.selected || item.focused;
-        });
-        if (currentItem) {
-            this._scrollToItem(allItems.indexOf(currentItem));
-        }
     }
     _afterClosePopover() {
         this._iconPressed = false;
@@ -324,7 +307,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             this._selectionPerformed = false;
         }
         this.open = false;
-        this.fireDecoratorEvent("close");
     }
     _toggleRespPopover() {
         if (this.open) {
@@ -340,9 +322,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         }
     }
     _handleValueStatePopoverFocusout() {
-        if (!this._handleLinkNavigation) {
-            this.focused = false;
-        }
+        this.focused = false;
     }
     _handleValueStatePopoverAfterClose() {
         this.valueStateOpen = false;
@@ -389,7 +369,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         const { target } = e;
         this.filterValue = target.value;
         this.value = target.value;
-        this.fireDecoratorEvent("input");
+        this.fireEvent("input");
     }
     _input(e) {
         const { value } = e.target;
@@ -398,6 +378,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             // stop the native event, as the semantic "input" would be fired.
             e.stopImmediatePropagation();
             this.focused = true;
+            this._isValueStateFocused = false;
         }
         this._filteredItems = this._filterItems(value);
         this.value = value;
@@ -405,9 +386,9 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         this._clearFocus();
         // autocomplete
         if (shouldAutocomplete && !isAndroid()) {
-            this._handleTypeAhead(value, value);
+            this._handleTypeAhead(value, value, true);
         }
-        this.fireDecoratorEvent("input");
+        this.fireEvent("input");
         if (isPhone()) {
             return;
         }
@@ -453,8 +434,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         const allItems = [];
         this._filteredItems.forEach(item => {
             if (isInstanceOfComboBoxItemGroup(item)) {
-                const visibleItems = this.open ? item.items.filter(i => i._isVisible) : item.items;
-                const groupedItems = [item, ...visibleItems];
+                const groupedItems = [item, ...item.items];
                 allItems.push(...groupedItems);
                 return;
             }
@@ -469,7 +449,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         }
         const isOpen = this.open;
         const currentItem = allItems.find(item => {
-            return item.selected || item.focused;
+            return isOpen ? item.focused : item.selected;
         });
         const indexOfItem = currentItem ? allItems.indexOf(currentItem) : -1;
         e.preventDefault();
@@ -509,41 +489,61 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             this.value = isGroupItem ? nextItem.text : currentItem.text;
             currentItem.focused = false;
         }
+        this._isValueStateFocused = false;
         this._announceSelectedItem(indexOfItem);
-        this._scrollToItem(indexOfItem);
+        this._scrollToItem(indexOfItem, isForward);
         if (isGroupItem && this.open) {
             return;
         }
         // autocomplete
-        this._handleTypeAhead(this.value, this.open ? this._userTypedValue : "");
-        this.fireDecoratorEvent("input");
+        this._handleTypeAhead(this.value, this.open ? this._userTypedValue : "", false);
+        this.fireEvent("input");
     }
-    _handleTypeAhead(value, filterValue) {
+    _handleTypeAhead(value, filterValue, checkForGroupItem) {
         const item = this._getFirstMatchingItem(value);
         if (!item) {
             return;
         }
         this._applyAtomicValueAndSelection(item, filterValue);
+        if (value !== "" && !item.selected && (!checkForGroupItem || !item.isGroupItem)) {
+            this.fireEvent("selection-change", {
+                item: item,
+            });
+        }
     }
     _handleArrowDown(e, indexOfItem) {
         const isOpen = this.open;
-        if (this.focused && indexOfItem === -1 && isOpen) {
+        if (this.focused && indexOfItem === -1 && this.hasValueStateText && isOpen) {
+            this._isValueStateFocused = true;
+            this._announceValueStateText();
             this.focused = false;
+            return;
         }
+        indexOfItem = !isOpen && this.hasValueState && indexOfItem === -1 ? 0 : indexOfItem;
         this._handleItemNavigation(e, ++indexOfItem, true /* isForward */);
     }
     _handleArrowUp(e, indexOfItem) {
         const isOpen = this.open;
-        if (indexOfItem === 0) {
+        if (indexOfItem === 0 && !this.hasValueStateText) {
             this._clearFocus();
-            this._itemFocused = false;
             this.focused = true;
-            if (this.hasValueStateText && isOpen) {
-                this._filteredItems[0].selected = false;
-                this.value = this._userTypedValue;
-            }
+            this._itemFocused = false;
             return;
         }
+        if (indexOfItem === 0 && this.hasValueStateText && isOpen) {
+            this._clearFocus();
+            this._itemFocused = false;
+            this._isValueStateFocused = true;
+            this._announceValueStateText();
+            this._filteredItems[0].selected = false;
+            return;
+        }
+        if (this._isValueStateFocused) {
+            this.focused = true;
+            this._isValueStateFocused = false;
+            return;
+        }
+        indexOfItem = !isOpen && this.hasValueState && indexOfItem === -1 ? 0 : indexOfItem;
         this._handleItemNavigation(e, --indexOfItem, false /* isForward */);
     }
     _handlePageUp(e, indexOfItem) {
@@ -551,6 +551,13 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         const isProposedIndexValid = indexOfItem - SKIP_ITEMS_SIZE > -1;
         indexOfItem = isProposedIndexValid ? indexOfItem - SKIP_ITEMS_SIZE : 0;
         const shouldMoveForward = isInstanceOfComboBoxItemGroup(allItems[indexOfItem]) && !this.open;
+        if (!isProposedIndexValid && this.hasValueStateText && this.open) {
+            this._clearFocus();
+            this._itemFocused = false;
+            this._isValueStateFocused = true;
+            this._announceValueStateText();
+            return;
+        }
         this._handleItemNavigation(e, indexOfItem, shouldMoveForward);
     }
     _handlePageDown(e, indexOfItem) {
@@ -563,6 +570,13 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     }
     _handleHome(e) {
         const shouldMoveForward = isInstanceOfComboBoxItemGroup(this._filteredItems[0]) && !this.open;
+        if (this.hasValueStateText && this.open) {
+            this._clearFocus();
+            this._itemFocused = false;
+            this._isValueStateFocused = true;
+            this._announceValueStateText();
+            return;
+        }
         this._handleItemNavigation(e, 0, shouldMoveForward);
     }
     _handleEnd(e) {
@@ -595,13 +609,14 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
                 this.focused = true;
                 this.inner.setSelectionRange(this.value.length, this.value.length);
             }
-            else if (this._internals.form) {
+            else if (this._internals?.form) {
                 submitForm(this);
             }
         }
         if (isEscape(e)) {
             this.focused = true;
             this.value = !this.open ? this._lastValue : this.value;
+            this._isValueStateFocused = false;
         }
         if ((isTabNext(e) || isTabPrevious(e)) && this.open) {
             this._closeRespPopover();
@@ -627,55 +642,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
                 this.focused = true;
             }
         }
-        if (isCtrlAltF8(e)) {
-            return this._handleCtrlALtF8();
-        }
-    }
-    _addLinksEventListeners() {
-        const links = this.linksInAriaValueStateHiddenText;
-        links.forEach((link, index) => {
-            this._linksListenersArray.push((e) => {
-                attachListeners(e, links, index, {
-                    closeValueState: () => {
-                        if (this.open) {
-                            this._closeRespPopover();
-                        }
-                        if (this.valueStateOpen) {
-                            this.valueStateOpen = false;
-                        }
-                    },
-                    navigateToItem: () => {
-                        this._handleLinkNavigation = false;
-                        if (this.open) {
-                            this.inner.focus();
-                            this.handleNavKeyPress(e);
-                        }
-                    },
-                    focusInput: () => {
-                        this._handleLinkNavigation = false;
-                        this.inner.focus();
-                    },
-                    isPopoverOpen: () => this.open,
-                });
-            });
-            link.addEventListener("keydown", this._linksListenersArray[index]);
-        });
-    }
-    _removeLinksEventListeners() {
-        const links = this.linksInAriaValueStateHiddenText;
-        links.forEach((link, index) => {
-            link.removeEventListener("keydown", this._linksListenersArray[index]);
-        });
-        this._linksListenersArray = [];
-        this._handleLinkNavigation = false;
-    }
-    _handleCtrlALtF8() {
-        const links = this.linksInAriaValueStateHiddenText;
-        if (links.length > 0) {
-            this._clearFocus();
-            links[0].focus();
-        }
-        this._handleLinkNavigation = true;
     }
     _handlePopoverKeydown(e) {
         if (isTabNext(e)) {
@@ -704,6 +670,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         if (isPhone()) {
             this._fireChangeEvent();
         }
+        this._isValueStateFocused = false;
         this._clearFocus();
         this.open = false;
         this.valueStateOpen = false;
@@ -745,8 +712,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         }
         const matchingItems = this._startsWithMatchingItems(current);
         if (matchingItems.length) {
-            const exactMatch = matchingItems.find(item => item.text === current);
-            return exactMatch ?? matchingItems[0];
+            return matchingItems[0];
         }
     }
     _applyAtomicValueAndSelection(item, filterValue) {
@@ -759,21 +725,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         const currentlyFocusedItem = this.items.find(item => item.focused);
         const shouldSelectionBeCleared = currentlyFocusedItem && currentlyFocusedItem.isGroupItem;
         let itemToBeSelected;
-        let previouslySelectedItem;
-        // Find previously selected item
-        this._filteredItems.forEach(item => {
-            if (!isInstanceOfComboBoxItemGroup(item)) {
-                if (item.selected) {
-                    previouslySelectedItem = item;
-                }
-            }
-            else {
-                const selectedGroupItem = item.items?.find(i => i.selected);
-                if (selectedGroupItem) {
-                    previouslySelectedItem = selectedGroupItem;
-                }
-            }
-        });
         this._filteredItems.forEach(item => {
             if (!shouldSelectionBeCleared && !itemToBeSelected) {
                 itemToBeSelected = ((!item.isGroupItem && (item.text === this.value)) ? item : item?.items?.find(i => i.text === this.value));
@@ -789,25 +740,10 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             });
             return item;
         });
-        // Fire selection-change event only when selection actually changes
-        if (previouslySelectedItem !== itemToBeSelected) {
-            if (itemToBeSelected) {
-                // New item selected
-                this.fireDecoratorEvent("selection-change", {
-                    item: itemToBeSelected,
-                });
-            }
-            else if (previouslySelectedItem) {
-                // Selection cleared - fire event with 'null'
-                this.fireDecoratorEvent("selection-change", {
-                    item: null,
-                });
-            }
-        }
     }
     _fireChangeEvent() {
         if (this.value !== this._lastValue) {
-            this.fireDecoratorEvent("change");
+            this.fireEvent("change");
             this._lastValue = this.value;
         }
     }
@@ -818,8 +754,8 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         e.preventDefault();
     }
     _selectItem(e) {
-        const item = e.detail.item;
-        this._selectedItemText = item.text || "";
+        const listItem = e.detail.item;
+        this._selectedItemText = listItem.mappedItem.text || "";
         this._selectionPerformed = true;
         const sameItemSelected = this.value === this._selectedItemText;
         const sameSelectionPerformed = this.value.toLowerCase() === this.filterValue.toLowerCase();
@@ -828,11 +764,15 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             return this._closeRespPopover();
         }
         this.value = this._selectedItemText;
-        if (!item.selected) {
-            this.fireDecoratorEvent("selection-change", {
-                item,
+        if (!listItem.mappedItem.selected) {
+            this.fireEvent("selection-change", {
+                item: listItem.mappedItem,
             });
         }
+        this._filteredItems.map(item => {
+            item.selected = (item === listItem.mappedItem && !item.isGroupItem);
+            return item;
+        });
         this._fireChangeEvent();
         this._closeRespPopover();
         // reset selection
@@ -859,13 +799,13 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     _clear() {
         const selectedItem = this.items.find(item => item.selected);
         if (selectedItem?.text === this.value) {
-            this.fireDecoratorEvent("change");
+            this.fireEvent("change");
         }
         this.value = "";
-        this.fireDecoratorEvent("input");
+        this.fireEvent("input");
         if (this._isPhone) {
             this._lastValue = "";
-            this.fireDecoratorEvent("change");
+            this.fireEvent("change");
         }
         else {
             this.focus();
@@ -880,7 +820,7 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         }
         item._isVisible = true;
     }
-    _scrollToItem(indexOfItem) {
+    _scrollToItem(indexOfItem, forward) {
         const picker = this._getPicker();
         const list = this._getItemsList();
         const listItem = list?.listItems[indexOfItem];
@@ -889,16 +829,12 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
             const listItemRect = listItem.getBoundingClientRect();
             const isListItemInVisibleArea = listItemRect.top >= pickerRect.top && listItemRect.bottom <= pickerRect.bottom;
             if (!isListItemInVisibleArea) {
-                listItem.scrollIntoView({
-                    behavior: "auto",
-                    block: "nearest",
-                    inline: "nearest",
-                });
+                listItem.scrollIntoView({ behavior: "instant", block: forward ? "end" : "start", inline: "nearest" });
             }
         }
     }
     _announceValueStateText() {
-        const valueStateText = this.shouldDisplayDefaultValueStateMessage ? this.valueStateDefaultText : this.valueStateMessage.map(el => el.textContent).join(" ");
+        const valueStateText = this.shouldDisplayDefaultValueStateMessage ? this.valueStateDefaultText : this.valueStateMessageText.map(el => el.textContent).join(" ");
         if (valueStateText) {
             announce(valueStateText, InvisibleMessageMode.Polite);
         }
@@ -908,12 +844,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     }
     get _iconAccessibleNameText() {
         return ComboBox_1.i18nBundle.getText(SELECT_OPTIONS);
-    }
-    get _popupLabel() {
-        return ComboBox_1.i18nBundle.getText(COMBOBOX_AVAILABLE_OPTIONS);
-    }
-    get _dialogOkButtonText() {
-        return ComboBox_1.i18nBundle.getText(COMBOBOX_DIALOG_OK_BUTTON);
     }
     get inner() {
         return (isPhone() && this.open)
@@ -946,13 +876,16 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         if (this.shouldDisplayDefaultValueStateMessage) {
             return `${text} ${this.valueStateDefaultText || ""}`;
         }
-        return `${text}`.concat(" ", this.valueStateMessage.map(el => el.textContent).join(" "));
+        return `${text}`.concat(" ", this.valueStateMessageText.map(el => el.textContent).join(" "));
     }
     get valueStateDefaultText() {
         if (this.valueState === ValueState.None) {
             return;
         }
         return this.valueStateTextMappings[this.valueState];
+    }
+    get valueStateMessageText() {
+        return this.getSlottedNodes("valueStateMessage").map(el => el.cloneNode(true));
     }
     get valueStateTextMappings() {
         return {
@@ -986,42 +919,6 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
     get _valueStateMessageIcon() {
         return this.valueState !== ValueState.None ? ValueStateIconMapping[this.valueState] : "";
     }
-    get linksInAriaValueStateHiddenText() {
-        const links = [];
-        if (this.valueStateMessage) {
-            this.valueStateMessage.forEach(element => {
-                if (element.children.length) {
-                    element.querySelectorAll("ui5-link").forEach(link => {
-                        links.push(link);
-                    });
-                }
-            });
-        }
-        return links;
-    }
-    get valueStateLinksShortcutsTextAcc() {
-        const links = this.linksInAriaValueStateHiddenText;
-        if (!links.length) {
-            return "";
-        }
-        if (isMac()) {
-            return links.length === 1
-                ? ComboBox_1.i18nBundle.getText(VALUE_STATE_LINK_MAC)
-                : ComboBox_1.i18nBundle.getText(VALUE_STATE_LINKS_MAC);
-        }
-        return links.length === 1
-            ? ComboBox_1.i18nBundle.getText(VALUE_STATE_LINK)
-            : ComboBox_1.i18nBundle.getText(VALUE_STATE_LINKS);
-    }
-    get ariaDescribedByText() {
-        return `${this.valueStateTextId} ${this._valueStateLinksShortcutsTextAccId}`.trim();
-    }
-    get _valueStateLinksShortcutsTextAccId() {
-        return this.linksInAriaValueStateHiddenText.length > 0 ? `hiddenText-value-state-link-shortcut` : "";
-    }
-    get valueStateTextId() {
-        return this.hasValueState ? `value-state-description` : "";
-    }
     get _isPhone() {
         return isPhone();
     }
@@ -1029,21 +926,23 @@ let ComboBox = ComboBox_1 = class ComboBox extends UI5Element {
         return undefined;
     }
     get ariaLabelText() {
-        return getEffectiveAriaLabelText(this) || getAssociatedLabelForTexts(this);
+        return getEffectiveAriaLabelText(this);
     }
     get clearIconAccessibleName() {
         return ComboBox_1.i18nBundle.getText(INPUT_CLEAR_ICON_ACC_NAME);
     }
-    get responsivePopoverId() {
-        return `${this._id}-popover`;
+    static async onDefine() {
+        ComboBox_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
     get styles() {
         const remSizeInPx = parseInt(getComputedStyle(document.documentElement).fontSize);
         return {
+            popoverHeader: {
+                "width": `${this.offsetWidth}px`,
+            },
             suggestionPopoverHeader: {
                 "display": this._listWidth === 0 ? "none" : "inline-block",
                 "width": `${this._listWidth || ""}px`,
-                "max-width": "inherit",
             },
             suggestionsPopover: {
                 "min-width": `${this.offsetWidth || 0}px`,
@@ -1110,6 +1009,9 @@ __decorate([
     property({ type: Boolean })
 ], ComboBox.prototype, "focused", void 0);
 __decorate([
+    property({ type: Boolean })
+], ComboBox.prototype, "_isValueStateFocused", void 0);
+__decorate([
     property()
 ], ComboBox.prototype, "accessibleName", void 0);
 __decorate([
@@ -1131,21 +1033,10 @@ __decorate([
     property({ type: Boolean, noAttribute: true })
 ], ComboBox.prototype, "valueStateOpen", void 0);
 __decorate([
-    property({ type: Boolean })
+    property({ type: Boolean, noAttribute: true })
 ], ComboBox.prototype, "open", void 0);
 __decorate([
-    property({ type: Boolean })
-], ComboBox.prototype, "_handleLinkNavigation", void 0);
-__decorate([
-    property({ type: Array })
-], ComboBox.prototype, "_linksListenersArray", void 0);
-__decorate([
-    slot({
-        type: HTMLElement,
-        "default": true,
-        individualSlots: true,
-        invalidateOnChildChange: true,
-    })
+    slot({ type: HTMLElement, "default": true, invalidateOnChildChange: true })
 ], ComboBox.prototype, "items", void 0);
 __decorate([
     slot()
@@ -1153,15 +1044,12 @@ __decorate([
 __decorate([
     slot()
 ], ComboBox.prototype, "icon", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], ComboBox, "i18nBundle", void 0);
 ComboBox = ComboBox_1 = __decorate([
     customElement({
         tag: "ui5-combobox",
         languageAware: true,
         formAssociated: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: [
             ComboBoxCss,
             ResponsivePopoverCommonCss,
@@ -1170,31 +1058,28 @@ ComboBox = ComboBox_1 = __decorate([
             SuggestionsCss,
         ],
         template: ComboBoxTemplate,
+        dependencies: [
+            ComboBoxItem,
+            Icon,
+            ResponsivePopover,
+            List,
+            BusyIndicator,
+            Button,
+            ListItemStandard,
+            ListItemGroup,
+            ListItemGroupHeader,
+            Popover,
+            ComboBoxItemGroup,
+            Input,
+            SuggestionItem,
+        ],
     })
     /**
      * Fired when the input operation has finished by pressing Enter, focusout or an item is selected.
      * @public
      */
     ,
-    event("change", {
-        bubbles: true,
-    })
-    /**
-     * Fired when the dropdown is opened.
-     * @since 2.9.0
-     * @public
-     */
-    ,
-    event("open", {
-        bubbles: true,
-    })
-    /**
-     * Fired when the dropdown is closed.
-     * @since 2.9.0
-     * @public
-     */
-    ,
-    event("close")
+    event("change")
     /**
      * Fired when typing in input or clear icon is pressed.
      *
@@ -1202,9 +1087,7 @@ ComboBox = ComboBox_1 = __decorate([
      * @public
      */
     ,
-    event("input", {
-        bubbles: true,
-    })
+    event("input")
     /**
      * Fired when selection is changed by user interaction
      * @param {IComboBoxItem} item item to be selected.
@@ -1212,7 +1095,12 @@ ComboBox = ComboBox_1 = __decorate([
      */
     ,
     event("selection-change", {
-        bubbles: true,
+        detail: {
+            /**
+            * @public
+            */
+            item: { type: HTMLElement },
+        },
     })
 ], ComboBox);
 ComboBox.define();

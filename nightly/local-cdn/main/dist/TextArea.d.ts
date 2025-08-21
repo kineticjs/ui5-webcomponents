@@ -3,8 +3,12 @@ import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import type Popover from "./Popover.js";
+import Popover from "./Popover.js";
 import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
+import "@ui5/webcomponents-icons/dist/error.js";
+import "@ui5/webcomponents-icons/dist/alert.js";
+import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
+import "@ui5/webcomponents-icons/dist/information.js";
 type TokenizedText = Array<string>;
 type IndexedTokenizedText = Array<{
     text: string;
@@ -14,9 +18,6 @@ type ExceededText = {
     exceededText?: string;
     leftCharactersCount?: number;
     calcedMaxLength?: number;
-};
-type TextAreaInputEventDetail = {
-    escapePressed?: boolean;
 };
 /**
  * @class
@@ -37,13 +38,6 @@ type TextAreaInputEventDetail = {
  * @csspart textarea - Used to style the native textarea
  */
 declare class TextArea extends UI5Element implements IFormInputElement {
-    eventDetails: {
-        "change": void;
-        "input": TextAreaInputEventDetail;
-        "select": void;
-        "scroll": void;
-        "value-changed": void;
-    };
     /**
      * Defines the value of the component.
      * @formEvents change input
@@ -86,8 +80,8 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      * Defines the value state of the component.
      *
      * **Note:** If `maxlength` property is set,
-     * the component turns into "Critical" state once the characters exceeds the limit.
-     * In this case, only the "Negative" state is considered and can be applied.
+     * the component turns into "Warning" state once the characters exceeds the limit.
+     * In this case, only the "Error" state is considered and can be applied.
      * @default "None"
      * @since 1.0.0-rc.7
      * @public
@@ -201,6 +195,7 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     get formFormattedValue(): FormData | string | null;
+    static onDefine(): Promise<void>;
     constructor();
     onEnterDOM(): void;
     onExitDOM(): void;
@@ -237,7 +232,7 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     get classes(): {
         root: {
             "ui5-textarea-root": boolean;
-            "ui5-content-custom-scrollbars": boolean;
+            "ui5-content-native-scrollbars": boolean;
         };
         valueStateMsg: {
             "ui5-valuestatemessage-header": boolean;
@@ -246,17 +241,26 @@ declare class TextArea extends UI5Element implements IFormInputElement {
             "ui5-valuestatemessage--information": boolean;
         };
     };
+    get styles(): {
+        valueStateMsgPopover: {
+            "max-width": string;
+        };
+    };
     get tabIndex(): 0 | -1;
     get ariaLabelText(): string | undefined;
     get ariaDescribedBy(): string | undefined;
     get ariaValueStateHiddenText(): string | undefined;
     get valueStateDefaultText(): string;
-    get _ariaInvalid(): "true" | undefined;
+    get ariaInvalid(): "true" | null;
     get openValueStateMsgPopover(): boolean;
     get displayValueStateMessagePopover(): boolean;
     get hasCustomValueState(): boolean;
     get hasValueState(): boolean;
     get _valueStatePopoverHorizontalAlign(): `${PopoverHorizontalAlign}`;
+    /**
+     * This method is relevant for sap_horizon theme only
+     */
+    get _valueStateMessageIcon(): string;
     get valueStateTextMappings(): {
         Positive: string;
         Information: string;
@@ -271,4 +275,3 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     };
 }
 export default TextArea;
-export type { TextAreaInputEventDetail };

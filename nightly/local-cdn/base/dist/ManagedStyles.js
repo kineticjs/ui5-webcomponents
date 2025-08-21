@@ -9,7 +9,8 @@ const shouldUpdate = (runtimeIndex) => {
     }
     return compareRuntimes(getCurrentRuntimeIndex(), parseInt(runtimeIndex)) === 1; // 1 means the current is newer, 0 means the same, -1 means the resource's runtime is newer
 };
-const createStyle = (content, name, value = "", theme) => {
+const createStyle = (data, name, value = "", theme) => {
+    const content = typeof data === "string" ? data : data.content;
     const currentRuntimeIndex = getCurrentRuntimeIndex();
     const stylesheet = new CSSStyleSheet();
     stylesheet.replaceSync(content);
@@ -20,7 +21,8 @@ const createStyle = (content, name, value = "", theme) => {
     }
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
 };
-const updateStyle = (content, name, value = "", theme) => {
+const updateStyle = (data, name, value = "", theme) => {
+    const content = typeof data === "string" ? data : data.content;
     const currentRuntimeIndex = getCurrentRuntimeIndex();
     const stylesheet = document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
     if (!stylesheet) {
@@ -48,12 +50,12 @@ const hasStyle = (name, value = "") => {
 const removeStyle = (name, value = "") => {
     document.adoptedStyleSheets = document.adoptedStyleSheets.filter(sh => sh._ui5StyleId !== getStyleId(name, value));
 };
-const createOrUpdateStyle = (content, name, value = "", theme) => {
+const createOrUpdateStyle = (data, name, value = "", theme) => {
     if (hasStyle(name, value)) {
-        updateStyle(content, name, value, theme);
+        updateStyle(data, name, value, theme);
     }
     else {
-        createStyle(content, name, value, theme);
+        createStyle(data, name, value, theme);
     }
 };
 const mergeStyles = (style1, style2) => {
@@ -63,7 +65,15 @@ const mergeStyles = (style1, style2) => {
     if (style2 === undefined) {
         return style1;
     }
-    return `${style1} ${style2}`;
+    const style2Content = typeof style2 === "string" ? style2 : style2.content;
+    if (typeof style1 === "string") {
+        return `${style1} ${style2Content}`;
+    }
+    return {
+        content: `${style1.content} ${style2Content}`,
+        packageName: style1.packageName,
+        fileName: style1.fileName,
+    };
 };
 export { createStyle, hasStyle, updateStyle, removeStyle, createOrUpdateStyle, mergeStyles, };
 //# sourceMappingURL=ManagedStyles.js.map

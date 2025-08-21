@@ -1,2 +1,3 @@
-declare const _default: ":host{display:table-cell;font-family:\"72override\",var(--sapFontFamily);font-size:.875rem;height:var(--ui5-v2-14-0-rc-1_table_row_height);box-sizing:border-box;color:var(--sapList_TextColor);word-break:break-word;vertical-align:middle}td{display:contents}:host([popined]){padding-left:0;padding-top:.25rem}:host([_popined-inline]){padding-top:0}::slotted([ui5-label]){color:inherit}\n";
-export default _default;
+import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
+declare const styleData: StyleData;
+export default styleData;

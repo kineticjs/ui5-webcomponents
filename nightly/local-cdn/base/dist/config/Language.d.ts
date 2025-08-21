@@ -1,4 +1,3 @@
-declare const getLanguageChangePending: () => boolean;
 /**
  * Returns the currently configured language, or the browser language as a fallback.
  * @public
@@ -38,4 +37,4 @@ declare const setFetchDefaultLanguage: (fetchDefaultLang: boolean) => void;
  * @returns {boolean}
  */
 declare const getFetchDefaultLanguage: () => boolean;
-export { getLanguage, setLanguage, getDefaultLanguage, setFetchDefaultLanguage, getFetchDefaultLanguage, getLanguageChangePending, };
+export { getLanguage, setLanguage, getDefaultLanguage, setFetchDefaultLanguage, getFetchDefaultLanguage, };
