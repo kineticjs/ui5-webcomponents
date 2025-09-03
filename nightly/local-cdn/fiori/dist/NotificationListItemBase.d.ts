@@ -10,6 +10,7 @@ import ListItemBase from "@ui5/webcomponents/dist/ListItemBase.js";
  * @public
  */
 declare class NotificationListItemBase extends ListItemBase {
+    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the `titleText` of the item.
      * @default undefined
@@ -47,6 +48,5 @@ declare class NotificationListItemBase extends ListItemBase {
     _onkeydown(e: KeyboardEvent): Promise<void>;
     getHeaderDomRef(): HTMLElement | undefined;
     shouldForwardTabAfter(): boolean;
-    static onDefine(): Promise<void>;
 }
 export default NotificationListItemBase;

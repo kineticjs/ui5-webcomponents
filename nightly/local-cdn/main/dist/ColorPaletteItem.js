@@ -8,10 +8,11 @@ var ColorPaletteItem_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
-import ColorPaletteItemTemplate from "./generated/templates/ColorPaletteItemTemplate.lit.js";
+import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScopeUtils.js";
+import ColorPaletteItemTemplate from "./ColorPaletteItemTemplate.js";
 import { COLORPALETTE_COLOR_LABEL, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import ColorPaletteItemCss from "./generated/themes/ColorPaletteItem.css.js";
@@ -28,9 +29,6 @@ import ColorPaletteItemCss from "./generated/themes/ColorPaletteItem.css.js";
  * @public
  */
 let ColorPaletteItem = ColorPaletteItem_1 = class ColorPaletteItem extends UI5Element {
-    static async onDefine() {
-        ColorPaletteItem_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
-    }
     constructor() {
         super();
         /**
@@ -72,11 +70,15 @@ let ColorPaletteItem = ColorPaletteItem_1 = class ColorPaletteItem extends UI5El
         this._disabled = !this.value;
         this.onPhone = isPhone();
         this.setAttribute("style", `background-color: ${this.value}`);
+        // since height is dynamically determined by padding-block-start
+        const itemHeight = this.offsetHeight + 4; // adding 4px for the offsets on top and bottom
+        this.style.setProperty(getScopedVarName("--_ui5_color_palette_item_height"), `${itemHeight}px`);
     }
     get colorLabel() {
         return ColorPaletteItem_1.i18nBundle.getText(COLORPALETTE_COLOR_LABEL);
     }
     get styles() {
+        // Remove after deleting the hbs template, it's added in the jsx template
         return {
             root: {
                 "background-color": this.value,
@@ -84,6 +86,7 @@ let ColorPaletteItem = ColorPaletteItem_1 = class ColorPaletteItem extends UI5El
         };
     }
     get classes() {
+        // Remove after deleting the hbs template, it's added in the jsx template
         return {
             root: {
                 "ui5-cp-item": true,
@@ -109,12 +112,16 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], ColorPaletteItem.prototype, "_disabled", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], ColorPaletteItem, "i18nBundle", void 0);
 ColorPaletteItem = ColorPaletteItem_1 = __decorate([
     customElement({
         tag: "ui5-color-palette-item",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: ColorPaletteItemCss,
         template: ColorPaletteItemTemplate,
+        shadowRootOptions: { delegatesFocus: true },
     })
 ], ColorPaletteItem);
 ColorPaletteItem.define();

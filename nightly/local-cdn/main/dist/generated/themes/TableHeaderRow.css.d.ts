@@ -1,3 +1,2 @@
-import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
-declare const styleData: StyleData;
-export default styleData;
+declare const _default: ":host{background:var(--sapList_HeaderBackground);border-top:var(--sapList_BorderWidth) solid var(--sapList_BorderColor);border-bottom:var(--sapList_BorderWidth) solid var(--sapList_HeaderBorderColor);grid-template-rows:auto 0px}:host([hidden]){display:none}:host([sticky]){position:sticky;top:var(--ui5-v2-14-0-rc-6_grid_sticky_top, 0);z-index:2}#popin-cell{padding:0;width:0;height:0}#selection-cell [ui5-icon]{width:var(--_ui5-v2-14-0-rc-6_checkbox_inner_width_height);height:var(--_ui5-v2-14-0-rc-6_checkbox_inner_width_height)}\n";
+export default _default;

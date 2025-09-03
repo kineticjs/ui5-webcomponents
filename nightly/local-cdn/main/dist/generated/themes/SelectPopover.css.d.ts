@@ -1,3 +1,2 @@
-import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
-declare const styleData: StyleData;
-export default styleData;
+declare const _default: ".ui5-select-popover::part(content),.ui5-select-popover::part(header){padding:0}.ui5-select-popover .ui5-responsive-popover-header .row{justify-content:flex-start}\n";
+export default _default;

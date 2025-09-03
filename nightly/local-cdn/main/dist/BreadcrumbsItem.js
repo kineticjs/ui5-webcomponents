@@ -28,6 +28,11 @@ let BreadcrumbsItem = class BreadcrumbsItem extends UI5Element {
     get _linkDesign() {
         return this._isCurrentPageItem ? LinkDesign.Emphasized : LinkDesign.Default;
     }
+    get accessibilityAttributes() {
+        return {
+            current: this._isCurrentPageItem ? "page" : false,
+        };
+    }
 };
 __decorate([
     property()

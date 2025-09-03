@@ -87,18 +87,13 @@ declare class BusyIndicator extends UI5Element {
     constructor();
     onEnterDOM(): void;
     onExitDOM(): void;
-    static onDefine(): Promise<void>;
     get ariaTitle(): string;
     get labelId(): string | undefined;
-    get classes(): {
-        root: {
-            "ui5-busy-indicator-root": boolean;
-        };
-    };
     get textPosition(): {
         top: boolean | "" | undefined;
         bottom: boolean | "" | undefined;
     };
+    get hasContent(): boolean;
     onBeforeRendering(): void;
     _handleKeydown(e: KeyboardEvent): void;
     _preventEvent(e: KeyboardEvent): void;

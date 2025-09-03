@@ -1,12 +1,10 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import "@ui5/webcomponents-icons/dist/information.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
 import type { Timeout } from "@ui5/webcomponents-base/dist/types.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import type { ListItemClickEventDetail } from "./List.js";
@@ -17,14 +15,14 @@ import type ListItemBase from "./ListItemBase.js";
  * Interface for components that may be slotted inside `ui5-select` as options
  * @public
  */
-type IOption = ListItemBase & {
+interface IOption extends ListItemBase {
     tooltip?: string;
     icon?: string;
     value?: string;
     additionalText?: string;
-    focused?: boolean;
+    focused: boolean;
     effectiveDisplayText: string;
-};
+}
 type SelectChangeEventDetail = {
     selectedOption: IOption;
 };
@@ -42,17 +40,31 @@ type SelectLiveChangeEventDetail = {
  *
  * There are two main usages of the `ui5-select>`.
  *
- * 1. With Option (`ui5-option`) web component:
+ * - With Option (`ui5-option`) web component:
  *
  * The available options of the Select are defined by using the Option component.
  * The Option comes with predefined design and layout, including `icon`, `text` and `additional-text`.
  *
- * 2. With OptionCustom (`ui5-option-custom`) web component.
+ * - With OptionCustom (`ui5-option-custom`) web component.
  *
- * Options with custom content are defined by using the OptionCustom component
+ * Options with custom content are defined by using the OptionCustom component.
  * The OptionCustom component comes with no predefined layout and it expects consumers to define it.
  *
+ * ### Selection
+ *
+ * The options can be selected via user interaction (click or with the use of the Space and Enter keys)
+ * and programmatically - the Select component supports two distinct selection APIs, though mixing them is not supported:
+ * - The "value" property of the Select component
+ * - The "selected" property on individual options
+ *
+ * **Note:** If the "value" property is set but does not match any option,
+ * no option will be selected and the Select component will be displayed as empty.
+ *
+ * **Note:** when both "value" and "selected" are both used (although discouraged),
+ * the "value" property will take precedence.
+ *
  * ### Keyboard Handling
+ *
  * The `ui5-select` provides advanced keyboard handling.
  *
  * - [F4] / [Alt] + [Up] / [Alt] + [Down] / [Space] or [Enter] - Opens/closes the drop-down.
@@ -63,6 +75,7 @@ type SelectLiveChangeEventDetail = {
  * - [End] - Navigates to the last option
  *
  * ### ES6 Module Import
+ *
  * `import "@ui5/webcomponents/dist/Select";`
  *
  * `import "@ui5/webcomponents/dist/Option";`
@@ -74,6 +87,14 @@ type SelectLiveChangeEventDetail = {
  * @since 0.8.0
  */
 declare class Select extends UI5Element implements IFormInputElement {
+    eventDetails: {
+        "change": SelectChangeEventDetail;
+        "live-change": SelectLiveChangeEventDetail;
+        "open": void;
+        "close": void;
+        "selected-item-changed": void;
+        "input": void;
+    };
     static i18nBundle: I18nBundle;
     /**
      * Defines whether the component is in disabled state.
@@ -83,6 +104,21 @@ declare class Select extends UI5Element implements IFormInputElement {
      * @public
      */
     disabled: boolean;
+    /**
+     * Defines the icon, displayed as graphical element within the component.
+     * When set, the component will display the icon only - the selected option's text,
+     * the Select's "label" slot (if present) and the dropdown arrow won't be displayed.
+     *
+     * The SAP-icons font provides numerous options.
+     *
+     * Example:
+     * See all the available icons within the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
+     *
+     * **Note:** When using this property with a valid icon, Select will be rendered as icon only button and the label and the default arrow down won't be visible.
+     * @default undefined
+     * @private
+     */
+    icon?: string;
     /**
      * Determines the name by which the component will be identified upon submission in an HTML form.
      *
@@ -129,6 +165,32 @@ declare class Select extends UI5Element implements IFormInputElement {
      */
     accessibleNameRef?: string;
     /**
+     * Defines the accessible description of the component.
+     * @default undefined
+     * @public
+     * @since 2.14.0
+     */
+    accessibleDescription?: string;
+    /**
+     * Receives id(or many ids) of the elements that describe the select.
+     * @default undefined
+     * @public
+     * @since 2.14.0
+     */
+    accessibleDescriptionRef?: string;
+    /**
+     * Defines the tooltip of the select.
+     * @default undefined
+     * @public
+     * @since 2.8.0
+     */
+    tooltip?: string;
+    /**
+     * Constantly updated value of texts collected from the associated description texts
+     * @private
+     */
+    _associatedDescriptionRefTexts?: string;
+    /**
      * @private
      */
     _iconPressed: boolean;
@@ -151,6 +213,7 @@ declare class Select extends UI5Element implements IFormInputElement {
     _typingTimeoutID?: Timeout | number;
     responsivePopover: ResponsivePopover;
     valueStatePopover?: Popover;
+    _valueStorage: string | undefined;
     /**
      * Defines the component options.
      *
@@ -167,7 +230,7 @@ declare class Select extends UI5Element implements IFormInputElement {
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed,
-     * when the component is in `Information`, `Warning` or `Error` value state.
+     * when the component is in `Information`, `Critical` or `Negative` value state.
      *
      * **Note:** If the component has `suggestionItems`,
      * the `valueStateMessage` would be displayed as part of the same popover, if used on desktop, or dialog - on phone.
@@ -191,9 +254,29 @@ declare class Select extends UI5Element implements IFormInputElement {
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     get formFormattedValue(): string | null;
+    onEnterDOM(): void;
+    onExitDOM(): void;
     onBeforeRendering(): void;
     onAfterRendering(): void;
-    _ensureSingleSelection(): void;
+    /**
+     * Selects an option, based on the Select's "value" property,
+     * or the options' "selected" property.
+     */
+    _applySelection(): void;
+    /**
+     * Selects an option by given value.
+     */
+    _applySelectionByValue(value: string): void;
+    /**
+     * Selects the first option if no option is selected,
+     * or selects the last option if multiple options are selected.
+     */
+    _applyAutoSelection(): void;
+    /**
+     * Sets value by given option.
+     */
+    _setValueByOption(option: IOption): void;
+    _applyFocus(): void;
     _onfocusin(): void;
     _onfocusout(): void;
     get _isPickerOpen(): boolean;
@@ -201,12 +284,14 @@ declare class Select extends UI5Element implements IFormInputElement {
     /**
      * Defines the value of the component:
      *
-     * - when get - returns the value of the component, e.g. the `value` property of the selected option or its text content.
-     *
+     * - when get - returns the value of the component or the value/text content of the selected option.
      * - when set - selects the option with matching `value` property or text content.
      *
+     * **Note:** Use either the Select's value or the Options' selected property.
+     * Mixed usage could result in unexpected behavior.
+     *
      * **Note:** If the given value does not match any existing option,
-     * the first option will get selected.
+     * no option will be selected and the Select component will be displayed as empty.
      * @public
      * @default ""
      * @since 1.20.0
@@ -273,10 +358,11 @@ declare class Select extends UI5Element implements IFormInputElement {
     get valueStateTypeText(): string;
     get hasValueState(): boolean;
     get valueStateTextId(): string | undefined;
+    get responsivePopoverId(): string;
     get isDisabled(): true | undefined;
     get _headerTitleText(): string;
     get _currentlySelectedOption(): IOption;
-    get _effectiveTabIndex(): "-1" | "0";
+    get _effectiveTabIndex(): 0 | -1;
     /**
     * This method is relevant for sap_horizon theme only
     */
@@ -307,7 +393,6 @@ declare class Select extends UI5Element implements IFormInputElement {
         };
     };
     get ariaLabelText(): string | undefined;
-    get valueStateMessageText(): Node[];
     get shouldDisplayDefaultValueStateMessage(): boolean;
     get hasValueStateText(): boolean;
     get shouldOpenValueStateMessagePopover(): boolean;
@@ -318,8 +403,11 @@ declare class Select extends UI5Element implements IFormInputElement {
     closeValueStatePopover(): void;
     toggleValueStatePopover(open: boolean): void;
     get selectedOptionIcon(): string | undefined;
+    get ariaDescriptionText(): string | undefined;
+    get ariaDescriptionTextId(): "" | "accessibleDescription";
+    get ariaDescribedByIds(): string | undefined;
+    _updateAssociatedLabelsTexts(): void;
     _getPopover(): Popover | null;
-    static onDefine(): Promise<void>;
 }
 export default Select;
 export type { IOption, SelectChangeEventDetail, SelectLiveChangeEventDetail, };

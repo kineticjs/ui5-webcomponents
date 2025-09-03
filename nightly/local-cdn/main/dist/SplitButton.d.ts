@@ -1,8 +1,15 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { AccessibilityAttributes } from "@ui5/webcomponents-base/dist/types.js";
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 import type ButtonDesign from "./types/ButtonDesign.js";
-import Button from "./Button.js";
+import type Button from "./Button.js";
+type SplitButtonRootAccAttributes = Pick<AccessibilityAttributes, "hasPopup" | "roleDescription" | "title">;
+type SplitButtonArrowButtonAccAtributes = Pick<AccessibilityAttributes, "hasPopup" | "expanded" | "title">;
+type SplitButtonAccessibilityAttributes = {
+    root?: SplitButtonRootAccAttributes;
+    arrowButton?: SplitButtonArrowButtonAccAtributes;
+};
 /**
  * @class
  *
@@ -42,19 +49,26 @@ import Button from "./Button.js";
  * ### ES6 Module Import
  *
  * `import "@ui5/webcomponents/dist/SplitButton.js";`
+ * @csspart button - Used to style the native button element
+ * @csspart icon - Used to style the icon in the native button element
+ * @csspart endIcon - Used to style the end icon in the native button element
  * @constructor
  * @extends UI5Element
  * @public
  * @since 1.1.0
  */
 declare class SplitButton extends UI5Element {
+    eventDetails: {
+        click: void;
+        "arrow-click": void;
+    };
     /**
      * Defines the icon to be displayed as graphical element within the component.
      * The SAP-icons font provides numerous options.
      *
      * Example:
      *
-     * See all the available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
+     * See all available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
      * @default undefined
      * @public
      */
@@ -91,19 +105,13 @@ declare class SplitButton extends UI5Element {
      * @default "0"
      * @private
      */
-    _tabIndex: string;
+    _tabIndex: number;
     /**
-     * Indicates if there is Space key pressed
+     * Indicates if there is Shift or Escape key pressed while Space key is down.
      * @default false
      * @private
      */
-    _spacePressed: boolean;
-    /**
-     * Indicates if there is SHIFT or ESCAPE key pressed
-     * @default false
-     * @private
-     */
-    _shiftOrEscapePressed: boolean;
+    _shiftOrEscapePressedDuringSpace: boolean;
     /**
      * Defines the active state of the text button
      * @default false
@@ -117,28 +125,62 @@ declare class SplitButton extends UI5Element {
      */
     _activeArrowButton: boolean;
     /**
+     * Defines the display of the end icon as a graphical element within the default action of the component after the button text.
+     * The SAP-icons font provides different options.
+     *
+     * Example:
+     *
+     * See all available icons in the [Icon Explorer](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html).
+     * @default undefined
+     * @private
+     */
+    _endIcon?: string;
+    /**
+     * Defines the visibility of the arrow button of the component.
+     *
+     * @default false
+     * @private
+     */
+    _hideArrowButton: boolean;
+    /**
+     * Defines the additional accessibility attributes that will be applied to the component.
+     * The `accessibilityAttributes` property accepts an object with the following optional fields:
+     *
+     * - **root**: Attributes that will be applied to the main (text) button.
+     *   - **hasPopup**: Indicates the presence and type of popup triggered by the button.
+     *     Accepts string values: `"dialog"`, `"grid"`, `"listbox"`, `"menu"`, or `"tree"`.
+     *   - **roleDescription**: Provides a human-readable description for the role of the button.
+     *     Accepts any string value.
+     *   - **title**: Specifies a tooltip or description for screen readers.
+     *     Accepts any string value.
+     *
+     * - **arrowButton**: Attributes applied specifically to the arrow (split) button.
+     *   - **hasPopup**: Indicates the presence and type of popup triggered by the arrow button.
+     *     Accepts string values: `"dialog"`, `"grid"`, `"listbox"`, `"menu"`, or `"tree"`.
+     *   - **expanded**: Indicates whether the popup triggered by the arrow button is currently expanded.
+     *     Accepts boolean values: `true` or `false`.
+     *
+     * @default {}
+     * @public
+     * @since 2.13.0
+     */
+    accessibilityAttributes: SplitButtonAccessibilityAttributes;
+    /**
      * Defines the text of the component.
      *
      * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
      * @public
      */
     text: Array<Node>;
-    _textButtonPress: {
-        handleEvent: (e: MouseEvent) => void;
-        passive: boolean;
-    };
-    _isDefaultActionPressed: boolean;
-    _isKeyDownOperation: boolean;
     static i18nBundle: I18nBundle;
-    static onDefine(): Promise<void>;
-    constructor();
     onBeforeRendering(): void;
-    _handleMouseClick(e: MouseEvent): void;
-    _onFocusOut(e: FocusEvent): void;
-    _onFocusIn(e: FocusEvent): void;
+    _handleMouseClick(e: UI5CustomEvent<Button, "click">): void;
+    _onFocusOut(): void;
+    handleTouchStart(e: TouchEvent | MouseEvent): void;
     _onInnerButtonFocusIn(e: FocusEvent): void;
     _onKeyDown(e: KeyboardEvent): void;
     _onKeyUp(e: KeyboardEvent): void;
+    _resetActionButtonStates(): void;
     _fireClick(e?: Event): void;
     _fireArrowClick(e?: Event): void;
     _textButtonRelease(): void;
@@ -159,33 +201,29 @@ declare class SplitButton extends UI5Element {
      */
     _isDefaultAction(e: KeyboardEvent): boolean;
     /**
-     * Checks if the pressed key is an escape key or shift key.
-     * @param e - keyboard event
-     * @private
-     */
-    _isShiftOrEscape(e: KeyboardEvent): boolean;
-    /**
      * Handles the click event and the focus on the arrow button.
      * @param e - keyboard event
      * @private
      */
-    _handleArrowButtonAction(e: KeyboardEvent | MouseEvent): void;
+    _handleArrowButtonAction(e: UI5CustomEvent<Button, "click"> | KeyboardEvent): void;
     /**
      * Handles the default action and the active state of the respective button.
      * @param e - keyboard event
      * @private
      */
     _handleDefaultAction(e: KeyboardEvent): void;
-    _handleShiftOrEscapePressed(): void;
     get effectiveActiveArrowButton(): boolean;
     get textButtonAccText(): string | null;
     get isTextButton(): boolean;
     get textButton(): Button | null | undefined;
     get arrowButton(): Button | null | undefined;
-    get accessibilityInfo(): {
-        description: string;
+    get _computedAccessibilityAttributes(): SplitButtonAccessibilityAttributes;
+    get accInfo(): {
         keyboardHint: string;
+        description: string;
     };
+    get arrowButtonTooltip(): string;
     get ariaLabelText(): string;
 }
 export default SplitButton;
+export type { SplitButtonAccessibilityAttributes, };

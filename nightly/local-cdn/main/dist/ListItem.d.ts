@@ -1,6 +1,5 @@
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import type { AccessibilityAttributes, PassiveEventListenerObject } from "@ui5/webcomponents-base/dist/types.js";
-import type AriaHasPopup from "@ui5/webcomponents-base/dist/types/AriaHasPopup.js";
+import type { AccessibilityAttributes, AriaRole, AriaHasPopup } from "@ui5/webcomponents-base";
 import "@ui5/webcomponents-icons/dist/decline.js";
 import "@ui5/webcomponents-icons/dist/edit.js";
 import Highlight from "./types/Highlight.js";
@@ -21,13 +20,13 @@ type SelectionRequestEventDetail = {
     key?: string;
 };
 type AccInfo = {
-    role?: string;
+    role?: AriaRole | undefined;
     ariaExpanded?: boolean;
     ariaLevel?: number;
     ariaLabel: string;
     ariaLabelRadioButton: string;
     ariaSelectedText?: string;
-    ariaHaspopup?: `${Lowercase<AriaHasPopup>}`;
+    ariaHaspopup?: `${AriaHasPopup}`;
     posinset?: number;
     setsize?: number;
     ariaSelected?: boolean;
@@ -48,6 +47,13 @@ type ListItemAccessibilityAttributes = Pick<AccessibilityAttributes, "hasPopup" 
  * @public
  */
 declare abstract class ListItem extends ListItemBase {
+    eventDetails: ListItemBase["eventDetails"] & {
+        "detail-click": {
+            item: ListItem;
+            selected: boolean;
+        };
+        "selection-requested": SelectionRequestEventDetail;
+    };
     /**
      * Defines the visual indication and behavior of the list items.
      * Available options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.
@@ -115,7 +121,14 @@ declare abstract class ListItem extends ListItemBase {
      *
      */
     accessibleRole: `${ListItemAccessibleRole}`;
+    _forcedAccessibleRole?: string;
     _selectionMode: `${ListSelectionMode}`;
+    /**
+     * Defines the current media query size.
+     * @default "S"
+     * @private
+     */
+    mediaRange: string;
     /**
      * Defines the delete button, displayed in "Delete" mode.
      * **Note:** While the slot allows custom buttons, to match
@@ -127,10 +140,8 @@ declare abstract class ListItem extends ListItemBase {
     deleteButton: Array<IButton>;
     deactivateByKey: (e: KeyboardEvent) => void;
     deactivate: () => void;
-    _ontouchstart: PassiveEventListenerObject;
     accessibleName?: string;
     indeterminate?: boolean;
-    disableDeleteButton?: boolean;
     static i18nBundle: I18nBundle;
     constructor();
     onBeforeRendering(): void;
@@ -138,18 +149,20 @@ declare abstract class ListItem extends ListItemBase {
     onExitDOM(): void;
     _onkeydown(e: KeyboardEvent): Promise<void>;
     _onkeyup(e: KeyboardEvent): void;
-    _onmousedown(e: MouseEvent): void;
-    _onmouseup(e: MouseEvent): void;
-    _ontouchend(e: TouchEvent): void;
-    _onfocusout(): void;
+    _onmousedown(): void;
+    _onmouseup(): void;
+    _ontouchend(): void;
+    _onfocusin(e: FocusEvent): void;
+    _onfocusout(e: FocusEvent): void;
     _ondragstart(e: DragEvent): void;
     _ondragend(e: DragEvent): void;
+    _isTargetSelfFocusDomRef(e: KeyboardEvent): boolean;
     /**
      * Called when selection components in Single (ui5-radio-button)
      * and Multi (ui5-checkbox) selection modes are used.
      */
-    onMultiSelectionComponentPress(e: MouseEvent): void;
-    onSingleSelectionComponentPress(e: MouseEvent): void;
+    onMultiSelectionComponentPress(e: CustomEvent): void;
+    onSingleSelectionComponentPress(e: CustomEvent): void;
     activate(): void;
     onDelete(): void;
     onDetailClick(): void;
@@ -160,27 +173,20 @@ declare abstract class ListItem extends ListItemBase {
     get modeSingleSelect(): boolean;
     get modeMultiple(): boolean;
     get modeDelete(): boolean;
-    /**
-     * Used in UploadCollectionItem
-     */
-    get renderDeleteButton(): boolean;
-    /**
-     * End
-     */
     get typeDetail(): boolean;
     get typeNavigation(): boolean;
     get typeActive(): boolean;
     get _ariaSelected(): boolean | undefined;
-    get listItemAccessibleRole(): string;
+    get listItemAccessibleRole(): AriaRole | undefined;
     get ariaSelectedText(): string | undefined;
     get deleteText(): string;
     get hasDeleteButtonSlot(): boolean;
     get _accessibleNameRef(): string;
+    get ariaLabelledByText(): string;
     get _accInfo(): AccInfo;
     get _hasHighlightColor(): boolean;
     get hasConfigurableMode(): boolean;
     get _listItem(): HTMLLIElement | null;
-    static onDefine(): Promise<void>;
 }
 export default ListItem;
 export type { IAccessibleListItem, SelectionRequestEventDetail, ListItemAccessibilityAttributes, };

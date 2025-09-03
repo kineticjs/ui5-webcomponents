@@ -6,7 +6,8 @@ import { getFeature } from "../FeaturesRegistry.js";
 import { attachCustomThemeStylesToHead, getThemeRoot } from "../config/ThemeRoot.js";
 import { DEFAULT_THEME } from "../generated/AssetParameters.js";
 import { getCurrentRuntimeIndex } from "../Runtimes.js";
-const BASE_THEME_PACKAGE = "@ui5/webcomponents-theming";
+// eslint-disable-next-line
+const BASE_THEME_PACKAGE = "@" + "ui5" + "/" + "webcomponents-theming";
 const isThemeBaseRegistered = () => {
     const registeredPackages = getRegisteredPackages();
     return registeredPackages.has(BASE_THEME_PACKAGE);
@@ -48,7 +49,7 @@ const detectExternalTheme = async (theme) => {
         const varsLoaded = openUI5Support.cssVariablesLoaded();
         if (varsLoaded) {
             return {
-                themeName: openUI5Support.getConfigurationSettingsObject()?.theme,
+                themeName: openUI5Support.getConfigurationSettingsObject()?.theme, // just themeName
                 baseThemeName: "", // baseThemeName is only relevant for custom themes
             };
         }

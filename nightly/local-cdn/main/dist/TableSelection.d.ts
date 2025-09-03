@@ -9,7 +9,7 @@ import type TableRowBase from "./TableRowBase.js";
  *
  * ### Overview
  *
- * The `ui5-table-selection` component is used inside the `ui5-table` ti add key-based selection capabilities to the `ui5-table`.
+ * The `ui5-table-selection` component is used inside the `ui5-table` to add key-based selection capabilities to the `ui5-table`.
  *
  * The component offers three selection modes:
  * * Single - select a single row.
@@ -36,11 +36,15 @@ import type TableRowBase from "./TableRowBase.js";
  *
  * @constructor
  * @extends UI5Element
- * @since 2.0
+ * @since 2.0.0
  * @public
+ * @deprecated This component is deprecated and will be removed in future releases. Use the `ui5-table-selection-single` or `ui5-table-selection-multi` components instead.
  * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 declare class TableSelection extends UI5Element implements ITableFeature {
+    eventDetails: {
+        change: void;
+    };
     /**
      * Defines the selection mode.
      *
@@ -57,6 +61,7 @@ declare class TableSelection extends UI5Element implements ITableFeature {
     selected: string;
     readonly identifier = "TableSelection";
     _table?: Table;
+    _rowsLength: number;
     _rangeSelection?: {
         selected: boolean;
         isUp: boolean | null;
@@ -64,34 +69,39 @@ declare class TableSelection extends UI5Element implements ITableFeature {
         isMouse: boolean;
         shiftPressed: boolean;
     } | null;
+    onClickCaptureBound: (e: MouseEvent) => void;
+    constructor();
     onTableActivate(table: Table): void;
     onExitDOM(): void;
     onBeforeRendering(): void;
+    onTableBeforeRendering(): void;
+    onTableAfterRendering(): void;
     isSelectable(): boolean;
-    isMultiSelect(): boolean;
-    hasRowSelector(): boolean;
-    getRowIdentifier(row: TableRow): string;
+    isMultiSelectable(): boolean;
+    isRowSelectorRequired(): boolean;
+    getAriaDescriptionForTable(): string | undefined;
+    getAriaDescriptionForColumnHeader(): string | undefined;
+    getRowKey(row: TableRow): string;
     isSelected(row: TableRowBase): boolean;
     hasSelectedRow(): boolean;
     areAllRowsSelected(): boolean;
-    informSelectionChange(row: TableRowBase): void;
+    setSelected(row: TableRowBase, selected: boolean, fireEvent?: boolean): void;
     get selectedAsArray(): string[];
     set selectedAsArray(selectedArray: string[]);
     get selectedAsSet(): Set<string>;
     set selectedAsSet(selectedSet: Set<string>);
     _selectRow(row: TableRow, selected: boolean): void;
-    _informRowSelectionChange(row: TableRow): void;
-    _informHeaderRowSelectionChange(): void;
+    _selectHeaderRow(selected: boolean): void;
     _invalidateTableAndRows(): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent, eventOrigin: HTMLElement): void;
-    _onclick(e: MouseEvent): void;
+    _onClickCapture(e: MouseEvent): void;
     /**
      * Start the range selection and initialises the range selection state
      * @param row starting row
      * @private
      */
-    _startRangeSelection(row: TableRow, isMouse?: boolean): void;
+    _startRangeSelection(row: TableRow, selected: boolean, isMouse?: boolean): void;
     /**
      * Handles the range selection
      * @param targetRow row that is currently focused

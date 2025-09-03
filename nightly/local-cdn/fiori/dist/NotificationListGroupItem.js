@@ -9,19 +9,16 @@ import { isSpace, isPlus, isMinus, isLeft, isRight, } from "@ui5/webcomponents-b
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import Button from "@ui5/webcomponents/dist/Button.js";
-import BusyIndicator from "@ui5/webcomponents/dist/BusyIndicator.js";
-import Icon from "@ui5/webcomponents/dist/Icon.js";
-import NotificationListGroupList from "./NotificationListGroupList.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import NotificationListItemBase from "./NotificationListItemBase.js";
 // Icons
-import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
-import "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
+import iconNavigationRightArrow from "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
+import iconNavigationDownArrow from "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
 // Texts
 import { NOTIFICATION_LIST_GROUP_ITEM_TXT, NOTIFICATION_LIST_GROUP_COLLAPSED, NOTIFICATION_LIST_GROUP_EXPANDED, NOTIFICATION_LIST_GROUP_ITEM_TOGGLE_ICON_COLLAPSE_TITLE, } from "./generated/i18n/i18n-defaults.js";
 // Templates
-import NotificationListGroupItemTemplate from "./generated/templates/NotificationListGroupItemTemplate.lit.js";
+import NotificationListGroupItemTemplate from "./NotificationListGroupItemTemplate.js";
 // Styles
 import NotificationListGroupItemCss from "./generated/themes/NotificationListGroupItem.css.js";
 /**
@@ -38,7 +35,7 @@ import NotificationListGroupItemCss from "./generated/themes/NotificationListGro
  * - Items of the group
  *
  * ### Usage
- * The component can be used in a standard `ui5-list`.
+ * The component should be used inside a `ui5-notification-list`.
  *
  * ### Keyboard Handling
  * The `ui5-li-notification-group` provides advanced keyboard handling.
@@ -67,9 +64,20 @@ let NotificationListGroupItem = NotificationListGroupItem_1 = class Notification
          * @public
          */
         this.collapsed = false;
+        /**
+         * Defines whether the component will have growing capability by pressing a `More` button.
+         * When button is pressed `load-more` event will be fired.
+         * @default "None"
+         * @public
+         * @since 2.2.0
+         */
+        this.growing = "None";
     }
     onBeforeRendering() {
         super.onBeforeRendering();
+        this.items.forEach(item => {
+            item._ariaLevel = 2;
+        });
         if (this.loading) {
             this.clearChildBusyIndicator();
         }
@@ -110,18 +118,18 @@ let NotificationListGroupItem = NotificationListGroupItem_1 = class Notification
         }
         return ids.join(" ");
     }
-    get _ariaExpanded() {
+    get _expanded() {
         return !this.collapsed;
     }
     get _pressable() {
         return false;
     }
     get groupCollapsedIcon() {
-        return this.collapsed ? "navigation-right-arrow" : "navigation-down-arrow";
+        return this.collapsed ? iconNavigationRightArrow : iconNavigationDownArrow;
     }
     toggleCollapsed() {
         this.collapsed = !this.collapsed;
-        this.fireEvent("toggle", { item: this });
+        this.fireDecoratorEvent("toggle", { item: this });
     }
     /**
      * Event handlers
@@ -130,9 +138,19 @@ let NotificationListGroupItem = NotificationListGroupItem_1 = class Notification
     _onHeaderToggleClick() {
         this.toggleCollapsed();
     }
+    _onLoadMore() {
+        this.fireDecoratorEvent("load-more");
+    }
+    getGrowingButton() {
+        const innerList = this.getDomRef()?.querySelector("[ui5-notification-group-list]");
+        return innerList.getGrowingButton();
+    }
     async _onkeydown(e) {
         const isFocused = this.matches(":focus");
         if (!isFocused) {
+            return;
+        }
+        if (this.getGrowingButton()?.matches(":focus")) {
             return;
         }
         await super._onkeydown(e);
@@ -167,29 +185,39 @@ __decorate([
     property({ type: Boolean })
 ], NotificationListGroupItem.prototype, "collapsed", void 0);
 __decorate([
+    property()
+], NotificationListGroupItem.prototype, "growing", void 0);
+__decorate([
     slot({ type: HTMLElement, "default": true })
 ], NotificationListGroupItem.prototype, "items", void 0);
 NotificationListGroupItem = NotificationListGroupItem_1 = __decorate([
     customElement({
         tag: "ui5-li-notification-group",
         languageAware: true,
+        renderer: jsxRenderer,
         styles: [
             NotificationListGroupItemCss,
         ],
         template: NotificationListGroupItemTemplate,
-        dependencies: [
-            NotificationListGroupList,
-            Button,
-            Icon,
-            BusyIndicator,
-        ],
     })
     /**
      * Fired when the `ui5-li-notification-group` is expanded/collapsed by user interaction.
      * @public
      */
     ,
-    event("toggle")
+    event("toggle", {
+        bubbles: true,
+    })
+    /**
+     * Fired when additional items are requested.
+     *
+     * @public
+     * @since 2.2.0
+     */
+    ,
+    event("load-more", {
+        bubbles: true,
+    })
 ], NotificationListGroupItem);
 NotificationListGroupItem.define();
 export default NotificationListGroupItem;

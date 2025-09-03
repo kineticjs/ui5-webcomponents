@@ -1,7 +1,7 @@
 import { registerIcon } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 
 const name = "throughput-backlog";
-const pathData = "M368 504V72c0-5 3-8 8-8h80c5 0 8 3 8 8v432c0 5-3 8-8 8h-80c-5 0-8-3-8-8zM53 297L256 93h-66c-7 0-13-7-14-14 0-9 5-14 14-15l86 1c15 0 28 13 28 28v86c0 9-5 13-15 13-7 0-13-6-13-13v-65L73 317c-2 3-5 4-10 4-4 0-7-1-10-4-7-4-7-13 0-20zm155 207V264c0-5 3-8 8-8h80c5 0 8 3 8 8v240c0 5-3 8-8 8h-80c-5 0-8-3-8-8zM56 384h80c5 0 8 3 8 8v112c0 5-3 8-8 8H56c-5 0-8-3-8-8V392c0-5 3-8 8-8z";
+const pathData = "M393.5 9q0-9 9-9h91q9 0 9 9v494q0 9-9 9h-91q-9 0-9-9V9zm-100 178q-11 0-18.5-7.5t-7.5-18.5V83l-166 166q-7 7-18 7t-18-7q-8-8-8-18t8-18l160-160h-66q-11 0-18.5-7t-7.5-18T141 9.5 159.5 2h134q11 0 18.5 7.5t7.5 18.5v133q0 11-7.5 18.5t-18.5 7.5zm-83 78q0-9 9-9h91q9 0 9 9v239q0 8-9 8h-91q-9 0-9-8V265zm-174 101h92q9 0 9 9v128q0 9-9 9h-92q-9 0-9-9V375q0-9 9-9z";
 const ltr = false;
 const accData = null;
 const collection = "tnt-v3";

@@ -9,15 +9,15 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
 import ToolbarItemOverflowBehavior from "@ui5/webcomponents/dist/types/ToolbarItemOverflowBehavior.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 // Template
-import DynamicPageTitleTemplate from "./generated/templates/DynamicPageTitleTemplate.lit.js";
+import DynamicPageTitleTemplate from "./DynamicPageTitleTemplate.js";
 // Styles
 import DynamicPageTitleCss from "./generated/themes/DynamicPageTitle.css.js";
 // Texts
@@ -76,13 +76,15 @@ let DynamicPageTitle = DynamicPageTitle_1 = class DynamicPageTitle extends UI5El
          */
         this.focused = false;
         /**
+         * Indicates whether the title has snapped on mobile devices.
+         * @private
+         */
+        this.hasSnappedTitleOnMobile = false;
+        /**
          * @private
          */
         this.interactive = false;
         this._handleResize = this.handleResize.bind(this);
-    }
-    static async onDefine() {
-        DynamicPageTitle_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
     }
     onEnterDOM() {
         ResizeHandler.register(this, this._handleResize);
@@ -95,16 +97,6 @@ let DynamicPageTitle = DynamicPageTitle_1 = class DynamicPageTitle extends UI5El
     }
     onBeforeRendering() {
         this.prepareLayoutActions();
-    }
-    get styles() {
-        return {
-            content: {
-                "min-width": this.minContentWidth ? `${this.minContentWidth || 0}px` : undefined,
-            },
-            actions: {
-                "min-width": this.minActionsWidth ? `${this.minActionsWidth || 0}px` : undefined,
-            },
-        };
     }
     get hasContent() {
         return !!this.content.length;
@@ -119,13 +111,19 @@ let DynamicPageTitle = DynamicPageTitle_1 = class DynamicPageTitle extends UI5El
         return !this.snapped ? "subheading" : "snappedSubheading";
     }
     get _tabIndex() {
-        return this.interactive ? "0" : undefined;
+        return this.interactive ? 0 : undefined;
     }
     get _headerExpanded() {
         return !this.snapped;
     }
+    get _role() {
+        return this.interactive ? "button" : undefined;
+    }
+    get _ariaDescribedBy() {
+        return this.interactive ? `${this._id}-toggle-description` : undefined;
+    }
     get _ariaDescribedbyText() {
-        return DynamicPageTitle_1.i18nBundle.getText(DYNAMIC_PAGE_ARIA_DESCR_TOGGLE_HEADER);
+        return this.interactive ? DynamicPageTitle_1.i18nBundle.getText(DYNAMIC_PAGE_ARIA_DESCR_TOGGLE_HEADER) : undefined;
     }
     get _ariaLabelledBy() {
         const hasAnyHeading = this[this.headingSlotName].length;
@@ -133,14 +131,21 @@ let DynamicPageTitle = DynamicPageTitle_1 = class DynamicPageTitle extends UI5El
             return `${this._id}-heading`;
         }
     }
+    get _needsSeparator() {
+        return (this.navigationBar.length > 0 && this.actionsBar.length > 0);
+    }
+    get forAriaExpanded() {
+        return this.interactive ? this._headerExpanded : undefined;
+    }
     prepareLayoutActions() {
-        // all navigation/layout actions should have the NeverOverflow behavior
-        const navigationBar = this.querySelector("[ui5-toolbar][slot='navigationBar']");
+        const navigationBar = this.querySelector("[ui5-toolbar][slot='navigationBar']"), isWideScreen = this.offsetWidth >= 1280;
         if (!navigationBar) {
             return;
         }
         navigationBar.items.forEach(action => {
-            action.overflowPriority = ToolbarItemOverflowBehavior.NeverOverflow;
+            action.overflowPriority = isWideScreen
+                ? ToolbarItemOverflowBehavior.NeverOverflow
+                : ToolbarItemOverflowBehavior.Default;
         });
     }
     handleResize() {
@@ -156,12 +161,12 @@ let DynamicPageTitle = DynamicPageTitle_1 = class DynamicPageTitle extends UI5El
         }
     }
     onTitleClick() {
-        this.fireEvent("_toggle-title");
+        this.fireDecoratorEvent("toggle-title");
     }
     _onkeydown(e) {
         if (isEnter(e) || isSpace(e)) {
             e.preventDefault();
-            this.fireEvent("_toggle-title");
+            this.fireDecoratorEvent("toggle-title");
         }
     }
 };
@@ -181,11 +186,17 @@ __decorate([
     property({ type: Number })
 ], DynamicPageTitle.prototype, "minActionsWidth", void 0);
 __decorate([
+    property({ type: Boolean })
+], DynamicPageTitle.prototype, "hasSnappedTitleOnMobile", void 0);
+__decorate([
     slot({ type: HTMLElement })
 ], DynamicPageTitle.prototype, "heading", void 0);
 __decorate([
     slot({ type: HTMLElement })
 ], DynamicPageTitle.prototype, "snappedHeading", void 0);
+__decorate([
+    slot({ type: HTMLElement })
+], DynamicPageTitle.prototype, "snappedTitleOnMobile", void 0);
 __decorate([
     slot({ type: HTMLElement })
 ], DynamicPageTitle.prototype, "actionsBar", void 0);
@@ -207,11 +218,14 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], DynamicPageTitle.prototype, "interactive", void 0);
+__decorate([
+    i18n("@ui5/webcomponents-fiori")
+], DynamicPageTitle, "i18nBundle", void 0);
 DynamicPageTitle = DynamicPageTitle_1 = __decorate([
     customElement({
         tag: "ui5-dynamic-page-title",
         fastNavigation: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: DynamicPageTitleCss,
         template: DynamicPageTitleTemplate,
     })
@@ -220,7 +234,9 @@ DynamicPageTitle = DynamicPageTitle_1 = __decorate([
      * @private
      */
     ,
-    event("_toggle-title")
+    event("toggle-title", {
+        bubbles: true,
+    })
 ], DynamicPageTitle);
 DynamicPageTitle.define();
 export default DynamicPageTitle;

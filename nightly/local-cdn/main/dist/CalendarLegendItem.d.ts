@@ -42,7 +42,6 @@ declare class CalendarLegendItem extends UI5Element implements ITabbable {
      */
     forcedTabIndex: string;
     static i18nBundle: I18nBundle;
-    static onDefine(): Promise<void>;
     get effectiveText(): string;
 }
 export default CalendarLegendItem;

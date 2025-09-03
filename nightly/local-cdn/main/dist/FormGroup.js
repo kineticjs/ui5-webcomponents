@@ -32,12 +32,19 @@ import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
  * @public
  * @implements {IFormItem}
  * @since 2.0.0
- * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 let FormGroup = class FormGroup extends UI5Element {
     constructor() {
         super(...arguments);
+        /**
+         * Defines the compoennt heading level,
+         * set by the `headerText`.
+         * @default "H3"
+         * @public
+         * @since 2.10.0
+        */
+        this.headerLevel = "H3";
         /**
          * @private
          */
@@ -46,14 +53,12 @@ let FormGroup = class FormGroup extends UI5Element {
         this.colsL = 1;
         this.colsXl = 1;
         this.itemSpacing = "Normal";
-        this.labelSpan = "S12 M4 L4 XL4";
     }
     onBeforeRendering() {
         this.processFormItems();
     }
     processFormItems() {
         this.items.forEach((item) => {
-            item.labelSpan = this.labelSpan;
             item.itemSpacing = this.itemSpacing;
         });
     }
@@ -64,6 +69,9 @@ let FormGroup = class FormGroup extends UI5Element {
 __decorate([
     property()
 ], FormGroup.prototype, "headerText", void 0);
+__decorate([
+    property()
+], FormGroup.prototype, "headerLevel", void 0);
 __decorate([
     property({ type: Number })
 ], FormGroup.prototype, "columnSpan", void 0);
@@ -89,7 +97,10 @@ __decorate([
     property()
 ], FormGroup.prototype, "itemSpacing", void 0);
 FormGroup = __decorate([
-    customElement("ui5-form-group")
+    customElement({
+        tag: "ui5-form-group",
+        fastNavigation: true,
+    })
 ], FormGroup);
 FormGroup.define();
 export default FormGroup;

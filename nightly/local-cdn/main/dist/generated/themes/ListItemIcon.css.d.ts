@@ -1,3 +1,2 @@
-import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
-declare const styleData: StyleData;
-export default styleData;
+declare const _default: ".ui5-li-icon{color:var(--sapList_TextColor);min-width:var(--_ui5-v2-14-0-rc-6_list_item_icon_size);min-height:var(--_ui5-v2-14-0-rc-6_list_item_icon_size);padding-inline-end:var(--_ui5-v2-14-0-rc-6_list_item_icon_padding-inline-end)}\n";
+export default _default;

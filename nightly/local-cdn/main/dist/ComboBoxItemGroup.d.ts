@@ -1,39 +1,25 @@
-import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IComboBoxItem } from "./ComboBox.js";
+import ListItemGroup from "./ListItemGroup.js";
+import type ComboBoxItem from "./ComboBoxItem.js";
 /**
  * @class
  * The `ui5-cb-group-item` is type of suggestion item,
  * that can be used to split the `ui5-combobox` suggestions into groups.
  * @constructor
- * @extends UI5Element
+ * @extends ListItemGroup
  * @abstract
  * @public
  * @implements {IComboBoxItem}
  * @since 1.0.0-rc.15
  */
-declare class ComboBoxItemGroup extends UI5Element implements IComboBoxItem {
-    /**
-     * Defines the text of the component.
-     * @default undefined
-     * @public
-     */
-    headerText?: string;
-    /**
-     * Indicates whether the item is focused
-     * @protected
-     */
-    focused: boolean;
+declare class ComboBoxItemGroup extends ListItemGroup implements IComboBoxItem {
+    eventDetails: ListItemGroup["eventDetails"];
     /**
      * Defines the items of the <code>ui5-cb-item-group</code>.
      * @public
      */
-    items: Array<IComboBoxItem>;
-    /**
-     * Used to avoid tag name checks
-     * @protected
-     */
+    items: Array<ComboBoxItem>;
     get isGroupItem(): boolean;
-    get stableDomRef(): string;
     get _isVisible(): boolean;
 }
 declare const isInstanceOfComboBoxItemGroup: (object: any) => object is ComboBoxItemGroup;

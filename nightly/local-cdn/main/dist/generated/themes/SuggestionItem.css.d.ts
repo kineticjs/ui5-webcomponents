@@ -1,3 +1,2 @@
-import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
-declare const styleData: StyleData;
-export default styleData;
+declare const _default: ":host([ui5-suggestion-item]){height:auto;min-height:var(--_ui5-v2-14-0-rc-6_list_item_base_height)}:host([ui5-suggestion-item]) .ui5-li-root{min-height:var(--_ui5-v2-14-0-rc-6_list_item_base_height)}:host([ui5-suggestion-item]) .ui5-li-content{padding-bottom:.5rem;padding-top:.5rem;box-sizing:border-box}\n";
+export default _default;

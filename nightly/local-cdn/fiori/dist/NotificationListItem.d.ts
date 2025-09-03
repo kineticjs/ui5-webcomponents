@@ -1,16 +1,13 @@
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
+import type { ButtonAccessibilityAttributes } from "@ui5/webcomponents/dist/Button.js";
+import type Link from "@ui5/webcomponents/dist/Link.js";
 import WrappingType from "@ui5/webcomponents/dist/types/WrappingType.js";
 import type Menu from "@ui5/webcomponents/dist/Menu.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import NotificationListItemImportance from "./types/NotificationListItemImportance.js";
 import NotificationListItemBase from "./NotificationListItemBase.js";
-import "@ui5/webcomponents-icons/dist/overflow.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
-import "@ui5/webcomponents-icons/dist/high-priority.js";
-import "@ui5/webcomponents-icons/dist/message-success.js";
-import "@ui5/webcomponents-icons/dist/message-information.js";
-import "@ui5/webcomponents-icons/dist/message-error.js";
-import "@ui5/webcomponents-icons/dist/message-warning.js";
+import IconDesign from "@ui5/webcomponents/dist/types/IconDesign.js";
 type NotificationListItemCloseEventDetail = {
     item: HTMLElement;
 };
@@ -36,7 +33,7 @@ type NotificationListItemPressEventDetail = {
  * **Note:** Adding custom actions by using the `ui5-notification-action` component is deprecated as of version 2.0!
  *
  * ### Usage
- * The component can be used in a standard `ui5-list`.
+ * The component should be used inside a `ui5-notification-list`.
  *
  * ### Keyboard Handling
  *
@@ -63,6 +60,11 @@ type NotificationListItemPressEventDetail = {
  * @csspart title-text - Used to style the titleText of the notification list item
  */
 declare class NotificationListItem extends NotificationListItemBase {
+    eventDetails: NotificationListItemBase["eventDetails"] & {
+        _press: NotificationListItemPressEventDetail;
+        close: NotificationListItemCloseEventDetail;
+        _close: NotificationListItemCloseEventDetail;
+    };
     /**
     * Defines if the `titleText` and `description` should wrap,
     * they truncate by default.
@@ -136,24 +138,25 @@ declare class NotificationListItem extends NotificationListItemBase {
     * @public
     */
     description: Array<Node>;
+    titleTextDOM?: HTMLElement;
+    menuButtonDOM?: HTMLElement;
+    descriptionDOM?: HTMLElement;
     _titleTextOverflowHeight: number;
     _descOverflowHeight: number;
     _onResizeBound: ResizeObserverCallback;
+    _ariaLevel?: number;
     constructor();
     onEnterDOM(): void;
     onExitDOM(): void;
     get hasState(): boolean;
     get hasDesc(): boolean;
     get hasImportance(): boolean;
-    get contentClasses(): "ui5-nli-content ui5-nli-content-with-importance" | "ui5-nli-content";
     get hasFootNotes(): boolean;
     get showMoreText(): string;
     get menuBtnAccessibleName(): string;
     get moreLinkAccessibleName(): string;
     get closeBtnAccessibleName(): string;
     get hideShowMore(): true | undefined;
-    get descriptionDOM(): HTMLElement | null;
-    get titleTextDOM(): HTMLElement | null;
     get titleTextHeight(): number;
     get descriptionHeight(): number;
     get titleTextOverflows(): boolean;
@@ -165,38 +168,31 @@ declare class NotificationListItem extends NotificationListItemBase {
     get ariaLabelledBy(): string;
     get itemClasses(): string;
     get statusIconName(): string;
-    get statusIconDesign(): string;
+    get statusIconDesign(): IconDesign | undefined;
     get importanceText(): string;
     get stateText(): string;
     get readText(): string;
-    get accInfoButton(): {
-        accessibilityAttributes: {
-            hasPopup: string;
-        };
+    get menuButtonAccessibilityAttributes(): ButtonAccessibilityAttributes;
+    get moreLinkAccessibilityAttributes(): {
+        expanded: boolean;
     };
-    get accInfoLink(): {
-        accessibilityAttributes: {
-            expanded: boolean;
-        };
-    };
-    get menuButtonDOM(): HTMLElement;
     get showMenu(): boolean;
     /**
      * Event handlers
      */
-    _onclick(e: MouseEvent): void;
-    _onShowMoreClick(e: MouseEvent): void;
+    _onclick(): void;
+    _onShowMoreClick(e: UI5CustomEvent<Link, "click">): void;
     _onkeydown(e: KeyboardEvent): Promise<void>;
-    focusSameItemOnNextRow(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
     _onBtnCloseClick(): void;
     _onBtnMenuClick(): void;
+    _toggleShowMorePressed(): void;
     openMenu(): void;
     getMenu(): Menu;
     /**
      * Private
      */
-    fireItemPress(e: Event): void;
+    fireItemPress(): void;
     onResize(): void;
 }
 export default NotificationListItem;

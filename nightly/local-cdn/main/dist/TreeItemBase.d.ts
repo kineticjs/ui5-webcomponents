@@ -1,4 +1,5 @@
 import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItem from "./ListItem.js";
 import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
@@ -18,6 +19,11 @@ type TreeItemBaseStepOutEventDetail = TreeItemBaseEventDetail;
  * @public
  */
 declare class TreeItemBase extends ListItem {
+    eventDetails: ListItem["eventDetails"] & {
+        toggle: TreeItemBaseToggleEventDetail;
+        "step-in": TreeItemBaseStepInEventDetail;
+        "step-out": TreeItemBaseStepOutEventDetail;
+    };
     /**
      * Defines the indentation of the tree list item. Use level 1 for tree list items, representing top-level tree nodes.
      * @protected
@@ -110,12 +116,27 @@ declare class TreeItemBase extends ListItem {
      */
     _fixed: boolean;
     /**
+     * @private
+     */
+    _hasImage: boolean;
+    /**
      * Defines the items of the component.
      *
      * **Note:** Use `ui5-tree-item` or `ui5-tree-item-custom`
      * @public
      */
     items: Array<TreeItemBase>;
+    /**
+     * **Note:** While the slot allows option for setting custom avatar, to match the
+     * design guidelines, please use the `ui5-avatar` with size XS.
+     *
+     * **Note:** If bigger `ui5-avatar` needs to be used, then the size of the
+     * `ui5-tree-item` should be customized in order to fit.
+     * @since 2.10.0
+     * @public
+     */
+    image: Array<HTMLElement>;
+    static i18nBundle: I18nBundle;
     onBeforeRendering(): void;
     get classes(): ClassMap;
     get styles(): {
@@ -126,10 +147,11 @@ declare class TreeItemBase extends ListItem {
     get requiresToggleButton(): boolean;
     get effectiveLevel(): number;
     get hasParent(): boolean;
-    get _toggleIconName(): "navigation-down-arrow" | "navigation-right-arrow";
+    get hasImage(): boolean;
+    get _toggleIconName(): "navigation-right-arrow" | "navigation-down-arrow";
     get _ariaLabel(): string;
     get _accInfo(): {
-        role: string;
+        role: "treeitem";
         ariaExpanded: boolean | undefined;
         ariaLevel: number;
         posinset: number;
@@ -137,13 +159,13 @@ declare class TreeItemBase extends ListItem {
         ariaSelectedText: string | undefined;
         listItemAriaLabel: string | undefined;
         ariaOwns: string | undefined;
-        ariaHaspopup: ("dialog" | "grid" | "listbox" | "menu" | "tree") | undefined;
+        ariaHaspopup: import("@ui5/webcomponents-base/dist/types.js").AriaHasPopup | undefined;
         ariaLabel: string;
         ariaLabelRadioButton: string;
-        ariaSelected?: boolean | undefined;
-        ariaChecked?: boolean | undefined;
-        tooltip?: string | undefined;
-        ariaKeyShortcuts?: string | undefined;
+        ariaSelected?: boolean;
+        ariaChecked?: boolean;
+        tooltip?: string;
+        ariaKeyShortcuts?: string;
     };
     /**
      * Used to duck-type TreeItem elements without using instanceof
@@ -159,7 +181,6 @@ declare class TreeItemBase extends ListItem {
     _toggleClick(e: MouseEvent | KeyboardEvent): void;
     _onkeydown(e: KeyboardEvent): Promise<void>;
     get iconAccessibleName(): string;
-    static onDefine(): Promise<void>;
 }
 export default TreeItemBase;
 export type { TreeItemBaseToggleEventDetail, TreeItemBaseStepInEventDetail, TreeItemBaseStepOutEventDetail, };
