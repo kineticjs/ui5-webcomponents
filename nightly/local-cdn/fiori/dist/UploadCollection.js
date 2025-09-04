@@ -7,18 +7,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var UploadCollection_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import Icon from "@ui5/webcomponents/dist/Icon.js";
+import Label from "@ui5/webcomponents/dist/Label.js";
+import List from "@ui5/webcomponents/dist/List.js";
+import Title from "@ui5/webcomponents/dist/Title.js";
+import IllustratedMessage from "./IllustratedMessage.js";
 import "./illustrations/Tent.js";
+import "@ui5/webcomponents-icons/dist/upload-to-cloud.js";
 import "@ui5/webcomponents-icons/dist/document.js";
 import { UPLOADCOLLECTION_NO_DATA_TEXT, UPLOADCOLLECTION_NO_DATA_DESCRIPTION, UPLOADCOLLECTION_DRAG_FILE_INDICATOR, UPLOADCOLLECTION_DROP_FILE_INDICATOR, UPLOADCOLLECTION_ARIA_ROLE_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
 import { attachBodyDnDHandler, detachBodyDnDHandler, draggingFiles, } from "./upload-utils/UploadCollectionBodyDnD.js";
 import UploadCollectionDnDOverlayMode from "./types/UploadCollectionDnDMode.js";
 // Template
-import UploadCollectionTemplate from "./UploadCollectionTemplate.js";
+import UploadCollectionTemplate from "./generated/templates/UploadCollectionTemplate.lit.js";
 // Styles
 import UploadCollectionCss from "./generated/themes/UploadCollection.css.js";
 /**
@@ -38,6 +44,9 @@ import UploadCollectionCss from "./generated/themes/UploadCollection.css.js";
  * @since 1.0.0-rc.7
  */
 let UploadCollection = UploadCollection_1 = class UploadCollection extends UI5Element {
+    static async onDefine() {
+        UploadCollection_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
+    }
     constructor() {
         super();
         /**
@@ -113,16 +122,25 @@ let UploadCollection = UploadCollection_1 = class UploadCollection extends UI5El
         this._dndOverlayMode = UploadCollectionDnDOverlayMode.Drag;
     }
     _onItemDelete(e) {
-        this.fireDecoratorEvent("item-delete", { item: e.target });
+        this.fireEvent("item-delete", { item: e.target });
     }
     _onSelectionChange(e) {
-        this.fireDecoratorEvent("selection-change", { selectedItems: e.detail.selectedItems });
+        this.fireEvent("selection-change", { selectedItems: e.detail.selectedItems });
     }
     get classes() {
         return {
             content: {
                 "ui5-uc-content": true,
                 "ui5-uc-content-no-data": this.items.length === 0,
+            },
+            dndOverlay: {
+                "uc-dnd-overlay": true,
+                "uc-drag-overlay": this._dndOverlayMode === UploadCollectionDnDOverlayMode.Drag,
+                "uc-drop-overlay": this._dndOverlayMode === UploadCollectionDnDOverlayMode.Drop,
+            },
+            noFiles: {
+                "uc-no-files": true,
+                "uc-no-files-dnd-overlay": this._showDndOverlay,
             },
         };
     }
@@ -178,16 +196,20 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement })
 ], UploadCollection.prototype, "header", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-fiori")
-], UploadCollection, "i18nBundle", void 0);
 UploadCollection = UploadCollection_1 = __decorate([
     customElement({
         tag: "ui5-upload-collection",
         languageAware: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: UploadCollectionCss,
         template: UploadCollectionTemplate,
+        dependencies: [
+            Icon,
+            Label,
+            List,
+            Title,
+            IllustratedMessage,
+        ],
     })
     /**
      * Fired when an element is dropped inside the drag and drop overlay.
@@ -197,9 +219,8 @@ UploadCollection = UploadCollection_1 = __decorate([
      * @public
      * @native
      */
-    // @event("drop", {
-    // 	bubbles: true,
-    // })
+    ,
+    event("drop")
     /**
      * Fired when the delete button of any item is pressed.
      * @param {HTMLElement} item The `ui5-upload-collection-item` which was deleted.
@@ -207,7 +228,12 @@ UploadCollection = UploadCollection_1 = __decorate([
      */
     ,
     event("item-delete", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when selection is changed by user interaction
@@ -217,7 +243,12 @@ UploadCollection = UploadCollection_1 = __decorate([
      */
     ,
     event("selection-change", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            selectedItems: { type: Array },
+        },
     })
 ], UploadCollection);
 UploadCollection.define();

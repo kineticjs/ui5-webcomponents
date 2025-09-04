@@ -1,14 +1,14 @@
+/// <reference types="openui5" />
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
-import type Popover from "./Popover.js";
-import type DateTimeInput from "./DateTimeInput.js";
-import type { InputAccInfo } from "./Input.js";
-import type TimeSelectionClocks from "./TimeSelectionClocks.js";
+import "@ui5/webcomponents-icons/dist/time-entry-request.js";
+import Popover from "./Popover.js";
+import ResponsivePopover from "./ResponsivePopover.js";
+import Input from "./Input.js";
 import type { TimeSelectionChangeEventDetail } from "./TimePickerInternals.js";
-type ValueStateAnnouncement = Record<Exclude<ValueState, ValueState.None>, string>;
 type TimePickerChangeInputEventDetail = {
     value: string;
     valid: boolean;
@@ -39,7 +39,7 @@ type TimePickerInputEventDetail = TimePickerChangeInputEventDetail;
  * the input field, it must fit to the used time format.
  *
  * Supported format options are pattern-based on Unicode LDML Date Format notation.
- * For more information, see [UTS #35: Unicode Locale Data Markup Language](https://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
+ * For more information, see [UTS #35: Unicode Locale Data Markup Language](http://unicode.org/reports/tr35/#Date_Field_Symbol_Table).
  *
  * For example, if the `format-pattern` is "HH:mm:ss",
  * a valid value string is "11:42:35" and the same is displayed in the input.
@@ -78,13 +78,6 @@ type TimePickerInputEventDetail = TimePickerChangeInputEventDetail;
  * @since 1.0.0-rc.6
  */
 declare class TimePicker extends UI5Element implements IFormInputElement {
-    eventDetails: {
-        change: TimePickerChangeEventDetail;
-        "value-changed": TimePickerChangeEventDetail;
-        input: TimePickerInputEventDetail;
-        open: void;
-        close: void;
-    };
     /**
      * Defines a formatted time value.
      * @default ""
@@ -145,7 +138,7 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
      * Defines the open or closed state of the popover.
      * @public
      * @default false
-     * @since 2.0.0
+     * @since 2.0
      */
     open: boolean;
     /**
@@ -169,20 +162,6 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
      * @since 2.1.0
      */
     accessibleNameRef?: string;
-    /**
-     * Defines the accessible description of the component.
-     * @default undefined
-     * @public
-     * @since 2.14.0
-     */
-    accessibleDescription?: string;
-    /**
-     * Receives id(or many ids) of the elements that describe the input.
-     * @default undefined
-     * @public
-     * @since 2.14.0
-     */
-    accessibleDescriptionRef?: string;
     _isInputsPopoverOpen: boolean;
     /**
      * Defines the value state message that will be displayed as pop up under the `ui5-time-picker`.
@@ -190,32 +169,33 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
      * **Note:** If not specified, a default text (in the respective language) will be displayed.
      *
      * **Note:** The `valueStateMessage` would be displayed,
-     * when the `ui5-time-picker` is in `Information`, `Critical` or `Negative` value state.
+     * when the `ui5-time-picker` is in `Information`, `Warning` or `Error` value state.
      * @since 1.0.0-rc.8
      * @public
      */
     valueStateMessage: Array<HTMLElement>;
-    _timeSelectionClocks?: TimeSelectionClocks;
-    _inputsPopover: Popover;
-    _dateTimeInput: DateTimeInput;
     tempValue?: string;
     static i18nBundle: I18nBundle;
+    static onDefine(): Promise<void>;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     get formFormattedValue(): FormData | string | null;
     onBeforeRendering(): void;
-    get roleDescription(): string;
+    get dateAriaDescription(): string;
     get pickerAccessibleName(): string;
-    get accInfo(): InputAccInfo;
-    get ariaLabelText(): string;
+    get accInfo(): {
+        ariaRoledescription: string;
+        ariaHasPopup: string;
+        ariaRequired: boolean;
+        ariaLabel: string | undefined;
+    };
     /**
      * Currently selected time represented as JavaScript Date instance
      * @public
      * @default null
      */
     get dateValue(): Date | null;
-    get _lastAvailableTime(): string;
     /**
      * @protected
      */
@@ -228,13 +208,10 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
     get _effectiveValue(): string;
     get _timeSelectionValue(): string | undefined;
     get _isPhone(): boolean;
-    get _isMobileDevice(): boolean;
-    get shouldDisplayValueStateMessageInResponsivePopover(): boolean;
     onTimeSelectionChange(e: CustomEvent<TimeSelectionChangeEventDetail>): void;
     _togglePicker(): void;
     submitPickers(): void;
     onResponsivePopoverAfterClose(): void;
-    onResponsivePopoverBeforeOpen(): void;
     onResponsivePopoverAfterOpen(): void;
     /**
      * Opens the Inputs popover.
@@ -258,13 +235,16 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
     onInputsPopoverAfterOpen(): void;
     onInputsPopoverAfterClose(): void;
     _handleInputClick(e: MouseEvent): void;
-    _updateValueAndFireEvents(value: string, normalizeValue: boolean, eventsNames: Array<"input" | "change" | "value-changed">): void;
+    _updateValueAndFireEvents(value: string, normalizeValue: boolean, eventsNames: Array<string>): void;
     _updateValueState(): void;
     _handleInputChange(e: CustomEvent): void;
     _handleInputLiveChange(e: CustomEvent): void;
     _canOpenPicker(): boolean;
     _canOpenInputsPopover(): boolean;
-    _getInputField(): HTMLInputElement | import("./Input.js").default | null;
+    _getPopover(): ResponsivePopover;
+    _getInputsPopover(): Popover;
+    _getInput(): Input;
+    _getInputField(): HTMLInputElement | Input | null;
     _onkeydown(e: KeyboardEvent): void;
     get _isPattern(): boolean;
     getFormat(): import("sap/ui/core/format/DateFormat").default;
@@ -297,14 +277,9 @@ declare class TimePicker extends UI5Element implements IFormInputElement {
      */
     _hideMobileKeyboard(): void;
     _onfocusin(e: FocusEvent): void;
-    get valueStateDefaultText(): string | undefined;
-    get valueStateTextMappings(): ValueStateAnnouncement;
-    get shouldDisplayDefaultValueStateMessage(): boolean;
+    _oninput(e: CustomEvent): void;
     get submitButtonLabel(): string;
     get cancelButtonLabel(): string;
-    get hasValueStateText(): boolean;
-    get hasValueState(): boolean;
-    get shouldDisplayValueStateMessageOnDesktop(): boolean;
     /**
      * @protected
      */

@@ -1,6 +1,5 @@
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import SliderBase from "./SliderBase.js";
 /**
  * @class
@@ -69,9 +68,6 @@ declare class Slider extends SliderBase implements IFormInputElement {
     _valueOnInteractionStart?: number;
     _progressPercentage: number;
     _handlePositionFromStart: number;
-    _lastValidInputValue: string;
-    _tooltipInputValue: string;
-    _tooltipInputValueState: `${ValueState}`;
     get formFormattedValue(): string;
     static i18nBundle: I18nBundle;
     constructor();
@@ -94,7 +90,7 @@ declare class Slider extends SliderBase implements IFormInputElement {
      */
     _onmousedown(e: TouchEvent | MouseEvent): void;
     _onfocusin(): void;
-    _onfocusout(e: FocusEvent): void;
+    _onfocusout(): void;
     /**
      * Called when the user moves the slider
      * @private
@@ -104,7 +100,6 @@ declare class Slider extends SliderBase implements IFormInputElement {
      * @private
      */
     _handleUp(): void;
-    _onkeyup(e: KeyboardEvent): void;
     /** Determines if the press is over the handle
      * @private
      */
@@ -114,8 +109,6 @@ declare class Slider extends SliderBase implements IFormInputElement {
      */
     _updateHandleAndProgress(newValue: number): void;
     _handleActionKeyPress(e: KeyboardEvent): void;
-    _onTooltopForwardFocus(e: CustomEvent): void;
-    get inputValue(): string;
     get styles(): {
         progress: {
             transform: string;
@@ -124,13 +117,22 @@ declare class Slider extends SliderBase implements IFormInputElement {
         handle: {
             [x: string]: string;
         };
+        label: {
+            width: string;
+        };
+        labelContainer: {
+            [x: string]: string;
+            width: string;
+        };
+        tooltip: {
+            visibility: string;
+        };
     };
     get _sliderHandle(): Element;
     get tooltipValue(): string;
     get _ariaDisabled(): true | undefined;
     get _ariaLabelledByText(): string;
-    get _ariaDescribedByInputText(): string;
-    get _ariaLabelledByInputText(): string;
+    static onDefine(): Promise<void>;
     get tickmarksObject(): boolean[];
 }
 export default Slider;

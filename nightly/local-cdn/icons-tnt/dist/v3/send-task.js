@@ -1,7 +1,7 @@
 import { registerIcon } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 
 const name = "send-task";
-const pathData = "M510 143q0 2 .5 4.5t.5 5.5v237q0 37-26 64t-64 27H89q-38 0-64-27t-26-64V153q0-2 .5-4t.5-5l50 33 164 102q18 12 40 12t40-12l164-102zm-247 88q-9 5-19 0L24 91q12-13 28.5-20.5T89 63h332q20 0 36.5 7.5T486 90l-59 39z";
+const pathData = "M254 290L23 98c5-1 8-2 9-2h448c4 0 6 0 7 1zm67 33l168 156c-1 1-4 1-9 1H32c-1 0-5-1-12-2l167-155-25-22C79 376 40 413 20 430L0 448V128c0-3 0-5 1-6l253 211 257-213c1 1 1 4 1 8v320c0 3 0 5-1 6L347 302z";
 const ltr = false;
 const accData = null;
 const collection = "tnt-v3";

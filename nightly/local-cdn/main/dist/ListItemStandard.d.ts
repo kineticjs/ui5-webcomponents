@@ -2,8 +2,6 @@ import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import ListItem from "./ListItem.js";
 import type { IAccessibleListItem } from "./ListItem.js";
 import type WrappingType from "./types/WrappingType.js";
-import type { ExpandableTextTemplateParams } from "./types/ExpandableTextTemplateParams.js";
-type ExpandableTextTemplate = (this: ListItemStandard, params: ExpandableTextTemplateParams) => JSX.Element;
 /**
  * @class
  * The `ui5-li` represents the simplest type of item for a `ui5-list`.
@@ -22,19 +20,14 @@ type ExpandableTextTemplate = (this: ListItemStandard, params: ExpandableTextTem
  * @csspart delete-button - Used to style the button rendered when the list item is in delete mode
  * @csspart radio - Used to style the radio button rendered when the list item is in single selection mode
  * @csspart checkbox - Used to style the checkbox rendered when the list item is in multiple selection mode
+ * @slot {Node[]} default - Defines the text of the component.
+ *
+ * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  * @constructor
  * @extends ListItem
  * @public
  */
 declare class ListItemStandard extends ListItem implements IAccessibleListItem {
-    /**
-     * Defines the text of the component.
-     *
-     * @default undefined
-     * @public
-     * @since 2.10.0
-     */
-    text?: string;
     /**
      * Defines the description displayed right under the item text, if such is present.
      * @default undefined
@@ -91,21 +84,12 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
      */
     accessibleName?: string;
     /**
-     * Defines if the text of the component should wrap when it's too long.
-     * When set to "Normal", the content (title, description) will be wrapped
-     * using the `ui5-expandable-text` component.<br/>
+     * Defines if the text of the component should wrap, they truncate by default.
      *
-     * The text can wrap up to 100 characters on small screens (size S) and
-     * up to 300 characters on larger screens (size M and above). When text exceeds
-     * these limits, it truncates with an ellipsis followed by a text expansion trigger.
-     *
-     * Available options are:
-     * - `None` (default) - The text will truncate with an ellipsis.
-     * - `Normal` - The text will wrap (without truncation).
-     *
+     * **Note:** this property takes affect only if text node is provided to default slot of the component
      * @default "None"
-     * @public
-     * @since 2.10.0
+     * @private
+     * @since 1.5.0
      */
     wrappingType: `${WrappingType}`;
     /**
@@ -114,23 +98,6 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
      */
     hasTitle: boolean;
     _hasImage: boolean;
-    /**
-     * The expandableText template.
-     * @private
-     */
-    expandableTextTemplate?: ExpandableTextTemplate;
-    /**
-     * Defines the custom formatted text of the component.
-     *
-     * **Note:** For optimal text wrapping and a consistent layout, it is strongly recommended to use the `text` property.
-     *
-     * Use the `default` slot only when custom formatting with HTML elements (e.g., `<b>`, `<i>`) is required.
-     * Be aware that wrapping (via `wrappingType="Normal"`) may not function correctly with custom HTML content in the `default` slot.
-     *
-     * If both `text` and `default` slot are used, the `text` property takes precedence.
-     * @public
-     */
-    content: Array<Node>;
     /**
      * **Note:** While the slot allows option for setting custom avatar, to match the
      * design guidelines, please use the `ui5-avatar` with it's default size - S.
@@ -142,21 +109,8 @@ declare class ListItemStandard extends ListItem implements IAccessibleListItem {
      */
     image: Array<HTMLElement>;
     onBeforeRendering(): void;
-    /**
-     * Returns the content text, either from text property or from the default slot
-     * @private
-     */
-    get _textContent(): string;
-    /**
-     * Determines the maximum characters to display based on the current media range.
-     * - Size S: 100 characters
-     * - Size M and larger: 300 characters
-     * @private
-     */
-    get _maxCharacters(): number;
     get displayIconBegin(): boolean;
     get displayIconEnd(): boolean;
     get hasImage(): boolean;
-    static ExpandableTextTemplate?: ExpandableTextTemplate;
 }
 export default ListItemStandard;

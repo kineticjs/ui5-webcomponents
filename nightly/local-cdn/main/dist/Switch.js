@@ -8,18 +8,20 @@ var Switch_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+import { isDesktop, isSafari } from "@ui5/webcomponents-base/dist/Device.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import "@ui5/webcomponents-icons/dist/accept.js";
 import "@ui5/webcomponents-icons/dist/decline.js";
 import "@ui5/webcomponents-icons/dist/less.js";
+import Icon from "./Icon.js";
 import SwitchDesign from "./types/SwitchDesign.js";
 import { FORM_CHECKABLE_REQUIRED } from "./generated/i18n/i18n-defaults.js";
 // Template
-import SwitchTemplate from "./SwitchTemplate.js";
+import SwitchTemplate from "./generated/templates/SwitchTemplate.lit.js";
 // Styles
 import switchCss from "./generated/themes/Switch.css.js";
 /**
@@ -88,13 +90,6 @@ let Switch = Switch_1 = class Switch extends UI5Element {
          * @since 1.16.0
          */
         this.required = false;
-        /**
-         * Defines the form value of the component.
-         * @default ""
-         * @since 2.12.0
-         * @public
-         */
-        this.value = "";
     }
     get formValidityMessage() {
         return Switch_1.i18nBundle.getText(FORM_CHECKABLE_REQUIRED);
@@ -106,10 +101,7 @@ let Switch = Switch_1 = class Switch extends UI5Element {
         return this.getFocusDomRefAsync();
     }
     get formFormattedValue() {
-        if (this.checked) {
-            return this.value || "on";
-        }
-        return null;
+        return this.checked ? "on" : null;
     }
     get sapNextIcon() {
         return this.checked ? "accept" : "less";
@@ -133,9 +125,9 @@ let Switch = Switch_1 = class Switch extends UI5Element {
     toggle() {
         if (!this.disabled) {
             this.checked = !this.checked;
-            const changePrevented = !this.fireDecoratorEvent("change");
+            const changePrevented = !this.fireEvent("change", null, true);
             // Angular two way data binding;
-            const valueChangePrevented = !this.fireDecoratorEvent("value-changed");
+            const valueChangePrevented = !this.fireEvent("value-changed", null, true);
             if (changePrevented || valueChangePrevented) {
                 this.checked = !this.checked;
             }
@@ -154,7 +146,20 @@ let Switch = Switch_1 = class Switch extends UI5Element {
         return this.graphical ? "" : this.textOff;
     }
     get effectiveTabIndex() {
-        return this.disabled ? undefined : 0;
+        return this.disabled ? undefined : "0";
+    }
+    get classes() {
+        const hasLabel = this.graphical || this.textOn || this.textOff;
+        return {
+            main: {
+                "ui5-switch--desktop": isDesktop(),
+                "ui5-switch--disabled": this.disabled,
+                "ui5-switch--checked": this.checked,
+                "ui5-switch--semantic": this.graphical,
+                "ui5-switch--no-label": !hasLabel,
+                "ui5-switch--safari": isSafari(),
+            },
+        };
     }
     get effectiveAriaDisabled() {
         return this.disabled ? "true" : undefined;
@@ -170,6 +175,9 @@ let Switch = Switch_1 = class Switch extends UI5Element {
     }
     get ariaLabelText() {
         return [getEffectiveAriaLabelText(this), this.hiddenText].join(" ").trim();
+    }
+    static async onDefine() {
+        Switch_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
 };
 __decorate([
@@ -202,39 +210,23 @@ __decorate([
 __decorate([
     property()
 ], Switch.prototype, "name", void 0);
-__decorate([
-    property()
-], Switch.prototype, "value", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], Switch, "i18nBundle", void 0);
 Switch = Switch_1 = __decorate([
     customElement({
         tag: "ui5-switch",
         formAssociated: true,
         languageAware: true,
         styles: switchCss,
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: SwitchTemplate,
+        dependencies: [Icon],
     })
     /**
      * Fired when the component checked state changes.
      * @public
+     * @allowPreventDefault
      */
     ,
-    event("change", {
-        bubbles: true,
-        cancelable: true,
-    })
-    /**
-     * Fired to make Angular two way data binding work properly.
-     * @private
-     */
-    ,
-    event("value-changed", {
-        bubbles: true,
-        cancelable: true,
-    })
+    event("change")
 ], Switch);
 Switch.define();
 export default Switch;

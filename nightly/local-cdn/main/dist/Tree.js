@@ -8,15 +8,20 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import DragAndDropHandler from "./delegate/DragAndDropHandler.js";
+import DragRegistry from "@ui5/webcomponents-base/dist/util/dragAndDrop/DragRegistry.js";
+import findClosestPosition from "@ui5/webcomponents-base/dist/util/dragAndDrop/findClosestPosition.js";
+import Orientation from "@ui5/webcomponents-base/dist/types/Orientation.js";
 import MovePlacement from "@ui5/webcomponents-base/dist/types/MovePlacement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
-import "./TreeItem.js";
-import "./TreeItemCustom.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import DropIndicator from "./DropIndicator.js";
+import TreeItem from "./TreeItem.js";
+import TreeItemCustom from "./TreeItemCustom.js";
+import TreeList from "./TreeList.js";
 import ListAccessibleRole from "./types/ListAccessibleRole.js";
 // Template
-import TreeTemplate from "./TreeTemplate.js";
+import TreeTemplate from "./generated/templates/TreeTemplate.lit.js";
 // Styles
 import TreeCss from "./generated/themes/Tree.css.js";
 /**
@@ -64,7 +69,7 @@ import TreeCss from "./generated/themes/Tree.css.js";
  */
 let Tree = class Tree extends UI5Element {
     constructor() {
-        super();
+        super(...arguments);
         /**
          * Defines the selection mode of the component. Since the tree uses a `ui5-list` to display its structure,
          * the tree modes are exactly the same as the list modes, and are all applicable.
@@ -72,15 +77,12 @@ let Tree = class Tree extends UI5Element {
          * @default "None"
          */
         this.selectionMode = "None";
-        // Initialize the DragAndDropHandler with the necessary configurations
-        // The handler will manage the drag and drop operations for the tree items.
-        this._dragAndDropHandler = new DragAndDropHandler(this, {
-            getItems: this._getItems.bind(this),
-            getDropIndicator: () => this.dropIndicatorDOM,
-            transformElement: this._transformElement.bind(this),
-            validateDraggedElement: this._validateDraggedElement.bind(this),
-            filterPlacements: this._filterPlacements.bind(this),
-        });
+    }
+    onEnterDOM() {
+        DragRegistry.subscribe(this);
+    }
+    onExitDOM() {
+        DragRegistry.unsubscribe(this);
     }
     onBeforeRendering() {
         this._prepareTreeItems();
@@ -99,20 +101,80 @@ let Tree = class Tree extends UI5Element {
     get _role() {
         return ListAccessibleRole.Tree;
     }
+    get _label() {
+        return getEffectiveAriaLabelText(this);
+    }
     get _hasHeader() {
         return !!this.header.length;
     }
     _ondragenter(e) {
-        this._dragAndDropHandler.ondragenter(e);
+        e.preventDefault();
     }
     _ondragleave(e) {
-        this._dragAndDropHandler.ondragleave(e);
+        if (e.relatedTarget instanceof Node && this.shadowRoot.contains(e.relatedTarget)) {
+            return;
+        }
+        this.dropIndicatorDOM.targetReference = null;
     }
     _ondragover(e) {
-        this._dragAndDropHandler.ondragover(e);
+        const draggedElement = DragRegistry.getDraggedElement();
+        const allLiNodesTraversed = []; // use the only <li> nodes to determine positioning
+        if (!(e.target instanceof HTMLElement) || !draggedElement) {
+            return;
+        }
+        this.walk(item => {
+            allLiNodesTraversed.push(item.shadowRoot.querySelector("li"));
+        });
+        const closestPosition = findClosestPosition(allLiNodesTraversed, e.clientY, Orientation.Vertical);
+        if (!closestPosition) {
+            this.dropIndicatorDOM.targetReference = null;
+            return;
+        }
+        let placements = closestPosition.placements;
+        closestPosition.element = closestPosition.element.getRootNode().host;
+        if (draggedElement.contains(closestPosition.element)) {
+            return;
+        }
+        if (closestPosition.element === draggedElement) {
+            placements = placements.filter(placement => placement !== MovePlacement.On);
+        }
+        const placementAccepted = placements.some(placement => {
+            const closestElement = closestPosition.element;
+            const beforeItemMovePrevented = !this.fireEvent("move-over", {
+                source: {
+                    element: draggedElement,
+                },
+                destination: {
+                    element: closestElement,
+                    placement,
+                },
+            }, true);
+            if (beforeItemMovePrevented) {
+                e.preventDefault();
+                this.dropIndicatorDOM.targetReference = closestElement;
+                this.dropIndicatorDOM.placement = placement;
+                return true;
+            }
+            return false;
+        });
+        if (!placementAccepted) {
+            this.dropIndicatorDOM.targetReference = null;
+        }
     }
     _ondrop(e) {
-        this._dragAndDropHandler.ondrop(e);
+        e.preventDefault();
+        const draggedElement = DragRegistry.getDraggedElement();
+        this.fireEvent("move", {
+            source: {
+                element: draggedElement,
+            },
+            destination: {
+                element: this.dropIndicatorDOM.targetReference,
+                placement: this.dropIndicatorDOM.placement,
+            },
+        });
+        draggedElement.focus();
+        this.dropIndicatorDOM.targetReference = null;
     }
     _onListItemStepIn(e) {
         const treeItem = e.detail.item;
@@ -132,41 +194,38 @@ let Tree = class Tree extends UI5Element {
     }
     _onListItemToggle(e) {
         const treeItem = e.detail.item;
-        const defaultPrevented = !this.fireDecoratorEvent("item-toggle", { item: treeItem });
+        const defaultPrevented = !this.fireEvent("item-toggle", { item: treeItem }, true);
         if (!defaultPrevented) {
             treeItem.toggle();
         }
     }
     _onListItemClick(e) {
         const treeItem = e.detail.item;
-        if (!this.fireDecoratorEvent("item-click", { item: treeItem })) {
+        if (!this.fireEvent("item-click", { item: treeItem }, true)) {
             e.preventDefault();
         }
     }
     _onListItemDelete(e) {
         const treeItem = e.detail.item;
-        this.fireDecoratorEvent("item-delete", { item: treeItem });
+        this.fireEvent("item-delete", { item: treeItem });
     }
     _onListItemFocus(e) {
         const treeItem = e.detail.item;
-        this.fireDecoratorEvent("item-focus", { item: treeItem });
+        this.fireEvent("item-focus", { item: treeItem });
     }
     _onListItemMouseOver(e) {
         const target = e.target;
         if (this._isInstanceOfTreeItemBase(target)) {
-            this.fireDecoratorEvent("item-mouseover", { item: target });
+            this.fireEvent("item-mouseover", { item: target });
         }
     }
     _onListItemMouseOut(e) {
         const target = e.target;
         if (this._isInstanceOfTreeItemBase(target)) {
-            this.fireDecoratorEvent("item-mouseout", { item: target });
+            this.fireEvent("item-mouseout", { item: target });
         }
     }
     _onListSelectionChange(e) {
-        if (!e.detail || !e.detail.previouslySelectedItems || !e.detail.selectedItems) {
-            return;
-        }
         const previouslySelectedItems = e.detail.previouslySelectedItems;
         const selectedItems = e.detail.selectedItems;
         const targetItem = e.detail.targetItem;
@@ -176,7 +235,7 @@ let Tree = class Tree extends UI5Element {
         selectedItems.forEach(item => {
             item.selected = true;
         });
-        this.fireDecoratorEvent("selection-change", {
+        this.fireEvent("selection-change", {
             previouslySelectedItems,
             selectedItems,
             targetItem,
@@ -225,28 +284,6 @@ let Tree = class Tree extends UI5Element {
     walk(callback) {
         walkTree(this, 1, callback);
     }
-    _getItems() {
-        const allLiNodesTraversed = [];
-        this.walk(item => {
-            allLiNodesTraversed.push(item.shadowRoot.querySelector("li"));
-        });
-        return allLiNodesTraversed;
-    }
-    _transformElement(element) {
-        // Get the host element from shadow DOM
-        return element.getRootNode().host;
-    }
-    _validateDraggedElement(draggedElement, targetElement) {
-        // Don't allow dropping on itself or its children
-        return !draggedElement.contains(targetElement);
-    }
-    _filterPlacements(placements, draggedElement, targetElement) {
-        // Filter out MovePlacement.On when dragged element is the same as target
-        if (targetElement === draggedElement) {
-            return placements.filter(placement => placement !== MovePlacement.On);
-        }
-        return placements;
-    }
     _isInstanceOfTreeItemBase(object) {
         return "isTreeItem" in object;
     }
@@ -270,12 +307,6 @@ __decorate([
     property()
 ], Tree.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property()
-], Tree.prototype, "accessibleDescription", void 0);
-__decorate([
-    property()
-], Tree.prototype, "accessibleDescriptionRef", void 0);
-__decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true, "default": true })
 ], Tree.prototype, "items", void 0);
 __decorate([
@@ -284,9 +315,15 @@ __decorate([
 Tree = __decorate([
     customElement({
         tag: "ui5-tree",
-        renderer: jsxRenderer,
+        renderer: litRender,
         styles: TreeCss,
         template: TreeTemplate,
+        dependencies: [
+            TreeList,
+            TreeItem,
+            TreeItemCustom,
+            DropIndicator,
+        ],
     })
     /**
      * Fired when a tree item is expanded or collapsed.
@@ -295,12 +332,17 @@ Tree = __decorate([
      * This may be handy for example if you want to dynamically load tree items upon the user expanding a node.
      * Even if you prevented the event's default behavior, you can always manually call `toggle()` on a tree item.
      * @param {HTMLElement} item the toggled item.
+     * @allowPreventDefault
      * @public
      */
     ,
     event("item-toggle", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when the mouse cursor enters the tree item borders.
@@ -310,7 +352,12 @@ Tree = __decorate([
      */
     ,
     event("item-mouseover", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when the mouse cursor leaves the tree item borders.
@@ -320,17 +367,27 @@ Tree = __decorate([
      */
     ,
     event("item-mouseout", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when a tree item is activated.
+     * @allowPreventDefault
      * @param {HTMLElement} item The clicked item.
      * @public
      */
     ,
     event("item-click", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when the Delete button of any tree item is pressed.
@@ -342,7 +399,12 @@ Tree = __decorate([
      */
     ,
     event("item-delete", {
-        bubbles: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when a tree item is focused.
@@ -351,7 +413,9 @@ Tree = __decorate([
      */
     ,
     event("item-focus", {
-        bubbles: true,
+        detail: {
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when selection is changed by user interaction
@@ -363,32 +427,20 @@ Tree = __decorate([
      */
     ,
     event("selection-change", {
-        bubbles: true,
-    })
-    /**
-     * Fired when a movable tree item is moved over a potential drop target during a drag-and-drop operation.
-     *
-     * If the new position is valid, prevent the default action of the event using `preventDefault()`.
-     * @param {object} source Contains information about the moved element under the `element` property.
-     * @param {object} destination Contains information about the destination of the moved element. Has `element` and `placement` properties.
-     * @public
-     */
-    ,
-    event("move", {
-        bubbles: true,
-    })
-    /**
-     * Fired when a movable tree item is dropped onto a drop target.
-     *
-     * **Note:** The `move` event is fired only if there was a preceding `move-over` event with prevented default action.
-     * @param {object} source Contains information about the moved element under the `element` property.
-     * @param {object} destination Contains information about the destination of the moved element. Has `element` and `placement` properties.
-     * @public
-     */
-    ,
-    event("move-over", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            selectedItems: { type: Array },
+            /**
+             * @public
+             */
+            previouslySelectedItems: { type: Array },
+            /**
+             * @public
+             */
+            targetItem: { type: HTMLElement },
+        },
     })
 ], Tree);
 const walkTree = (el, level, callback) => {

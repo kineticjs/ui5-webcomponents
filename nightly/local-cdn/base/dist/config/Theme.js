@@ -4,11 +4,7 @@ import applyTheme from "../theming/applyTheme.js";
 import getThemeDesignerTheme from "../theming/getThemeDesignerTheme.js";
 import { DEFAULT_THEME, SUPPORTED_THEMES } from "../generated/AssetParameters.js";
 import { boot, isBooted } from "../Boot.js";
-import { attachConfigurationReset } from "./ConfigurationReset.js";
 let curTheme;
-attachConfigurationReset(() => {
-    curTheme = undefined;
-});
 /**
  * Returns the current theme.
  * @public
@@ -55,7 +51,8 @@ const getDefaultTheme = () => {
  * @returns {boolean}
  */
 const isTheme = (theme) => {
-    return getTheme() === theme;
+    const currentTheme = getTheme();
+    return currentTheme === theme || currentTheme === `${theme}_exp`;
 };
 /**
  * Returns if the currently set theme is part of legacy theme families ("sap_fiori_3").

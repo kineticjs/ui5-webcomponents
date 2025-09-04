@@ -6,13 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var Label_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { LABEL_COLON } from "./generated/i18n/i18n-defaults.js";
 // Template
-import LabelTemplate from "./LabelTemplate.js";
+import LabelTemplate from "./generated/templates/LabelTemplate.lit.js";
 // Styles
 import labelCss from "./generated/themes/Label.css.js";
 /**
@@ -69,6 +69,9 @@ let Label = Label_1 = class Label extends UI5Element {
          */
         this.wrappingType = "Normal";
     }
+    static async onDefine() {
+        Label_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    }
     _onclick() {
         if (!this.for) {
             return;
@@ -94,13 +97,10 @@ __decorate([
 __decorate([
     property()
 ], Label.prototype, "wrappingType", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], Label, "i18nBundle", void 0);
 Label = Label_1 = __decorate([
     customElement({
         tag: "ui5-label",
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: LabelTemplate,
         styles: labelCss,
         languageAware: true,

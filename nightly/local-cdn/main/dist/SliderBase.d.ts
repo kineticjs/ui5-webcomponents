@@ -1,6 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import type { SliderTooltipChangeEventDetails } from "./SliderTooltip.js";
+import type { PassiveEventListenerObject } from "@ui5/webcomponents-base/dist/types.js";
+import "@ui5/webcomponents-icons/dist/direction-arrows.js";
 type StateStorage = {
     [key: string]: number | undefined;
 };
@@ -10,10 +11,6 @@ type DirectionStart = "left" | "right";
  * @public
  */
 declare abstract class SliderBase extends UI5Element {
-    eventDetails: {
-        "change": void;
-        "input": void;
-    };
     /**
      * Defines the minimum value of the slider.
      * @default 0
@@ -68,16 +65,6 @@ declare abstract class SliderBase extends UI5Element {
      */
     showTooltip: boolean;
     /**
-     *
-     * Indicates whether input fields should be used as tooltips for the handles.
-     *
-     * **Note:** Setting this option to true will only work if showTooltip is set to true.
-     * **Note:** In order for the component to comply with the accessibility standard, it is recommended to set the editableTooltip property to true.
-     * @default false
-     * @public
-     */
-    editableTooltip: boolean;
-    /**
      * Defines whether the slider is in disabled state.
      * @default false
      * @public
@@ -93,19 +80,14 @@ declare abstract class SliderBase extends UI5Element {
     /**
      * @private
      */
-    value: number;
-    /**
-     * @private
-     */
-    _tooltipsOpen: boolean;
+    _tooltipVisibility: string;
     _labelsOverlapping: boolean;
     _hiddenTickmarks: boolean;
-    _isInputValueValid: boolean;
     _resizeHandler: ResizeObserverCallback;
     _moveHandler: (e: TouchEvent | MouseEvent) => void;
-    _upHandler: (e: TouchEvent | MouseEvent) => void;
-    _windowMouseoutHandler: (e: MouseEvent) => void;
+    _upHandler: () => void;
     _stateStorage: StateStorage;
+    _ontouchstart: PassiveEventListenerObject;
     notResized: boolean;
     _isUserInteraction: boolean;
     _isInnerElementFocusing: boolean;
@@ -114,14 +96,17 @@ declare abstract class SliderBase extends UI5Element {
     _oldMax?: number;
     _labelWidth: number;
     _labelValues?: Array<string>;
-    _valueOnInteractionStart?: number;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     constructor();
     _handleMove(e: TouchEvent | MouseEvent): void;
-    _handleUp(e: TouchEvent | MouseEvent): void;
+    _handleUp(): void;
     _onmousedown(e: TouchEvent | MouseEvent): void;
     _handleActionKeyPress(e: Event): void;
-    abstract tickmarksObject: Array<boolean>;
+    abstract styles: {
+        label: object;
+        labelContainer: object;
+    };
+    abstract tickmarksObject: any;
     abstract _ariaLabelledByText: string;
     static get ACTION_KEYS(): ((event: KeyboardEvent) => boolean)[];
     static get MIN_SPACE_BETWEEN_TICKMARKS(): number;
@@ -130,7 +115,7 @@ declare abstract class SliderBase extends UI5Element {
         HIDDEN: string;
     };
     static get renderer(): import("@ui5/webcomponents-base/dist/UI5Element.js").Renderer;
-    static get styles(): string;
+    static get styles(): import("@ui5/webcomponents-base/dist/types.js").StyleData;
     get classes(): {
         root: {
             "ui5-slider-root-phone": boolean;
@@ -152,9 +137,7 @@ declare abstract class SliderBase extends UI5Element {
      */
     _onmouseout(): void;
     _onkeydown(e: KeyboardEvent): void;
-    _onTooltipChange(e: CustomEvent<SliderTooltipChangeEventDetails>): void;
-    _updateValueFromInput(fieldValue: string): void;
-    _onKeyupBase(): void;
+    _onkeyup(): void;
     /**
      * Flags if an inner element is currently being focused
      * @private
@@ -281,7 +264,8 @@ declare abstract class SliderBase extends UI5Element {
      */
     _createLabels(): void;
     _handleActionKeyPressBase(e: KeyboardEvent, affectedPropName: string): number;
-    static _isIncreaseValueAction(e: KeyboardEvent, directionStart: DirectionStart): boolean;
+    static _isDecreaseValueAction(e: KeyboardEvent): boolean;
+    static _isIncreaseValueAction(e: KeyboardEvent): boolean;
     static _isBigStepAction(e: KeyboardEvent): boolean;
     get _tickmarksCount(): number;
     /**
@@ -303,11 +287,7 @@ declare abstract class SliderBase extends UI5Element {
     get _effectiveStep(): number;
     get _effectiveMin(): number;
     get _effectiveMax(): number;
-    get _tabIndex(): 0 | -1;
-    get _ariaKeyshortcuts(): "F2" | undefined;
-    get _ariaDescribedByHandleText(): "ui5-slider-InputDesc" | undefined;
-    get _ariaLabel(): string;
-    get _ariaDescribedByInputText(): string;
-    get _ariaLabelledByInputText(): string;
+    get _tabIndex(): "-1" | "0";
+    get _ariaLabelledByHandleRefs(): string;
 }
 export default SliderBase;

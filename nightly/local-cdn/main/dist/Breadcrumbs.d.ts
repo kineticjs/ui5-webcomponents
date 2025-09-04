@@ -6,24 +6,19 @@ import type { AccessibilityAttributes } from "@ui5/webcomponents-base/dist/types
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import BreadcrumbsDesign from "./types/BreadcrumbsDesign.js";
-import "./BreadcrumbsItem.js";
-import type BreadcrumbsItem from "./BreadcrumbsItem.js";
 import type BreadcrumbsSeparator from "./types/BreadcrumbsSeparator.js";
-import type Link from "./Link.js";
+import BreadcrumbsItem from "./BreadcrumbsItem.js";
+import Link from "./Link.js";
 import type { LinkClickEventDetail } from "./Link.js";
-import type Label from "./Label.js";
-import type ResponsivePopover from "./ResponsivePopover.js";
+import ResponsivePopover from "./ResponsivePopover.js";
 import type { ListSelectionChangeEventDetail } from "./List.js";
+import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 type BreadcrumbsItemClickEventDetail = {
     item: BreadcrumbsItem;
-    altKey?: boolean;
-    ctrlKey?: boolean;
-    metaKey?: boolean;
-    shiftKey?: boolean;
-};
-type FocusAdaptor = ITabbable & {
-    getlabelWrapper: () => Element | null;
-    forcedTabIndex: string;
+    altKey: boolean;
+    ctrlKey: boolean;
+    metaKey: boolean;
+    shiftKey: boolean;
 };
 /**
  * @class
@@ -55,9 +50,6 @@ type FocusAdaptor = ITabbable & {
  * @since 1.0.0-rc.15
  */
 declare class Breadcrumbs extends UI5Element {
-    eventDetails: {
-        "item-click": BreadcrumbsItemClickEventDetail;
-    };
     /**
      * Defines the visual appearance of the last BreadcrumbsItem.
      *
@@ -91,7 +83,6 @@ declare class Breadcrumbs extends UI5Element {
     _onResizeHandler: ResizeObserverCallback;
     _breadcrumbItemWidths: WeakMap<BreadcrumbsItem, number>;
     _dropdownArrowLinkWidth: number;
-    _labelFocusAdaptor: FocusAdaptor;
     responsivePopover?: ResponsivePopover;
     static i18nBundle: I18nBundle;
     constructor();
@@ -107,12 +98,6 @@ declare class Breadcrumbs extends UI5Element {
      * @private
      */
     _getFocusableItems(): ITabbable[];
-    getFocusDomRef(): HTMLElement | undefined;
-    /**
-     * Returns the translatable accessible name for the popover
-     * @private
-     */
-    get _accessibleNamePopover(): string;
     _onfocusin(e: FocusEvent): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
@@ -125,7 +110,6 @@ declare class Breadcrumbs extends UI5Element {
     _getElementWidth(element: HTMLElement): number;
     _getTotalContentWidth(): number;
     _onLinkPress(e: CustomEvent<LinkClickEventDetail>): void;
-    _onLabelPress(e: MouseEvent | KeyboardEvent): void;
     _onOverflowListItemSelect(e: CustomEvent<ListSelectionChangeEventDetail>): void;
     _respPopover(): ResponsivePopover;
     _toggleRespPopover(): void;
@@ -136,14 +120,9 @@ declare class Breadcrumbs extends UI5Element {
     _preprocessItems(): void;
     _getItemPositionText(position: number, size: number): string;
     _getItemAccessibleName(item: BreadcrumbsItem, position: number, size: number): string;
-    getCurrentLocationLabelWrapper(): HTMLElement | null;
     get _visibleItems(): BreadcrumbsItem[];
-    get _endsWithCurrentLinkItem(): string | 0 | undefined;
-    get _endsWithCurrentLocation(): boolean;
-    get _currentLocationText(): string;
-    get _currentLocationLabel(): Label | null;
+    get _endsWithCurrentPageItem(): boolean;
     get _isDropdownArrowFocused(): boolean;
-    get _isCurrentLocationLabelFocused(): boolean | null;
     /**
      * Returns the maximum allowed count of items in the overflow
      * with respect to the UX requirement to never overflow the last visible item
@@ -159,18 +138,9 @@ declare class Breadcrumbs extends UI5Element {
      */
     get _overflowItemsData(): BreadcrumbsItem[];
     /**
-     * Returns all items that should be displayed in the popover on mobile devices
-     * @private
-     */
-    get _mobilePopoverItems(): BreadcrumbsItem[];
-    /**
      * Getter for the list of abstract breadcrumb items to be rendered as links outside the overflow
      */
     get _linksData(): BreadcrumbsItem[];
-    /**
-     * Getter for accessible name of the current location. Includes the position of the current location and the size of the breadcrumbs
-     */
-    get _currentLocationAccName(): string;
     /**
      * Getter for the list of links corresponding to the abstract breadcrumb items
      */
@@ -181,6 +151,7 @@ declare class Breadcrumbs extends UI5Element {
     get _accessibleNameText(): string;
     get _dropdownArrowAccessibleNameText(): string;
     get _cancelButtonText(): string;
+    static onDefine(): Promise<void>;
 }
 export default Breadcrumbs;
 export type { BreadcrumbsItemClickEventDetail, };

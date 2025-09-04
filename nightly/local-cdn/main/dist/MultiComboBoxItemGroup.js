@@ -5,20 +5,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
+import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import MultiComboBoxItemGroupTemplate from "./MultiComboBoxItemGroupTemplate.js";
-import ComboBoxItemGroup from "./ComboBoxItemGroup.js";
 /**
  * @class
  * The `ui5-mcb-item-group` is type of suggestion item,
  * that can be used to split the `ui5-multi-combobox` suggestions into groups.
  * @constructor
- * @extends ComboBoxItemGroup
+ * @extends UI5Element
+ * @abstract
  * @public
  * @implements {IMultiComboBoxItem}
- * @since 2.0.0
+ * @since 2.0
  */
-let MultiComboBoxItemGroup = class MultiComboBoxItemGroup extends ComboBoxItemGroup {
+let MultiComboBoxItemGroup = class MultiComboBoxItemGroup extends UI5Element {
     /**
      * Used to avoid tag name checks
      * @protected
@@ -32,23 +33,19 @@ let MultiComboBoxItemGroup = class MultiComboBoxItemGroup extends ComboBoxItemGr
     get stableDomRef() {
         return this.getAttribute("stable-dom-ref") || `${this._id}-stable-dom-ref`;
     }
-    getFocusDomRef() {
-        return this.shadowRoot.querySelector("[ui5-li-group-header]");
-    }
 };
+__decorate([
+    property()
+], MultiComboBoxItemGroup.prototype, "headerText", void 0);
 __decorate([
     slot({
         "default": true,
         invalidateOnChildChange: true,
-        individualSlots: true,
         type: HTMLElement,
     })
 ], MultiComboBoxItemGroup.prototype, "items", void 0);
 MultiComboBoxItemGroup = __decorate([
-    customElement({
-        tag: "ui5-mcb-item-group",
-        template: MultiComboBoxItemGroupTemplate,
-    })
+    customElement("ui5-mcb-item-group")
 ], MultiComboBoxItemGroup);
 MultiComboBoxItemGroup.define();
 const isInstanceOfMultiComboBoxItemGroup = (object) => {

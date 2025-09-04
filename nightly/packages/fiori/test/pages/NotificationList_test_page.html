@@ -6,12 +6,14 @@
 	<title>NotificationListItem and NotificationListGroupItem</title>
 
 
+	
 
 
 	<script>// delete Document.prototype.adoptedStyleSheets;</script>
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-EyFc8Vhq.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/NotificationList_test_page-6gQ2UF1q.css">
+	
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-2f67e5db.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/NotificationList_test_page-49bcf0a8.css">
 </head>
 
 <body class="notificationlist_test_page1auto">
@@ -218,15 +220,15 @@
 	<br >
 	<ui5-button>Some button</ui5-button>
 	<script>
-		notificationList.addEventListener("ui5-item-click", function(event) {
+		notificationList.addEventListener("ui5-itemClick", function(event) {
 			clickInput.value = event.detail.item.titleText;
 		});
 
-		notificationList.addEventListener("ui5-item-close", function(event) {
+		notificationList.addEventListener("ui5-itemClose", function(event) {
 			closeInput.value = event.detail.item.titleText;
 		});
 
-		notificationList.addEventListener("ui5-item-toggle", function(event) {
+		notificationList.addEventListener("ui5-itemToggle", function(event) {
 			toggleInput.value = event.detail.item.titleText;
 		});
 

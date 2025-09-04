@@ -9,12 +9,12 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
-import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
-import CardHeaderTemplate from "./CardHeaderTemplate.js";
+import { isFirefox, isDesktop, } from "@ui5/webcomponents-base/dist/Device.js";
+import CardHeaderTemplate from "./generated/templates/CardHeaderTemplate.lit.js";
 import { AVATAR_TOOLTIP, ARIA_ROLEDESCRIPTION_CARD_HEADER, ARIA_ROLEDESCRIPTION_INTERACTIVE_CARD_HEADER, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import cardHeaderCss from "./generated/themes/CardHeader.css.js";
@@ -46,7 +46,7 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
         super(...arguments);
         /**
          * Defines if the component would be interactive,
-         * e.g gets hover effect and `click` event is fired, when pressed.
+         * e.g gets hover effect, gets focus outline and `click` event is fired, when pressed.
          * @default false
          * @public
         */
@@ -66,6 +66,16 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
             this.setAttribute("desktop", "");
         }
     }
+    get classes() {
+        return {
+            root: {
+                "ui5-card-header": true,
+                "ui5-card-header--interactive": this.interactive,
+                "ui5-card-header--active": this.interactive && this._headerActive,
+                "ui5-card-header-ff": isFirefox(),
+            },
+        };
+    }
     get _root() {
         return this.shadowRoot.querySelector(".ui5-card-header");
     }
@@ -73,7 +83,7 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
         return this.interactive ? CardHeader_1.i18nBundle.getText(ARIA_ROLEDESCRIPTION_INTERACTIVE_CARD_HEADER) : CardHeader_1.i18nBundle.getText(ARIA_ROLEDESCRIPTION_CARD_HEADER);
     }
     get ariaRoleFocusableElement() {
-        return this.interactive ? "button" : "group";
+        return this.interactive ? "button" : null;
     }
     get ariaCardAvatarLabel() {
         return CardHeader_1.i18nBundle.getText(AVATAR_TOOLTIP);
@@ -100,6 +110,9 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
     get hasAction() {
         return !!this.action.length;
     }
+    static async onDefine() {
+        CardHeader_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    }
     _actionsFocusin() {
         this._root.classList.add("ui5-card-header-hide-focus");
     }
@@ -110,7 +123,7 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
         // prevents the native browser "click" event from firing
         e.stopImmediatePropagation();
         if (this.interactive && this._root.contains(e.target)) {
-            this.fireDecoratorEvent("click");
+            this.fireEvent("click");
         }
     }
     _keydown(e) {
@@ -121,7 +134,7 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
         const space = isSpace(e);
         this._headerActive = enter || space;
         if (enter) {
-            this.fireDecoratorEvent("click");
+            this.fireEvent("click");
             return;
         }
         if (space) {
@@ -135,7 +148,7 @@ let CardHeader = CardHeader_1 = class CardHeader extends UI5Element {
         const space = isSpace(e);
         this._headerActive = false;
         if (space) {
-            this.fireDecoratorEvent("click");
+            this.fireEvent("click");
         }
     }
 };
@@ -163,14 +176,11 @@ __decorate([
 __decorate([
     slot()
 ], CardHeader.prototype, "action", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], CardHeader, "i18nBundle", void 0);
 CardHeader = CardHeader_1 = __decorate([
     customElement({
         tag: "ui5-card-header",
         languageAware: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: CardHeaderTemplate,
         styles: cardHeaderCss,
     })
@@ -181,9 +191,7 @@ CardHeader = CardHeader_1 = __decorate([
      * @public
      */
     ,
-    event("click", {
-        bubbles: true,
-    })
+    event("click")
 ], CardHeader);
 CardHeader.define();
 export default CardHeader;

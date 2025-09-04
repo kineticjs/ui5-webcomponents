@@ -7,16 +7,18 @@
 	<title>ui5-list / ui5-li</title>
 
 
+	
 
 
+	
 
 	<style>
 		[ui5-avatar] img {
 			object-fit: contain;
 		}
 	</style>
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-BhC2_dZE.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/List_test_page-kUZOXwBS.css">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-046abc37.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/List_test_page-bd80d576.css">
 </head>
 
 <body class="list_test_page1auto">
@@ -145,17 +147,17 @@
 	<ui5-list id="listWithDesc">
 		<ui5-li description="2GB RAM, Intel i7 4.5 GHz">Laptop HP
 			<ui5-avatar slot="image" shape="Square">
-				<img src="/ui5-webcomponents/nightly/assets/HT-1000-BiqZozDV.jpg" alt="Woman image">
+				<img src="/ui5-webcomponents/nightly/assets/HT-1000-59a0ea5a.jpg" alt="Woman image">
 			</ui5-avatar>
 		</ui5-li>
 		<ui5-li description="2GB RAM, Intel i7 4.5 GHz">Audio cabel
 			<ui5-avatar slot="image" shape="Square">
-				<img src="/ui5-webcomponents/nightly/assets/HT-2026-Bts79zak.jpg" alt="Woman image">
+				<img src="/ui5-webcomponents/nightly/assets/HT-2026-8d3d321d.jpg" alt="Woman image">
 			</ui5-avatar>
 		</ui5-li>
 		<ui5-li description="2GB RAM, Intel i7 4.5 GHz">DVD set
 			<ui5-avatar slot="image" shape="Square">
-				<img src="/ui5-webcomponents/nightly/assets/HT-2002-F2pD6qrf.jpg" alt="Woman image">
+				<img src="/ui5-webcomponents/nightly/assets/HT-2002-0e49d270.jpg" alt="Woman image">
 			</ui5-avatar>
 		</ui5-li>
 	</ui5-list>
@@ -230,7 +232,7 @@
 	<ui5-list>
 		<ui5-li id="image-slot-li2"> Avatar inside image slot
 			<ui5-avatar id="image-slot-img" slot="image">
-				<img src="/ui5-webcomponents/nightly/assets/woman_avatar_5-C3UK-oZV.png" alt="Woman image">
+				<img src="/ui5-webcomponents/nightly/assets/woman_avatar_5-7316a316.png" alt="Woman image">
 			</ui5-avatar>
 		</ui5-li>
 
@@ -240,7 +242,7 @@
 
 	<ui5-list>
 		<ui5-li id="image-slot-li"> Img tag inside image slot
-			<img slot="image" src="/ui5-webcomponents/nightly/assets/woman_avatar_5-C3UK-oZV.png" alt="Woman image">
+			<img slot="image" src="/ui5-webcomponents/nightly/assets/woman_avatar_5-7316a316.png" alt="Woman image">
 		</ui5-li>
 
 	</ui5-list>
@@ -388,7 +390,7 @@
 		listEvents.addEventListener("ui5-selection-change", function (event) {
 			selectionChangeCounter += 1;
 			selectionChangeResultField.value = `${selectionChangeCounter}`;
-			selectionChangeResultFieldRadio.value = `${event.detail.selectionComponentPressed}`;
+			selectionChangeResultFieldRadio.value = event.detail.selectionComponentPressed;
 		});
 
 		listEvents.addEventListener("ui5-selection-change", function(event) {

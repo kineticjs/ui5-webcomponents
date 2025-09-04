@@ -1,6 +1,7 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
 import "@ui5/webcomponents-icons/dist/accept.js";
 import "@ui5/webcomponents-icons/dist/decline.js";
 import "@ui5/webcomponents-icons/dist/less.js";
@@ -34,10 +35,6 @@ import SwitchDesign from "./types/SwitchDesign.js";
  * @csspart handle - Used to style the handle of the switch
  */
 declare class Switch extends UI5Element implements IFormInputElement {
-    eventDetails: {
-        change: void;
-        "value-changed": void;
-    };
     /**
      * Defines the component design.
      *
@@ -127,19 +124,12 @@ declare class Switch extends UI5Element implements IFormInputElement {
      * @since 1.16.0
      */
     name?: string;
-    /**
-     * Defines the form value of the component.
-     * @default ""
-     * @since 2.12.0
-     * @public
-     */
-    value: string;
     static i18nBundle: I18nBundle;
     get formValidityMessage(): string;
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
-    get formFormattedValue(): string | null;
-    get sapNextIcon(): "accept" | "less";
+    get formFormattedValue(): "on" | null;
+    get sapNextIcon(): "less" | "accept";
     _onclick(): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
@@ -148,11 +138,13 @@ declare class Switch extends UI5Element implements IFormInputElement {
     get hasNoLabel(): boolean;
     get _textOn(): string | undefined;
     get _textOff(): string | undefined;
-    get effectiveTabIndex(): 0 | undefined;
+    get effectiveTabIndex(): "0" | undefined;
+    get classes(): ClassMap;
     get effectiveAriaDisabled(): "true" | undefined;
     get accessibilityOnText(): string | undefined;
     get accessibilityOffText(): string | undefined;
     get hiddenText(): string | undefined;
     get ariaLabelText(): string;
+    static onDefine(): Promise<void>;
 }
 export default Switch;

@@ -8,21 +8,22 @@ var TableRow_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import { isSpace, isEnter, isF7, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import { getLastTabbableElement } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
+import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
+import CheckBox from "@ui5/webcomponents/dist/CheckBox.js";
 import TableMode from "./types/TableMode.js";
 import TableRowType from "./types/TableRowType.js";
 import TableColumnPopinDisplay from "./types/TableColumnPopinDisplay.js";
-import TableRowTemplate from "./TableRowTemplate.js";
+import TableRowTemplate from "./generated/templates/TableRowTemplate.lit.js";
 import { ARIA_LABEL_ROW_SELECTION, LIST_ITEM_NOT_SELECTED, LIST_ITEM_SELECTED, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import tableRowStyles from "./generated/themes/TableRow.css.js";
-import { patchScopingSuffix } from "./utils/CompatCustomElementsScope.js";
 /**
  * @class
  *
@@ -35,11 +36,10 @@ import { patchScopingSuffix } from "./utils/CompatCustomElementsScope.js";
  * @public
  * @csspart row - Used to style the native `tr` element
  * @csspart popin-row - Used to style the `tr` element when a row pops in
- * @deprecated Deprecated as of version 2.12.0, use `@ui5/webcomponents/dist/TableRow.js` instead.
  */
 let TableRow = TableRow_1 = class TableRow extends UI5Element {
     constructor() {
-        super(...arguments);
+        super();
         /**
          * Defines the visual indication and behavior of the component.
          *
@@ -84,9 +84,13 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         // Properties, set and handled by the Table
         this.tabbableElements = [];
         this._columnsInfoString = "";
-    }
-    _ontouchstart() {
-        this.activate();
+        const handleToushStartEvent = () => {
+            this.activate();
+        };
+        this._ontouchstart = {
+            handleEvent: handleToushStartEvent,
+            passive: true,
+        };
     }
     _onmouseup() {
         this.deactivate();
@@ -103,20 +107,20 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         const elements = rowElements.map(getLastTabbableElement).filter(Boolean);
         const lastFocusableElement = elements.pop();
         if (isTabNext(e) && activeElement === (lastFocusableElement || this.root)) {
-            this.fireDecoratorEvent("forward-after", { target: activeElement });
+            this.fireEvent("_forward-after", { target: activeElement });
         }
         if (isTabPrevious(e) && activeElement === this.root) {
-            this.fireDecoratorEvent("forward-before", { target: activeElement });
+            this.fireEvent("_forward-before", { target: activeElement });
         }
         if (isSpace(e) && target.tagName.toLowerCase() === "tr") {
             e.preventDefault();
         }
         if (isRowFocused && !checkboxPressed) {
             if ((isSpace(e) && itemSelectable) || (isEnter(e) && isSingleSelect)) {
-                this.fireDecoratorEvent("selection-requested", { row: this });
+                this.fireEvent("selection-requested", { row: this });
             }
             if (isEnter(e) && itemActive) {
-                this.fireDecoratorEvent("row-click", { row: this });
+                this.fireEvent("row-click", { row: this });
                 if (!isSingleSelect) {
                     this.activate();
                 }
@@ -124,7 +128,7 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         }
         if (isF7(e)) {
             e.preventDefault();
-            this.fireDecoratorEvent("f7-pressed", { row: this });
+            this.fireEvent("f7-pressed", { row: this });
         }
     }
     _onkeyup(e) {
@@ -143,14 +147,14 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
             this.root.focus();
             this.activate();
         }
-        this.fireDecoratorEvent("_focused");
+        this.fireEvent("_focused");
     }
     _onrowclick(e) {
         const checkboxPressed = e.target.classList.contains("ui5-multi-select-checkbox");
         // If the user tab over a button on IOS device, the document.activeElement
         // is the ui5-table-row. The check below ensure that, if a button within the row is pressed,
         // the row will not be selected.
-        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
+        if (getEventMark(e) === "button") {
             return;
         }
         const activeElement = this.getRootNode().activeElement;
@@ -167,12 +171,12 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
                 this._handleSelection();
             }
             if (this.type === TableRowType.Active && !checkboxPressed) {
-                this.fireDecoratorEvent("row-click", { row: this });
+                this.fireEvent("row-click", { row: this });
             }
         }
     }
     _handleSelection() {
-        this.fireDecoratorEvent("selection-requested", { row: this });
+        this.fireEvent("selection-requested", { row: this });
     }
     _activeElementHasAttribute(attr) {
         return !!(this.getRootNode().activeElement?.hasAttribute(attr));
@@ -191,9 +195,9 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
         }
     }
     get shouldPopin() {
-        return !!(this._columnsInfo?.filter(el => {
+        return this._columnsInfo?.filter(el => {
             return el.demandPopin || !el.visible;
-        }).length);
+        }).length;
     }
     get allColumnsPoppedIn() {
         return this._columnsInfo?.every(el => el.demandPopin && !el.visible);
@@ -288,6 +292,9 @@ let TableRow = TableRow_1 = class TableRow extends UI5Element {
     getNormilzedTextContent(textContent) {
         return textContent.replace(/[\n\r\t]/g, "").trim();
     }
+    static async onDefine() {
+        TableRow_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    }
 };
 __decorate([
     property()
@@ -319,15 +326,13 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement, "default": true, individualSlots: true })
 ], TableRow.prototype, "cells", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], TableRow, "i18nBundle", void 0);
 TableRow = TableRow_1 = __decorate([
     customElement({
         tag: "ui5-table-row",
         styles: tableRowStyles,
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: TableRowTemplate,
+        dependencies: [CheckBox],
     })
     /**
      * Fired when a row in `Active` mode is clicked or `Enter` key is pressed.
@@ -335,50 +340,23 @@ TableRow = TableRow_1 = __decorate([
      * @private
      */
     ,
-    event("row-click", {
-        bubbles: true,
-    })
-    /**
-     * @private
-     */
-    ,
-    event("_focused", {
-        bubbles: true,
-    })
-    /**
-     * @private
-     */
-    ,
-    event("forward-before", {
-        bubbles: true,
-    })
-    /**
-     * @private
-     */
-    ,
-    event("forward-after", {
-        bubbles: true,
-    })
+    event("row-click"),
+    event("_focused")
     /**
      * Fired on selection change of an active row.
      * @since 2.0.0
      * @private
      */
     ,
-    event("selection-requested", {
-        bubbles: true,
-    })
+    event("selection-requested")
     /**
      * Fired when F7 is pressed.
      * @since 2.0.0
      * @private
      */
     ,
-    event("f7-pressed", {
-        bubbles: true,
-    })
+    event("f7-pressed")
 ], TableRow);
-patchScopingSuffix(TableRow);
 TableRow.define();
 export default TableRow;
 //# sourceMappingURL=TableRow.js.map

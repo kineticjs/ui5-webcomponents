@@ -9,17 +9,23 @@ import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import { getEffectiveAriaLabelText, getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
+import "@ui5/webcomponents-icons/dist/accept.js";
+import "@ui5/webcomponents-icons/dist/complete.js";
+import "@ui5/webcomponents-icons/dist/border.js";
+import "@ui5/webcomponents-icons/dist/tri-state.js";
+import Icon from "./Icon.js";
+import Label from "./Label.js";
 import { VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_SUCCESS, FORM_CHECKABLE_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import checkboxCss from "./generated/themes/CheckBox.css.js";
 // Template
-import CheckBoxTemplate from "./CheckBoxTemplate.js";
+import CheckBoxTemplate from "./generated/templates/CheckBoxTemplate.lit.js";
 let isGlobalHandlerAttached = false;
 let activeCb;
 /**
@@ -75,7 +81,7 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
         return this.getFocusDomRefAsync();
     }
     get formFormattedValue() {
-        return this.checked ? this.value : null;
+        return this.checked ? "on" : null;
     }
     constructor() {
         super();
@@ -110,9 +116,6 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
         this.displayOnly = false;
         /**
          * Defines whether the component is required.
-         *
-         * **Note:** We advise against using the text property of the checkbox when there is a
-         * label associated with it to avoid having two required asterisks.
          * @default false
          * @public
          * @since 1.3.0
@@ -160,19 +163,6 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
          * @public
          */
         this.wrappingType = "Normal";
-        /**
-         * Defines the form value of the component that is submitted when the checkbox is checked.
-         *
-         * When a form containing `ui5-checkbox` elements is submitted, only the values of the
-         * **checked** checkboxes are included in the form data sent to the server. Unchecked
-         * checkboxes do not contribute any data to the form submission.
-         *
-         * This property is particularly useful for **checkbox groups**, where multiple checkboxes with the same `name` but different `value` properties can be used to represent a set of related options.
-         *
-         * @default "on"
-         * @public
-         */
-        this.value = "on";
         /**
          * Defines the active state (pressed or not) of the component.
          * @private
@@ -240,10 +230,10 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
             else {
                 this.checked = !this.checked;
             }
-            const changePrevented = !this.fireDecoratorEvent("change");
+            const changePrevented = !this.fireEvent("change", null, true);
             // Angular two way data binding
-            const valueChangePrevented = !this.fireDecoratorEvent("value-changed");
-            if (changePrevented || valueChangePrevented) {
+            const valueChagnePrevented = !this.fireEvent("value-changed", null, true);
+            if (changePrevented || valueChagnePrevented) {
                 this.checked = lastState.checked;
                 this.indeterminate = lastState.indeterminate;
             }
@@ -261,7 +251,7 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
         };
     }
     get ariaLabelText() {
-        return getEffectiveAriaLabelText(this) || getAssociatedLabelForTexts(this);
+        return getEffectiveAriaLabelText(this);
     }
     get classes() {
         return {
@@ -298,12 +288,7 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
     }
     get effectiveTabIndex() {
         const tabindex = this.getAttribute("tabindex");
-        if (this.tabbable) {
-            return tabindex ? parseInt(tabindex) : 0;
-        }
-    }
-    get tabbable() {
-        return !this.disabled && !this.displayOnly;
+        return this.disabled || this.displayOnly ? undefined : tabindex || "0";
     }
     get isCompletelyChecked() {
         return this.checked && !this.indeterminate;
@@ -311,15 +296,17 @@ let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
     get isDisplayOnly() {
         return this.displayOnly && !this.disabled;
     }
-    get accInfo() {
-        return {
-            "role": this._accInfo ? this._accInfo.role : "checkbox",
-            "ariaChecked": this._accInfo ? this._accInfo.ariaChecked : this.effectiveAriaChecked,
-            "ariaReadonly": this._accInfo ? this._accInfo.ariaReadonly : this.ariaReadonly,
-            "ariaDisabled": this._accInfo ? this._accInfo.ariaDisabled : this.effectiveAriaDisabled,
-            "ariaRequired": this._accInfo ? this._accInfo.ariaRequired : this.required,
-            "tabindex": this._accInfo ? this._accInfo.tabindex : this.effectiveTabIndex,
-        };
+    get displayOnlyIcon() {
+        if (this.isCompletelyChecked) {
+            return "complete";
+        }
+        if (this.checked && this.indeterminate) {
+            return "tri-state";
+        }
+        return "border";
+    }
+    static async onDefine() {
+        CheckBox_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
 };
 __decorate([
@@ -359,44 +346,28 @@ __decorate([
     property()
 ], CheckBox.prototype, "name", void 0);
 __decorate([
-    property()
-], CheckBox.prototype, "value", void 0);
-__decorate([
     property({ type: Boolean })
 ], CheckBox.prototype, "active", void 0);
-__decorate([
-    property({ type: Object })
-], CheckBox.prototype, "_accInfo", void 0);
-__decorate([
-    i18n("@ui5/webcomponents")
-], CheckBox, "i18nBundle", void 0);
 CheckBox = CheckBox_1 = __decorate([
     customElement({
         tag: "ui5-checkbox",
         languageAware: true,
         formAssociated: true,
-        renderer: jsxRenderer,
+        renderer: litRender,
         template: CheckBoxTemplate,
         styles: checkboxCss,
+        dependencies: [
+            Label,
+            Icon,
+        ],
     })
     /**
      * Fired when the component checked state changes.
      * @public
+     * @allowPreventDefault
      */
     ,
-    event("change", {
-        bubbles: true,
-        cancelable: true,
-    })
-    /**
-     * Fired to make Angular two way data binding work properly.
-     * @private
-     */
-    ,
-    event("value-changed", {
-        bubbles: true,
-        cancelable: true,
-    })
+    event("change")
 ], CheckBox);
 CheckBox.define();
 export default CheckBox;

@@ -75,10 +75,6 @@ const internals = {
         // Therefore the OS is detected as MACINTOSH instead of iOS and the device is a tablet if the Device.support.touch is true.
         return /ipad/i.test(internals.userAgent) || (/Macintosh/i.test(internals.userAgent) && "ontouchend" in document);
     },
-    _isPhone() {
-        detectTablet();
-        return internals.touch && !tablet;
-    },
 };
 let windowsVersion;
 let webkitVersion;
@@ -147,7 +143,8 @@ const isTablet = () => {
     return (internals.touch || isWindows8OrAbove()) && tablet;
 };
 const isPhone = () => {
-    return internals._isPhone();
+    detectTablet();
+    return internals.touch && !tablet;
 };
 const isDesktop = () => {
     if (isSSR) {
@@ -167,5 +164,5 @@ const isMac = () => {
 const isAndroid = () => {
     return internals.android || internals.androidPhone;
 };
-export { internals, supportsTouch, isSafari, isChrome, isFirefox, isPhone, isTablet, isDesktop, isCombi, isIOS, isAndroid, isMac, };
+export { supportsTouch, isSafari, isChrome, isFirefox, isPhone, isTablet, isDesktop, isCombi, isIOS, isAndroid, isMac, };
 //# sourceMappingURL=Device.js.map

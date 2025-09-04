@@ -6,14 +6,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var NotificationList_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
-import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import NotificationListInternal from "./NotificationListInternal.js";
 // Template
-import NotificationListTemplate from "./NotificationListTemplate.js";
+import NotificationListTemplate from "./generated/templates/NotificationListTemplate.lit.js";
 // Styles
 import NotificationListCss from "./generated/themes/NotificationList.css.js";
 // Texts
@@ -61,24 +62,27 @@ let NotificationList = NotificationList_1 = class NotificationList extends UI5El
     }
     _onItemClick(e) {
         const item = e.detail.item;
-        if (!this.fireDecoratorEvent("item-click", { item })) {
+        if (!this.fireEvent("item-click", { item }, true)) {
             e.preventDefault();
         }
     }
     _onItemClose(e) {
         const item = e.detail.item;
-        if (!this.fireDecoratorEvent("item-close", { item })) {
+        if (!this.fireEvent("item-close", { item }, true)) {
             e.preventDefault();
         }
     }
     _onItemToggle(e) {
         const item = e.detail.item;
-        if (!this.fireDecoratorEvent("item-toggle", { item })) {
+        if (!this.fireEvent("item-toggle", { item }, true)) {
             e.preventDefault();
         }
     }
     _onLoadMore() {
-        this.fireDecoratorEvent("load-more");
+        this.fireEvent("load-more");
+    }
+    static async onDefine() {
+        NotificationList_1.i18nFioriBundle = await getI18nBundle("@ui5/webcomponents-fiori");
     }
 };
 __decorate([
@@ -87,36 +91,46 @@ __decorate([
 __decorate([
     property()
 ], NotificationList.prototype, "noDataText", void 0);
-__decorate([
-    i18n("@ui5/webcomponents-fiori")
-], NotificationList, "i18nFioriBundle", void 0);
 NotificationList = NotificationList_1 = __decorate([
     customElement({
         tag: "ui5-notification-list",
-        renderer: jsxRenderer,
+        renderer: litRender,
         languageAware: true,
         styles: [NotificationListCss],
         template: NotificationListTemplate,
+        dependencies: [
+            NotificationListInternal,
+        ],
     })
     /**
      * Fired when an item is clicked.
+     * @allowPreventDefault
      * @param {HTMLElement} item The clicked item.
      * @public
      */
     ,
     event("item-click", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when the `Close` button of any item is clicked.
+     *
      * @param {HTMLElement} item the item about to be closed.
      * @public
      */
     ,
     event("item-close", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
     /**
      * Fired when an item is toggled.
@@ -126,8 +140,12 @@ NotificationList = NotificationList_1 = __decorate([
      */
     ,
     event("item-toggle", {
-        bubbles: true,
-        cancelable: true,
+        detail: {
+            /**
+             * @public
+             */
+            item: { type: HTMLElement },
+        },
     })
 ], NotificationList);
 NotificationList.define();

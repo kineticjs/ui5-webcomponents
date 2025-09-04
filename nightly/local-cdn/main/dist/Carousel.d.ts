@@ -1,5 +1,4 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ScrollEnablement from "@ui5/webcomponents-base/dist/delegate/ScrollEnablement.js";
 import type { ScrollEnablementEventListenerParam } from "@ui5/webcomponents-base/dist/delegate/ScrollEnablement.js";
@@ -8,20 +7,10 @@ import CarouselArrowsPlacement from "./types/CarouselArrowsPlacement.js";
 import CarouselPageIndicatorType from "./types/CarouselPageIndicatorType.js";
 import type BackgroundDesign from "./types/BackgroundDesign.js";
 import type BorderDesign from "./types/BorderDesign.js";
-import type Button from "./Button.js";
+import "@ui5/webcomponents-icons/dist/slim-arrow-left.js";
+import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
 type CarouselNavigateEventDetail = {
     selectedIndex: number;
-};
-type ItemsInfo = {
-    id: string;
-    item: HTMLElement & {
-        _individualSlot?: string;
-    };
-    tabIndex: number;
-    posinset: number;
-    setsize: number;
-    selected: boolean;
-    _individualSlot?: string;
 };
 /**
  * @class
@@ -33,7 +22,7 @@ type ItemsInfo = {
  * There are several ways to perform navigation:
  *
  * - on desktop - the user can navigate using the navigation arrows or with keyboard shortcuts.
- * - on touch devices - the user can navigate using the navigation arrows (always visible) or can use swipe gestures.
+ * - on mobile - the user can use swipe gestures.
  *
  * ### Usage
  *
@@ -72,9 +61,6 @@ type ItemsInfo = {
  * @csspart content - Used to style the content of the component
  */
 declare class Carousel extends UI5Element {
-    eventDetails: {
-        navigate: CarouselNavigateEventDetail;
-    };
     /**
      * Defines the accessible name of the component.
      * @default undefined
@@ -112,6 +98,8 @@ declare class Carousel extends UI5Element {
      * Defines the visibility of the navigation arrows.
      * If set to true the navigation arrows will be hidden.
      *
+     * **Note:** The navigation arrows are never displayed on touch devices.
+     * In this case, the user can swipe to navigate through the items.
      * @since 1.0.0-rc.15
      * @default false
      * @public
@@ -219,7 +207,7 @@ declare class Carousel extends UI5Element {
     get _getLastFocusedActivePageIndex(): number;
     navigateLeft(): void;
     navigateRight(): void;
-    _navButtonClick(e: UI5CustomEvent<Button, "click">): void;
+    _navButtonClick(e: MouseEvent): void;
     /**
      * Changes the currently displayed page.
      * @param itemIndex The index of the target page
@@ -231,7 +219,18 @@ declare class Carousel extends UI5Element {
      * Assuming that all items have the same width
      * @private
      */
-    get items(): Array<ItemsInfo>;
+    get items(): {
+        id: string;
+        item: HTMLElement;
+        tabIndex: string;
+        posinset: string;
+        setsize: string;
+        styles: {
+            width: string;
+        };
+        classes: string;
+        selected: boolean;
+    }[];
     get effectiveItemsPerPage(): number;
     isItemInViewport(index: number): boolean;
     isIndexInRange(index: number): boolean;
@@ -240,6 +239,11 @@ declare class Carousel extends UI5Element {
      */
     get renderNavigation(): boolean;
     get hasManyPages(): boolean;
+    get styles(): {
+        content: {
+            transform: string;
+        };
+    };
     get classes(): {
         viewport: {
             "ui5-carousel-viewport": boolean;
@@ -255,6 +259,12 @@ declare class Carousel extends UI5Element {
             [x: string]: boolean;
             "ui5-carousel-navigation-wrapper": boolean;
             "ui5-carousel-navigation-with-buttons": boolean;
+        };
+        navPrevButton: {
+            "ui5-carousel-navigation-button--hidden": boolean;
+        };
+        navNextButton: {
+            "ui5-carousel-navigation-button--hidden": boolean;
         };
     };
     get pagesCount(): number;
@@ -277,7 +287,6 @@ declare class Carousel extends UI5Element {
     get ariaLabelTxt(): string | undefined;
     get nextPageText(): string;
     get previousPageText(): string;
-    get _roleDescription(): string;
     /**
      * The indices of the currently visible items of the component.
      * @public
@@ -285,6 +294,7 @@ declare class Carousel extends UI5Element {
      * @default []
      */
     get visibleItemsIndices(): Array<number>;
+    static onDefine(): Promise<void>;
 }
 export default Carousel;
 export type { CarouselNavigateEventDetail, };

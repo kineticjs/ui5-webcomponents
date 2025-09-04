@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta charset="utf-8">
 	<title>Form</title>
+	
+	
 
 	<script id='sap-ui-bootstrap'
 		src='https://openui5nightly.hana.ondemand.com/resources/sap-ui-core.js'
@@ -16,9 +18,9 @@
 	<script>
         sap.ui.getCore().attachInit(function() {
 			var oLayout1 = new sap.ui.layout.form.ColumnLayout("L1", {
-				columnsM: 1,
-				columnsL: 2,
-				columnsXL: 3,
+				// columnsM: 2,
+				// columnsL: 3,
+				// columnsXL: 4,
 			});
 			var oForm1 = new sap.ui.layout.form.Form("F1",{
 				title: "SAPUI5 Form :: Supplier",
@@ -205,8 +207,8 @@
 			window.oLayout1 = oLayout1;
         });
     </script>
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-BhC2_dZE.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/FormLayout-DrxiYO6l.css">
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-046abc37.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/FormLayout-1008fc94.css">
 </head>
 
 <body class="bg">
@@ -218,8 +220,7 @@
 		<div class="controls">
 			<ui5-label>Column Layout:</ui5-label>
 			<ui5-select id="selLayout">
-				<ui5-option value="S1 M2 L2 XL2">S1 M1 L2 XL2</ui5-option>
-				<ui5-option selected value="S1 M1 L2 XL3">S1 M1 L2 XL3</ui5-option>
+				<ui5-option selected value="S1 M2 L2 XL2">S1 M1 L2 XL2</ui5-option>
 				<ui5-option value="S1 M2 L2 XL2">S1 M2 L2 XL2</ui5-option>
 				<ui5-option value="S1 M2 L3 XL2">S1 M2 L3 XL2</ui5-option>
 				<ui5-option value="S1 M2 L3 XL3">S1 M2 L3 XL3</ui5-option>

@@ -10,10 +10,12 @@
 	</script>
 
 
+	
 
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-EyFc8Vhq.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/DynamicSideContent-BucF0VgI.css">
+	
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-2f67e5db.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/DynamicSideContent-85d5302a.css">
 </head>
 
 <body class="page1auto">
@@ -87,12 +89,10 @@
 
 		hideMainContent.addEventListener("ui5-change", function() {
 			dynamnicSideContent.hideMainContent = !hideMainContent.checked;
-			toggleButton.style.display = dynamnicSideContent._isToggleEnabled ? "block" : "none";
 		});
 
 		hideSideContent.addEventListener("ui5-change", function() {
 			dynamnicSideContent.hideSideContent = !hideSideContent.checked;
-			toggleButton.style.display = dynamnicSideContent._isToggleEnabled ? "block" : "none";
 		});
 
 		equalSplit.addEventListener("ui5-change", function() {
@@ -101,17 +101,14 @@
 
 		sideContentPosition.addEventListener("ui5-change", function() {
 			dynamnicSideContent.sideContentPosition = sideContentPosition.checked ? "End" : "Start";
-			toggleButton.style.display = dynamnicSideContent._isToggleEnabled ? "block" : "none";
 		});
 
 		sideContentVisibility.addEventListener("ui5-change", function(event) {
 			dynamnicSideContent.sideContentVisibility = event.detail.selectedOption.innerText;
-			toggleButton.style.display = dynamnicSideContent._isToggleEnabled ? "block" : "none";
 		});
 
 		sideContentFallDown.addEventListener("ui5-change", function(event) {
 			dynamnicSideContent.sideContentFallDown = event.detail.selectedOption.innerText;
-			toggleButton.style.display = dynamnicSideContent._isToggleEnabled ? "block" : "none";
 		});
 
 		dynamicSideContent.addEventListener("ui5-layout-change", function(event) {
@@ -121,7 +118,8 @@
 			document.querySelectorAll('.breakpointTag').forEach(function(elem) { elem.style.display = "none"; });
 			document.querySelector("#breakpoint" + breakpoint).style.display="block";
 			document.querySelectorAll('.hide-on-S').forEach(function(elem) { elem.style.display = disp; });
-			toggleButton.style.display = dynamnicSideContent._isToggleEnabled ? "block" : "none";
+			toggleButton.style.display = breakpoint !== "S" || dynamicSideContent.sideContentVisibility === "AlwaysShow" ? "none" : "block";
+
 		});
 
 		dynamicSideContent.addEventListener("ui5-layout-change", function(event) {
@@ -130,15 +128,6 @@
 			mainVisible.value = event.detail.mainContentVisible ? "1" : "0"
 			sideVisible.value = event.detail.sideContentVisible ? "1" : "0"
 		});
-
-		dynamicSideContent.accessibilityAttributes = {
-			mainContent: {
-				ariaLabel: "Main Content Area",
-			},
-			sideContent: {
-				ariaLabel: "Side Content Area",
-			}
-		};
 	</script>
 
 </body>

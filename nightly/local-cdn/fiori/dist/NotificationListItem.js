@@ -5,50 +5,55 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var NotificationListItem_1;
-import { isSpace, isDelete, isF10Shift, isEnterShift, } from "@ui5/webcomponents-base/dist/Keys.js";
+import { isSpace, isDelete, isF10Shift, isEnterShift, isUp, isDown, } from "@ui5/webcomponents-base/dist/Keys.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import query from "@ui5/webcomponents-base/dist/decorators/query.js";
 import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
+import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
+import Button from "@ui5/webcomponents/dist/Button.js";
+import BusyIndicator from "@ui5/webcomponents/dist/BusyIndicator.js";
+import Tag from "@ui5/webcomponents/dist/Tag.js";
+import Link from "@ui5/webcomponents/dist/Link.js";
+import Icon from "@ui5/webcomponents/dist/Icon.js";
 import WrappingType from "@ui5/webcomponents/dist/types/WrappingType.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.js";
-import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import NotificationListItemImportance from "./types/NotificationListItemImportance.js";
 import NotificationListItemBase from "./NotificationListItemBase.js";
 // Icons
-import iconSysEnter2 from "@ui5/webcomponents-icons/dist/sys-enter-2.js";
-import iconAlert from "@ui5/webcomponents-icons/dist/alert.js";
-import iconError from "@ui5/webcomponents-icons/dist/error.js";
-import iconInformation from "@ui5/webcomponents-icons/dist/information.js";
+import "@ui5/webcomponents-icons/dist/overflow.js";
+import "@ui5/webcomponents-icons/dist/decline.js";
+import "@ui5/webcomponents-icons/dist/high-priority.js";
+import "@ui5/webcomponents-icons/dist/message-success.js";
+import "@ui5/webcomponents-icons/dist/message-information.js";
+import "@ui5/webcomponents-icons/dist/message-error.js";
+import "@ui5/webcomponents-icons/dist/message-warning.js";
 // Texts
 import { NOTIFICATION_LIST_ITEM_READ, NOTIFICATION_LIST_ITEM_UNREAD, NOTIFICATION_LIST_ITEM_SHOW_MORE, NOTIFICATION_LIST_ITEM_SHOW_LESS, NOTIFICATION_LIST_ITEM_INFORMATION_STATUS_TXT, NOTIFICATION_LIST_ITEM_POSITIVE_STATUS_TXT, NOTIFICATION_LIST_ITEM_NEGATIVE_STATUS_TXT, NOTIFICATION_LIST_ITEM_CRITICAL_STATUS_TXT, NOTIFICATION_LIST_ITEM_MENU_BTN_TITLE, NOTIFICATION_LIST_ITEM_MORE_LINK_LABEL_FULL, NOTIFICATION_LIST_ITEM_MORE_LINK_LABEL_TRUNCATE, NOTIFICATION_LIST_ITEM_CLOSE_BTN_TITLE, NOTIFICATION_LIST_ITEM_IMPORTANT_TXT, } from "./generated/i18n/i18n-defaults.js";
 // Templates
-import NotificationListItemTemplate from "./NotificationListItemTemplate.js";
+import NotificationListItemTemplate from "./generated/templates/NotificationListItemTemplate.lit.js";
 // Styles
 import NotificationListItemCss from "./generated/themes/NotificationListItem.css.js";
-import IconDesign from "@ui5/webcomponents/dist/types/IconDesign.js";
 /**
  * Defines the icons name corresponding to the notification's status indicator.
  */
 const ICON_PER_STATUS_NAME = {
-    [ValueState.Negative]: iconError,
-    [ValueState.Critical]: iconAlert,
-    [ValueState.Positive]: iconSysEnter2,
-    [ValueState.Information]: iconInformation,
+    [ValueState.Negative]: "error",
+    [ValueState.Critical]: "alert",
+    [ValueState.Positive]: "sys-enter-2",
+    [ValueState.Information]: "information",
     [ValueState.None]: "",
 };
 /**
  * Defines the icons design (color) corresponding to the notification's status indicator.
  */
 const ICON_PER_STATUS_DESIGN = {
-    [ValueState.Negative]: IconDesign.Negative,
-    [ValueState.Critical]: IconDesign.Critical,
-    [ValueState.Positive]: IconDesign.Positive,
-    [ValueState.Information]: IconDesign.Information,
-    [ValueState.None]: undefined,
+    [ValueState.Negative]: "Negative",
+    [ValueState.Critical]: "Critical",
+    [ValueState.Positive]: "Positive",
+    [ValueState.Information]: "Information",
+    [ValueState.None]: "",
 };
 /**
  * @class
@@ -69,7 +74,7 @@ const ICON_PER_STATUS_DESIGN = {
  * **Note:** Adding custom actions by using the `ui5-notification-action` component is deprecated as of version 2.0!
  *
  * ### Usage
- * The component should be used inside a `ui5-notification-list`.
+ * The component can be used in a standard `ui5-list`.
  *
  * ### Keyboard Handling
  *
@@ -156,10 +161,13 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
         return this.state !== ValueState.None;
     }
     get hasDesc() {
-        return willShowContent(this.description);
+        return !!this.description.length;
     }
     get hasImportance() {
         return this.importance !== NotificationListItemImportance.Standard;
+    }
+    get contentClasses() {
+        return this.hasImportance ? "ui5-nli-content ui5-nli-content-with-importance" : "ui5-nli-content";
     }
     get hasFootNotes() {
         return !!this.footnotes.length;
@@ -184,6 +192,12 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
             return undefined;
         }
         return true;
+    }
+    get descriptionDOM() {
+        return this.shadowRoot.querySelector(".ui5-nli-description");
+    }
+    get titleTextDOM() {
+        return this.shadowRoot.querySelector(".ui5-nli-title-text");
     }
     get titleTextHeight() {
         return this.titleTextDOM.offsetHeight;
@@ -278,15 +292,22 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
     get readText() {
         return this.read ? NotificationListItem_1.i18nFioriBundle.getText(NOTIFICATION_LIST_ITEM_READ) : NotificationListItem_1.i18nFioriBundle.getText(NOTIFICATION_LIST_ITEM_UNREAD);
     }
-    get menuButtonAccessibilityAttributes() {
+    get accInfoButton() {
         return {
-            hasPopup: "menu",
+            accessibilityAttributes: {
+                hasPopup: "menu",
+            },
         };
     }
-    get moreLinkAccessibilityAttributes() {
+    get accInfoLink() {
         return {
-            expanded: this._showMorePressed,
+            accessibilityAttributes: {
+                expanded: this._showMorePressed,
+            },
         };
+    }
+    get menuButtonDOM() {
+        return this.shadowRoot.querySelector(".ui5-nli-menu-btn");
     }
     get showMenu() {
         return !!this.getMenu();
@@ -294,49 +315,73 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
     /**
      * Event handlers
      */
-    _onclick() {
-        this.fireItemPress();
+    _onclick(e) {
+        this.fireItemPress(e);
     }
     _onShowMoreClick(e) {
         e.preventDefault();
-        this._toggleShowMorePressed();
+        this._showMorePressed = !this._showMorePressed;
     }
     async _onkeydown(e) {
         await super._onkeydown(e);
         if (isF10Shift(e)) {
             e.preventDefault();
         }
+        this.focusSameItemOnNextRow(e);
+    }
+    focusSameItemOnNextRow(e) {
+        const target = e.target;
+        if (!target || target.hasAttribute("ui5-menu-item")) {
+            return;
+        }
+        const isFocusWithin = this.matches(":focus-within");
+        if (!isFocusWithin || (!isUp(e) && !isDown(e))) {
+            return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const list = this.closest("[ui5-notification-list]");
+        if (!list) {
+            return;
+        }
+        const navItems = list.getEnabledItems();
+        const index = navItems.indexOf(this) + (isUp(e) ? -1 : 1);
+        const nextItem = navItems[index];
+        if (!nextItem) {
+            return;
+        }
+        const sameItemOnNextRow = nextItem.getHeaderDomRef().querySelector(`.${target.className}`);
+        if (sameItemOnNextRow && sameItemOnNextRow.offsetParent) {
+            sameItemOnNextRow.focus();
+        }
+        else {
+            nextItem.focus();
+        }
     }
     _onkeyup(e) {
         super._onkeyup(e);
         const space = isSpace(e);
-        if (space && this.getFocusDomRef().matches(":has(:focus-within)")) {
-            e.preventDefault();
-            this._toggleShowMorePressed();
+        if (space && getEventMark(e) === "link") {
+            this._onShowMoreClick(e);
             return;
         }
         if (isDelete(e)) {
-            this.fireDecoratorEvent("close", { item: this });
-            this.fireDecoratorEvent("_close", { item: this });
+            this.fireEvent("close", { item: this });
         }
         if (isF10Shift(e)) {
             this._onBtnMenuClick();
         }
         if (isEnterShift(e)) {
-            this._toggleShowMorePressed();
+            this._showMorePressed = !this._showMorePressed;
         }
     }
     _onBtnCloseClick() {
-        this.fireDecoratorEvent("close", { item: this });
-        this.fireDecoratorEvent("_close", { item: this });
+        this.fireEvent("close", { item: this });
     }
     _onBtnMenuClick() {
         if (this.getMenu()) {
             this.openMenu();
         }
-    }
-    _toggleShowMorePressed() {
-        this._showMorePressed = !this._showMorePressed;
     }
     openMenu() {
         const menu = this.getMenu();
@@ -344,20 +389,17 @@ let NotificationListItem = NotificationListItem_1 = class NotificationListItem e
         menu.open = true;
     }
     getMenu() {
-        const menu = this.querySelector("[ui5-menu]");
+        const menu = this.querySelector("ui5-menu");
         return menu;
     }
     /**
      * Private
      */
-    fireItemPress() {
-        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
+    fireItemPress(e) {
+        if (getEventMark(e) === "button" || getEventMark(e) === "link") {
             return;
         }
-        // NotificationListItem will never be assigned to a variable of type ListItemBase
-        // typescipt complains here, if that is the case, the parameter to the _press event handler could be a ListItemBase item,
-        // but this is never the case, all components are used by their class and never assigned to a variable with a type of ListItemBase
-        this.fireDecoratorEvent("_press", { item: this });
+        this.fireEvent("_press", { item: this });
     }
     onResize() {
         if (this.wrappingType === WrappingType.Normal) {
@@ -410,15 +452,6 @@ __decorate([
 __decorate([
     slot({ type: Node, "default": true })
 ], NotificationListItem.prototype, "description", void 0);
-__decorate([
-    query(".ui5-nli-title-text")
-], NotificationListItem.prototype, "titleTextDOM", void 0);
-__decorate([
-    query(".ui5-nli-menu-btn")
-], NotificationListItem.prototype, "menuButtonDOM", void 0);
-__decorate([
-    query(".ui5-nli-description")
-], NotificationListItem.prototype, "descriptionDOM", void 0);
 NotificationListItem = NotificationListItem_1 = __decorate([
     customElement({
         tag: "ui5-li-notification",
@@ -426,27 +459,31 @@ NotificationListItem = NotificationListItem_1 = __decorate([
         styles: [
             NotificationListItemCss,
         ],
-        renderer: jsxRenderer,
         template: NotificationListItemTemplate,
+        dependencies: [
+            Button,
+            Icon,
+            BusyIndicator,
+            Link,
+            Tag,
+        ],
     }),
-    event("_press", {
-        bubbles: true,
-    })
+    event("_press")
     /**
      * Fired when the `Close` button is pressed.
      * @param {HTMLElement} item the closed item.
      * @public
      */
     ,
-    event("close")
-    /**
-     * Fired when the `Close` button is pressed.
-     * @param {HTMLElement} item the closed item.
-     * @private
-     */
-    ,
-    event("_close", {
-        bubbles: true,
+    event("close", {
+        detail: {
+            /**
+             * @public
+             */
+            item: {
+                type: HTMLElement,
+            },
+        },
     })
 ], NotificationListItem);
 NotificationListItem.define();

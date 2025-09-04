@@ -6,8 +6,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Tree Drag and Drop</title>
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-BhC2_dZE.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/List-CIh4qaNm.css">
+	
+	
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-046abc37.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/List-5f4b47aa.css">
 </head>
 
 <body class="tree1auto">
@@ -79,17 +81,23 @@
 
 		const handleMove = (e) => {
 			const { destination, source } = e.detail;
+			const parent = destination.element.parentNode.closest("[ui5-tree-item]") ||
+				destination.element.closest("[ui5-tree]");
 
-			switch (destination.placement) {
-				case "Before":
-					destination.element.before(source.element);
-					break;
-				case "After":
-					destination.element.after(source.element);
-					break;
-				case "On":
-					destination.element.prepend(source.element);
-					break;
+			if (destination.placement === "Before") {
+				parent.insertBefore(
+					source.element,
+					destination.element
+				);
+			} else if (destination.placement === "After") {
+				const nextElement = Array.from(parent.children).at(Array.from(parent.children).indexOf(destination.element) + 1);
+
+				parent.insertBefore(
+					source.element,
+					nextElement,
+				);
+			} else if (destination.placement === "On") {
+				destination.element.prepend(source.element);
 			}
 		};
 

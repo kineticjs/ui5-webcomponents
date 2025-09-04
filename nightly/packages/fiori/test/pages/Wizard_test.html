@@ -7,10 +7,12 @@
 	<title>Wizard Test Page</title>
 
 
+	
 
 
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-EyFc8Vhq.js"></script>
-  <link rel="stylesheet" crossorigin href="/ui5-webcomponents/nightly/assets/Wizard_test-DqqRzL1D.css">
+	
+  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-2f67e5db.js"></script>
+  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/Wizard_test-c1970af5.css">
 </head>
 
 <body class="wizard_test1auto">
@@ -120,7 +122,7 @@
 							<ui5-segmented-button id="sb">
 								<ui5-toggle-button icon="employee" pressed>Small</ui5-toggle-button>
 								<ui5-toggle-button>Medium</ui5-toggle-button>
-								<ui5-toggle-button>Large</ui5-toggle-button>
+								<ui5-toggle-button>Largr</ui5-toggle-button>
 							</ui5-segmented-button>
 						</div>
 					</div>
@@ -285,7 +287,7 @@
 									<ui5-segmented-button>
 										<ui5-toggle-button icon="employee" pressed>Small</ui5-toggle-button>
 										<ui5-toggle-button>Medium</ui5-toggle-button>
-										<ui5-toggle-button>Large</ui5-toggle-button>
+										<ui5-toggle-button>Largr</ui5-toggle-button>
 									</ui5-segmented-button>
 								</div>
 							</div>
@@ -335,7 +337,7 @@
 		wiz.addEventListener("ui5-step-change", function (event) {
 			console.log(event.detail.step);
 			inpStepChangeCounter.value = `${++counter}`;
-			inpStepChangeCause.value = `${!event.detail.withScroll}`;
+			inpStepChangeCause.value = !event.detail.withScroll;
 		});
 
 		toStep2.addEventListener("click", function () {
