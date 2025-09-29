@@ -330,15 +330,15 @@ class FlexibleColumnLayout extends UI5Element {
 	 */
 	@property({ type: Object })
 	_layoutsConfiguration?: {
-	[device in MEDIA]: {
-		[layoutName in FCLLayout]: {
-			layout: Array<string>;
-			separators: Array<{
-				visible: boolean;
-			}>;
+		[device in MEDIA]: {
+			[layoutName in FCLLayout]: {
+				layout: Array<string>;
+				separators: Array<{
+					visible: boolean;
+				}>;
+			};
 		};
 	};
-};
 
 	/**
 	* Defines the content in the start column.
