@@ -327,7 +327,7 @@ class FlexibleColumnLayout extends UI5Element {
 	/**
 	 * This property is no longer used and is replaced by `layoutsConfiguration`.
 	 * The property will be removed once all adopters migrate to `layoutsConfiguration`.
-	 */
+	*/
 	@property({ type: Object })
 	_layoutsConfiguration?: {
 		[device in MEDIA]: {
