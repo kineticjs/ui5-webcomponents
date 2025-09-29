@@ -108,7 +108,6 @@ type FlexibleColumnLayoutLayoutConfigurationChangeEventDetail = {
 };
 
 type FCLAccessibilityRoles = Extract<AriaLandmarkRole, "none" | "complementary" | "contentinfo" | "main" | "region">
-
 type FCLAccessibilityAttributes = {
 	startColumn?: {
 		role: FCLAccessibilityRoles,
