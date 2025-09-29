@@ -212,6 +212,7 @@ type FCLAccessibilityAttributes = {
  * @param {MEDIA} media The current media type
  * @param {array} columnLayout The effective column layout, f.e ["67%", "33%", "0px"]
  * @public
+ * @since 2.15.1
  */
 @event("layout-configuration-change", {
 	bubbles: true,
