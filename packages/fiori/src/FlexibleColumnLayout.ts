@@ -272,7 +272,7 @@ class FlexibleColumnLayout extends UI5Element {
 	accessibilityAttributes: FCLAccessibilityAttributes = {};
 
 	/**
-	* Allows to customize the proportions of the column widts per screen size and layout.
+	* Allows to customize the column proportions per screen size and layout.
 	* If no custom proportion provided for a specific layout, the default will be used.
 	*
 	* **Notes:**
