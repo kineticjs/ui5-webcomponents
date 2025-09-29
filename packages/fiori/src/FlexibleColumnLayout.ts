@@ -272,6 +272,25 @@ class FlexibleColumnLayout extends UI5Element {
 	accessibilityAttributes: FCLAccessibilityAttributes = {};
 
 	/**
+	* Allows to customize the proportions of the column widts per screen size and layout.
+	* If no custom proportion provided for a specific layout, the default will be used.
+	*
+	* **Notes:**
+	*
+	* - The proportions should be given in percentages. For example ["30%", "40%", "30%"], ["70%", "30%", 0], etc.
+	* - The proportions should add up to 100%.
+	* - Hidden columns are marked as "0px", e.g. ["0px", "70%", "30%"]. Specifying 0 or "0%" for hidden columns is also valid.
+	* - If the proportions do not match the layout (e.g. if provided proportions ["70%", "30%", "0px"] for "OneColumn" layout), then the default proportions will be used instead.
+	* - Whenever the user drags the columns separator to resize the columns, the `layoutsConfiguration` object will be updated with the user-specified proportions for the given layout (and the `layout-configuration-change` event will be fired).
+	* - No custom configuration available for the phone screen size, as the default of 100% column width is always used there.
+	* @public
+	* @since 2.15.1
+	* @default {}
+	*/
+	@property({ type: Object })
+	layoutsConfiguration: LayoutConfiguration = {};
+
+	/**
 	* Defines the component width in px.
 	* @default 0
 	* @private
@@ -306,23 +325,20 @@ class FlexibleColumnLayout extends UI5Element {
 	_resizing = false;
 
 	/**
-	* Allows to customize the proportions of the column widts per screen size and layout.
-	* If no custom proportion provided for a specific layout, the default will be used.
-	*
-	* **Notes:**
-	*
-	* - The proportions should be given in percentages. For example ["30%", "40%", "30%"], ["70%", "30%", 0], etc.
-	* - The proportions should add up to 100%.
-	* - Hidden columns are marked as "0px", e.g. ["0px", "70%", "30%"]. Specifying 0 or "0%" for hidden columns is also valid.
-	* - If the proportions do not match the layout (e.g. if provided proportions ["70%", "30%", "0px"] for "OneColumn" layout), then the default proportions will be used instead.
-	* - Whenever the user drags the columns separator to resize the columns, the `layoutsConfiguration` object will be updated with the user-specified proportions for the given layout (and the `layout-configuration-change` event will be fired).
-	* - No custom configuration available for the phone screen size, as the default of 100% column width is always used there.
-	* @public
-	* @since 2.0.0
-	* @default {}
-	*/
+	 * This property is no longer used and is replaced by `layoutsConfiguration`.
+	 * The property will be removed once all adopters migrate to `layoutsConfiguration`.
+	 */
 	@property({ type: Object })
-	layoutsConfiguration: LayoutConfiguration = {};
+	_layoutsConfiguration?: {
+	[device in MEDIA]: {
+		[layoutName in FCLLayout]: {
+			layout: Array<string>;
+			separators: Array<{
+				visible: boolean;
+			}>;
+		};
+	};
+};
 
 	/**
 	* Defines the content in the start column.
