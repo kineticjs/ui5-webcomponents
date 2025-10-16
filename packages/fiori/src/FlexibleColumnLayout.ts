@@ -212,6 +212,7 @@ type FCLAccessibilityAttributes = {
  * @param {array} columnLayout The effective column layout, f.e ["67%", "33%", "0px"]
  * @public
  * @since 2.16.0
+ * @experimental
  */
 @event("layout-configuration-change", {
 	bubbles: true,
@@ -283,9 +284,10 @@ class FlexibleColumnLayout extends UI5Element {
 	* - If the proportions do not match the layout (e.g. if provided proportions ["70%", "30%", "0px"] for "OneColumn" layout), then the default proportions will be used instead.
 	* - Whenever the user drags the columns separator to resize the columns, the `layoutsConfiguration` object will be updated with the user-specified proportions for the given layout (and the `layout-configuration-change` event will be fired).
 	* - No custom configuration available for the phone screen size, as the default of 100% column width is always used there.
+	* @default {}
 	* @public
 	* @since 2.16.0
-	* @default {}
+	* @experimental
 	*/
 	@property({ type: Object })
 	layoutsConfiguration: LayoutConfiguration = {};
