@@ -206,7 +206,7 @@ type FCLAccessibilityAttributes = {
 })
 
 /**
- * Fired when the `layoutConfiguration` changes via user interaction by dragging the separators.
+ * Fired when the `layoutsConfiguration` changes via user interaction by dragging the separators.
  * @param {FCLLayout} layout The current layout
  * @param {MEDIA} media The current media type
  * @param {array} columnLayout The effective column layout, f.e ["67%", "33%", "0px"]
