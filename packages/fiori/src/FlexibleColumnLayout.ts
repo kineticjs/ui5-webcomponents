@@ -666,7 +666,7 @@ class FlexibleColumnLayout extends UI5Element {
 
 	isValidColumnLayout(columnLayout: (string | 0)[]) {
 		const pxWidths = columnLayout?.map(w => this.convertColumnWidthToPixels(w));
-		const totalWidth = pxWidths.reduce((i, sum) => i + sum);
+		const totalWidth = pxWidths.reduce((sum, i) => sum + i, 0);
 
 		if (Math.round(totalWidth) !== Math.round(this._availableWidthForColumns)) {
 			return false;
@@ -840,7 +840,7 @@ class FlexibleColumnLayout extends UI5Element {
 	updateLayoutsConfiguration(layout: `${FCLLayout}`, columnLayout: string[]) {
 		if (this.mediaAllowsCustomConfiguration(this.media)) {
 			this.layoutsConfiguration[this.media] ??= {};
-			this.layoutsConfiguration[this.media]![layout] ??= { layout: columnLayout };
+			this.layoutsConfiguration[this.media]![layout] ??= { layout: [] };
 			this.layoutsConfiguration[this.media]![layout]!.layout = columnLayout;
 		}
 	}
