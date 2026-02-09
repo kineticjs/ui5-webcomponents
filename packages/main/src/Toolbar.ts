@@ -295,6 +295,10 @@ class Toolbar extends UI5Element {
 			const lastItem = this.interactiveItems.at(-1);
 			lastItem?.focus();
 		}
+		// Pre-populate AlwaysOverflow items before first render to avoid flash of content in the overflow on initial load
+		if (this.itemsToOverflow.length === 0 && this.items.length > 0) {
+			this.distributeItemsThatAlwaysOverflow();
+		}
 	}
 
 	async onAfterRendering() {
