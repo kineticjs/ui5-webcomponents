@@ -283,6 +283,64 @@ describe("Toolbar general interaction", () => {
 			.should("have.class", "ui5-tb-popover-item");
 	});
 
+	it("Should place dynamically added AlwaysOverflow items in overflow without flash", () => {
+		// Start with a toolbar that already has an AlwaysOverflow item in overflow
+		cy.mount(
+			<Toolbar id="dynamic-overflow-toolbar">
+				<ToolbarButton text="First Always" icon="employee" overflow-priority="AlwaysOverflow" id="first-always-btn"></ToolbarButton>
+			</Toolbar>
+		);
+
+		// Wait for initial render to complete
+		cy.wait(500);
+
+		// Verify initial state - first AlwaysOverflow item is in overflow
+		cy.get("#first-always-btn")
+			.shadow()
+			.find("[ui5-button]")
+			.should("have.class", "ui5-tb-popover-item");
+
+		// Overflow button should be visible (not hidden)
+		cy.get("#dynamic-overflow-toolbar")
+			.shadow()
+			.find(".ui5-tb-overflow-btn")
+			.should("not.have.class", "ui5-tb-overflow-btn-hidden");
+
+		// Now dynamically add ANOTHER AlwaysOverflow item while overflow is non-empty
+		cy.get("#dynamic-overflow-toolbar").then($toolbar => {
+			const toolbar = $toolbar[0] as Toolbar;
+			const newButton = document.createElement("ui5-toolbar-button") as ToolbarButton;
+			newButton.id = "dynamic-always-btn";
+			newButton.text = "Dynamic Always";
+			newButton.icon = "decline";
+			newButton.overflowPriority = "AlwaysOverflow";
+			toolbar.appendChild(newButton);
+		});
+
+		// Verify the dynamically added item is placed in the overflow (has popover class)
+		cy.get("#dynamic-always-btn")
+			.shadow()
+			.find("[ui5-button]")
+			.should("have.class", "ui5-tb-popover-item");
+
+		// The first AlwaysOverflow item should still be in overflow
+		cy.get("#first-always-btn")
+			.shadow()
+			.find("[ui5-button]")
+			.should("have.class", "ui5-tb-popover-item");
+
+		// Open overflow popover and verify both AlwaysOverflow items are there
+		cy.get("#dynamic-overflow-toolbar")
+			.shadow()
+			.find(".ui5-tb-overflow-btn")
+			.realClick();
+
+		cy.get("#dynamic-overflow-toolbar")
+			.shadow()
+			.find(".ui5-tb-popover-item")
+			.should("have.length", 2);
+	});
+
 	it("Should properly prevent the closing of the overflow menu when preventClosing = true", () => {
 		cy.mount(
 			<div style="width: 250px;">
