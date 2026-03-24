@@ -1,0 +1,1 @@
+import"../../bundle.esm-7369b410.js";(async()=>{var a=await window["sap-ui-webcomponents-bundle"].getIconNames();a.forEach(e=>{var n=document.createElement("ui5-icon");n.name=e,allIcons.appendChild(n)})})();
