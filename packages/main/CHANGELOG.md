@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0-rc.6](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.5...v2.22.0-rc.6) (2026-05-21)
+
+
+### Bug Fixes
+
+* **ui5-carousel:** clamp page index when items per page changes on resize ([#13499](https://github.com/UI5/webcomponents/issues/13499)) ([851a63f](https://github.com/UI5/webcomponents/commit/851a63f249551ccba919dbcfdee7a26c385825ba)), closes [#13443](https://github.com/UI5/webcomponents/issues/13443)
+* **ui5-form:** correct layout breakpoints near L/XL boundary ([#13522](https://github.com/UI5/webcomponents/issues/13522)) ([281e374](https://github.com/UI5/webcomponents/commit/281e3744710f77e4c0d08b6d6bfb8dc3570bd77e)), closes [#13420](https://github.com/UI5/webcomponents/issues/13420)
+* **ui5-li:** implement edit mode for keyboard navigation in list items ([#13411](https://github.com/UI5/webcomponents/issues/13411)) ([cdaa85b](https://github.com/UI5/webcomponents/commit/cdaa85b7ab8763f2d7c9f687eac6f97aed2d353b)), closes [#13220](https://github.com/UI5/webcomponents/issues/13220)
+* **ui5-multi-combobox:** remove invalid values on focusout ([#13504](https://github.com/UI5/webcomponents/issues/13504)) ([b5f72c4](https://github.com/UI5/webcomponents/commit/b5f72c4b7f07b612a7c7c7b5b0146eb27af60ac4))
+* **ui5-select:** correct dropdown button height ([#13408](https://github.com/UI5/webcomponents/issues/13408)) ([9fb905f](https://github.com/UI5/webcomponents/commit/9fb905f8feecfce503670a93e8506a1f582d03fe)), closes [#13306](https://github.com/UI5/webcomponents/issues/13306)
+
+
+### Features
+
+* **table:** add support for group rows ([#13510](https://github.com/UI5/webcomponents/issues/13510)) ([6202009](https://github.com/UI5/webcomponents/commit/6202009405594b66464cdd76edbbff708a86a108)), closes [#10148](https://github.com/UI5/webcomponents/issues/10148)
+
+
+
+
+
 # [2.22.0-rc.5](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.4...v2.22.0-rc.5) (2026-05-14)
 
 

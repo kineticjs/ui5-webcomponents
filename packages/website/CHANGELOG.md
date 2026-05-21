@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0-rc.6](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.5...v2.22.0-rc.6) (2026-05-21)
+
+
+### Features
+
+* **table:** add support for group rows ([#13510](https://github.com/UI5/webcomponents/issues/13510)) ([6202009](https://github.com/UI5/webcomponents/commit/6202009405594b66464cdd76edbbff708a86a108)), closes [#10148](https://github.com/UI5/webcomponents/issues/10148)
+
+
+
+
+
 # [2.22.0-rc.5](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.4...v2.22.0-rc.5) (2026-05-14)
 
 

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0-rc.6](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.5...v2.22.0-rc.6) (2026-05-21)
+
+
+### Bug Fixes
+
+* **ui5-dynamic-page:** correct scroll-padding-top for focus auto-scroll ([#13418](https://github.com/UI5/webcomponents/issues/13418)) ([ccf4bcc](https://github.com/UI5/webcomponents/commit/ccf4bcc49fc706ea635fbcb3f841166c22a87714)), closes [#13332](https://github.com/UI5/webcomponents/issues/13332)
+* **ui5-li:** implement edit mode for keyboard navigation in list items ([#13411](https://github.com/UI5/webcomponents/issues/13411)) ([cdaa85b](https://github.com/UI5/webcomponents/commit/cdaa85b7ab8763f2d7c9f687eac6f97aed2d353b)), closes [#13220](https://github.com/UI5/webcomponents/issues/13220)
+* **ui5-shellbar-search:** restore focus on button when collapsed ([#13523](https://github.com/UI5/webcomponents/issues/13523)) ([8eda19d](https://github.com/UI5/webcomponents/commit/8eda19d73eac6aead02448a89a9c7957573cada7))
+
+
+### Features
+
+* **ui5-dynamic-side-content:** add 'role' property to accessibilityAttributes object ([#13476](https://github.com/UI5/webcomponents/issues/13476)) ([0fb6736](https://github.com/UI5/webcomponents/commit/0fb673630a61a3e6e7e2abeb90781b685ae185cc))
+* **ui5-shellbar:** add 8px gap between startButton elements ([#13537](https://github.com/UI5/webcomponents/issues/13537)) ([732076b](https://github.com/UI5/webcomponents/commit/732076b70ba23b83eced0e9875f94c0f6a518402))
+* **ui5-shellbar:** align hover state colors for shell action buttons ([#13539](https://github.com/UI5/webcomponents/issues/13539)) ([bffa14d](https://github.com/UI5/webcomponents/commit/bffa14dac1e9212daf3a67771744b1f130b7a7af))
+
+
+
+
+
 # [2.22.0-rc.5](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.4...v2.22.0-rc.5) (2026-05-14)
 
 

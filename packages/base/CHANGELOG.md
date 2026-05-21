@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0-rc.6](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.5...v2.22.0-rc.6) (2026-05-21)
+
+
+### Bug Fixes
+
+* **OpenUI5Support:** add shared registry for patched functions ([#13520](https://github.com/UI5/webcomponents/issues/13520)) ([b51cef2](https://github.com/UI5/webcomponents/commit/b51cef25b1875a979f6f3f89de56c52a1127453c)), closes [#13406](https://github.com/UI5/webcomponents/issues/13406)
+
+
+### Features
+
+* **framework:** add ignoreUrlParams configuration option ([#13518](https://github.com/UI5/webcomponents/issues/13518)) ([f09792c](https://github.com/UI5/webcomponents/commit/f09792c6ba88a38a9179fd1db2a0431c779518a5)), closes [#13515](https://github.com/UI5/webcomponents/issues/13515)
+
+
+
+
+
 # [2.22.0-rc.5](https://github.com/UI5/webcomponents/compare/v2.22.0-rc.4...v2.22.0-rc.5) (2026-05-14)
 
 
