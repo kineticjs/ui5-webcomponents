@@ -1,13 +1,14 @@
 import { registerIcon } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 
 const name = "top-side-panel-layout";
-const pathData = "M512 512H0V0h512v512zM32 32v96h448V32H32zm448 128H160v320h320V160zm-448 0v320h96V160H32z";
+const pathData = "M0 0h512v512H0V0zm480 160H160v320h320V160zM32 128h448V32H32v96zm0 32v320h96V160H32z";
 const ltr = false;
 const accData = null;
+const viewBox = "0 0 512 512";
 const collection = "business-suite-v1";
 const packageName = "@ui5/webcomponents-icons-business-suite";
 
-registerIcon(name, { pathData, ltr, collection, packageName });
+registerIcon(name, { pathData, ltr, viewBox, collection, packageName });
 
 export default "business-suite-v1/top-side-panel-layout";
-export { pathData, ltr, accData };
+export { pathData, ltr, viewBox, accData };

@@ -2,6 +2,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import "@ui5/webcomponents-icons/dist/favorite.js";
 import "@ui5/webcomponents-icons/dist/unfavorite.js";
+import type RatingIndicatorSize from "./types/RatingIndicatorSize.js";
 type Star = {
     selected: boolean;
     index: number;
@@ -42,6 +43,9 @@ type Star = {
  * @since 1.0.0-rc.8
  */
 declare class RatingIndicator extends UI5Element {
+    eventDetails: {
+        change: void;
+    };
     /**
      * The indicated value of the rating.
      *
@@ -62,6 +66,13 @@ declare class RatingIndicator extends UI5Element {
      */
     max: number;
     /**
+     * Defines the size of the component.
+     * @default "M"
+     * @public
+     * @since 2.6.0
+     */
+    size: `${RatingIndicatorSize}`;
+    /**
      * Defines whether the component is disabled.
      *
      * **Note:** A disabled component is completely noninteractive.
@@ -78,6 +89,16 @@ declare class RatingIndicator extends UI5Element {
      * @public
      */
     readonly: boolean;
+    /**
+     * Defines whether the component is in display-only mode.
+     *
+     * **Note:** A display-only component is visually identical to read-only
+     * but cannot receive focus and is not announced by screen readers.
+     * @default false
+     * @public
+     * @since 2.26.0
+     */
+    displayOnly: boolean;
     /**
      * Defines the accessible ARIA name of the component.
      * @default undefined
@@ -107,25 +128,35 @@ declare class RatingIndicator extends UI5Element {
      */
     tooltip?: string;
     /**
-     * @private
+     * Defines the icon to be displayed for the selected (filled) rating symbol.
+     *
+     * @default "favorite"
+     * @public
+     * @since 2.20
      */
-    _stars: Array<Star>;
+    ratedIcon: string;
+    /**
+     * Defines the icon to be displayed for the unselected (empty) rating symbol.
+     * @default "unfavorite"
+     * @public
+     * @since 2.20
+     */
+    unratedIcon: string;
     /**
      * @private
      */
-    _focused: boolean;
+    _stars: Array<Star>;
     _liveValue?: number;
     static i18nBundle: I18nBundle;
-    static onDefine(): Promise<void>;
     constructor();
+    onEnterDOM(): void;
     onBeforeRendering(): void;
     calcState(): void;
     _onclick(e: MouseEvent): void;
     _onkeydown(e: KeyboardEvent): void;
     _onfocusin(): void;
-    _onfocusout(): void;
-    get effectiveTabIndex(): string;
-    get ratingTooltip(): string;
+    get effectiveTabIndex(): number;
+    get ratingTooltip(): string | undefined;
     get defaultTooltip(): string;
     get _ariaRoleDescription(): string;
     get _ariaDisabled(): true | undefined;
@@ -134,3 +165,4 @@ declare class RatingIndicator extends UI5Element {
     get ariaReadonly(): "true" | undefined;
 }
 export default RatingIndicator;
+export type { Star };

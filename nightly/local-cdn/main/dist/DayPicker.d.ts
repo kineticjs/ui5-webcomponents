@@ -1,9 +1,10 @@
 import type LocaleData from "@ui5/webcomponents-localization/dist/LocaleData.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
+import DateFormat from "@ui5/webcomponents-localization/dist/DateFormat.js";
 import CalendarSelectionMode from "./types/CalendarSelectionMode.js";
 import CalendarPart from "./CalendarPart.js";
-import type { ICalendarPicker, SpecialCalendarDateT } from "./Calendar.js";
+import type { DisabledDateRangeT, ICalendarPicker, SpecialCalendarDateT } from "./Calendar.js";
 type DayName = {
     name: string;
     classes: string;
@@ -13,18 +14,20 @@ type Day = {
     timestamp: string;
     day: number;
     focusRef: boolean;
-    _tabIndex: string;
+    _tabIndex: number;
     selected: boolean;
     _isSecondaryCalendarType: boolean;
     classes: string;
+    tooltip?: string;
     ariaLabel: string;
-    ariaSelected: string;
-    ariaDisabled: string | undefined;
+    ariaSelected: boolean;
+    ariaDisabled: boolean | undefined;
     disabled: boolean;
     secondDay?: number;
     weekNum?: number;
     isHidden?: boolean;
     type?: string;
+    parts: string;
 };
 type WeekNumber = {
     weekNum: number;
@@ -37,6 +40,7 @@ type DayPickerChangeEventDetail = {
 };
 type DayPickerNavigateEventDetail = {
     timestamp: number;
+    mouse?: boolean;
 };
 /**
  * @class
@@ -47,10 +51,13 @@ type DayPickerNavigateEventDetail = {
  * @private
  */
 declare class DayPicker extends CalendarPart implements ICalendarPicker {
+    eventDetails: CalendarPart["eventDetails"] & {
+        "change": DayPickerChangeEventDetail;
+        "navigate": DayPickerNavigateEventDetail;
+    };
     /**
      * An array of UTC timestamps representing the selected date or dates depending on the capabilities of the picker component.
      * @default []
-     * @public
      */
     selectedDates: Array<number>;
     /**
@@ -61,7 +68,6 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
      * - `CalendarSelectionMode.Range` - enables selection of a date range.
      * - `CalendarSelectionMode.Multiple` - enables selection of multiple dates.
      * @default "Single"
-     * @public
      */
     selectionMode: `${CalendarSelectionMode}`;
     /**
@@ -70,7 +76,6 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
      * **Note:** For calendars other than Gregorian,
      * the week numbers are not displayed regardless of what is set.
      * @default false
-     * @public
      * @since 1.0.0-rc.8
      */
     hideWeekNumbers: boolean;
@@ -94,15 +99,23 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
      * @private
      */
     specialCalendarDates: Array<SpecialCalendarDateT>;
+    /**
+     * Array of disabled date ranges that cannot be selected.
+     * Each range can have a start and/or end date value.
+     * @private
+     */
+    disabledDates: Array<DisabledDateRangeT>;
+    _focusableDay: HTMLElement;
     _autoFocus?: boolean;
+    _mousedownTimestamp?: number;
     static i18nBundle: I18nBundle;
     onBeforeRendering(): void;
     /**
      * Builds the "_weeks" object that represents the month.
-     * @param localeData
      * @private
      */
-    _buildWeeks(localeData: LocaleData): void;
+    _buildWeeks(): void;
+    _calculateWeekNumber(date: Date): number;
     /**
      * Builds the dayNames object (header of the month).
      * @param localeData
@@ -116,6 +129,8 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
      */
     namesTooLong(dayNames: Array<string>): boolean;
     onAfterRendering(): void;
+    _focusCorrectDay(): void;
+    get _shouldFocusDay(): boolean;
     _onfocusin(): void;
     _onfocusout(): void;
     /**
@@ -124,6 +139,8 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
      * @private
      */
     _isDaySelected(timestamp: number): boolean;
+    _isRangeEndDate(timestamp: number): boolean;
+    _isRangeStartDate(timestamp: number): boolean;
     /**
      * Tells if the day is inside a selection range (light blue).
      * @param timestamp
@@ -134,9 +151,11 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
      * Selects/deselects a day.
      * @param e
      * @param isShift true if the user did Click+Shift or Enter+Shift (but not Space+Shift)
+     * @param setTimestamp whether to move focus (timestamp) to the selected day; false for mouse clicks where focus is independent
      * @private
      */
-    _selectDate(e: Event, isShift: boolean): void;
+    _selectDate(e: Event, isShift: boolean, setTimestamp?: boolean): void;
+    _updateSelectedDates(timestamp: number, isShift: boolean): void;
     /**
      * Selects/deselects the whole row (week).
      * @private
@@ -145,6 +164,7 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
     _toggleTimestampInSelection(timestamp: number): void;
     _addTimestampToSelection(timestamp: number): void;
     _removeTimestampFromSelection(timestamp: number): void;
+    _onmousedown(e: MouseEvent): void;
     /**
      * Called when at least one day is selected and the user presses "Shift".
      * @param timestamp
@@ -214,14 +234,42 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
     _updateSecondTimestamp(): void;
     get _specialCalendarDates(): SpecialCalendarDateT[];
     get shouldHideWeekNumbers(): boolean;
-    get classes(): {
-        root: {
-            "ui5-dp-root": boolean;
-            "ui5-dp-twocalendartypes": boolean;
-        };
-    };
     _isWeekend(oDate: CalendarDate): boolean;
+    /**
+     * Pre-computes disabled date range timestamps once before the rendering loop.
+     * Avoids repeated date string parsing inside the per-cell _isDateEnabled check.
+     * @private
+     */
+    _precomputeDisabledDates(): Array<{
+        startTimestamp: number;
+        endTimestamp: number;
+    }>;
+    /**
+     * Checks if a given date is enabled (selectable).
+     * A date is considered disabled if:
+     * - It falls outside the min/max date range defined by the component
+     * - It matches a single disabled date
+     * - It falls within a disabled date range (exclusive of start and end dates)
+     * @param date - The date to check
+     * @param minDate - Pre-resolved min calendar date
+     * @param maxDate - Pre-resolved max calendar date
+     * @param precomputedDisabledDates - Pre-parsed disabled date range timestamps
+     * @returns `true` if the date is enabled (selectable), `false` if disabled
+     * @private
+     */
+    _isDateEnabled(date: CalendarDate, minDate?: CalendarDate, maxDate?: CalendarDate, precomputedDisabledDates?: Array<{
+        startTimestamp: number;
+        endTimestamp: number;
+    }>): boolean;
+    /**
+     * Converts a date value string to a timestamp.
+     * @param dateValue - Date string to convert
+     * @returns timestamp in seconds, or 0 if invalid
+     * @private
+     */
+    _getTimestampFromDateValue(dateValue?: string): number;
     _isDayPressed(target: HTMLElement): boolean;
+    _isDefaultCalendarLegendType(type: string): boolean;
     _getSecondaryDay(tempDate: CalendarDate): CalendarDate;
     _getFirstDay(): CalendarDate;
     _getFirstDayOfWeek(): number;
@@ -235,6 +283,9 @@ declare class DayPicker extends CalendarPart implements ICalendarPicker {
         };
     };
     get ariaRoledescription(): string;
+    _getCalendarWeekLabel(weekNum: number): string;
+    get _formatLong(): DateFormat;
+    get _formatLongSecondary(): DateFormat;
 }
 export default DayPicker;
 export type { DayPickerNavigateEventDetail, DayPickerChangeEventDetail, };

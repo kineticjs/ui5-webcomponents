@@ -8,27 +8,16 @@ var StepInput_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import { isUp, isDown, isUpCtrl, isDownCtrl, isUpShift, isDownShift, isUpShiftCtrl, isDownShiftCtrl, isPageUpShift, isPageDownShift, isEscape, isEnter, } from "@ui5/webcomponents-base/dist/Keys.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import StepInputTemplate from "./generated/templates/StepInputTemplate.lit.js";
-import { STEPINPUT_DEC_ICON_TITLE, STEPINPUT_INC_ICON_TITLE } from "./generated/i18n/i18n-defaults.js";
-import "@ui5/webcomponents-icons/dist/less.js";
-import "@ui5/webcomponents-icons/dist/add.js";
-import Icon from "./Icon.js";
-import Input from "./Input.js";
-import InputType from "./types/InputType.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { submitForm } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
+import { getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { NUMBERINPUT_PATTERN_MISSMATCH, NUMBERINPUT_RANGEOVERFLOW, NUMBERINPUT_RANGEUNDERFLOW, } from "./generated/i18n/i18n-defaults.js";
+import StepInputTemplate from "./StepInputTemplate.js";
 // Styles
 import StepInputCss from "./generated/themes/StepInput.css.js";
-// Spin variables
-const INITIAL_WAIT_TIMEOUT = 500; // milliseconds
-const ACCELERATION = 0.8;
-const MIN_WAIT_TIMEOUT = 50; // milliseconds
-const INITIAL_SPEED = 120; // milliseconds
 /**
  * @class
  *
@@ -115,323 +104,83 @@ let StepInput = StepInput_1 = class StepInput extends UI5Element {
          * @public
          */
         this.valuePrecision = 0;
-        this._decIconDisabled = false;
-        this._incIconDisabled = false;
-        this.focused = false;
-        this._inputFocused = false;
-        this._previousValue = this.value;
-        this._waitTimeout = INITIAL_WAIT_TIMEOUT;
-        this._speed = INITIAL_SPEED;
-        this._spinStarted = false;
+    }
+    get _innerNumberInput() {
+        return this.shadowRoot.querySelector("[ui5-numeric-input]");
     }
     async formElementAnchor() {
         return (await this.getFocusDomRefAsync())?.getFocusDomRefAsync();
     }
+    get formValidityMessage() {
+        const validity = this.formValidity;
+        if (validity.patternMismatch) {
+            return StepInput_1.i18nBundle.getText(NUMBERINPUT_PATTERN_MISSMATCH, this.valuePrecision);
+        }
+        if (validity.rangeUnderflow) {
+            return StepInput_1.i18nBundle.getText(NUMBERINPUT_RANGEUNDERFLOW, this.min);
+        }
+        if (validity.rangeOverflow) {
+            return StepInput_1.i18nBundle.getText(NUMBERINPUT_RANGEOVERFLOW, this.max);
+        }
+        return "";
+    }
+    get formValidity() {
+        return {
+            patternMismatch: this.value !== 0 && (this._innerNumberInput?.formValidity.patternMismatch ?? false),
+            rangeOverflow: this.max !== undefined && this.value > this.max,
+            rangeUnderflow: this.min !== undefined && this.value < this.min,
+        };
+    }
     get formFormattedValue() {
         return this.value.toString();
     }
-    static async onDefine() {
-        StepInput_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    getFocusDomRef() {
+        return this._innerNumberInput?.getFocusDomRef();
     }
-    get type() {
-        return InputType.Number;
+    async getFocusDomRefAsync() {
+        await this._waitForDomRef();
+        return this._innerNumberInput?.getFocusDomRefAsync();
     }
-    // icons-related
-    get decIconTitle() {
-        return StepInput_1.i18nBundle.getText(STEPINPUT_DEC_ICON_TITLE);
+    get _associatedLabelText() {
+        return getAssociatedLabelForTexts(this) || undefined;
     }
-    get decIconName() {
-        return "less";
+    _onNumberInputChange(e) {
+        e.stopPropagation();
+        this._syncFromInner();
+        this.fireDecoratorEvent("change");
     }
-    get incIconTitle() {
-        return StepInput_1.i18nBundle.getText(STEPINPUT_INC_ICON_TITLE);
-    }
-    get incIconName() {
-        return "add";
-    }
-    get _decIconClickable() {
-        return !this._decIconDisabled && !this.readonly && !this.disabled;
-    }
-    get _incIconClickable() {
-        return !this._incIconDisabled && !this.readonly && !this.disabled;
-    }
-    get _isFocused() {
-        return this.focused;
-    }
-    get _displayValue() {
-        if ((this.value === 0) || (Number.isInteger(this.value))) {
-            return this.value.toFixed(this.valuePrecision);
-        }
-        if (this.input && this.value === Number(this.input.value)) { // For the cases where the number is fractional and is ending with 0s.
-            return this.input.value;
-        }
-        return this.value.toString();
-    }
-    get accInfo() {
-        return {
-            "ariaRequired": this.required,
-            "ariaLabel": getEffectiveAriaLabelText(this),
-        };
-    }
-    get inputAttributes() {
-        return {
-            min: this.min === undefined ? undefined : this.min,
-            max: this.max === undefined ? undefined : this.max,
-            step: this.step,
-        };
-    }
-    onBeforeRendering() {
-        this._setButtonState();
-        if (this._previousValue === undefined) {
-            this._previousValue = this.value;
-        }
-    }
-    get input() {
-        return this.shadowRoot.querySelector("[ui5-input]");
-    }
-    get innerInput() {
-        return this.input.shadowRoot.querySelector("input");
-    }
-    get inputOuter() {
-        return this.shadowRoot.querySelector(".ui5-step-input-input");
-    }
-    _onButtonFocusOut() {
-        setTimeout(() => {
-            if (!this._inputFocused) {
-                this.inputOuter.removeAttribute("focused");
-            }
-        }, 0);
-    }
-    _onInputFocusIn() {
-        this._inputFocused = true;
-        if (this.value !== this._previousValue) {
-            this._previousValue = this.value;
-        }
-    }
-    _onInputFocusOut() {
-        this._inputFocused = false;
-        this._onInputChange();
-    }
-    _setButtonState() {
-        this._decIconDisabled = this.min !== undefined && this.value <= this.min;
-        this._incIconDisabled = this.max !== undefined && this.value >= this.max;
-    }
-    _validate() {
-        if (this._initialValueState === undefined) {
-            this._initialValueState = this.valueState;
-        }
-        this._updateValueState();
-    }
-    _updateValueState() {
-        const isWithinRange = (this.min === undefined || Number(this.input.value) >= this.min)
-            && (this.max === undefined || Number(this.input.value) <= this.max);
-        const isValueWithCorrectPrecision = this._isValueWithCorrectPrecision;
-        const previousValueState = this.valueState;
-        const isValid = isWithinRange && isValueWithCorrectPrecision;
-        this.valueState = isValid ? ValueState.None : ValueState.Negative;
-        const eventPrevented = !this.fireEvent("value-state-change", {
-            valueState: this.valueState,
-            valid: isValid,
-        }, true);
-        if (eventPrevented) {
-            this.valueState = previousValueState;
-        }
-    }
-    _preciseValue(value) {
-        const pow = 10 ** this.valuePrecision;
-        return Math.round(value * pow) / pow;
-    }
-    _fireChangeEvent() {
-        if (this._previousValue !== this.value) {
-            this._previousValue = this.value;
-            this.fireEvent("change", { value: this.value });
-        }
-    }
-    /**
-     * Value modifier - modifies the value of the component, validates the new value and enables/disables increment and
-     * decrement buttons according to the value and min/max values (if set). Fires `change` event when requested
-     * @private
-     * @param modifier modifies the value of the component with the given modifier (positive or negative)
-     * @param fireChangeEvent if `true`, fires `change` event when the value is changed
-     */
-    _modifyValue(modifier, fireChangeEvent = false) {
-        let value;
-        value = this.value + modifier;
-        if (this.min !== undefined && value < this.min) {
-            value = this.min;
-        }
-        if (this.max !== undefined && value > this.max) {
-            value = this.max;
-        }
-        value = this._preciseValue(value);
-        if (value !== this.value) {
-            this.value = value;
-            this.input.value = value.toFixed(this.valuePrecision);
-            this._validate();
-            this._setButtonState();
-            this.focused = true;
-            this.inputOuter.setAttribute("focused", "");
-            if (fireChangeEvent) {
-                this._fireChangeEvent();
-            }
-            else {
-                this.input.focus();
-            }
-        }
-    }
-    _incValue(e) {
-        if (this._incIconClickable && e.isTrusted && !this.disabled && !this.readonly) {
-            this._modifyValue(this.step, true);
-            this._previousValue = this.value;
-        }
-    }
-    _decValue(e) {
-        if (this._decIconClickable && e.isTrusted && !this.disabled && !this.readonly) {
-            this._modifyValue(-this.step, true);
-            this._previousValue = this.value;
-        }
-    }
-    get _isValueWithCorrectPrecision() {
-        // gets either "." or "," as delimiter which is based on locale, and splits the number by it
-        const delimiter = this.input.value.includes(".") ? "." : ",";
-        const numberParts = this.input.value.split(delimiter);
-        const decimalPartLength = numberParts.length > 1 ? numberParts[1].length : 0;
-        return decimalPartLength === this.valuePrecision;
-    }
-    _onInputChange() {
-        this._setDefaultInputValueIfNeeded();
-        const inputValue = Number(this.input.value);
-        if (this._isValueChanged(inputValue)) {
-            this._updateValueAndValidate(inputValue);
-        }
-    }
-    _setDefaultInputValueIfNeeded() {
-        if (this.input.value === "") {
-            const defaultValue = (this.min || 0).toFixed(this.valuePrecision);
-            this.input.value = defaultValue;
-            this.innerInput.value = defaultValue; // we need to update inner input value as well, to avoid empty input scenario
-        }
-    }
-    _isValueChanged(inputValue) {
-        const isValueWithCorrectPrecision = this._isValueWithCorrectPrecision;
-        // Treat values as distinct when modified to match a specific precision (e.g., from 3.4000 to 3.40),
-        // even if JavaScript sees them as equal, to correctly update valueState based on expected valuePrecision.
-        const isPrecisionCorrectButValueStateError = isValueWithCorrectPrecision && this.valueState === ValueState.Negative;
-        return this.value !== this._previousValue
-            || this.value !== inputValue
-            || inputValue === 0
-            || !isValueWithCorrectPrecision
-            || isPrecisionCorrectButValueStateError;
-    }
-    _updateValueAndValidate(inputValue) {
-        this.value = inputValue;
-        this._validate();
-        this._setButtonState();
-        this._fireChangeEvent();
-    }
-    _onfocusin() {
-        this.focused = true;
-    }
-    _onfocusout() {
-        this.focused = false;
-    }
-    _onkeydown(e) {
-        let preventDefault = true;
-        if (this.disabled || this.readonly) {
-            return;
-        }
-        if (isEnter(e)) {
-            this._onInputChange();
-            return;
-        }
-        if (isUp(e)) {
-            // step up
-            this._modifyValue(this.step);
-        }
-        else if (isDown(e)) {
-            // step down
-            this._modifyValue(-this.step);
-        }
-        else if (isEscape(e)) {
-            // return previous value
-            this.value = this._previousValue;
-            this.input.value = this.value.toFixed(this.valuePrecision);
-        }
-        else if (this.max !== undefined && (isPageUpShift(e) || isUpShiftCtrl(e))) {
-            // step to max
-            this._modifyValue(this.max - this.value);
-        }
-        else if (this.min !== undefined && (isPageDownShift(e) || isDownShiftCtrl(e))) {
-            // step to min
-            this._modifyValue(this.min - this.value);
-        }
-        else if (!isUpCtrl(e) && !isDownCtrl(e) && !isUpShift(e) && !isDownShift(e)) {
-            preventDefault = false;
-        }
-        if (preventDefault) {
+    _onNumberInputInput(e) {
+        e.stopPropagation();
+        const prevented = !this.fireDecoratorEvent("input", { inputType: e.detail.inputType });
+        if (prevented) {
             e.preventDefault();
         }
     }
-    _decSpin() {
-        if (!this._decIconDisabled) {
-            this._spinValue(false, true);
+    _onNumberInputValueStateChange(e) {
+        e.stopPropagation();
+        const prevented = !this.fireDecoratorEvent("value-state-change", {
+            valueState: e.detail.valueState,
+            valid: e.detail.valid,
+        });
+        if (prevented) {
+            // Inner already applied the new valueState — revert it back to the outer's current value
+            this._innerNumberInput.valueState = this.valueState;
+        }
+        else {
+            this.valueState = e.detail.valueState;
         }
     }
-    _incSpin() {
-        if (!this._incIconDisabled) {
-            this._spinValue(true, true);
+    _syncFromInner() {
+        const ni = this._innerNumberInput;
+        if (!ni) {
+            return;
         }
+        this.value = ni.value;
+        this.valueState = ni.valueState;
     }
-    /**
-     * Calculates the time which should be waited until _spinValue function is called.
-     */
-    _calcWaitTimeout() {
-        this._speed *= ACCELERATION;
-        this._waitTimeout = ((this._waitTimeout - this._speed) < MIN_WAIT_TIMEOUT ? MIN_WAIT_TIMEOUT : (this._waitTimeout - this._speed));
-        return this._waitTimeout;
-    }
-    /**
-     * Called when the increment or decrement button is pressed and held to set new value.
-     * @private
-     * @param increment - is this the increment button or not so the values should be spin accordingly up or down
-     * @param resetVariables - whether to reset the spin-related variables or not
-     */
-    _spinValue(increment, resetVariables = false) {
-        if (resetVariables) {
-            this._waitTimeout = INITIAL_WAIT_TIMEOUT;
-            this._speed = INITIAL_SPEED;
-            this._btnDown = true;
-        }
-        this._spinTimeoutId = setTimeout(() => {
-            if (this._btnDown) {
-                this._spinStarted = true;
-                this._modifyValue(increment ? this.step : -this.step);
-                this._setButtonState();
-                if ((!this._incIconDisabled && increment) || (!this._decIconDisabled && !increment)) {
-                    this._spinValue(increment);
-                }
-                else {
-                    this._resetSpin();
-                    this._fireChangeEvent();
-                }
-            }
-        }, this._calcWaitTimeout());
-    }
-    /**
-    * Resets spin process
-    */
-    _resetSpin() {
-        clearTimeout(this._spinTimeoutId);
-        this._btnDown = false;
-        this._spinStarted = false;
-    }
-    /**
-    * Resets spin process when mouse outs + or - buttons
-    */
-    _resetSpinOut() {
-        if (this._btnDown) {
-            this._resetSpin();
-            this._fireChangeEvent();
+    _onRequestSubmit() {
+        if (this._internals.form) {
+            submitForm(this);
         }
     }
 };
@@ -475,61 +224,43 @@ __decorate([
     property()
 ], StepInput.prototype, "accessibleNameRef", void 0);
 __decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_decIconDisabled", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_incIconDisabled", void 0);
-__decorate([
-    property({ type: Boolean })
-], StepInput.prototype, "focused", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_inputFocused", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_previousValue", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_waitTimeout", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_speed", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_btnDown", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_spinTimeoutId", void 0);
-__decorate([
-    property({ noAttribute: true })
-], StepInput.prototype, "_spinStarted", void 0);
-__decorate([
     slot()
 ], StepInput.prototype, "valueStateMessage", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], StepInput, "i18nBundle", void 0);
 StepInput = StepInput_1 = __decorate([
     customElement({
         tag: "ui5-step-input",
+        cldr: true,
         formAssociated: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: StepInputCss,
         template: StepInputTemplate,
-        dependencies: [
-            Icon,
-            Input,
-        ],
+        languageAware: true,
     })
     /**
      * Fired when the input operation has finished by pressing Enter or on focusout.
      * @public
      */
     ,
-    event("change")
+    event("change", {
+        bubbles: true,
+    })
+    /**
+     * Fired when the value of the component changes at each keystroke.
+     * @public
+     * @since 2.6.0
+     */
+    ,
+    event("input", {
+        cancelable: true,
+        bubbles: true,
+    })
     /**
      * Fired before the value state of the component is updated internally.
      * The event is preventable, meaning that if it's default action is
      * prevented, the component will not update the value state.
-     * @allowPreventDefault
      * @since 1.23.0
      * @public
      * @param {string} valueState The new `valueState` that will be set.
@@ -537,20 +268,8 @@ StepInput = StepInput_1 = __decorate([
      */
     ,
     event("value-state-change", {
-        detail: {
-            /**
-             * @public
-             */
-            valueState: {
-                type: String,
-            },
-            /**
-             * @public
-             */
-            valid: {
-                type: Boolean,
-            },
-        },
+        bubbles: true,
+        cancelable: true,
     })
 ], StepInput);
 StepInput.define();

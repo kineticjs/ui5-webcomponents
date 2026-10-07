@@ -6,13 +6,14 @@ import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNaviga
 import LinkDesign from "./types/LinkDesign.js";
 import type WrappingType from "./types/WrappingType.js";
 import type LinkAccessibleRole from "./types/LinkAccessibleRole.js";
+import type InteractiveAreaSize from "./types/InteractiveAreaSize.js";
 type LinkClickEventDetail = {
     altKey: boolean;
     ctrlKey: boolean;
     metaKey: boolean;
     shiftKey: boolean;
 };
-type LinkAccessibilityAttributes = Pick<AccessibilityAttributes, "expanded" | "hasPopup">;
+type LinkAccessibilityAttributes = Pick<AccessibilityAttributes, "expanded" | "hasPopup" | "current">;
 /**
  * @class
  *
@@ -35,6 +36,21 @@ type LinkAccessibilityAttributes = Pick<AccessibilityAttributes, "expanded" | "h
  * anchor tag (`<a></a>`) and opens the specified URL in the given target frame (`target` property).
  * To specify where the linked content is opened, you can use the `target` property.
  *
+ * ### Navigation vs. Action
+ *
+ * The `ui5-link` supports two distinct use cases. Choosing the right one is important for accessibility:
+ *
+ * - **Navigation**: set the `href` property (and optionally `target`). The component behaves as a
+ * standard anchor tag, and the browser handles navigation, which also enables native
+ * affordances such as open-in-new-tab, copy link, and hover preview.
+ * - **Action**: when the link triggers an in-page action (for example, opening a dialog) instead of
+ * navigating, leave `href` unset and set `accessibleRole` to `"Button"`. This exposes the component
+ * with a `button` role, which assistive technologies activate reliably.
+ *
+ * **Note:** A link that triggers an action but keeps the default `"Link"` role (with no `href`) cannot be
+ * activated by some screen readers, such as JAWS in browse mode, because a link without `href` has
+ * no destination to navigate to. Always set `accessibleRole="Button"` for action-only links.
+ *
  * ### Responsive behavior
  *
  * If there is not enough space, the text of the `ui5-link` becomes truncated.
@@ -54,6 +70,9 @@ type LinkAccessibilityAttributes = Pick<AccessibilityAttributes, "expanded" | "h
  * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
  */
 declare class Link extends UI5Element implements ITabbable {
+    eventDetails: {
+        click: LinkClickEventDetail;
+    };
     /**
      * Defines whether the component is disabled.
      *
@@ -102,6 +121,20 @@ declare class Link extends UI5Element implements ITabbable {
      */
     design: `${LinkDesign}`;
     /**
+     * Defines the target area size of the link:
+     * - **InteractiveAreaSize.Normal**: The default target area size.
+     * - **InteractiveAreaSize.Large**: The target area size is enlarged to 24px in height.
+     *
+     * **Note:**The property is designed to make links easier to activate and helps meet the WCAG 2.2 Target Size requirement. It is applicable only for the SAP Horizon themes.
+     * **Note:**To improve <code>ui5-link</code>'s reliability and usability, it is recommended to use the <code>InteractiveAreaSize.Large</code> value in scenarios where the <code>ui5-link</code> component is placed inside another interactive component, such as a list item or a table cell.
+     * Setting the <code>interactiveAreaSize</code> property to <code>InteractiveAreaSize.Large</code> increases the <code>ui5-link</code>'s invisible touch area. As a result, the user's intended one-time selection command is more likely to activate the desired <code>ui5-link</code>, with minimal chance of unintentionally activating the underlying component.
+     *
+     * @public
+     * @since 2.8.0
+     * @default "Normal"
+     */
+    interactiveAreaSize: `${InteractiveAreaSize}`;
+    /**
      * Defines how the text of a component will be displayed when there is not enough space.
      *
      * **Note:** By default the text will wrap. If "None" is set - the text will truncate.
@@ -126,7 +159,7 @@ declare class Link extends UI5Element implements ITabbable {
     /**
      * Defines the ARIA role of the component.
      *
-     * **Note:** Use the <code>LinkAccessibleRole.Button</code> role in cases when navigation is not expected to occur and the href property is not defined.
+     * **Note:** Set the role to <code>LinkAccessibleRole.Button</code> when the link triggers an action instead of navigating (when the <code>href</code> property is not defined). Otherwise, the component keeps the default <code>"Link"</code> role, and some screen readers (for example, JAWS in browse mode) cannot activate it, as a link with no <code>href</code> has no destination to navigate to.
      * @default "Link"
      * @public
      * @since 1.9.0
@@ -147,6 +180,13 @@ declare class Link extends UI5Element implements ITabbable {
      * @default {}
      */
     accessibilityAttributes: LinkAccessibilityAttributes;
+    /**
+     * Defines the accessible description of the component.
+     * @default undefined
+     * @public
+     * @since 2.5.0
+     */
+    accessibleDescription?: string;
     /**
      * Defines the icon, displayed as graphical element within the component before the link's text.
      * The SAP-icons font provides numerous options.
@@ -177,28 +217,22 @@ declare class Link extends UI5Element implements ITabbable {
     endIcon?: string;
     _rel: string | undefined;
     forcedTabIndex?: string;
-    /**
-     * Indicates if the element is on focus.
-     * @private
-     */
-    focused: boolean;
     _dummyAnchor: HTMLAnchorElement;
     static i18nBundle: I18nBundle;
     constructor();
+    onEnterDOM(): void;
     onBeforeRendering(): void;
     _isCrossOrigin(href: string): boolean;
-    get effectiveTabIndex(): string;
+    get effectiveTabIndex(): number;
     get ariaLabelText(): string | undefined;
     get hasLinkType(): boolean;
     static typeTextMappings(): Record<string, I18nText>;
     get linkTypeText(): string;
     get parsedRef(): string | undefined;
-    get effectiveAccRole(): string;
-    get _hasPopup(): ("dialog" | "grid" | "listbox" | "menu" | "tree") | undefined;
-    static onDefine(): Promise<void>;
+    get effectiveAccRole(): "button" | "link";
+    get ariaDescriptionText(): string | undefined;
+    get _hasPopup(): import("@ui5/webcomponents-base/dist/types.js").AriaHasPopup | undefined;
     _onclick(e: MouseEvent | KeyboardEvent): void;
-    _onfocusin(e: FocusEvent): void;
-    _onfocusout(): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
 }

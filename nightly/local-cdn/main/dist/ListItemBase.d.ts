@@ -3,8 +3,12 @@ import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNaviga
 import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
 type ListItemBasePressEventDetail = {
     item: ListItemBase;
-    selected: boolean;
-    key: string;
+    selected?: boolean;
+    key?: string;
+};
+type ListItemBaseClickEventDetail = {
+    item?: ListItemBase;
+    originalEvent: Event;
 };
 /**
  * @class
@@ -16,6 +20,14 @@ type ListItemBasePressEventDetail = {
  * @public
  */
 declare class ListItemBase extends UI5Element implements ITabbable {
+    eventDetails: {
+        "click": ListItemBaseClickEventDetail;
+        "request-tabindex-change": FocusEvent;
+        "_press": ListItemBasePressEventDetail;
+        "_focused": FocusEvent;
+        "forward-after": void;
+        "forward-before": void;
+    };
     /**
      * Defines the selected state of the component.
      * @default false
@@ -60,6 +72,18 @@ declare class ListItemBase extends UI5Element implements ITabbable {
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
     _onclick(e: MouseEvent): void;
+    _isDisabledInteractiveContentClicked(e: MouseEvent): boolean;
+    _isNativeInteractiveElement(target: HTMLElement): boolean;
+    _isCustomInteractiveElement(target: HTMLElement): boolean;
+    _isElementDisabled(target: HTMLElement): boolean;
+    /**
+     * Override from subcomponent, if needed
+     */
+    _isSpace(e: KeyboardEvent): boolean;
+    /**
+     * Override from subcomponent, if needed
+     */
+    _isEnter(e: KeyboardEvent): boolean;
     fireItemPress(e: Event): void;
     _handleTabNext(e: KeyboardEvent): void;
     _handleTabPrevious(e: KeyboardEvent): void;
@@ -77,7 +101,8 @@ declare class ListItemBase extends UI5Element implements ITabbable {
     get _focusable(): boolean;
     get _pressable(): boolean;
     get hasConfigurableMode(): boolean;
-    get _effectiveTabIndex(): string | 0 | -1 | undefined;
+    get _effectiveTabIndex(): number | undefined;
+    get isListItemBase(): boolean;
 }
 export default ListItemBase;
-export type { ListItemBasePressEventDetail, };
+export type { ListItemBasePressEventDetail, ListItemBaseClickEventDetail, };

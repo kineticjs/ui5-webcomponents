@@ -1,5 +1,6 @@
 import type { IOption } from "./Select.js";
 import ListItemBase from "./ListItemBase.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 /**
  * @class
  *
@@ -16,13 +17,14 @@ import ListItemBase from "./ListItemBase.js";
  * @public
  */
 declare class Option extends ListItemBase implements IOption {
+    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the text of the component.
      *
      * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
      * @public
      */
-    text: Array<Node>;
+    text: DefaultSlot<Node>;
     /**
      * Defines the value of the `ui5-select` inside an HTML Form element when this component is selected.
      * For more information on HTML Form support, see the `name` property of `ui5-select`.
@@ -51,16 +53,28 @@ declare class Option extends ListItemBase implements IOption {
      * Defines the tooltip of the option.
      * @default undefined
      * @public
-     * @since 1.23.0
+     * @since 2.0.0
      */
     tooltip?: string;
     /**
      * Defines the selected state of the component.
+     *
      * @default false
      * @public
+     * @deprecated since 2.20.0, please use the parent Select's `value` property instead.
      */
     selected: boolean;
     get displayIconBegin(): boolean;
+    /**
+     * Per-group aria-setsize, set by Select when this option is inside a ui5-option-group.
+     * @private
+     */
+    _forcedSetsize?: number;
+    /**
+     * Per-group aria-posinset, set by Select when this option is inside a ui5-option-group.
+     * @private
+     */
+    _forcedPosinset?: number;
     get effectiveDisplayText(): string;
 }
 export default Option;

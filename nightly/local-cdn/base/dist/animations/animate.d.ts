@@ -8,7 +8,7 @@ declare const animate: (options: AnimateOptions) => {
     promise: () => Promise<void | Error>;
     stop: () => () => void;
 };
-declare const duration = 400;
+declare const duration: () => 0 | 400;
 export { duration };
 export type { AnimateOptions };
 export default animate;

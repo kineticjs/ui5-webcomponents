@@ -1,4 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { Slot, DefaultSlot, ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IButton } from "@ui5/webcomponents/dist/Button.js";
@@ -135,10 +136,43 @@ declare class IllustratedMessage extends UI5Element {
     */
     dialogSvg?: string;
     /**
+    * Template function for the Dot design (safe variant).
+    * @private
+    * @since 2.16.0
+    */
+    dotTemplate?: object;
+    /**
+    * Template function for the Spot design (safe variant).
+    * @private
+    * @since 2.16.0
+    */
+    spotTemplate?: object;
+    /**
+    * Template function for the Scene design (safe variant).
+    * @private
+    * @since 2.16.0
+    */
+    sceneTemplate?: object;
+    /**
+    * Template function for the Dialog design (safe variant).
+    * @private
+    * @since 2.16.0
+    */
+    dialogTemplate?: object;
+    /**
     * Determinates what is the current media of the component based on its width.
     * @private
     */
     media?: string;
+    /**
+    * Defines whether the illustration is decorative.
+    *
+    * When set to `true`, the attributes `role="presentation"` and `aria-hidden="true"` are applied to the SVG element.
+    * @default false
+    * @public
+    * @since 2.10.0
+    */
+    decorative: boolean;
     /**
     * Defines the title of the component.
     *
@@ -146,7 +180,7 @@ declare class IllustratedMessage extends UI5Element {
     * @public
     * @since 1.7.0
     */
-    title: Array<HTMLElement> & string;
+    title: Slot<HTMLElement> & string;
     /**
     * Defines the subtitle of the component.
     *
@@ -154,28 +188,22 @@ declare class IllustratedMessage extends UI5Element {
     * @public
     * @since 1.0.0-rc.16
     */
-    subtitle: Array<HTMLElement>;
+    subtitle: Slot<HTMLElement>;
     /**
     * Defines the component actions.
+    *
+    * **Note:** Not displayed when the `design` property is set to `Base`.
     * @public
     */
-    actions: Array<IButton>;
+    actions: DefaultSlot<IButton>;
     illustrationTitle?: string;
     illustrationSubtitle?: string;
     static i18nBundle: I18nBundle;
-    _lastKnownOffsetWidthForMedia: Record<string, number>;
-    _lastKnownOffsetHeightForMedia: Record<string, number>;
-    _lastKnownMedia: string;
+    _contentHeightForMedia: Record<string, number>;
     _handleResize: ResizeObserverCallback;
+    _handleThemeLoaded: () => void;
     constructor();
-    static onDefine(): Promise<void>;
     static get BREAKPOINTS(): {
-        DIALOG: number;
-        SPOT: number;
-        DOT: number;
-        BASE: number;
-    };
-    static get BREAKPOINTS_HEIGHT(): {
         DIALOG: number;
         SPOT: number;
         DOT: number;
@@ -191,10 +219,17 @@ declare class IllustratedMessage extends UI5Element {
     onBeforeRendering(): Promise<void>;
     onEnterDOM(): void;
     onExitDOM(): void;
+    onInvalidation(changeInfo: ChangeInfo): void;
     handleResize(): void;
-    _applyMedia(heightChange?: boolean): void;
+    /**
+     * Checks if the current height of the component is enough to display the illustration, title, subtitle and actions.
+     * If not, the minimum required height for the current media is stored in the `_contentHeightForMedia` object.
+     * @private
+     */
+    _checkHeightConstraints(): void;
+    _applyMedia(): void;
+    _mediaExceedsContainerHeight(media: string): boolean;
     _setSVGAccAttrs(): void;
-    _adjustHeightToFitContainer(): void;
     onAfterRendering(): void;
     /**
      * Modifies the IM styles in accordance to the `size` property's value.
@@ -204,7 +239,7 @@ declare class IllustratedMessage extends UI5Element {
      */
     _handleCustomSize(): void;
     get ariaLabelText(): string | undefined;
-    get effectiveIllustration(): string | undefined;
+    get effectiveIllustration(): string | object | undefined;
     get hasFormattedSubtitle(): boolean;
     get hasFormattedTitle(): boolean;
     get effectiveTitleText(): string | undefined;

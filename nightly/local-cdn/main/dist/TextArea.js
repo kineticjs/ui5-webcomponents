@@ -8,27 +8,19 @@ var TextArea_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import { getEffectiveAriaLabelText, getAssociatedLabelForTexts } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
-import getEffectiveScrollbarStyle from "@ui5/webcomponents-base/dist/util/getEffectiveScrollbarStyle.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { getEffectiveAriaLabelText, getAssociatedLabelForTexts, getEffectiveAriaDescriptionText, } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import { isEscape } from "@ui5/webcomponents-base/dist/Keys.js";
-import Popover from "./Popover.js";
-import Icon from "./Icon.js";
-import "@ui5/webcomponents-icons/dist/error.js";
-import "@ui5/webcomponents-icons/dist/alert.js";
-import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
-import "@ui5/webcomponents-icons/dist/information.js";
-import TextAreaTemplate from "./generated/templates/TextAreaTemplate.lit.js";
-import { VALUE_STATE_SUCCESS, VALUE_STATE_INFORMATION, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, TEXTAREA_CHARACTERS_LEFT, TEXTAREA_CHARACTERS_EXCEEDED, FORM_TEXTFIELD_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
+import TextAreaTemplate from "./TextAreaTemplate.js";
+import { VALUE_STATE_SUCCESS, VALUE_STATE_INFORMATION, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, TEXTAREA_CHARACTERS_LEFT, TEXTAREA_CHARACTERS_EXCEEDED, FORM_TEXTFIELD_REQUIRED, TEXTAREA_EXCEEDS_MAXLENGTH, } from "./generated/i18n/i18n-defaults.js";
 // Styles
-import styles from "./generated/themes/TextArea.css.js";
+import textareaStyles from "./generated/themes/TextArea.css.js";
 import valueStateMessageStyles from "./generated/themes/ValueStateMessage.css.js";
-import browserScrollbarCSS from "./generated/themes/BrowserScrollbar.css.js";
 /**
  * @class
  *
@@ -49,19 +41,24 @@ import browserScrollbarCSS from "./generated/themes/BrowserScrollbar.css.js";
  */
 let TextArea = TextArea_1 = class TextArea extends UI5Element {
     get formValidityMessage() {
-        return TextArea_1.i18nBundle.getText(FORM_TEXTFIELD_REQUIRED);
+        if (this.formValidity.valueMissing) {
+            return TextArea_1.i18nBundle.getText(FORM_TEXTFIELD_REQUIRED);
+        }
+        if (this.formValidity.tooLong) {
+            return TextArea_1.i18nBundle.getText(TEXTAREA_EXCEEDS_MAXLENGTH, this.value.length - (this.maxlength ?? 0));
+        }
     }
     get formValidity() {
-        return { valueMissing: this.required && !this.value };
+        return {
+            valueMissing: this.required && !this.value,
+            tooLong: this._hasExceededText && (this.value.length > (this.maxlength ?? 0)),
+        };
     }
     async formElementAnchor() {
         return this.getFocusDomRefAsync();
     }
     get formFormattedValue() {
         return this.value;
-    }
-    static async onDefine() {
-        TextArea_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
     constructor() {
         super();
@@ -101,8 +98,8 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
          * Defines the value state of the component.
          *
          * **Note:** If `maxlength` property is set,
-         * the component turns into "Warning" state once the characters exceeds the limit.
-         * In this case, only the "Error" state is considered and can be applied.
+         * the component turns into "Critical" state once the characters exceeds the limit.
+         * In this case, only the "Negative" state is considered and can be applied.
          * @default "None"
          * @since 1.0.0-rc.7
          * @public
@@ -130,8 +127,27 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
          * paste and the counter below the component displays their number.
          * @default false
          * @public
+         * @deprecated Use `counterMode="Always"` instead.
          */
         this.showExceededText = false;
+        /**
+         * Determines when the character counter of the component is displayed.
+         *
+         * Available options are:
+         *
+         * - `None` - The counter is never shown and `maxlength` acts as a hard cap.
+         * - `Always` - The counter is always visible below the component.
+         * - `Auto` - The counter is shown only when the component is focused, when the character limit
+         * is exceeded, or when `valueState` is `Critical` or `Negative`. Space is always reserved to
+         * prevent layout shifts.
+         *
+         * **Note:** When set to a value other than `None`, this property takes precedence over the
+         * deprecated `showExceededText` property.
+         * @default "None"
+         * @public
+         * @since 2.28.0
+         */
+        this.counterMode = "None";
         /**
          * Enables the component to automatically grow and shrink dynamically with its content.
          * @default false
@@ -156,6 +172,12 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
          * @private
          */
         this._mirrorText = [];
+        /**
+         * Indicates whether IME composition is currently active
+         * @default false
+         * @private
+         */
+        this._isComposing = false;
         this._firstRendering = true;
         this._openValueStateMsgPopover = false;
         this._fnOnResize = this._onResize.bind(this);
@@ -163,9 +185,11 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     onEnterDOM() {
         ResizeHandler.register(this, this._fnOnResize);
+        this._enableComposition();
     }
     onExitDOM() {
         ResizeHandler.deregister(this, this._fnOnResize);
+        this._composition?.removeEventListeners();
     }
     onBeforeRendering() {
         if (!this.value) {
@@ -193,11 +217,18 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     _onkeydown(e) {
         this._keyDown = true;
+        if (this._isComposing) {
+            return;
+        }
         if (isEscape(e)) {
             const nativeTextArea = this.getInputDomRef();
-            this.value = this.previousValue;
-            nativeTextArea.value = this.value;
-            this.fireEvent("input");
+            const prevented = !this.fireDecoratorEvent("input", {
+                escapePressed: true,
+            });
+            if (!prevented) {
+                this.value = this.previousValue;
+                nativeTextArea.value = this.value;
+            }
         }
     }
     _onkeyup() {
@@ -217,13 +248,13 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         }
     }
     _onchange() {
-        this.fireEvent("change", {});
+        this.fireDecoratorEvent("change");
     }
     _onselect() {
-        this.fireEvent("select", {});
+        this.fireDecoratorEvent("select");
     }
     _onscroll() {
-        this.fireEvent("scroll", {});
+        this.fireDecoratorEvent("scroll");
     }
     _oninput(e) {
         const nativeTextArea = this.getInputDomRef();
@@ -236,9 +267,9 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         if (e.inputType === "insertFromPaste" && this.maxlength && valueLength > this.maxlength) {
             nativeTextArea.setSelectionRange(this.maxlength, valueLength);
         }
-        this.fireEvent("input", {});
+        this.fireDecoratorEvent("input");
         // Angular two way data binding
-        this.fireEvent("value-changed");
+        this.fireDecoratorEvent("value-changed");
     }
     _onResize() {
         if (this.displayValueStateMessagePopover) {
@@ -274,12 +305,9 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         return this.shadowRoot.querySelector("[ui5-popover]");
     }
     _tokenizeText(value) {
-        const tokenizedText = value.replace(/&/gm, "&amp;").replace(/"/gm, "&quot;").replace(/'/gm, "&apos;").replace(/</gm, "<")
+        const tokenizedText = value.replace(/</gm, "<")
             .replace(/>/gm, ">")
             .split("\n");
-        if (tokenizedText.length < this.rows) {
-            return this._mapTokenizedTextToObject([...tokenizedText, ...Array(this.rows - tokenizedText.length).fill("")]);
-        }
         return this._mapTokenizedTextToObject(tokenizedText);
     }
     _mapTokenizedTextToObject(tokenizedText) {
@@ -292,7 +320,7 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     _calcExceededText() {
         let calcedMaxLength, exceededText, leftCharactersCount;
-        if (this.showExceededText) {
+        if (this._hasExceededText) {
             const maxLength = this.maxlength;
             if (maxLength !== null && maxLength !== undefined) {
                 leftCharactersCount = maxLength - this.value.length;
@@ -311,11 +339,37 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
             exceededText, leftCharactersCount, calcedMaxLength,
         };
     }
+    _enableComposition() {
+        if (this._composition) {
+            return;
+        }
+        const setup = (FeatureClass) => {
+            this._composition = new FeatureClass({
+                getInputEl: () => this.getInputDomRef(),
+                updateCompositionState: (isComposing) => {
+                    this._isComposing = isComposing;
+                },
+            });
+            this._composition.addEventListeners();
+        };
+        if (TextArea_1.composition) {
+            setup(TextArea_1.composition);
+        }
+        else {
+            import("./features/InputComposition.js").then(CompositionModule => {
+                TextArea_1.composition = CompositionModule.default;
+                setup(CompositionModule.default);
+            });
+        }
+    }
     get classes() {
         return {
             root: {
                 "ui5-textarea-root": true,
-                "ui5-content-native-scrollbars": getEffectiveScrollbarStyle(),
+            },
+            exceededText: {
+                "ui5-textarea-exceeded-text": true,
+                "ui5-textarea-exceeded-text--hidden": this._effectiveCounterMode === "Auto" && !this._isExceededTextVisible,
             },
             valueStateMsg: {
                 "ui5-valuestatemessage-header": true,
@@ -325,19 +379,12 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
             },
         };
     }
-    get styles() {
-        return {
-            valueStateMsgPopover: {
-                "max-width": `${this._width}px`,
-            },
-        };
-    }
     get tabIndex() {
         return this.disabled ? -1 : 0;
     }
     get ariaLabelText() {
         const effectiveAriaLabelText = getEffectiveAriaLabelText(this) || getAssociatedLabelForTexts(this);
-        if (this.showExceededText) {
+        if (this._hasExceededText) {
             if (effectiveAriaLabelText) {
                 return effectiveAriaLabelText.concat(" ", this._exceededTextProps.exceededText);
             }
@@ -345,8 +392,18 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         }
         return effectiveAriaLabelText;
     }
+    get ariaDescriptionText() {
+        return getEffectiveAriaDescriptionText(this);
+    }
+    get ariaDescriptionTextId() {
+        return this.ariaDescriptionText ? "accessibleDescription" : "";
+    }
     get ariaDescribedBy() {
-        return this.hasValueState ? `${this._id}-valueStateDesc` : undefined;
+        const ids = [
+            this.hasValueState ? `${this._id}-valueStateDesc` : "",
+            this.ariaDescriptionTextId,
+        ].filter(Boolean).join(" ");
+        return ids || undefined;
     }
     get ariaValueStateHiddenText() {
         if (!this.hasValueState) {
@@ -366,8 +423,8 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
         }
         return "";
     }
-    get ariaInvalid() {
-        return this.valueState === ValueState.Negative ? "true" : null;
+    get _ariaInvalid() {
+        return this.valueState === ValueState.Negative ? "true" : undefined;
     }
     get openValueStateMsgPopover() {
         return !this._firstRendering && this._openValueStateMsgPopover && this.displayValueStateMessagePopover;
@@ -380,21 +437,6 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
     }
     get hasValueState() {
         return this.valueState === ValueState.Negative || this.valueState === ValueState.Critical || this.valueState === ValueState.Information;
-    }
-    get _valueStatePopoverHorizontalAlign() {
-        return this.effectiveDir !== "rtl" ? "Start" : "End";
-    }
-    /**
-     * This method is relevant for sap_horizon theme only
-     */
-    get _valueStateMessageIcon() {
-        const iconPerValueState = {
-            Negative: "error",
-            Critical: "alert",
-            Positive: "sys-enter-2",
-            Information: "information",
-        };
-        return this.valueState !== ValueState.None ? iconPerValueState[this.valueState] : "";
     }
     get valueStateTextMappings() {
         return {
@@ -411,6 +453,41 @@ let TextArea = TextArea_1 = class TextArea extends UI5Element {
             "Negative": TextArea_1.i18nBundle.getText(VALUE_STATE_TYPE_ERROR),
             "Critical": TextArea_1.i18nBundle.getText(VALUE_STATE_TYPE_WARNING),
         };
+    }
+    /**
+     * Resolves the effective counter mode, bridging the deprecated `showExceededText` Boolean.
+     * The `counterMode` enum wins when set to anything other than `None`; otherwise the
+     * deprecated Boolean maps to `Always`/`None`.
+     * @private
+     */
+    get _effectiveCounterMode() {
+        if (this.counterMode !== "None") {
+            return this.counterMode;
+        }
+        return this.showExceededText ? "Always" : "None";
+    }
+    /**
+     * Determines whether the exceeded text counter should be visible.
+     * Consulted only in `Auto` mode.
+     *
+     * The counter is visible when:
+     * - The component is focused, OR
+     * - The character limit is exceeded, OR
+     * - The valueState is "Critical" or "Negative" (for accessibility - users should always see warnings/errors)
+     * @private
+     */
+    get _isExceededTextVisible() {
+        return this.focused
+            || this.exceeding
+            || this.valueState === ValueState.Critical
+            || this.valueState === ValueState.Negative;
+    }
+    /**
+     * Determines whether the exceeded text feature is active (any mode other than `None`).
+     * @private
+     */
+    get _hasExceededText() {
+        return this._effectiveCounterMode !== "None";
     }
 };
 __decorate([
@@ -441,6 +518,9 @@ __decorate([
     property({ type: Boolean })
 ], TextArea.prototype, "showExceededText", void 0);
 __decorate([
+    property()
+], TextArea.prototype, "counterMode", void 0);
+__decorate([
     property({ type: Boolean })
 ], TextArea.prototype, "growing", void 0);
 __decorate([
@@ -456,13 +536,19 @@ __decorate([
     property()
 ], TextArea.prototype, "accessibleNameRef", void 0);
 __decorate([
+    property()
+], TextArea.prototype, "accessibleDescription", void 0);
+__decorate([
+    property()
+], TextArea.prototype, "accessibleDescriptionRef", void 0);
+__decorate([
     property({ type: Boolean })
 ], TextArea.prototype, "focused", void 0);
 __decorate([
     property({ type: Boolean })
 ], TextArea.prototype, "exceeding", void 0);
 __decorate([
-    property({ type: Array })
+    property({ type: Array, noAttribute: true })
 ], TextArea.prototype, "_mirrorText", void 0);
 __decorate([
     property({ noAttribute: true })
@@ -471,32 +557,54 @@ __decorate([
     property({ type: Number })
 ], TextArea.prototype, "_width", void 0);
 __decorate([
+    property({ type: Boolean, noAttribute: true })
+], TextArea.prototype, "_isComposing", void 0);
+__decorate([
     slot()
 ], TextArea.prototype, "valueStateMessage", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], TextArea, "i18nBundle", void 0);
 TextArea = TextArea_1 = __decorate([
     customElement({
         tag: "ui5-textarea",
         formAssociated: true,
         languageAware: true,
-        styles: [browserScrollbarCSS, styles, valueStateMessageStyles],
-        renderer: litRender,
+        styles: [
+            textareaStyles,
+            valueStateMessageStyles,
+        ],
+        renderer: jsxRenderer,
         template: TextAreaTemplate,
-        dependencies: [Popover, Icon],
     })
     /**
      * Fired when the text has changed and the focus leaves the component.
      * @public
      */
     ,
-    event("change")
+    event("change", {
+        bubbles: true,
+    })
+    /**
+     * Fired to make Angular two way data binding work properly.
+     * @private
+     */
+    ,
+    event("value-changed", {
+        bubbles: true,
+    })
     /**
      * Fired when the value of the component changes at each keystroke or when
      * something is pasted.
      * @since 1.0.0-rc.5
+     * @param {boolean} escapePressed Indicates whether the Escape key was pressed, which triggers a revert to the previous value
      * @public
      */
     ,
-    event("input")
+    event("input", {
+        bubbles: true,
+        cancelable: true,
+    })
     /**
      * Fired when some text has been selected.
      *
@@ -504,7 +612,9 @@ TextArea = TextArea_1 = __decorate([
      * @public
      */
     ,
-    event("select")
+    event("select", {
+        bubbles: true,
+    })
     /**
      * Fired when textarea is scrolled.
      *
@@ -512,8 +622,11 @@ TextArea = TextArea_1 = __decorate([
      * @public
      */
     ,
-    event("scroll")
+    event("scroll", {
+        bubbles: true,
+    })
 ], TextArea);
 TextArea.define();
 export default TextArea;
+export { TextArea as BaseTextArea };
 //# sourceMappingURL=TextArea.js.map

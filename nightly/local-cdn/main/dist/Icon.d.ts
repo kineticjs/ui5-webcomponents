@@ -1,5 +1,8 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { AriaRole } from "@ui5/webcomponents-base/dist/types.js";
+import type { Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { I18nText } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type IconDesign from "./types/IconDesign.js";
 import IconMode from "./types/IconMode.js";
 /**
@@ -29,7 +32,7 @@ interface IIcon extends HTMLElement {
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons).
  * - [@ui5/webcomponents-icons-tnt](https://www.npmjs.com/package/@ui5/webcomponents-icons-tnt) represents the "tnt" collection and includes the following
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons-TNT).
- * - [@ui5/webcomponents-icons-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
+ * - [@ui5/webcomponents-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
  * [icons](https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/BusinessSuiteInAppSymbols).
  *
  * 2. **After exploring the icons collections, add one or more of the packages as dependencies to your project.**
@@ -67,7 +70,6 @@ interface IIcon extends HTMLElement {
  * ### Keyboard Handling
  *
  * - [Space] / [Enter] or [Return] - Fires the `click` event if the `mode` property is set to `Interactive`.
- * - [Shift] - If [Space] / [Enter] or [Return] is pressed, pressing [Shift] releases the ui5-icon without triggering the click event.
  *
  * ### ES6 Module Import
  *
@@ -79,6 +81,10 @@ interface IIcon extends HTMLElement {
  * @public
  */
 declare class Icon extends UI5Element implements IIcon {
+    eventDetails: {
+        click: void;
+    };
+    static i18nBundle: I18nBundle;
     /**
      * Defines the component semantic design.
      * @default "Default"
@@ -132,11 +138,30 @@ declare class Icon extends UI5Element implements IIcon {
     showTooltip: boolean;
     /**
      * Defines the mode of the component.
-     * @default "Image"
+     * @default "Decorative"
      * @public
      * @since 2.0.0
      */
     mode: `${IconMode}`;
+    /**
+     * Defines the font icon to be used as an icon.
+     * Intended for font-based icon libraries where
+     * the application loads the font and provides a slotted element with the unicode character.
+     * When this slot is used, the component renders a `<span>` instead of an `<svg>`.
+     * Accessibility is fully delegated to the application — set `accessible-name` and `mode` explicitly.
+     *
+     * **Note:** To control the glyph size, set `font-size` on the `ui5-icon` host element.
+     *
+     * **Example:**
+     * ```html
+     * <ui5-icon mode="Image" accessible-name="Home">
+     *   <i class="fa fa-home" slot="fontIcon"></i>
+     * </ui5-icon>
+     * ```
+     * @public
+     * @since 2.23.0
+     */
+    fontIcon: Slot<HTMLElement>;
     /**
      * @private
      */
@@ -156,7 +181,9 @@ declare class Icon extends UI5Element implements IIcon {
     ltr?: boolean;
     packageName?: string;
     viewBox?: string;
-    customSvg?: object;
+    customTemplate?: object;
+    customTemplateAsString?: string;
+    _onclick(e: MouseEvent): void;
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
     /**
@@ -164,11 +191,22 @@ declare class Icon extends UI5Element implements IIcon {
     */
     get _dir(): "ltr" | undefined;
     get effectiveAriaHidden(): "true" | undefined;
-    get _tabIndex(): "0" | undefined;
+    get _tabIndex(): 0 | undefined;
     get effectiveAccessibleRole(): "button" | "presentation" | "img";
     onEnterDOM(): void;
     onBeforeRendering(): Promise<void>;
+    get hasFontIcon(): boolean;
     get hasIconTooltip(): string | false | undefined;
+    _getAriaTypeDescription(): string;
+    get accessibilityInfo(): {
+        role?: undefined;
+        type?: undefined;
+        description?: undefined;
+    } | {
+        role: AriaRole;
+        type: string;
+        description: string | undefined;
+    };
 }
 export default Icon;
 export type { IIcon, };

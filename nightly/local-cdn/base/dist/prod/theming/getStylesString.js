@@ -1,2 +1,2 @@
-"use strict";const n=10,a=t=>Array.isArray(t)?t.filter(r=>!!r).flat(10).map(r=>typeof r=="string"?r:r.content).join(" "):typeof t=="string"?t:t.content;export default a;
+"use strict";const n=10,e=t=>Array.isArray(t)?t.filter(r=>!!r).flat(10).join(" "):t;export default e;
 //# sourceMappingURL=getStylesString.js.map

@@ -1,11 +1,15 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import ResponsivePopover from "@ui5/webcomponents/dist/ResponsivePopover.js";
+import type ResponsivePopover from "@ui5/webcomponents/dist/ResponsivePopover.js";
+import type Button from "@ui5/webcomponents/dist/Button.js";
 import type WizardContentLayout from "./types/WizardContentLayout.js";
-import WizardTab from "./WizardTab.js";
-import WizardStep from "./WizardStep.js";
+import "./WizardStep.js";
+import type WizardTab from "./WizardTab.js";
+import type WizardStep from "./WizardStep.js";
 type WizardStepChangeEventDetail = {
     step: WizardStep;
     previousStep: WizardStep;
@@ -29,8 +33,9 @@ type StepInfo = {
     pos: number;
     accInfo: AccessibilityInformation;
     refStepId: string;
-    tabIndex: string;
-    styles: object;
+    styles: {
+        zIndex: number;
+    };
 };
 /**
  * @class
@@ -118,6 +123,9 @@ type StepInfo = {
  * @csspart step-content - Used to style a `ui5-wizard-step` container.
  */
 declare class Wizard extends UI5Element {
+    eventDetails: {
+        "step-change": WizardStepChangeEventDetail;
+    };
     /**
      * Defines how the content of the `ui5-wizard` would be visualized.
      * @public
@@ -125,6 +133,20 @@ declare class Wizard extends UI5Element {
      * @default "MultipleSteps"
      */
     contentLayout: `${WizardContentLayout}`;
+    /**
+     * Defines the accessible ARIA name of the component.
+     * @default undefined
+     * @public
+     * @since 2.26.0
+     */
+    accessibleName?: string;
+    /**
+     * Receives id(or many ids) of the elements that label the component.
+     * @default undefined
+     * @public
+     * @since 2.26.0
+     */
+    accessibleNameRef?: string;
     /**
      * Defines the width of the `ui5-wizard`.
      * @private
@@ -155,14 +177,13 @@ declare class Wizard extends UI5Element {
      * @private
      */
     _groupedTabs: Array<WizardTab>;
-    _breakpoint?: string;
     /**
      * Defines the steps.
      *
      * **Note:** Use the available `ui5-wizard-step` component.
      * @public
      */
-    steps: Array<WizardStep>;
+    steps: DefaultSlot<WizardStep>;
     static i18nBundle: I18nBundle;
     stepScrollOffsets: Array<number>;
     selectedStepIndex: number;
@@ -174,18 +195,6 @@ declare class Wizard extends UI5Element {
     _itemNavigation: ItemNavigation;
     _onStepResize: ResizeObserverCallback;
     constructor();
-    get classes(): {
-        root: {
-            "ui5-wiz-root": boolean;
-            "ui5-content-native-scrollbars": boolean;
-        };
-        popover: {
-            "ui5-wizard-responsive-popover": boolean;
-            "ui5-wizard-popover": boolean;
-            "ui5-wizard-dialog": boolean;
-        };
-    };
-    static onDefine(): Promise<void>;
     static get SCROLL_DEBOUNCE_RATE(): number;
     onExitDOM(): void;
     onBeforeRendering(): void;
@@ -226,19 +235,19 @@ declare class Wizard extends UI5Element {
      * **Note:** the handler is bound in the template.
      * @private
      */
-    onSelectionChangeRequested(e: MouseEvent): void;
+    onSelectionChangeRequested(e: CustomEvent): void;
     /**
      * Handles user scrolling with debouncing.
      * **Note:** the handler is bound in the template.
      * @private
      */
-    onScroll(e: MouseEvent): void;
+    onScroll(e: Event): void;
     /**
      * Handles when a step in the header is focused in order to update the `ItemNavigation`.
      * **Note:** the handler is bound in the template.
      * @private
      */
-    onStepInHeaderFocused(e: FocusEvent): void;
+    onStepInHeaderFocused(e: CustomEvent): void;
     /**
      * Handles resize in order to:
      * (1) sync steps' scroll offset and selection
@@ -248,7 +257,6 @@ declare class Wizard extends UI5Element {
     onStepResize(): void;
     attachStepsResizeObserver(): void;
     detachStepsResizeObserver(): void;
-    _calcCurrentBreakpoint(): void;
     /**
      * Updates the expanded attribute for each ui5-wizard-tab based on the ui5-wizard width
      * @private
@@ -258,7 +266,7 @@ declare class Wizard extends UI5Element {
     _isGroupAtEnd(selectedStep: WizardTab): boolean;
     _showPopover(oDomTarget: WizardTab, isAtStart: boolean): void;
     _onGroupedTabClick(e: MouseEvent): void;
-    _onOverflowStepButtonClick(e: MouseEvent): void;
+    _onOverflowStepButtonClick(e: UI5CustomEvent<Button, "click">): void;
     _closeRespPopover(): void;
     _respPopover(): ResponsivePopover;
     /**
@@ -277,6 +285,7 @@ declare class Wizard extends UI5Element {
      */
     changeSelectionByStepAction(stepInHeader: WizardTab): Promise<void>;
     getContentHeight(): number;
+    getFocusDomRef(): HTMLElement | undefined;
     getStepAriaLabelText(step: WizardStep, ariaLabel: string): string;
     get stepsDOM(): HTMLElement[];
     get progressNavigatorListDOM(): Element;
@@ -302,6 +311,7 @@ declare class Wizard extends UI5Element {
     get activeStepText(): string;
     get inactiveStepText(): string;
     get ariaLabelText(): string;
+    get _dialogCancelButtonText(): string;
     get effectiveStepSwitchThreshold(): number;
     /**
      * Returns an array of data objects, based on the user defined steps
@@ -327,6 +337,12 @@ declare class Wizard extends UI5Element {
      * @private
      */
     scrollToSelectedStep(): void;
+    /**
+     * Focuses the first focusable element in the currently selected step.
+     * This helps screen readers announce the step change.
+     * @private
+     */
+    focusFirstElementInCurrentStep(): Promise<void>;
     /**
      * Scrolls to the content item within the `ui5-wizard` shadowDOM
      * by given step index.
@@ -359,7 +375,7 @@ declare class Wizard extends UI5Element {
      * Sorter method for sorting an array in ascending order.
      * @private
      */
-    sortAscending(a: number, b: number): 1 | -1 | 0;
+    sortAscending(a: number, b: number): 0 | 1 | -1;
 }
 export type { WizardStepChangeEventDetail, };
 export default Wizard;

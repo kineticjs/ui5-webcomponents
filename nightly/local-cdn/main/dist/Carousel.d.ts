@@ -1,4 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { UI5CustomEvent } from "@ui5/webcomponents-base";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ScrollEnablement from "@ui5/webcomponents-base/dist/delegate/ScrollEnablement.js";
 import type { ScrollEnablementEventListenerParam } from "@ui5/webcomponents-base/dist/delegate/ScrollEnablement.js";
@@ -7,10 +9,24 @@ import CarouselArrowsPlacement from "./types/CarouselArrowsPlacement.js";
 import CarouselPageIndicatorType from "./types/CarouselPageIndicatorType.js";
 import type BackgroundDesign from "./types/BackgroundDesign.js";
 import type BorderDesign from "./types/BorderDesign.js";
-import "@ui5/webcomponents-icons/dist/slim-arrow-left.js";
-import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
+import type Icon from "./Icon.js";
 type CarouselNavigateEventDetail = {
     selectedIndex: number;
+};
+type ChangePageOptions = {
+    fireEvent?: boolean;
+    moveFocus?: boolean;
+};
+type ItemsInfo = {
+    id: string;
+    item: HTMLElement & {
+        _individualSlot?: string;
+    };
+    tabIndex: number;
+    posinset: number;
+    setsize: number;
+    visible: boolean;
+    _individualSlot?: string;
 };
 /**
  * @class
@@ -22,7 +38,7 @@ type CarouselNavigateEventDetail = {
  * There are several ways to perform navigation:
  *
  * - on desktop - the user can navigate using the navigation arrows or with keyboard shortcuts.
- * - on mobile - the user can use swipe gestures.
+ * - on touch devices - the user can navigate using the navigation arrows (always visible) or can use swipe gestures.
  *
  * ### Usage
  *
@@ -35,6 +51,12 @@ type CarouselNavigateEventDetail = {
  *
  * - The items you want to display need to be visible at the same time.
  * - The items you want to display are uniform and very similar.
+ *
+ * ### Hidden Items
+ *
+ * Carousel items can be conditionally hidden by adding the `hidden` attribute to any child element.
+ * Hidden items are automatically excluded from carousel navigation and will not be displayed or counted in pagination.
+ * This allows for dynamic showing or hiding of carousel items without affecting the overall carousel behavior.
  *
  * ### Keyboard Handling
  *
@@ -61,6 +83,9 @@ type CarouselNavigateEventDetail = {
  * @csspart content - Used to style the content of the component
  */
 declare class Carousel extends UI5Element {
+    eventDetails: {
+        navigate: CarouselNavigateEventDetail;
+    };
     /**
      * Defines the accessible name of the component.
      * @default undefined
@@ -98,8 +123,6 @@ declare class Carousel extends UI5Element {
      * Defines the visibility of the navigation arrows.
      * If set to true the navigation arrows will be hidden.
      *
-     * **Note:** The navigation arrows are never displayed on touch devices.
-     * In this case, the user can swipe to navigate through the items.
      * @since 1.0.0-rc.15
      * @default false
      * @public
@@ -150,7 +173,7 @@ declare class Carousel extends UI5Element {
      * @default 0
      * @private
      */
-    _selectedIndex: number;
+    _focusedItemIndex: number;
     /**
      * Defines the position of arrows.
      *
@@ -178,16 +201,36 @@ declare class Carousel extends UI5Element {
      * @since 1.0.0-rc.15
      */
     _visibleNavigationArrows: boolean;
+    /**
+     * Internal trigger flag that forces component re-rendering when content items change.
+     * @private
+     * @since 2.16.0
+     */
+    _visibleItemsCount: number;
+    /**
+     * Defines the current page index, which determines the first visible item.
+     * @private
+     * @since 2.16.0-r.c1
+     */
+    _currentPageIndex: number;
     _scrollEnablement: ScrollEnablement;
     _onResizeBound: ResizeObserverCallback;
     _resizing: boolean;
     _lastFocusedElements: Array<HTMLElement>;
-    _orderOfLastFocusedPages: Array<number>;
+    _orderOfLastFocusedItems: Array<number>;
+    _lastInnerFocusedElement?: HTMLElement;
+    _pageStep: number;
+    _visibleItemsIndexes: Array<number>;
+    _contentItemsObserver: MutationObserver;
+    _observableContent: Array<HTMLElement>;
     /**
      * Defines the content of the component.
+     *
+     * **Note:** Items with the `hidden` attribute will be automatically excluded from carousel navigation and page calculations.
+     * They will not be displayed or accessible via keyboard navigation. See [sample](./#carousel-with-hidden-items).
      * @public
      */
-    content: Array<HTMLElement>;
+    content: DefaultSlot<HTMLElement>;
     static i18nBundle: I18nBundle;
     static get pageTypeLimit(): number;
     constructor();
@@ -195,55 +238,60 @@ declare class Carousel extends UI5Element {
     onAfterRendering(): void;
     onEnterDOM(): void;
     onExitDOM(): void;
-    validateSelectedIndex(): void;
+    validateFocusedIndex(): void;
     _onResize(): void;
     _updateScrolling(e: ScrollEnablementEventListenerParam): void;
-    _onkeydown(e: KeyboardEvent): Promise<void>;
+    _onkeydown(e: KeyboardEvent): void;
     _onfocusin(e: FocusEvent): void;
     _onmouseout(): void;
     _onmouseover(): void;
-    _handleF7Key(e: KeyboardEvent): void;
+    _ontouchstart(e: TouchEvent): void;
+    _onmousedown(e: MouseEvent): void;
+    _handleF7Key(e: KeyboardEvent): Promise<void>;
+    _observeContentItems(): void;
+    get hasMatchingContent(): boolean;
+    _handleHome(e: KeyboardEvent): Promise<void>;
+    _handleEnd(e: KeyboardEvent): Promise<void>;
+    _handlePageUp(e: KeyboardEvent): Promise<void>;
+    _handlePageDown(e: KeyboardEvent): Promise<void>;
     get _backgroundDesign(): string;
-    get _getLastFocusedActivePageIndex(): number;
-    navigateLeft(): void;
-    navigateRight(): void;
-    _navButtonClick(e: MouseEvent): void;
+    get _getLastFocusedItemIndex(): number;
+    navigateLeft(): Promise<void>;
+    navigateRight(): Promise<void>;
+    navigateArrowRight(): Promise<void>;
+    navigateArrowLeft(): Promise<void>;
+    focusItem(): void;
+    _navButtonClick(e: UI5CustomEvent<Icon, "click">): void;
     /**
      * Changes the currently displayed page.
-     * @param itemIndex The index of the target page
+     * @param itemIndex The index of the target item
      * @since 1.0.0-rc.15
      * @public
      */
     navigateTo(itemIndex: number): void;
+    _changePageIndex(itemIndex: number, options?: ChangePageOptions): void;
+    _changeFocusIndex(itemIndex: number): void;
+    /**
+     * The indices of the currently visible items of the component.
+     * @public
+     * @since 1.0.0-rc.15
+     * @default []
+     */
+    get visibleItemsIndices(): Array<number>;
     /**
      * Assuming that all items have the same width
      * @private
      */
-    get items(): {
-        id: string;
-        item: HTMLElement;
-        tabIndex: string;
-        posinset: string;
-        setsize: string;
-        styles: {
-            width: string;
-        };
-        classes: string;
-        selected: boolean;
-    }[];
+    get items(): Array<ItemsInfo>;
     get effectiveItemsPerPage(): number;
-    isItemInViewport(index: number): boolean;
+    isItemVisible(index: number): boolean;
+    _updateVisibleItems(index: number): void;
     isIndexInRange(index: number): boolean;
     /**
      * @private
      */
     get renderNavigation(): boolean;
     get hasManyPages(): boolean;
-    get styles(): {
-        content: {
-            transform: string;
-        };
-    };
     get classes(): {
         viewport: {
             "ui5-carousel-viewport": boolean;
@@ -260,12 +308,6 @@ declare class Carousel extends UI5Element {
             "ui5-carousel-navigation-wrapper": boolean;
             "ui5-carousel-navigation-with-buttons": boolean;
         };
-        navPrevButton: {
-            "ui5-carousel-navigation-button--hidden": boolean;
-        };
-        navNextButton: {
-            "ui5-carousel-navigation-button--hidden": boolean;
-        };
     };
     get pagesCount(): number;
     get isPageTypeDots(): boolean;
@@ -281,20 +323,20 @@ declare class Carousel extends UI5Element {
     get hasNext(): boolean;
     get suppressAnimation(): boolean;
     get _isRTL(): boolean;
-    get selectedIndexToShow(): number;
     get ofText(): string;
-    get ariaActiveDescendant(): string | undefined;
     get ariaLabelTxt(): string | undefined;
     get nextPageText(): string;
     get previousPageText(): string;
+    get _roleDescription(): string;
+    get _ariaListLabel(): string;
     /**
-     * The indices of the currently visible items of the component.
-     * @public
-     * @since 1.0.0-rc.15
+     * Returns only visible (non-hidden) content items.
+     * Items with the 'hidden' attribute are automatically excluded from carousel navigation.
      * @default []
+     * @private
      */
-    get visibleItemsIndices(): Array<number>;
-    static onDefine(): Promise<void>;
+    get _visibleItems(): Array<HTMLElement>;
+    carouselItemDomRef(idx: number): Array<HTMLElement>;
 }
 export default Carousel;
 export type { CarouselNavigateEventDetail, };

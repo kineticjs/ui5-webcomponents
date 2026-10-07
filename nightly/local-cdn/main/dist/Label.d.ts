@@ -61,7 +61,6 @@ declare class Label extends UI5Element {
      */
     wrappingType: `${WrappingType}`;
     static i18nBundle: I18nBundle;
-    static onDefine(): Promise<void>;
     _onclick(): void;
     get _colonSymbol(): string;
 }

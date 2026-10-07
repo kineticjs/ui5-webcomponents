@@ -3,8 +3,39 @@ import { fireLanguageChange } from "../locale/languageChange.js";
 import { reRenderAllUI5Elements } from "../Render.js";
 import { DEFAULT_LANGUAGE } from "../generated/AssetParameters.js";
 import { isBooted } from "../Boot.js";
+import { attachConfigurationReset } from "./ConfigurationReset.js";
+import { fireConfigChange, attachConfigChange, getSharedValue } from "./ConfigurationSync.js";
 let curLanguage;
 let fetchDefaultLanguage;
+attachConfigurationReset(() => {
+    curLanguage = undefined;
+    fetchDefaultLanguage = undefined;
+});
+// Promise that resolves when the current language change (i18n bundles + CLDR data)
+// completes, or `null` when no language change is in flight. Consumers that need to
+// wait for locale data to be ready before rendering — most notably language-aware
+// UI5Element instances mounted while setLanguage is in flight — can await it.
+let languageChangePending = null;
+const startLanguageChange = (language) => {
+    const changePromise = fireLanguageChange(language)
+        .then(() => {
+        // Clear if there is no other language change in flight. Re-render all language-aware components
+        // so they pick up the newly loaded CLDR and i18n data.
+        if (languageChangePending === changePromise) {
+            languageChangePending = null;
+            if (isBooted()) {
+                return reRenderAllUI5Elements({ languageAware: true });
+            }
+        }
+    });
+    languageChangePending = changePromise;
+    return changePromise;
+};
+attachConfigChange("language", (language) => {
+    curLanguage = language;
+    startLanguageChange(language);
+});
+const getLanguageChangePending = () => languageChangePending;
 /**
  * Returns the currently configured language, or the browser language as a fallback.
  * @public
@@ -12,7 +43,7 @@ let fetchDefaultLanguage;
  */
 const getLanguage = () => {
     if (curLanguage === undefined) {
-        curLanguage = getConfiguredLanguage();
+        curLanguage = getSharedValue("language") ?? getConfiguredLanguage();
     }
     return curLanguage;
 };
@@ -29,10 +60,8 @@ const setLanguage = async (language) => {
         return;
     }
     curLanguage = language;
-    if (isBooted()) {
-        await fireLanguageChange(language);
-        await reRenderAllUI5Elements({ languageAware: true });
-    }
+    fireConfigChange("language", language);
+    await startLanguageChange(language);
 };
 /**
  * Returns the default languague.
@@ -63,9 +92,9 @@ const setFetchDefaultLanguage = (fetchDefaultLang) => {
  */
 const getFetchDefaultLanguage = () => {
     if (fetchDefaultLanguage === undefined) {
-        setFetchDefaultLanguage(getConfiguredFetchDefaultLanguage());
+        fetchDefaultLanguage = getConfiguredFetchDefaultLanguage();
     }
     return fetchDefaultLanguage;
 };
-export { getLanguage, setLanguage, getDefaultLanguage, setFetchDefaultLanguage, getFetchDefaultLanguage, };
+export { getLanguage, setLanguage, getDefaultLanguage, setFetchDefaultLanguage, getFetchDefaultLanguage, getLanguageChangePending, };
 //# sourceMappingURL=Language.js.map

@@ -27,7 +27,7 @@ const slideDown = (element) => {
             element.style.marginBottom = "0";
             element.style.height = "0";
         },
-        duration,
+        duration: duration(),
         element,
         advance: progress => {
             // WORKAROUND

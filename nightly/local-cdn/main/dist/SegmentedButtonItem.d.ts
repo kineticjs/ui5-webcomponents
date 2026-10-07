@@ -1,7 +1,11 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ISegmentedButtonItem } from "./SegmentedButton.js";
 import type { IButton } from "./Button.js";
+type SegmentedButtonItemClickEventDetail = {
+    originalEvent: Event;
+};
 /**
  * @class
  *
@@ -24,6 +28,9 @@ import type { IButton } from "./Button.js";
  * @public
  */
 declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmentedButtonItem {
+    eventDetails: {
+        "click": SegmentedButtonItemClickEventDetail;
+    };
     /**
      * Defines whether the component is disabled.
      * A disabled component can't be selected or
@@ -62,6 +69,20 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      */
     accessibleNameRef?: string;
     /**
+     * Defines the accessible description of the component.
+     * @default undefined
+     * @public
+     * @since 2.15.0
+     */
+    accessibleDescription?: string;
+    /**
+     * Defines the IDs of the HTML Elements that describe the component.
+     * @default undefined
+     * @public
+     * @since 2.15.0
+     */
+    accessibleDescriptionRef?: string;
+    /**
      * Defines the icon, displayed as graphical element within the component.
      * The SAP-icons font provides numerous options.
      *
@@ -91,22 +112,25 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
      * @default 0
      * @private
      */
-    posInSet: number;
+    posInSet?: number | undefined;
     /**
      * Defines how many items are inside of the SegmentedButton.
      * @default 0
      * @private
      */
-    sizeOfSet: number;
+    sizeOfSet?: number | undefined;
+    /**
+     * @private
+     */
+    hidden: boolean;
     /**
      * Defines the text of the component.
      *
      * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
      * @public
      */
-    text: Array<Node>;
+    text: DefaultSlot<Node>;
     static i18nBundle: I18nBundle;
-    get ariaDescription(): string;
     constructor();
     _onclick(e: MouseEvent): void;
     onEnterDOM(): void;
@@ -114,7 +138,9 @@ declare class SegmentedButtonItem extends UI5Element implements IButton, ISegmen
     _onkeyup(e: KeyboardEvent): void;
     get tabIndexValue(): string | undefined;
     get ariaLabelText(): string | undefined;
+    get ariaDescriptionText(): string;
     get showIconTooltip(): boolean;
-    static onDefine(): Promise<void>;
+    get slotTextContent(): string;
 }
 export default SegmentedButtonItem;
+export type { SegmentedButtonItemClickEventDetail };

@@ -8,16 +8,17 @@ var SegmentedButtonItem_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { getEnableDefaultTooltips } from "@ui5/webcomponents-base/dist/config/Tooltips.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import { isSpaceShift } from "@ui5/webcomponents-base/dist/Keys.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import { getEffectiveAriaLabelText, getAssociatedLabelForTexts, getEffectiveAriaDescriptionText, } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
 import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { SEGMENTEDBUTTONITEM_ARIA_DESCRIPTION } from "./generated/i18n/i18n-defaults.js";
-import SegmentedButtonItemTemplate from "./generated/templates/SegmentedButtonItemTemplate.lit.js";
-import Icon from "./Icon.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { SEGMENTEDBUTTON_ARIA_DESCRIBEDBY } from "./generated/i18n/i18n-defaults.js";
+import SegmentedButtonItemTemplate from "./SegmentedButtonItemTemplate.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import segmentedButtonItemCss from "./generated/themes/SegmentedButtonItem.css.js";
 /**
  * @class
@@ -41,9 +42,6 @@ import segmentedButtonItemCss from "./generated/themes/SegmentedButtonItem.css.j
  * @public
  */
 let SegmentedButtonItem = SegmentedButtonItem_1 = class SegmentedButtonItem extends UI5Element {
-    get ariaDescription() {
-        return SegmentedButtonItem_1.i18nBundle.getText(SEGMENTEDBUTTONITEM_ARIA_DESCRIPTION);
-    }
     constructor() {
         super();
         /**
@@ -82,13 +80,26 @@ let SegmentedButtonItem = SegmentedButtonItem_1 = class SegmentedButtonItem exte
          * @private
          */
         this.sizeOfSet = 0;
+        /**
+         * @private
+         */
+        this.hidden = false;
     }
     _onclick(e) {
         if (this.disabled) {
             e.preventDefault();
             e.stopPropagation();
+            return;
         }
-        this.selected = !this.selected;
+        e.stopImmediatePropagation();
+        // Fire semantic click event (CustomEvent that bubbles)
+        const prevented = !this.fireDecoratorEvent("click", {
+            originalEvent: e,
+        });
+        if (prevented) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     }
     onEnterDOM() {
         if (isDesktop()) {
@@ -114,13 +125,20 @@ let SegmentedButtonItem = SegmentedButtonItem_1 = class SegmentedButtonItem exte
         return this.forcedTabIndex;
     }
     get ariaLabelText() {
-        return getEffectiveAriaLabelText(this);
+        return getEffectiveAriaLabelText(this) || getAssociatedLabelForTexts(this) || undefined;
+    }
+    get ariaDescriptionText() {
+        return `${(getEffectiveAriaDescriptionText(this) || "")} ${SegmentedButtonItem_1.i18nBundle.getText(SEGMENTEDBUTTON_ARIA_DESCRIBEDBY)}`.trim();
     }
     get showIconTooltip() {
-        return this.iconOnly && !this.tooltip;
+        return getEnableDefaultTooltips() && this.iconOnly && !this.tooltip;
     }
-    static async onDefine() {
-        SegmentedButtonItem_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    get slotTextContent() {
+        return this.text
+            .filter(node => node.nodeType === Node.TEXT_NODE)
+            .map(node => node.textContent?.trim() || "")
+            .filter(Boolean)
+            .join(" ");
     }
 };
 __decorate([
@@ -140,6 +158,12 @@ __decorate([
 ], SegmentedButtonItem.prototype, "accessibleNameRef", void 0);
 __decorate([
     property()
+], SegmentedButtonItem.prototype, "accessibleDescription", void 0);
+__decorate([
+    property()
+], SegmentedButtonItem.prototype, "accessibleDescriptionRef", void 0);
+__decorate([
+    property()
 ], SegmentedButtonItem.prototype, "icon", void 0);
 __decorate([
     property({ type: Boolean })
@@ -157,15 +181,34 @@ __decorate([
     property({ type: Number })
 ], SegmentedButtonItem.prototype, "sizeOfSet", void 0);
 __decorate([
+    property({ type: Boolean })
+], SegmentedButtonItem.prototype, "hidden", void 0);
+__decorate([
     slot({ type: Node, "default": true })
 ], SegmentedButtonItem.prototype, "text", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], SegmentedButtonItem, "i18nBundle", void 0);
 SegmentedButtonItem = SegmentedButtonItem_1 = __decorate([
     customElement({
         tag: "ui5-segmented-button-item",
-        renderer: litRender,
+        renderer: jsxRenderer,
         template: SegmentedButtonItemTemplate,
         styles: segmentedButtonItemCss,
-        dependencies: [Icon],
+    })
+    /**
+     * Fired when the component is activated either with a mouse/tap or by using the Enter or Space key.
+     *
+     * **Note:** The event will not be fired if the `disabled` property is set to `true`.
+     *
+     * @param {Event} originalEvent The original DOM event that triggered the click. Use this to access modifier keys (altKey, ctrlKey, metaKey, shiftKey) and other native event properties.
+     * @since 2.22.0
+     * @public
+     */
+    ,
+    event("click", {
+        bubbles: true,
+        cancelable: true,
     })
 ], SegmentedButtonItem);
 SegmentedButtonItem.define();

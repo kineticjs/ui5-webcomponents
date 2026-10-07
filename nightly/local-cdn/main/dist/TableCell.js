@@ -5,7 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import TableCellTemplate from "./generated/templates/TableCellTemplate.lit.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
+import TableCellTemplate from "./TableCellTemplate.js";
 import TableCellStyles from "./generated/themes/TableCell.css.js";
 import TableCellBase from "./TableCellBase.js";
 import { LABEL_COLON } from "./generated/i18n/i18n-defaults.js";
@@ -23,22 +25,76 @@ import { LABEL_COLON } from "./generated/i18n/i18n-defaults.js";
  *
  * @constructor
  * @extends TableCellBase
- * @since 2.0
+ * @since 2.0.0
  * @public
- * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 let TableCell = class TableCell extends TableCellBase {
-    get _popinHeader() {
+    constructor() {
+        super(...arguments);
+        /**
+         * Defines whether the cell is visually merged with the cell directly above it.
+         *
+         * This is useful if consecutive cells in a column have the same value and should visually appear as a single merged cell.
+         * Although the cell is visually merged with the previous one, its content must still be provided for accessibility purposes.
+         * **Note:** This feature is disabled when cells are rendered as a popin, and should remain `false` for interactive cell content.
+         *
+         * @default false
+         * @since 2.21.0
+         * @public
+         */
+        this.merged = false;
+    }
+    onBeforeRendering() {
+        super.onBeforeRendering();
+        if (this.horizontalAlign) {
+            this.style.textAlign = this.horizontalAlign;
+            this.style.justifyContent = this.horizontalAlign;
+        }
+        else if (this._headerCell) {
+            this.style.textAlign = `var(--halign-${this._headerCell._id})`;
+            this.style.justifyContent = `var(--halign-${this._headerCell._id})`;
+        }
+    }
+    _injectHeaderNodes(ref) {
+        if (ref && !ref.hasChildNodes()) {
+            ref.replaceChildren(...this._popinHeaderNodes);
+        }
+    }
+    get _headerCell() {
         const row = this.parentElement;
-        const table = row.parentElement;
-        const index = row.cells.indexOf(this);
-        const headerCell = table.headerRow[0].cells[index];
-        return headerCell.content[0]?.cloneNode(true);
+        const table = row?.parentElement;
+        const index = row?.cells?.indexOf(this) ?? -1;
+        return (index !== -1) ? table?.headerRow?.[0]?.cells?.[index] : null;
+    }
+    get _popinHeaderNodes() {
+        const nodes = [];
+        const headerCell = this._headerCell;
+        if (headerCell) {
+            if (headerCell.popinText) {
+                nodes.push(document.createTextNode(headerCell.popinText));
+            }
+            else {
+                nodes.push(...headerCell.content.map(node => node.cloneNode(true)));
+            }
+            if (headerCell.action[0]) {
+                nodes.push(headerCell.action[0].cloneNode(true));
+            }
+        }
+        return nodes;
     }
     get _i18nPopinColon() {
         return TableCellBase.i18nBundle.getText(LABEL_COLON);
     }
 };
+__decorate([
+    property({ type: Boolean })
+], TableCell.prototype, "merged", void 0);
+__decorate([
+    query("#popin-header")
+], TableCell.prototype, "_popinHeader", void 0);
+__decorate([
+    query("#popin-content")
+], TableCell.prototype, "_popinContent", void 0);
 TableCell = __decorate([
     customElement({
         tag: "ui5-table-cell",

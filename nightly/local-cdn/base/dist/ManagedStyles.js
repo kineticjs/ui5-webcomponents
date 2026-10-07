@@ -1,5 +1,10 @@
 import { getCurrentRuntimeIndex, compareRuntimes } from "./Runtimes.js";
 const isSSR = typeof document === "undefined";
+// Workaround for https://bugs.webkit.org/show_bug.cgi?id=278778 — Safari's GC can prematurely
+// collect the JS wrapper of an adopted stylesheet even while it's still in document.adoptedStyleSheets,
+// wiping out any expando properties (_ui5StyleId, _ui5Theme, _ui5RuntimeIndex) attached to it.
+// Holding a strong reference here keeps the exact wrapper object alive through a path the GC traces correctly.
+const stylesheetMap = new Map();
 const getStyleId = (name, value) => {
     return value ? `${name}|${value}` : name;
 };
@@ -7,22 +12,24 @@ const shouldUpdate = (runtimeIndex) => {
     if (runtimeIndex === undefined) {
         return true;
     }
-    return compareRuntimes(getCurrentRuntimeIndex(), parseInt(runtimeIndex)) === 1; // 1 means the current is newer, 0 means the same, -1 means the resource's runtime is newer
+    return compareRuntimes(getCurrentRuntimeIndex(), parseInt(runtimeIndex)) >= 1; // 1 or larger means the current is newer, 0 means the same, -1 means the resource's runtime is newer
 };
-const createStyle = (data, name, value = "", theme) => {
-    const content = typeof data === "string" ? data : data.content;
+const createStyle = (content, name, value = "", theme) => {
     const currentRuntimeIndex = getCurrentRuntimeIndex();
     const stylesheet = new CSSStyleSheet();
     stylesheet.replaceSync(content);
     stylesheet._ui5StyleId = getStyleId(name, value); // set an id so that we can find the style later
+    stylesheetMap.set(getStyleId(name, value), stylesheet);
     if (theme) {
         stylesheet._ui5RuntimeIndex = currentRuntimeIndex;
         stylesheet._ui5Theme = theme;
     }
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
 };
-const updateStyle = (data, name, value = "", theme) => {
-    const content = typeof data === "string" ? data : data.content;
+const updateStyle = (content, name, value = "", theme) => {
+    if (isSSR) {
+        return;
+    }
     const currentRuntimeIndex = getCurrentRuntimeIndex();
     const stylesheet = document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
     if (!stylesheet) {
@@ -50,12 +57,12 @@ const hasStyle = (name, value = "") => {
 const removeStyle = (name, value = "") => {
     document.adoptedStyleSheets = document.adoptedStyleSheets.filter(sh => sh._ui5StyleId !== getStyleId(name, value));
 };
-const createOrUpdateStyle = (data, name, value = "", theme) => {
+const createOrUpdateStyle = (content, name, value = "", theme) => {
     if (hasStyle(name, value)) {
-        updateStyle(data, name, value, theme);
+        updateStyle(content, name, value, theme);
     }
     else {
-        createStyle(data, name, value, theme);
+        createStyle(content, name, value, theme);
     }
 };
 const mergeStyles = (style1, style2) => {
@@ -65,15 +72,7 @@ const mergeStyles = (style1, style2) => {
     if (style2 === undefined) {
         return style1;
     }
-    const style2Content = typeof style2 === "string" ? style2 : style2.content;
-    if (typeof style1 === "string") {
-        return `${style1} ${style2Content}`;
-    }
-    return {
-        content: `${style1.content} ${style2Content}`,
-        packageName: style1.packageName,
-        fileName: style1.fileName,
-    };
+    return `${style1} ${style2}`;
 };
 export { createStyle, hasStyle, updateStyle, removeStyle, createOrUpdateStyle, mergeStyles, };
 //# sourceMappingURL=ManagedStyles.js.map

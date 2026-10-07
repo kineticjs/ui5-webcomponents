@@ -1,5 +1,6 @@
 import type { IInputSuggestionItemSelectable } from "./Input.js";
 import ListItemBase from "./ListItemBase.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 /**
  * @class
  * The `ui5-suggestion-item-custom` is type of suggestion item,
@@ -14,6 +15,7 @@ import ListItemBase from "./ListItemBase.js";
  * @since 2.0.0
  */
 declare class SuggestionItemCustom extends ListItemBase implements IInputSuggestionItemSelectable {
+    eventDetails: ListItemBase["eventDetails"];
     /**
      * Defines the text of the `ui5-suggestion-item-custom`.
      * **Note:** The text property is considered only for autocomplete.
@@ -26,6 +28,7 @@ declare class SuggestionItemCustom extends ListItemBase implements IInputSuggest
      *
      * @public
      */
-    content: Array<Node>;
+    content: DefaultSlot<Node>;
+    get _effectiveTabIndex(): number;
 }
 export default SuggestionItemCustom;

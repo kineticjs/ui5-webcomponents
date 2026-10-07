@@ -4,18 +4,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var Icon_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
 import { getIconData, getIconDataSync } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
 import executeTemplate from "@ui5/webcomponents-base/dist/renderer/executeTemplate.js";
-import IconTemplate from "./generated/templates/IconTemplate.lit.js";
+import IconTemplate from "./IconTemplate.js";
 import IconMode from "./types/IconMode.js";
+import { ICON_ARIA_TYPE_IMAGE, ICON_ARIA_TYPE_INTERACTIVE } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import iconCss from "./generated/themes/Icon.css.js";
 const ICON_NOT_FOUND = "ICON_NOT_FOUND";
@@ -40,7 +44,7 @@ const ICON_NOT_FOUND = "ICON_NOT_FOUND";
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons).
  * - [@ui5/webcomponents-icons-tnt](https://www.npmjs.com/package/@ui5/webcomponents-icons-tnt) represents the "tnt" collection and includes the following
  * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons-TNT).
- * - [@ui5/webcomponents-icons-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
+ * - [@ui5/webcomponents-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
  * [icons](https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/BusinessSuiteInAppSymbols).
  *
  * 2. **After exploring the icons collections, add one or more of the packages as dependencies to your project.**
@@ -78,7 +82,6 @@ const ICON_NOT_FOUND = "ICON_NOT_FOUND";
  * ### Keyboard Handling
  *
  * - [Space] / [Enter] or [Return] - Fires the `click` event if the `mode` property is set to `Interactive`.
- * - [Shift] - If [Space] / [Enter] or [Return] is pressed, pressing [Shift] releases the ui5-icon without triggering the click event.
  *
  * ### ES6 Module Import
  *
@@ -89,7 +92,7 @@ const ICON_NOT_FOUND = "ICON_NOT_FOUND";
  * @implements {IIcon}
  * @public
  */
-let Icon = class Icon extends UI5Element {
+let Icon = Icon_1 = class Icon extends UI5Element {
     constructor() {
         super(...arguments);
         /**
@@ -109,11 +112,11 @@ let Icon = class Icon extends UI5Element {
         this.showTooltip = false;
         /**
          * Defines the mode of the component.
-         * @default "Image"
+         * @default "Decorative"
          * @public
          * @since 2.0.0
          */
-        this.mode = "Image";
+        this.mode = "Decorative";
         /**
          * @private
          */
@@ -123,12 +126,23 @@ let Icon = class Icon extends UI5Element {
         */
         this.invalid = false;
     }
+    _onclick(e) {
+        if (this.mode !== IconMode.Interactive) {
+            if (this.mode === IconMode.Image) {
+                e.stopPropagation();
+            }
+            return;
+        }
+        // prevents the native browser "click" event from firing
+        e.stopImmediatePropagation();
+        this.fireDecoratorEvent("click");
+    }
     _onkeydown(e) {
         if (this.mode !== IconMode.Interactive) {
             return;
         }
         if (isEnter(e)) {
-            this.fireEvent("click");
+            this.fireDecoratorEvent("click");
         }
         if (isSpace(e)) {
             e.preventDefault(); // prevent scrolling
@@ -136,7 +150,7 @@ let Icon = class Icon extends UI5Element {
     }
     _onkeyup(e) {
         if (this.mode === IconMode.Interactive && isSpace(e)) {
-            this.fireEvent("click");
+            this.fireDecoratorEvent("click");
         }
     }
     /**
@@ -149,7 +163,7 @@ let Icon = class Icon extends UI5Element {
         return this.mode === IconMode.Decorative ? "true" : undefined;
     }
     get _tabIndex() {
-        return this.mode === IconMode.Interactive ? "0" : undefined;
+        return this.mode === IconMode.Interactive ? 0 : undefined;
     }
     get effectiveAccessibleRole() {
         switch (this.mode) {
@@ -167,10 +181,19 @@ let Icon = class Icon extends UI5Element {
         }
     }
     async onBeforeRendering() {
+        if (this.fontIcon.length) {
+            // Font-based icon via slot — skip registry, accessibility is app's responsibility
+            if (!this.accessibleName) {
+                this.effectiveAccessibleName = undefined;
+            }
+            else {
+                this.effectiveAccessibleName = this.accessibleName;
+            }
+            return;
+        }
         const name = this.name;
         if (!name) {
-            /* eslint-disable-next-line */
-            return console.warn("Icon name property is required", this);
+            return;
         }
         let iconData = getIconDataSync(name);
         if (!iconData) {
@@ -187,13 +210,17 @@ let Icon = class Icon extends UI5Element {
             return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/AllIcons.js".`);
         }
         this.viewBox = iconData.viewBox || "0 0 512 512";
-        if (iconData.customTemplate) {
-            iconData.pathData = [];
-            this.customSvg = executeTemplate(iconData.customTemplate, this);
+        if ("customTemplate" in iconData && iconData.customTemplate) {
+            this.customTemplate = executeTemplate(iconData.customTemplate, this);
+        }
+        if ("customTemplateAsString" in iconData) {
+            this.customTemplateAsString = iconData.customTemplateAsString;
         }
         // in case a new valid name is set, show the icon
         this.invalid = false;
-        this.pathData = Array.isArray(iconData.pathData) ? iconData.pathData : [iconData.pathData];
+        if ("pathData" in iconData && iconData.pathData) {
+            this.pathData = Array.isArray(iconData.pathData) ? iconData.pathData : [iconData.pathData];
+        }
         this.accData = iconData.accData;
         this.ltr = iconData.ltr;
         this.packageName = iconData.packageName;
@@ -201,15 +228,43 @@ let Icon = class Icon extends UI5Element {
             this.effectiveAccessibleName = this.accessibleName;
         }
         else if (this.accData) {
-            const i18nBundle = await getI18nBundle(this.packageName);
-            this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
+            if (this.packageName) {
+                const i18nBundle = await getI18nBundle(this.packageName);
+                this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
+            }
+            else {
+                this.effectiveAccessibleName = this.accData?.defaultText || undefined;
+            }
         }
         else {
             this.effectiveAccessibleName = undefined;
         }
     }
+    get hasFontIcon() {
+        return this.fontIcon.length > 0;
+    }
     get hasIconTooltip() {
         return this.showTooltip && this.effectiveAccessibleName;
+    }
+    _getAriaTypeDescription() {
+        switch (this.mode) {
+            case IconMode.Interactive:
+                return Icon_1.i18nBundle.getText(ICON_ARIA_TYPE_INTERACTIVE);
+            case IconMode.Image:
+                return Icon_1.i18nBundle.getText(ICON_ARIA_TYPE_IMAGE);
+            default:
+                return "";
+        }
+    }
+    get accessibilityInfo() {
+        if (this.mode === IconMode.Decorative) {
+            return {};
+        }
+        return {
+            role: this.effectiveAccessibleRole,
+            type: this._getAriaTypeDescription(),
+            description: this.effectiveAccessibleName,
+        };
     }
 };
 __decorate([
@@ -228,7 +283,10 @@ __decorate([
     property()
 ], Icon.prototype, "mode", void 0);
 __decorate([
-    property({ type: Array })
+    slot({ type: HTMLElement })
+], Icon.prototype, "fontIcon", void 0);
+__decorate([
+    property({ type: Array, noAttribute: true })
 ], Icon.prototype, "pathData", void 0);
 __decorate([
     property({ type: Object, noAttribute: true })
@@ -239,24 +297,30 @@ __decorate([
 __decorate([
     property({ noAttribute: true })
 ], Icon.prototype, "effectiveAccessibleName", void 0);
-Icon = __decorate([
+__decorate([
+    i18n("@ui5/webcomponents")
+], Icon, "i18nBundle", void 0);
+Icon = Icon_1 = __decorate([
     customElement({
         tag: "ui5-icon",
         languageAware: true,
         themeAware: true,
-        renderer: litRender,
+        renderer: jsxRender,
         template: IconTemplate,
         styles: iconCss,
     })
     /**
-     * Fired on mouseup, `SPACE` and `ENTER`.
-     * - on mouse click, the icon fires native `click` event
-     * - on `SPACE` and `ENTER`, the icon fires custom `click` event
-     * @private
-     * @since 1.0.0-rc.8
+     * Fired when the component is activated by mouse/touch, keyboard (Enter or Space),
+     * or screen reader virtual cursor activation.
+     *
+     * **Note:** The event will not be fired if the `mode` property is set to `Decorative` or `Image`.
+     * @public
+     * @since 2.11.0
      */
     ,
-    event("click")
+    event("click", {
+        bubbles: true,
+    })
 ], Icon);
 Icon.define();
 export default Icon;

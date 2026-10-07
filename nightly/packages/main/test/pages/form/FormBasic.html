@@ -4,8 +4,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta charset="utf-8">
 	<title>Form Basic</title>
-	
-	
 		
 	<script id='sap-ui-bootstrap'
 		src='https://openui5nightly.hana.ondemand.com/resources/sap-ui-core.js'
@@ -514,8 +512,8 @@
 			window.oLayout5 = oLayout5;
         });
     </script>
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-779694d5.js"></script>
-  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/FormLayout-1008fc94.css">
+  <script type="module" crossorigin src="/webcomponents/nightly/assets/bundle.esm-D_WAeXdP.js"></script>
+  <link rel="stylesheet" crossorigin href="/webcomponents/nightly/assets/FormLayout-DrxiYO6l.css">
 </head>
 
 <body class="bg">
@@ -527,23 +525,23 @@
 		<section>
 			<ui5-form class="addressForm" header-text="WebC :: Address (Defaults)">
 				<ui5-form-item>
-					<ui5-label slot="labelContent">Name:</ui5-label>
-					<span class="text">Red Point Stores</span>
+					<ui5-label id="lblName" slot="labelContent">Name:</ui5-label>
+					<ui5-text aria-labelledby="lblName">Red Point Stores</ui5-text>
 				</ui5-form-item>
 				
 				<ui5-form-item>
-					<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-					<span class="text">411 Maintown</span>
+					<ui5-label id="lblCity" slot="labelContent">ZIP Code/City:</ui5-label>
+					<ui5-text aria-labelledby="lblCity">411 Maintown</ui5-text>
 				</ui5-form-item>
 				
 				<ui5-form-item>
-					<ui5-label slot="labelContent">Street:</ui5-label>
-					<span class="text">Main St 1618</span>
+					<ui5-label id="lblStreet" slot="labelContent">Street:</ui5-label>
+					<ui5-text aria-labelledby="lblStreet">Main St 1618</ui5-text>
 				</ui5-form-item>
 
 				<ui5-form-item>
-					<ui5-label slot="labelContent">Country:</ui5-label>
-					<span class="text">Germany</span>
+					<ui5-label id="lblCountry" slot="labelContent">Country:</ui5-label>
+					<ui5-text aria-labelledby="lblCountry">Germany</ui5-text>
 				</ui5-form-item>
 			</ui5-form>
 		</section>
@@ -598,22 +596,22 @@
 			<ui5-form class="addressForm" header-text="WebC :: Address (S1 M2 L3 XL4)" layout="S1 M2 L3 XL4">
 				<ui5-form-item>
 					<ui5-label slot="labelContent">Name:</ui5-label>
-					<span class="text">Red Point Stores</span>
+					<ui5-text>Red Point Stores</ui5-text>
 				</ui5-form-item>
 				
 				<ui5-form-item>
 					<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-					<span class="text">411 Maintown</span>
+					<ui5-text>411 Maintown</ui5-text>
 				</ui5-form-item>
 				
 				<ui5-form-item>
 					<ui5-label slot="labelContent">Street:</ui5-label>
-					<span class="text">Main St 1618</span>
+					<ui5-text>Main St 1618</ui5-text>
 				</ui5-form-item>
 
 				<ui5-form-item>
 					<ui5-label slot="labelContent">Country:</ui5-label>
-					<span class="text">Germany</span>
+					<ui5-text>Germany</ui5-text>
 				</ui5-form-item>
 
 				<ui5-form-item>
@@ -623,7 +621,7 @@
 
 				<ui5-form-item>
 					<ui5-label for="delInp" slot="labelContent">Delivery address:</ui5-label>
-					<span class="text">Newtown</span>
+					<ui5-text>Newtown</ui5-text>
 				</ui5-form-item>
 			</ui5-form>
 		</section>
@@ -637,22 +635,22 @@
 				<ui5-form-group id="testFormGroup4" header-text="Address">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -664,22 +662,22 @@
 				<ui5-form-group id="testFormGroup5" header-text="Contact">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Twitter:</ui5-label>
-						<span class="text">@sap</span>
+						<ui5-text>@sap</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Email:</ui5-label>
-						<span class="text">john.smith@sap.com</span>
+						<ui5-text>john.smith@sap.com</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Tel:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">SMS:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -710,22 +708,22 @@
 				<ui5-form-group id="testFormGroup6" header-text="Address">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -737,22 +735,22 @@
 				<ui5-form-group id="testFormGroup7" header-text="Contact">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Twitter:</ui5-label>
-						<span class="text">@sap</span>
+						<ui5-text>@sap</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Email:</ui5-label>
-						<span class="text">john.smith@sap.com</span>
+						<ui5-text>john.smith@sap.com</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Tel:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">SMS:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -775,22 +773,22 @@
 				<ui5-form-group id="testFormGroup8" header-text="Other info">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -811,22 +809,22 @@
 				<ui5-form-group header-text="Address">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -838,22 +836,22 @@
 				<ui5-form-group header-text="Contact">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Twitter:</ui5-label>
-						<span class="text">@sap</span>
+						<ui5-text>@sap</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Email:</ui5-label>
-						<span class="text">john.smith@sap.com</span>
+						<ui5-text>john.smith@sap.com</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Tel:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">SMS:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -876,22 +874,22 @@
 				<ui5-form-group header-text="Other info">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -911,22 +909,22 @@
 				<ui5-form-group id="testFormGroup1" header-text="Address">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -938,22 +936,22 @@
 				<ui5-form-group id="testFormGroup2" header-text="Contact">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Twitter:</ui5-label>
-						<span class="text">@sap</span>
+						<ui5-text>@sap</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Email:</ui5-label>
-						<span class="text">john.smith@sap.com</span>
+						<ui5-text>john.smith@sap.com</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Tel:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">SMS:</ui5-label>
-						<span class="text">+49 6227 747474</span>
+						<ui5-text>+49 6227 747474</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
@@ -976,22 +974,22 @@
 				<ui5-form-group id="testFormGroup3" header-text="Other info">
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Name:</ui5-label>
-						<span class="text">Red Point Stores</span>
+						<ui5-text>Red Point Stores</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">ZIP Code/City:</ui5-label>
-						<span class="text">411 Maintown</span>
+						<ui5-text>411 Maintown</ui5-text>
 					</ui5-form-item>
 					
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Street:</ui5-label>
-						<span class="text">Main St 1618</span>
+						<ui5-text>Main St 1618</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>
 						<ui5-label slot="labelContent">Country:</ui5-label>
-						<span class="text">Germany</span>
+						<ui5-text>Germany</ui5-text>
 					</ui5-form-item>
 	
 					<ui5-form-item>

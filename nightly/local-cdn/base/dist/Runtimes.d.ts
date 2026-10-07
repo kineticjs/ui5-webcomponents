@@ -1,6 +1,7 @@
 type RuntimeData = VersionInfo & {
     alias: string;
     description: string;
+    importMetaUrl: string;
 };
 /**
  * Registers the current runtime in the shared runtimes resource registry
@@ -11,6 +12,10 @@ declare const registerCurrentRuntime: () => void;
  * @returns {*}
  */
 declare const getCurrentRuntimeIndex: () => number;
+/**
+ * Compares two VersionInfo objects and returns 1 if the first is bigger, -1 if the second is bigger, and 0 if equal.
+ */
+declare const compareVersions: (v1: VersionInfo, v2: VersionInfo) => number;
 /**
  * Compares two runtimes and returns 1 if the first is of a bigger version, -1 if the second is of a bigger version, and 0 if equal
  * @param index1 The index of the first runtime to compare
@@ -24,4 +29,4 @@ declare const compareRuntimes: (index1: number, index2: number) => number;
  */
 declare const setRuntimeAlias: (alias: string) => void;
 declare const getAllRuntimes: () => RuntimeData[];
-export { getCurrentRuntimeIndex, registerCurrentRuntime, compareRuntimes, setRuntimeAlias, getAllRuntimes, };
+export { getCurrentRuntimeIndex, registerCurrentRuntime, compareRuntimes, compareVersions, setRuntimeAlias, getAllRuntimes, };

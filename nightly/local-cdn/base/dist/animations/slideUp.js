@@ -23,7 +23,7 @@ const slideUp = (element) => {
             storedHeight = el.style.height;
             el.style.overflow = "hidden";
         },
-        duration,
+        duration: duration(),
         element,
         advance: progress => {
             element.style.paddingTop = `${paddingTop - (paddingTop * progress)}px`;

@@ -6,10 +6,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
 import ListItemBase from "./ListItemBase.js";
 // Template
-import SuggestionItemCustomTemplate from "./generated/templates/SuggestionItemCustomTemplate.lit.js";
+import SuggestionItemCustomTemplate from "./SuggestionItemCustomTemplate.js";
 // styles
 import styles from "./generated/themes/SuggestionItemCustom.css.js";
 /**
@@ -26,6 +26,9 @@ import styles from "./generated/themes/SuggestionItemCustom.css.js";
  * @since 2.0.0
  */
 let SuggestionItemCustom = class SuggestionItemCustom extends ListItemBase {
+    get _effectiveTabIndex() {
+        return -1;
+    }
 };
 __decorate([
     property()

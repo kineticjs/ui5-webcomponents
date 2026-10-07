@@ -1,4 +1,3 @@
-import "@ui5/webcomponents-base/dist/features/OpenUI5Support.js";
 import "./Assets.js";
 import "@ui5/webcomponents-icons/dist/Assets.js";
 import "@ui5/webcomponents-icons/dist/AllIcons.js";
@@ -14,9 +13,10 @@ import "@ui5/webcomponents-localization/dist/features/calendar/Persian.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import * as defaultTexts from "./generated/i18n/i18n-defaults.js";
 declare const testAssets: {
+    resetConfiguration: (testEnv?: boolean) => void;
     configuration: {
-        getAnimationMode: () => "none" | "full" | "basic" | "minimal";
-        setAnimationMode: (animationMode: "none" | "full" | "basic" | "minimal") => void;
+        getAnimationMode: () => `${import("@ui5/webcomponents-base/dist/types/AnimationMode.js").default}`;
+        setAnimationMode: (animationMode: `${import("@ui5/webcomponents-base/dist/types/AnimationMode.js").default}`) => void;
         getTheme: () => string;
         setTheme: (theme: string) => Promise<void>;
         getThemeRoot: () => string | undefined;
@@ -25,7 +25,7 @@ declare const testAssets: {
         getLanguage: () => string | undefined;
         setLanguage: (language: string) => Promise<void>;
         setNoConflict: (noConflictData: boolean | {
-            events: string[];
+            events: Array<string>;
         }) => void;
         getFirstDayOfWeek: () => number | undefined;
         getTimezone: () => string | undefined;
@@ -33,10 +33,25 @@ declare const testAssets: {
     };
     invisibleMessage: {
         announce: (message: string, mode: import("@ui5/webcomponents-base/dist/types/InvisibleMessageMode.js").default) => void;
+        registerInvisibleMessageRegion: (container: HTMLElement) => void;
+        deregisterInvisibleMessageRegion: (container: HTMLElement) => void;
+    };
+    getElementSelection: (element: HTMLElement) => {
+        selectedText: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
     };
     getLocaleData: (lang: string) => Promise<import("@ui5/webcomponents-localization/dist/LocaleData.js").default>;
     applyDirection: () => Promise<void>;
     attachDirectionChange: (listener: () => void) => void;
+    attachLanguageChange: (listener: (lang: string) => Promise<void | Array<void>>) => void;
+    detachLanguageChange: (listener: (lang: string) => Promise<void | Array<void>>) => void;
     ResizeHandler: typeof ResizeHandler;
     addCustomCSS: (tag: string, css: string) => Promise<void>;
     attachThemeLoaded: (listener: (theme: string) => void) => void;
@@ -45,8 +60,9 @@ declare const testAssets: {
     getIconAccessibleName: (name: string | undefined) => Promise<string | undefined>;
     renderFinished: () => Promise<void>;
     defaultTexts: typeof defaultTexts;
-    getEffectiveIconCollection: (collectionName?: string | undefined) => string;
+    getEffectiveIconCollection: (collectionName?: import("@ui5/webcomponents-base/dist/config/Icons.js").IconCollection) => import("@ui5/webcomponents-base/dist/config/Icons.js").IconCollection;
     ignoreCustomElements: (tagPrefix: string) => void;
     shouldIgnoreCustomElement: (tag: string) => boolean;
+    startMultipleDrag: (count: number, e: DragEvent) => Promise<void>;
 };
 export default testAssets;

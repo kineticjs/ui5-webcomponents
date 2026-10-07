@@ -6,25 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var Table_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
-import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import TableTemplate from "./generated/templates/TableTemplate.lit.js";
+import { customElement, slotStrict as slot, property, eventStrict, i18n, } from "@ui5/webcomponents-base/dist/decorators.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import TableTemplate from "./TableTemplate.js";
 import TableStyles from "./generated/themes/Table.css.js";
-import TableRow from "./TableRow.js";
 import TableExtension from "./TableExtension.js";
-import TableOverflowMode from "./types/TableOverflowMode.js";
 import TableNavigation from "./TableNavigation.js";
+import TableOverflowMode from "./types/TableOverflowMode.js";
+import TableDragAndDrop from "./TableDragAndDrop.js";
+import TableCustomAnnouncement from "./TableCustomAnnouncement.js";
+import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
+import { findVerticalScrollContainer, computeAxisScrollDelta, isFeature, isValidColumnWidth, } from "./TableUtils.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
 import { TABLE_NO_DATA, } from "./generated/i18n/i18n-defaults.js";
-import BusyIndicator from "./BusyIndicator.js";
-import TableCell from "./TableCell.js";
-import { isFeature } from "./TableUtils.js";
 /**
  * @class
  *
@@ -41,8 +36,10 @@ import { isFeature } from "./TableUtils.js";
  *
  * The following features are currently available:
  *
- * * [TableSelection](../TableSelection) - adds selection capabilities to the table
+ * * [TableSelectionMulti](../TableSelectionMulti) - adds multi-selection capabilities to the table
+ * * [TableSelectionSingle](../TableSelectionSingle) - adds single-selection capabilities to the table
  * * [TableGrowing](../TableGrowing) - provides growing capabilities to load more data
+ * * [TableVirtualizer](../TableVirtualizer) - adds virtualization capabilities to the table
  *
  * ### Keyboard Handling
  *
@@ -65,7 +62,6 @@ import { isFeature } from "./TableUtils.js";
  * * <kbd>F2</kbd> - Focuses the first tabbable element in the row
  * * <kbd>F7</kbd> - If focus position is remembered, moves focus to the corresponding focus position row, otherwise to the first tabbable element within the row
  * * <kbd>[Shift]Tab</kbd> - Move focus to the element in the tab chain outside the table
-
  *
  * If the focus is on a cell, the following keyboard shortcuts are available:
  * * <kbd>Down</kbd> - Navigates down
@@ -80,16 +76,25 @@ import { isFeature } from "./TableUtils.js";
  * * <kbd>Enter</kbd> - Focuses the first tabbable cell content
  * * <kbd>F7</kbd> - If the focus is on an interactive element inside a row, moves focus to the corresponding row and remembers the focus position of the element within the row
  * * <kbd>[Shift]Tab</kbd> - Move focus to the element in the tab chain outside the table
-
  *
  * If the focus is on an interactive cell content, the following keyboard shortcuts are available:
  * * <kbd>Down</kbd> - Move the focus to the interactive element in the same column of the previous row, unless the focused element prevents the default
  * * <kbd>Up</kbd> - Move the focus to the interactive element in the same column of the next row, unless the focused element prevents the default
  * * <kbd>[Shift]Tab</kbd> - Move the focus to the element in the tab chain
  *
+ * ### Accessibility
+ *
+ * The `ui5-table` follows the [ARIA grid design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/).
+ * This pattern enables cell-based keyboard navigation and, as explained above, we also support row-based keyboard navigation.
+ * Since the grid design pattern does not inherently provide row-based keyboard behavior, if the focus is on a row, not only the row information but also the corresponding column headers for each cell must be announced.
+ * This can only be achieved through a custom accessibility announcement.
+ * To support this, UI5 Web Components expose its own accessibility metadata via the `accessibilityInfo` property.
+ * The `ui5-table` uses this information to create the required custom announcements dynamically.
+ * If you include custom web components inside table cells that are not part of the standard UI5 Web Components set, their accessibility information can be provided using the `data-ui5-acc-text` attribute.
+ *
  * ### ES6 Module Import
  *
- * `import "@ui5/webcomponents/dist/Table.js";`\
+ * `import "@ui5/webcomponents/dist/Table.js";` (`ui5-table`)\
  * `import "@ui5/webcomponents/dist/TableRow.js";` (`ui5-table-row`)\
  * `import "@ui5/webcomponents/dist/TableCell.js";` (`ui5-table-cell`)\
  * `import "@ui5/webcomponents/dist/TableHeaderRow.js";` (`ui5-table-header-row`)\
@@ -97,18 +102,10 @@ import { isFeature } from "./TableUtils.js";
  *
  * @constructor
  * @extends UI5Element
- * @since 2.0
+ * @since 2.0.0
  * @public
- * @experimental This Table web component is available since 2.0 and has been newly implemented to provide better screen reader and keyboard handling support.
- * Currently, it's considered experimental as its API is subject to change.
- * This Table replaces the previous Table web component, that has been part of **@ui5/webcomponents** version 1.x.
- * For compatibility reasons, we moved the previous Tabple implementation to the **@ui5/webcomponents-compat** package
- * and will be maintained until the new Table is experimental.
  */
 let Table = Table_1 = class Table extends UI5Element {
-    static async onDefine() {
-        Table_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
-    }
     constructor() {
         super();
         /**
@@ -117,7 +114,6 @@ let Table = Table_1 = class Table extends UI5Element {
          * Available options are:
          *
          * <code>Scroll</code> - Columns are shown as regular columns and horizontal scrolling is enabled.
-         *
          * <code>Popin</code> - Columns are shown as pop-ins instead of regular columns.
          *
          * @default "Scroll"
@@ -127,65 +123,110 @@ let Table = Table_1 = class Table extends UI5Element {
         /**
          * Defines if the loading indicator should be shown.
          *
-         * <b>Note:</b> When the component is loading, it is non-interactive.
+         * **Note:** When the component is loading, it is not interactive.
+         *
          * @default false
          * @public
          */
         this.loading = false;
         /**
          * Defines the delay in milliseconds, after which the loading indicator will show up for this component.
+         *
          * @default 1000
          * @public
          */
         this.loadingDelay = 1000;
+        /**
+         * Defines the maximum number of row actions that is displayed, which determines the width of the row action column.
+         *
+         * **Note:** It is recommended to use a maximum of 3 row actions, as exceeding this limit may take up too much space on smaller screens.
+         *
+         * @default 0
+         * @since 2.7.0
+         * @public
+         */
+        this.rowActionCount = 0;
+        /**
+         * Determines whether the table rows are displayed with alternating background colors.
+         *
+         * @default false
+         * @since 2.17
+         * @public
+         */
+        this.alternateRowColors = false;
         /**
          * Defines the sticky top offset of the table, if other sticky elements outside of the table exist.
          */
         this.stickyTop = "0";
         this._invalidate = 0;
         this._renderNavigated = false;
-        this._events = ["keydown", "keyup", "click", "focusin", "focusout"];
+        this._events = ["keydown", "keyup", "click", "focusin", "focusout", "pointerdown", "dragstart", "dragenter", "dragleave", "dragover", "drop", "dragend"];
         this._poppedIn = [];
         this._containerWidth = 0;
         this._onResizeBound = this._onResize.bind(this);
         this._onEventBound = this._onEvent.bind(this);
     }
     onEnterDOM() {
-        if (this.overflowMode === TableOverflowMode.Popin) {
-            ResizeHandler.register(this, this._onResizeBound);
-        }
         this._events.forEach(eventType => this.addEventListener(eventType, this._onEventBound));
-        this.features.forEach(feature => feature.onTableActivate(this));
+        this.features.forEach(feature => feature.onTableActivate?.(this));
         this._tableNavigation = new TableNavigation(this);
+        this._tableDragAndDrop = new TableDragAndDrop(this);
+        this._tableCustomAnnouncement = new TableCustomAnnouncement(this);
     }
     onExitDOM() {
         this._tableNavigation = undefined;
-        this._events.forEach(eventType => this.addEventListener(eventType, this._onEventBound));
-        if (this.overflowMode === TableOverflowMode.Popin) {
+        this._tableDragAndDrop = undefined;
+        this._events.forEach(eventType => this.removeEventListener(eventType, this._onEventBound));
+    }
+    onBeforeRendering() {
+        let alternateIndex = 0;
+        const hasFlexibleColumns = this._hasFlexibleColumns;
+        const rowActionCount = this.rowActionCount > 0 && this.rows.length > 0 ? this.rowActionCount : 0;
+        this._renderNavigated = this.rows.some(row => row.navigated);
+        [...this.headerRow, ...this.rows].forEach(row => {
+            if (!row.isGroupRow()) {
+                row._rowActionCount = rowActionCount;
+                row._renderDummyCell = !hasFlexibleColumns;
+                row._renderNavigated = this._renderNavigated;
+                row._alternate = this.alternateRowColors && alternateIndex++ % 2 === 0;
+            }
+            else {
+                row._rowActionCount = 0;
+                row._renderDummyCell = !hasFlexibleColumns && !this._hasPopin;
+                row._renderNavigated = false;
+                row._alternate = false;
+                alternateIndex = 1;
+            }
+        });
+        this.style.setProperty("--ui5_grid_sticky_top", this.stickyTop);
+        this._refreshPopinState();
+        this.features.forEach(feature => feature.onTableBeforeRendering?.(this));
+        if (this.getDomRef()) {
             ResizeHandler.deregister(this, this._onResizeBound);
         }
     }
-    onBeforeRendering() {
-        const renderNavigated = this._renderNavigated;
-        this._renderNavigated = this.rows.some(row => row.navigated);
-        if (renderNavigated !== this._renderNavigated) {
-            this.rows.forEach(row => {
-                row._renderNavigated = this._renderNavigated;
-            });
-        }
-        this.style.setProperty(getScopedVarName("--ui5_grid_sticky_top"), this.stickyTop);
-        this._refreshPopinState();
-    }
     onAfterRendering() {
-        this.features.forEach(feature => feature.onTableRendered?.());
+        this.features.forEach(feature => feature.onTableAfterRendering?.(this));
+        if (this.overflowMode === TableOverflowMode.Popin) {
+            ResizeHandler.register(this, this._onResizeBound);
+        }
+    }
+    _findFeature(featureName) {
+        return this.features.find(feature => isFeature(feature, featureName));
     }
     _getSelection() {
-        return this.features.find(feature => isFeature(feature, "TableSelection"));
+        return this._findFeature("TableSelectionBase") || this._findFeature("TableSelection");
+    }
+    _getVirtualizer() {
+        return this._findFeature("TableVirtualizer");
+    }
+    _getGrowing() {
+        return this._findFeature("TableGrowing");
     }
     _onEvent(e) {
         const composedPath = e.composedPath();
         const eventOrigin = composedPath[0];
-        const elements = [this._tableNavigation, ...composedPath, ...this.features];
+        const elements = [this._tableCustomAnnouncement, this._tableNavigation, this._tableDragAndDrop, ...composedPath, ...this.features].filter(Boolean);
         elements.forEach(element => {
             if (element instanceof TableExtension || (element instanceof HTMLElement && element.localName.includes("ui5-table"))) {
                 const eventHandlerName = `_on${e.type}`;
@@ -198,9 +239,11 @@ let Table = Table_1 = class Table extends UI5Element {
     }
     _onResize() {
         const { clientWidth, scrollWidth } = this._tableElement;
-        if (scrollWidth > clientWidth) {
+        // Safari can report scrollWidth 1px greater than clientWidth during zoom transitions
+        // due to subpixel rounding, so a strict > check triggers spurious popin cycles.
+        const overflow = scrollWidth - clientWidth;
+        if (overflow > 1) {
             // Overflow Handling: Move columns into the popin until overflow is resolved
-            const overflow = scrollWidth - clientWidth;
             const headers = this._getPopinOrderedColumns(false);
             const poppedInWidth = headers.reduce((totalPoppedInWidth, headerCell) => {
                 if (totalPoppedInWidth < overflow && !headerCell._popin) {
@@ -229,50 +272,27 @@ let Table = Table_1 = class Table extends UI5Element {
         }
     }
     _onfocusin(e) {
-        // Handles focus that is below sticky element
-        const stickyElements = this._stickyElements;
-        if (stickyElements.length === 0) {
+        if (e.target === this) {
             return;
         }
-        // Find the sticky element that is closest to the focused element
-        const target = e.target;
-        const element = target.closest("ui5-table-cell, ui5-table-row") ?? target;
-        const elementRect = element.getBoundingClientRect();
-        const stickyBottom = stickyElements.reduce((min, stickyElement) => {
-            const stickyRect = stickyElement.getBoundingClientRect();
-            if (stickyRect.bottom > elementRect.top) {
-                return Math.max(min, stickyRect.bottom);
-            }
-            return min;
-        }, -Infinity);
-        // If the focused element is not behind any sticky element, do nothing
-        if (stickyBottom === -Infinity) {
-            return;
-        }
-        // Scroll the focused element into view
-        const scrollContainer = this._scrollContainer;
-        scrollContainer.scrollBy({
-            top: elementRect.top - stickyBottom,
-        });
+        this._scrollElementIntoView(e.target);
     }
-    /**
-     * Refreshes the popin state of the columns.
-     * Syncs the popin state of the columns with the popin state of the header cells.
-     * This is needed when additional rows are manually added and no resize happens.
-     * @private
-     */
-    _refreshPopinState() {
-        this.headerRow[0].cells.forEach((header, index) => {
-            this.rows.forEach(row => {
-                const cell = row.cells[index];
-                if (cell && cell._popin !== header._popin) {
-                    cell._popin = header._popin;
-                }
-            });
-        });
+    _scrollElementIntoView(element) {
+        const verticalStickyElements = this.headerRow.filter(row => row.sticky);
+        if (verticalStickyElements.length) {
+            const verticalScrollContainer = findVerticalScrollContainer(this._tableElement, true);
+            const deltaY = computeAxisScrollDelta(element, verticalScrollContainer, verticalStickyElements, "y");
+            verticalScrollContainer.scrollBy({ top: deltaY });
+        }
+        const horizontalStickyElements = this.overflowMode === "Scroll" ? this.headerRow[0]._stickyCells : [];
+        if (horizontalStickyElements.length) {
+            const horizontalScrollContainer = this._tableElement;
+            const deltaX = computeAxisScrollDelta(element, horizontalScrollContainer, horizontalStickyElements, "x");
+            horizontalScrollContainer.scrollBy({ left: deltaX });
+        }
     }
     _onGrow() {
-        this._growing?.loadMore();
+        this._getGrowing()?.loadMore();
     }
     _getPopinOrderedColumns(reverse) {
         let headers = [...this.headerRow[0].cells];
@@ -284,68 +304,106 @@ let Table = Table_1 = class Table extends UI5Element {
         }
         return headers;
     }
-    _setHeaderPopinState(headerCell, inPopin, popinWidth) {
-        const headerIndex = this.headerRow[0].cells.indexOf(headerCell);
-        headerCell._popin = inPopin;
-        headerCell._popinWidth = popinWidth;
-        this.rows.forEach(row => {
-            row.cells[headerIndex]._popin = inPopin;
+    /**
+     * Refreshes the popin state of the columns.
+     * Syncs the popin state of the columns with the popin state of the header cells.
+     * This is needed when additional rows are manually added and no resize happens.
+     * @private
+     */
+    _refreshPopinState() {
+        this.headerRow[0]?.cells.forEach(header => {
+            this._setHeaderPopinState(header, header._popin, header._popinWidth);
         });
     }
-    _isFeature(feature) {
-        return Boolean(feature.onTableActivate && feature.onTableRendered);
+    _setHeaderPopinState(headerCell, inPopin, popinWidth) {
+        const headerIndex = this.headerRow[0].cells.indexOf(headerCell);
+        headerCell._popin = inPopin && this.overflowMode === TableOverflowMode.Popin;
+        headerCell._popinWidth = popinWidth;
+        this.rows.forEach(row => {
+            const cell = row.cells[headerIndex];
+            if (cell) {
+                cell._popinHidden = headerCell.popinHidden;
+                cell._popin = headerCell._popin;
+            }
+        });
     }
     _isGrowingFeature(feature) {
-        return Boolean(feature.loadMore && feature.hasGrowingComponent && this._isFeature(feature));
+        return Boolean(feature.loadMore && feature.hasGrowingComponent && isFeature(feature, "TableGrowing"));
     }
-    _onRowPress(row) {
-        this.fireEvent("row-click", { row });
+    _onRowClick(row) {
+        this.fireDecoratorEvent("row-click", { row });
+    }
+    _onRowActionClick(action) {
+        const row = action.parentElement;
+        this.fireDecoratorEvent("row-action-click", { action, row });
     }
     get styles() {
+        const virtualizer = this._getVirtualizer();
+        const headerStyleMap = {};
+        this.headerRow[0]?.cells.forEach(headerCell => {
+            headerStyleMap[`--halign-${headerCell._id}`] = headerCell.horizontalAlign || "initial";
+        });
         return {
             table: {
                 "grid-template-columns": this._gridTemplateColumns,
+                "--row-height": virtualizer ? `${virtualizer.rowHeight}px` : "auto",
+                ...headerStyleMap,
+            },
+            spacer: {
+                "transform": virtualizer?._getTransform(),
+                "will-change": virtualizer && "transform",
             },
         };
     }
     get _gridTemplateColumns() {
+        if (!this.headerRow[0]) {
+            return;
+        }
         const widths = [];
         const visibleHeaderCells = this.headerRow[0]._visibleCells;
-        if (this._getSelection()?.hasRowSelector()) {
-            widths.push(`var(${getScopedVarName("--_ui5_checkbox_width_height")})`);
+        // Selection Cell Width
+        if (this._isRowSelectorRequired) {
+            widths.push("min-content");
         }
+        // Column Widths
         widths.push(...visibleHeaderCells.map(cell => {
-            const minWidth = cell.minWidth === "auto" ? "3rem" : cell.minWidth;
-            if (cell.width === "auto" || cell.width.includes("%") || cell.width.includes("fr") || cell.width.includes("vw")) {
-                return `minmax(${minWidth}, ${cell.maxWidth})`;
+            const minWidth = cell.minWidth ?? "3rem";
+            let width = `minmax(${minWidth}, 1fr)`; // default width
+            if (isValidColumnWidth(cell.width)) {
+                width = cell.width.includes("%") ? `max(${minWidth}, ${cell.width})` : cell.width;
             }
-            return `minmax(${cell.width}, ${cell.width})`;
+            return width;
         }));
+        // Dummy Cell Width (before actions when popin, after navigated otherwise)
+        const dummyColumnWidth = !this._hasFlexibleColumns ? "minmax(0, 1fr)" : "";
+        const hasPopin = this._hasPopin;
+        if (dummyColumnWidth && hasPopin) {
+            widths.push(dummyColumnWidth);
+        }
+        // Row Action Cell Width
+        if (this.rowActionCount > 0 && this.rows.length > 0) {
+            widths.push(`calc(var(--_ui5_button_base_min_width) * ${this.rowActionCount} + var(--_ui5_table_row_actions_gap) * ${this.rowActionCount - 1} + var(--_ui5_table_cell_horizontal_padding) * 2)`);
+        }
+        // Navigated Cell Width
         if (this._renderNavigated) {
-            widths.push(`var(${getScopedVarName("--_ui5_table_navigated_cell_width")})`);
+            widths.push(`var(--_ui5_table_navigated_cell_width)`);
+        }
+        if (dummyColumnWidth && !hasPopin) {
+            widths.push(dummyColumnWidth);
         }
         return widths.join(" ");
     }
-    get _tableOverflowX() {
-        return (this.overflowMode === TableOverflowMode.Popin) ? "hidden" : "auto";
+    get _hasPopin() {
+        return this.overflowMode === TableOverflowMode.Popin && this.headerRow?.[0]?._hasPopin;
     }
-    get _tableOverflowY() {
-        return "auto";
+    get _hasFlexibleColumns() {
+        return this.headerRow?.[0]?._visibleCells.some(cell => !isValidColumnWidth(cell.width));
     }
-    get _nodataRow() {
-        return this.shadowRoot.getElementById("nodata-row");
+    get _isRowSelectorRequired() {
+        return this.rows.length > 0 && this._getSelection()?.isRowSelectorRequired();
     }
-    get _beforeElement() {
-        return this.shadowRoot.getElementById("before");
-    }
-    get _afterElement() {
-        return this.shadowRoot.getElementById("after");
-    }
-    get _tableElement() {
-        return this.shadowRoot.getElementById("table");
-    }
-    get _loadingElement() {
-        return this.shadowRoot.getElementById("loading");
+    get _scrollContainer() {
+        return this._getVirtualizer() ? this._tableElement : findVerticalScrollContainer(this);
     }
     get _effectiveNoDataText() {
         return this.noDataText || Table_1.i18nBundle.getText(TABLE_NO_DATA);
@@ -353,30 +411,31 @@ let Table = Table_1 = class Table extends UI5Element {
     get _ariaLabel() {
         return getEffectiveAriaLabelText(this) || undefined;
     }
+    get _ariaDescription() {
+        return this._getSelection()?.getAriaDescriptionForTable();
+    }
+    get _ariaRowCount() {
+        return this._getVirtualizer()?.rowCount || this.rows.length + 1;
+    }
+    get _ariaColCount() {
+        if (!this.headerRow[0]) {
+            return 0;
+        }
+        let ariaColCount = this.headerRow[0]._visibleCells.length;
+        if (this._isRowSelectorRequired) {
+            ariaColCount++;
+        }
+        if (this.rowActionCount > 0 && this.rows.length > 0) {
+            ariaColCount++;
+        }
+        if (this.headerRow[0]._popinCells.length > 0) {
+            ariaColCount++;
+        }
+        return ariaColCount;
+    }
     get _ariaMultiSelectable() {
         const selection = this._getSelection();
-        return (selection?.isSelectable() && this.rows.length) ? selection.isMultiSelect() : undefined;
-    }
-    get _shouldRenderGrowing() {
-        return this.rows.length && this._growing?.hasGrowingComponent();
-    }
-    get _growing() {
-        return this.features.find(feature => this._isGrowingFeature(feature));
-    }
-    // TODO: Could be moved to UI5Element. TBD
-    get _scrollContainer() {
-        let element = this;
-        while (element) {
-            const { overflowY } = window.getComputedStyle(element);
-            if (overflowY === "auto" || overflowY === "scroll") {
-                return element;
-            }
-            element = element.parentElement;
-        }
-        return document.scrollingElement || document.documentElement;
-    }
-    get _stickyElements() {
-        return [this.headerRow[0]].filter(row => row.sticky);
+        return (selection?.isSelectable() && this.rows.length) ? selection.isMultiSelectable() : undefined;
     }
     get isTable() {
         return true;
@@ -387,7 +446,7 @@ __decorate([
         type: HTMLElement,
         "default": true,
         invalidateOnChildChange: {
-            properties: ["navigated"],
+            properties: ["navigated", "position"],
             slots: false,
         },
     })
@@ -397,7 +456,7 @@ __decorate([
 ], Table.prototype, "headerRow", void 0);
 __decorate([
     slot()
-], Table.prototype, "nodata", void 0);
+], Table.prototype, "noData", void 0);
 __decorate([
     slot({ type: HTMLElement, individualSlots: true })
 ], Table.prototype, "features", void 0);
@@ -420,6 +479,12 @@ __decorate([
     property({ type: Number })
 ], Table.prototype, "loadingDelay", void 0);
 __decorate([
+    property({ type: Number })
+], Table.prototype, "rowActionCount", void 0);
+__decorate([
+    property({ type: Boolean })
+], Table.prototype, "alternateRowColors", void 0);
+__decorate([
     property()
 ], Table.prototype, "stickyTop", void 0);
 __decorate([
@@ -428,33 +493,99 @@ __decorate([
 __decorate([
     property({ type: Boolean, noAttribute: true })
 ], Table.prototype, "_renderNavigated", void 0);
+__decorate([
+    query("[ui5-drop-indicator]")
+], Table.prototype, "dropIndicatorDOM", void 0);
+__decorate([
+    query("#no-data-row")
+], Table.prototype, "_noDataRow", void 0);
+__decorate([
+    query("#table-end-row")
+], Table.prototype, "_endRow", void 0);
+__decorate([
+    query("#table")
+], Table.prototype, "_tableElement", void 0);
+__decorate([
+    query("#before")
+], Table.prototype, "_beforeElement", void 0);
+__decorate([
+    query("#after")
+], Table.prototype, "_afterElement", void 0);
+__decorate([
+    query("#loading")
+], Table.prototype, "_loadingElement", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Table, "i18nBundle", void 0);
 Table = Table_1 = __decorate([
     customElement({
         tag: "ui5-table",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: TableStyles,
         template: TableTemplate,
         fastNavigation: true,
-        dependencies: [
-            BusyIndicator,
-            TableCell,
-            TableRow,
-        ],
     })
     /**
      * Fired when an interactive row is clicked.
+     *
+     * **Note:** This event is not fired if the `behavior` property of the selection component is set to `RowOnly`.
+     * In that case, use the `change` event of the selection component instead.
      *
      * @param {TableRow} row The row instance
      * @public
      */
     ,
-    event("row-click", {
-        detail: {
-            /**
-             * @public
-             */
-            row: { type: TableRow },
-        },
+    eventStrict("row-click", {
+        bubbles: false,
+    })
+    /**
+     * Fired when a movable item is moved over a potential drop target during a dragging operation.
+     *
+     * If the new position is valid, prevent the default action of the event using `preventDefault()`.
+     *
+     * **Note:** If the dragging operation is a cross-browser operation or files are moved to a potential drop target,
+     * the `source` parameter will be `null`.
+     *
+     * @param {Event} originalEvent The original `dragover` event
+     * @param {object} source The source object
+     * @param {object} destination The destination object
+     * @public
+     */
+    ,
+    eventStrict("move-over", {
+        cancelable: true,
+        bubbles: true,
+    })
+    /**
+     * Fired when a movable list item is dropped onto a drop target.
+     *
+     * **Notes:**
+     *
+     * The `move` event is fired only if there was a preceding `move-over` with prevented default action.
+     *
+     * If the dragging operation is a cross-browser operation or files are moved to a potential drop target,
+     * the `source` parameter will be `null`.
+     *
+     * @param {Event} originalEvent The original `drop` event
+     * @param {object} source The source object
+     * @param {object} destination The destination object
+     * @public
+     */
+    ,
+    eventStrict("move", {
+        bubbles: true,
+    })
+    /**
+     * Fired when a row action is clicked.
+     *
+     * @param {TableRowActionBase} action The row action instance
+     * @param {TableRow} row The row instance
+     * @since 2.6.0
+     * @public
+     */
+    ,
+    eventStrict("row-action-click", {
+        bubbles: false,
     })
 ], Table);
 Table.define();

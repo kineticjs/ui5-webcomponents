@@ -7,17 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var Token_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isBackSpace, isSpace, isDelete, isSpaceCtrl, } from "@ui5/webcomponents-base/dist/Keys.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
-import "@ui5/webcomponents-icons/dist/sys-cancel.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import { TOKEN_ARIA_DELETABLE, TOKEN_ARIA_LABEL } from "./generated/i18n/i18n-defaults.js";
-import Icon from "./Icon.js";
-import TokenTemplate from "./generated/templates/TokenTemplate.lit.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
+import { TOKEN_ARIA_DELETE, TOKEN_ARIA_DELETABLE, TOKEN_ARIA_LABEL } from "./generated/i18n/i18n-defaults.js";
+import TokenTemplate from "./TokenTemplate.js";
 // Styles
 import tokenStyles from "./generated/themes/Token.css.js";
 /**
@@ -75,20 +73,29 @@ let Token = Token_1 = class Token extends UI5Element {
          */
         this.toBeDeleted = false;
         /**
+         * Set by the tokenizer to mark the last visible token before overflow.
+         * @default false
+         * @private
+         */
+        this.lastVisibleToken = false;
+        /**
          * Defines the tabIndex of the component.
          * @private
          */
         this.forcedTabIndex = "-1";
-        /**
-         * Indicates whether the token is visible or not.
-         * @private
-         */
-        this._isVisible = false;
+        // fireMyEvent(name: keyof this["_events"]) {
+        // 	console.log(name);
+        // }
     }
     _handleSelect() {
         if (!this.toBeDeleted) {
             this.selected = !this.selected;
-            this.fireEvent("select");
+            this.fireDecoratorEvent("select");
+        }
+    }
+    onEnterDOM() {
+        if (isDesktop()) {
+            this.setAttribute("desktop", "");
         }
     }
     _focusin() {
@@ -98,15 +105,25 @@ let Token = Token_1 = class Token extends UI5Element {
         this.focused = !this.focused;
     }
     _delete() {
+        // If toBeDeleted is already true, the delete event was already fired in mousedown
+        if (this.toBeDeleted) {
+            return;
+        }
         this.toBeDeleted = true;
-        this.fireEvent("delete");
+        this.fireDecoratorEvent("delete");
+    }
+    _onmousedown(e) {
+        e.preventDefault(); // Prevent focus changes during deletion
+        this.toBeDeleted = true;
+        // Fire the delete event immediately to avoid losing it due to DOM changes
+        this.fireDecoratorEvent("delete");
     }
     _keydown(e) {
         const isBackSpacePressed = isBackSpace(e);
         const isDeletePressed = isDelete(e);
         if (!this.readonly && (isBackSpacePressed || isDeletePressed)) {
             e.preventDefault();
-            this.fireEvent("delete", {
+            this.fireDecoratorEvent("delete", {
                 backSpace: isBackSpacePressed,
                 "delete": isDeletePressed,
             });
@@ -116,11 +133,8 @@ let Token = Token_1 = class Token extends UI5Element {
             this._handleSelect();
         }
     }
-    onBeforeRendering() {
-        this.toBeDeleted = false;
-    }
     get tokenDeletableText() {
-        return Token_1.i18nBundle.getText(TOKEN_ARIA_DELETABLE);
+        return Token_1.i18nBundle.getText(TOKEN_ARIA_DELETE);
     }
     get textDom() {
         return this.getDomRef()?.querySelector(".ui5-token--text");
@@ -137,9 +151,6 @@ let Token = Token_1 = class Token extends UI5Element {
             description += ` ${Token_1.i18nBundle.getText(TOKEN_ARIA_DELETABLE)}`;
         }
         return description;
-    }
-    static async onDefine() {
-        Token_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
 };
 __decorate([
@@ -161,32 +172,36 @@ __decorate([
     property({ type: Boolean })
 ], Token.prototype, "focused", void 0);
 __decorate([
-    property({ type: Boolean })
+    property({ type: Boolean, noAttribute: true })
 ], Token.prototype, "toBeDeleted", void 0);
+__decorate([
+    property({ type: Boolean })
+], Token.prototype, "lastVisibleToken", void 0);
 __decorate([
     property({ noAttribute: true })
 ], Token.prototype, "forcedTabIndex", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
-], Token.prototype, "_isVisible", void 0);
-__decorate([
     slot()
 ], Token.prototype, "closeIcon", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Token, "i18nBundle", void 0);
 Token = Token_1 = __decorate([
     customElement({
         tag: "ui5-token",
         languageAware: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         template: TokenTemplate,
         styles: tokenStyles,
-        dependencies: [Icon],
     })
     /**
      * Fired when the the component is selected by user interaction with mouse or by clicking space.
      * @private
      */
     ,
-    event("select")
+    event("select", {
+        bubbles: true,
+    })
     /**
      * Fired when the backspace, delete or close icon of the token is pressed
      * @param {Boolean} backSpace Indicates whether token is deleted by backspace key.
@@ -195,10 +210,7 @@ Token = Token_1 = __decorate([
      */
     ,
     event("delete", {
-        detail: {
-            "backSpace": { type: Boolean },
-            "delete": { type: Boolean },
-        },
+        bubbles: true,
     })
 ], Token);
 Token.define();

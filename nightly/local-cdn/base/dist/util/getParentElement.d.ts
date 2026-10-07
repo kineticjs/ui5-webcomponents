@@ -1,2 +1,2 @@
-declare const getParentElement: (el: HTMLElement) => HTMLElement;
+declare const getParentElement: (element: Element) => Element | null;
 export default getParentElement;

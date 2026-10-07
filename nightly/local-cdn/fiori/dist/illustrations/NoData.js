@@ -1,8 +1,8 @@
-import { registerIllustration } from "@ui5/webcomponents-base/dist/asset-registries/Illustrations.js";
+import { unsafeRegisterIllustration } from "@ui5/webcomponents-base/dist/asset-registries/Illustrations.js";
 import dialogSvg from "./sapIllus-Dialog-NoData.js";
 import sceneSvg from "./sapIllus-Scene-NoData.js";
 import spotSvg from "./sapIllus-Spot-NoData.js";
-import dotSvg from "./sapIllus-Spot-NoData.js";import {
+import dotSvg from "./sapIllus-Dot-NoData.js";import {
 	IM_TITLE_NODATA,
 	IM_SUBTITLE_NODATA,
 } from "../generated/i18n/i18n-defaults.js";
@@ -13,7 +13,7 @@ const collection = "V4";
 const title = IM_TITLE_NODATA;
 const subtitle = IM_SUBTITLE_NODATA;
 
-registerIllustration(name, {
+unsafeRegisterIllustration(name, {
 	dialogSvg,
 	sceneSvg,
 	spotSvg,

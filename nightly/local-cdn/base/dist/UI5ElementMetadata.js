@@ -65,7 +65,7 @@ class UI5ElementMetadata {
      */
     hasAttribute(propName) {
         const propData = this.getProperties()[propName];
-        return propData.type !== Object && propData.type !== Array && !propData.noAttribute;
+        return !propData.noAttribute;
     }
     /**
      * Returns an array with the properties of the UI5 Element (in camelCase)
@@ -157,6 +157,12 @@ class UI5ElementMetadata {
     isThemeAware() {
         return !!this.metadata.themeAware;
     }
+    /**
+     * Determines whether this UI5 Element needs CLDR assets to be fetched to work correctly
+     */
+    needsCLDR() {
+        return !!this.metadata.cldr;
+    }
     getShadowRootOptions() {
         return this.metadata.shadowRootOptions || {};
     }
@@ -220,6 +226,12 @@ class UI5ElementMetadata {
             }
         }
         throw new Error("Wrong format for invalidateOnChildChange: boolean or object is expected");
+    }
+    getI18n() {
+        if (!this.metadata.i18n) {
+            this.metadata.i18n = {};
+        }
+        return this.metadata.i18n;
     }
 }
 const validateSingleSlot = (value, slotData) => {

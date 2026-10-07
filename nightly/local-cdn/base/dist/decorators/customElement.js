@@ -13,10 +13,13 @@ const customElement = (tagNameOrComponentSettings = {}) => {
             target.metadata.tag = tagNameOrComponentSettings;
             return;
         }
-        const { tag, languageAware, themeAware, fastNavigation, formAssociated, shadowRootOptions, } = tagNameOrComponentSettings;
+        const { tag, languageAware, themeAware, cldr, fastNavigation, formAssociated, shadowRootOptions, } = tagNameOrComponentSettings;
         target.metadata.tag = tag;
         if (languageAware) {
             target.metadata.languageAware = languageAware;
+        }
+        if (cldr) {
+            target.metadata.cldr = cldr;
         }
         if (themeAware) {
             target.metadata.themeAware = themeAware;

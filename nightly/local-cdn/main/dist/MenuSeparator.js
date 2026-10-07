@@ -5,55 +5,34 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import menuSeparatorTemplate from "./generated/templates/MenuSeparatorTemplate.lit.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import menuSeparatorTemplate from "./MenuSeparatorTemplate.js";
 import menuSeparatorCss from "./generated/themes/MenuSeparator.css.js";
-import ListItemBase from "./ListItemBase.js";
-import ListItemCustom from "./ListItemCustom.js";
+import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import createInstanceChecker from "@ui5/webcomponents-base/dist/util/createInstanceChecker.js";
 /**
  * @class
  * The `ui5-menu-separator` represents a horizontal line to separate menu items inside a `ui5-menu`.
  * @constructor
- * @extends ListItemBase
+ * @extends UI5Element
  * @implements {IMenuItem}
  * @public
- * @since 2.0
+ * @since 2.0.0
  */
-let MenuSeparator = class MenuSeparator extends ListItemBase {
+let MenuSeparator = class MenuSeparator extends UI5Element {
     get isSeparator() {
         return true;
-    }
-    get classes() {
-        return {
-            main: {
-                "ui5-menu-separator": true,
-            },
-        };
-    }
-    /**
-     * @override
-     */
-    get _focusable() {
-        return false;
-    }
-    /**
-     * @override
-     */
-    get _pressable() {
-        return false;
     }
 };
 MenuSeparator = __decorate([
     customElement({
         tag: "ui5-menu-separator",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: [menuSeparatorCss],
         template: menuSeparatorTemplate,
-        dependencies: [
-            ListItemCustom,
-        ],
     })
 ], MenuSeparator);
 MenuSeparator.define();
 export default MenuSeparator;
+export const isInstanceOfMenuSeparator = createInstanceChecker("isSeparator");
 //# sourceMappingURL=MenuSeparator.js.map

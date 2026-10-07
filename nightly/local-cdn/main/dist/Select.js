@@ -8,37 +8,39 @@ var Select_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isSpace, isUp, isDown, isEnter, isEscape, isHome, isEnd, isShow, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
 import announce from "@ui5/webcomponents-base/dist/util/InvisibleMessage.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import { getEffectiveAriaLabelText, getAssociatedLabelForTexts, registerUI5Element, deregisterUI5Element, getAllAccessibleDescriptionRefTexts, getEffectiveAriaDescriptionText, } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
+import SelectTextSeparator from "./types/SelectTextSeparator.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import "@ui5/webcomponents-icons/dist/information.js";
 import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import InvisibleMessageMode from "@ui5/webcomponents-base/dist/types/InvisibleMessageMode.js";
-import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 import List from "./List.js";
-import { VALUE_STATE_SUCCESS, VALUE_STATE_INFORMATION, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, INPUT_SUGGESTIONS_TITLE, LIST_ITEM_POSITION, SELECT_ROLE_DESCRIPTION, FORM_SELECTABLE_REQUIRED, } from "./generated/i18n/i18n-defaults.js";
+import { VALUE_STATE_SUCCESS, VALUE_STATE_INFORMATION, VALUE_STATE_ERROR, VALUE_STATE_WARNING, VALUE_STATE_TYPE_SUCCESS, VALUE_STATE_TYPE_INFORMATION, VALUE_STATE_TYPE_ERROR, VALUE_STATE_TYPE_WARNING, LIST_ITEM_POSITION, SELECT_ROLE_DESCRIPTION, SELECT_POPOVER_ACCESSIBLE_NAME_PREFIX, SELECT_LISTBOX_LABEL, SELECT_DIALOG_CANCEL_BUTTON, FORM_SELECTABLE_REQUIRED, SELECT_OPTIONS_IN_GROUPS, } from "./generated/i18n/i18n-defaults.js";
 import Label from "./Label.js";
 import ResponsivePopover from "./ResponsivePopover.js";
 import Popover from "./Popover.js";
 import Icon from "./Icon.js";
 import Button from "./Button.js";
+import OptionGroup, { isInstanceOfOptionGroup } from "./OptionGroup.js";
 // Templates
-import SelectTemplate from "./generated/templates/SelectTemplate.lit.js";
+import SelectTemplate from "./SelectTemplate.js";
 // Styles
 import selectCss from "./generated/themes/Select.css.js";
 import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverCommon.css.js";
 import ValueStateMessageCss from "./generated/themes/ValueStateMessage.css.js";
 import SelectPopoverCss from "./generated/themes/SelectPopover.css.js";
+const isPrintableCharacter = (e) => {
+    return e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
+};
 /**
  * @class
  *
@@ -50,17 +52,31 @@ import SelectPopoverCss from "./generated/themes/SelectPopover.css.js";
  *
  * There are two main usages of the `ui5-select>`.
  *
- * 1. With Option (`ui5-option`) web component:
+ * - With Option (`ui5-option`) web component:
  *
  * The available options of the Select are defined by using the Option component.
  * The Option comes with predefined design and layout, including `icon`, `text` and `additional-text`.
  *
- * 2. With OptionCustom (`ui5-option-custom`) web component.
+ * - With OptionCustom (`ui5-option-custom`) web component.
  *
- * Options with custom content are defined by using the OptionCustom component
+ * Options with custom content are defined by using the OptionCustom component.
  * The OptionCustom component comes with no predefined layout and it expects consumers to define it.
  *
+ * ### Selection
+ *
+ * The options can be selected via user interaction (click or with the use of the Space and Enter keys)
+ * and programmatically - the Select component supports two distinct selection APIs, though mixing them is not supported:
+ * - The "value" property of the Select component
+ * - The "selected" property on individual options
+ *
+ * **Note:** If the "value" property is set but does not match any option,
+ * no option will be selected and the Select component will be displayed as empty.
+ *
+ * **Note:** when both "value" and "selected" are both used (although discouraged),
+ * the "value" property will take precedence.
+ *
  * ### Keyboard Handling
+ *
  * The `ui5-select` provides advanced keyboard handling.
  *
  * - [F4] / [Alt] + [Up] / [Alt] + [Down] / [Space] or [Enter] - Opens/closes the drop-down.
@@ -71,6 +87,7 @@ import SelectPopoverCss from "./generated/themes/SelectPopover.css.js";
  * - [End] - Navigates to the last option
  *
  * ### ES6 Module Import
+ *
  * `import "@ui5/webcomponents/dist/Select";`
  *
  * `import "@ui5/webcomponents/dist/Option";`
@@ -116,6 +133,14 @@ let Select = Select_1 = class Select extends UI5Element {
          */
         this.readonly = false;
         /**
+         * Defines the separator type for the two columns layout when Select is in read-only mode.
+         *
+         * @default "Dash"
+         * @public
+         * @since 2.16.0
+         */
+        this.textSeparator = "Dash";
+        /**
          * @private
          */
         this._iconPressed = false;
@@ -141,22 +166,75 @@ let Select = Select_1 = class Select extends UI5Element {
         return Select_1.i18nBundle.getText(FORM_SELECTABLE_REQUIRED);
     }
     get formValidity() {
-        const selectedOption = this.selectedOption;
-        return { valueMissing: this.required && (selectedOption && selectedOption.getAttribute("value") === "") };
+        return { valueMissing: this.required && (this.selectedOption?.getAttribute("value") === "") };
     }
     async formElementAnchor() {
         return this.getFocusDomRefAsync();
     }
     get formFormattedValue() {
+        if (this._valueStorage !== undefined) {
+            return this._valueStorage;
+        }
         const selectedOption = this.selectedOption;
         if (selectedOption) {
-            return selectedOption.hasAttribute("value") ? selectedOption.value : selectedOption.textContent;
+            if ("value" in selectedOption && selectedOption.value !== undefined) {
+                return selectedOption.value;
+            }
+            return selectedOption.hasAttribute("value") ? selectedOption.getAttribute("value") : selectedOption.textContent;
         }
         return "";
     }
+    onEnterDOM() {
+        registerUI5Element(this, this._updateAssociatedLabelsTexts.bind(this));
+    }
+    onExitDOM() {
+        deregisterUI5Element(this);
+    }
+    get _flatOptions() {
+        return this.options.flatMap(item => {
+            if (isInstanceOfOptionGroup(item)) {
+                return item.items;
+            }
+            return item;
+        });
+    }
+    get hasGroups() {
+        return this.options.some(item => isInstanceOfOptionGroup(item));
+    }
+    get _groupCountMessageId() {
+        return `${this._id}-groupCountDesc`;
+    }
+    get _groupCountText() {
+        const groups = this.options.filter(item => isInstanceOfOptionGroup(item));
+        return Select_1.i18nBundle.getText(SELECT_OPTIONS_IN_GROUPS, this._flatOptions.length, groups.length);
+    }
+    _applyGroupAriaPositions() {
+        const flatOptions = this._flatOptions;
+        flatOptions.forEach(o => {
+            o._forcedSetsize = undefined;
+            o._forcedPosinset = undefined;
+        });
+        if (!this.hasGroups) {
+            return;
+        }
+        const totalCount = flatOptions.length;
+        let globalPosition = 0;
+        this.options.forEach(item => {
+            if (isInstanceOfOptionGroup(item)) {
+                item.items.forEach(opt => {
+                    opt._forcedSetsize = totalCount;
+                    opt._forcedPosinset = ++globalPosition;
+                });
+            }
+            else {
+                globalPosition++;
+            }
+        });
+    }
     onBeforeRendering() {
-        this._ensureSingleSelection();
-        this.style.setProperty(getScopedVarName("--_ui5-input-icons-count"), `${this.iconsCount}`);
+        this._applySelection();
+        this._applyGroupAriaPositions();
+        this.style.setProperty("--_ui5-input-icons-count", `${this.iconsCount}`);
     }
     onAfterRendering() {
         this.toggleValueStatePopover(this.shouldOpenValueStateMessagePopover);
@@ -166,17 +244,52 @@ let Select = Select_1 = class Select extends UI5Element {
             }
         }
     }
-    _ensureSingleSelection() {
-        // if no item is selected => select the first one
-        // if multiple items are selected => select the last selected one
-        let selectedIndex = this.options.findLastIndex(option => option.selected);
+    /**
+     * Selects an option, based on the Select's "value" property,
+     * or the options' "selected" property.
+     */
+    _applySelection() {
+        // Flow 1: "value" has not been used
+        if (this._valueStorage === undefined) {
+            this._applyAutoSelection();
+            return;
+        }
+        // Flow 2: "value" has been used - select the option by value or apply auto selection
+        this._applySelectionByValue(this._valueStorage);
+    }
+    /**
+     * Selects an option by given value.
+     */
+    _applySelectionByValue(value) {
+        if (value !== (this.selectedOption?.value || this.selectedOption?.textContent)) {
+            this._flatOptions.forEach(option => {
+                option.selected = !!((option.getAttribute("value") || option.textContent) === value);
+            });
+        }
+    }
+    /**
+     * Selects the first option if no option is selected,
+     * or selects the last option if multiple options are selected.
+     */
+    _applyAutoSelection() {
+        const flatOptions = this._flatOptions;
+        let selectedIndex = flatOptions.findLastIndex(option => option.selected);
         selectedIndex = selectedIndex === -1 ? 0 : selectedIndex;
-        for (let i = 0; i < this.options.length; i++) {
-            this.options[i].selected = selectedIndex === i;
+        for (let i = 0; i < flatOptions.length; i++) {
+            flatOptions[i].selected = selectedIndex === i;
             if (selectedIndex === i) {
                 break;
             }
         }
+    }
+    /**
+     * Sets value by given option.
+     */
+    _setValueByOption(option) {
+        this.value = option.value || option.textContent || "";
+    }
+    _applyFocus() {
+        this.focus();
     }
     _onfocusin() {
         this.focused = true;
@@ -193,12 +306,14 @@ let Select = Select_1 = class Select extends UI5Element {
     /**
      * Defines the value of the component:
      *
-     * - when get - returns the value of the component, e.g. the `value` property of the selected option or its text content.
-     *
+     * - when get - returns the value of the component or the value/text content of the selected option.
      * - when set - selects the option with matching `value` property or text content.
      *
+     * **Note:** Use either the Select's value or the Options' selected property.
+     * Mixed usage could result in unexpected behavior.
+     *
      * **Note:** If the given value does not match any existing option,
-     * the first option will get selected.
+     * no option will be selected and the Select component will be displayed as empty.
      * @public
      * @default ""
      * @since 1.20.0
@@ -206,16 +321,16 @@ let Select = Select_1 = class Select extends UI5Element {
      * @formEvents change liveChange
      */
     set value(newValue) {
-        const options = Array.from(this.children);
-        options.forEach(option => {
-            option.selected = !!((option.getAttribute("value") || option.textContent) === newValue);
-        });
+        this._valueStorage = newValue;
     }
     get value() {
-        return this.selectedOption?.value || this.selectedOption?.textContent || "";
+        if (this._valueStorage !== undefined) {
+            return this._valueStorage;
+        }
+        return this.selectedOption?.value === undefined ? (this.selectedOption?.textContent || "") : this.selectedOption?.value;
     }
     get _selectedIndex() {
-        return this.options.findIndex(option => option.selected);
+        return this._flatOptions.findIndex(option => option.selected);
     }
     /**
      * Currently selected `ui5-option` element.
@@ -223,10 +338,59 @@ let Select = Select_1 = class Select extends UI5Element {
      * @default undefined
      */
     get selectedOption() {
-        return this.options.find(option => option.selected);
+        return this._flatOptions.find(option => option.selected);
+    }
+    /**
+     * Helper function to build display text with separator when additional text exists
+     * @param mainText - The main text content
+     * @param additionalText - The additional text (optional)
+     * @returns The combined text with separator if additionalText exists, otherwise just mainText
+     * @private
+     */
+    _buildDisplayText(mainText, additionalText) {
+        if (!additionalText) {
+            return mainText;
+        }
+        return `${mainText} ${this._separatorSymbol} ${additionalText}`;
     }
     get text() {
-        return this.selectedOption?.effectiveDisplayText;
+        const selectedOption = this.selectedOption;
+        if (!selectedOption) {
+            return "";
+        }
+        // Only show separator when readonly and there's additional text
+        if (this.readonly && selectedOption.additionalText) {
+            return this._buildDisplayText(selectedOption.effectiveDisplayText, selectedOption.additionalText);
+        }
+        return selectedOption.effectiveDisplayText;
+    }
+    get _effectiveTooltip() {
+        // User-defined tooltip takes precedence
+        if (this.tooltip) {
+            return this.tooltip;
+        }
+        // Provide default tooltip for readonly mode to show full content
+        if (this.readonly) {
+            const selectedOption = this.selectedOption;
+            if (!selectedOption) {
+                return undefined;
+            }
+            // Use textContent for tooltip to show actual text content, not display text
+            const mainText = selectedOption.textContent || "";
+            return this._buildDisplayText(mainText, selectedOption.additionalText);
+        }
+        return undefined;
+    }
+    get _separatorSymbol() {
+        switch (this.textSeparator) {
+            case SelectTextSeparator.Bullet:
+                return "·"; // Middle dot (U+00B7)
+            case SelectTextSeparator.VerticalLine:
+                return "|"; // Vertical line (U+007C)
+            case SelectTextSeparator.Dash:
+            default:
+                return "–"; // En dash (U+2013)
+        }
     }
     _toggleRespPopover() {
         if (this.disabled || this.readonly) {
@@ -262,16 +426,22 @@ let Select = Select_1 = class Select extends UI5Element {
         }
         else if (isEnd(e)) {
             this._handleEndKey(e);
+            // When focus is on the list item, Enter triggers _handleItemPress via the List item-click
+            // event, which already calls _handleSelectionChange and prevents default.
+            // Skip here to avoid a double selection change.
         }
-        else if (isEnter(e)) {
+        else if (isEnter(e) && !e.defaultPrevented) {
             this._handleSelectionChange();
         }
         else if (isUp(e) || isDown(e)) {
             this._handleArrowNavigation(e);
         }
+        else if (isPrintableCharacter(e)) {
+            this._handleKeyboardNavigation(e);
+        }
     }
     _handleKeyboardNavigation(e) {
-        if (isEnter(e) || this.readonly) {
+        if (this.readonly) {
             return;
         }
         const typedCharacter = e.key.toLowerCase();
@@ -291,7 +461,7 @@ let Select = Select_1 = class Select extends UI5Element {
         const currentIndex = this._selectedIndex;
         const itemToSelect = this._searchNextItemByText(text);
         if (itemToSelect) {
-            const nextIndex = this.options.indexOf(itemToSelect);
+            const nextIndex = this._flatOptions.indexOf(itemToSelect);
             this._changeSelectedItem(this._selectedIndex, nextIndex);
             if (currentIndex !== this._selectedIndex) {
                 this.itemSelectionAnnounce();
@@ -300,7 +470,7 @@ let Select = Select_1 = class Select extends UI5Element {
         }
     }
     _searchNextItemByText(text) {
-        let orderedOptions = this.options.slice(0);
+        let orderedOptions = this._flatOptions.slice(0);
         const optionsAfterSelected = orderedOptions.splice(this._selectedIndex + 1, orderedOptions.length - this._selectedIndex);
         const optionsBeforeSelected = orderedOptions.splice(0, orderedOptions.length - 1);
         orderedOptions = optionsAfterSelected.concat(optionsBeforeSelected);
@@ -318,7 +488,7 @@ let Select = Select_1 = class Select extends UI5Element {
         if (this.readonly) {
             return;
         }
-        const lastIndex = this.options.length - 1;
+        const lastIndex = this._flatOptions.length - 1;
         this._changeSelectedItem(this._selectedIndex, lastIndex);
     }
     _onkeyup(e) {
@@ -332,19 +502,25 @@ let Select = Select_1 = class Select extends UI5Element {
         }
     }
     _getItemIndex(item) {
-        return this.options.indexOf(item);
+        return this._flatOptions.indexOf(item);
     }
     _select(index) {
-        if (index < 0 || index >= this.options.length || this.options.length === 0) {
+        const selectedIndex = this._selectedIndex;
+        const flatOptions = this._flatOptions;
+        if (index < 0 || index >= flatOptions.length || flatOptions.length === 0) {
             return;
         }
-        if (this.options[this._selectedIndex]) {
-            this.options[this._selectedIndex].selected = false;
+        if (flatOptions[selectedIndex]) {
+            flatOptions[selectedIndex].selected = false;
         }
-        if (this._selectedIndex !== index) {
-            this.fireEvent("live-change", { selectedOption: this.options[index] });
+        const selectedOption = flatOptions[index];
+        if (selectedIndex !== index) {
+            this.fireDecoratorEvent("live-change", { selectedOption });
         }
-        this.options[index].selected = true;
+        selectedOption.selected = true;
+        if (this._valueStorage !== undefined) {
+            this._setValueByOption(selectedOption);
+        }
     }
     /**
      * The user clicked on an item from the list
@@ -368,6 +544,7 @@ let Select = Select_1 = class Select extends UI5Element {
      * @private
      */
     _handleSelectionChange(index = this._selectedIndex) {
+        this._typedChars = "";
         this._select(index);
         this._toggleRespPopover();
     }
@@ -407,39 +584,61 @@ let Select = Select_1 = class Select extends UI5Element {
         }
     }
     _changeSelectedItem(oldIndex, newIndex) {
-        const options = this.options;
+        const options = this._flatOptions;
+        // Normalize: first navigation with Up when nothing selected -> last item
+        if (oldIndex === -1 && newIndex < 0 && options.length) {
+            newIndex = options.length - 1;
+        }
+        // Abort on invalid target
+        if (newIndex < 0 || newIndex >= options.length) {
+            return;
+        }
         const previousOption = options[oldIndex];
-        previousOption.selected = false;
-        previousOption.focused = false;
         const nextOption = options[newIndex];
+        if (previousOption === nextOption) {
+            return;
+        }
+        if (previousOption) {
+            previousOption.selected = false;
+            previousOption.focused = false;
+        }
         nextOption.selected = true;
         nextOption.focused = true;
-        this.fireEvent("live-change", { selectedOption: nextOption });
+        if (this._valueStorage !== undefined) {
+            this._setValueByOption(nextOption);
+        }
+        this.fireDecoratorEvent("live-change", { selectedOption: nextOption });
         if (!this._isPickerOpen) {
             // arrow pressed on closed picker - do selection change
             this._fireChangeEvent(nextOption);
         }
     }
     _getNextOptionIndex() {
-        return this._selectedIndex === (this.options.length - 1) ? this._selectedIndex : (this._selectedIndex + 1);
+        return this._selectedIndex === (this._flatOptions.length - 1) ? this._selectedIndex : (this._selectedIndex + 1);
     }
     _getPreviousOptionIndex() {
         return this._selectedIndex === 0 ? this._selectedIndex : (this._selectedIndex - 1);
     }
     _beforeOpen() {
         this._selectedIndexBeforeOpen = this._selectedIndex;
-        this._lastSelectedOption = this.options[this._selectedIndex];
+        this._lastSelectedOption = this._flatOptions[this._selectedIndex];
     }
     _afterOpen() {
         this.opened = true;
-        this.fireEvent("open");
+        this.fireDecoratorEvent("open");
         this.itemSelectionAnnounce();
         this._scrollSelectedItem();
         this._applyFocusToSelectedItem();
     }
     _applyFocusToSelectedItem() {
-        this.options.forEach(option => {
+        const flatOptions = this._flatOptions;
+        flatOptions.forEach(option => {
             option.focused = option.selected;
+            if (option.focused) {
+                // move focus to the selected option so screen readers
+                // can announce it when the popover opens
+                option.focus();
+            }
         });
     }
     _afterClose() {
@@ -450,19 +649,21 @@ let Select = Select_1 = class Select extends UI5Element {
             this._select(this._selectedIndexBeforeOpen);
             this._escapePressed = false;
         }
-        else if (this._lastSelectedOption !== this.options[this._selectedIndex]) {
-            this._fireChangeEvent(this.options[this._selectedIndex]);
-            this._lastSelectedOption = this.options[this._selectedIndex];
+        else if (this._lastSelectedOption !== this._flatOptions[this._selectedIndex]) {
+            this._fireChangeEvent(this._flatOptions[this._selectedIndex]);
+            this._lastSelectedOption = this._flatOptions[this._selectedIndex];
         }
-        this.fireEvent("close");
+        this.fireDecoratorEvent("close");
     }
     get hasCustomLabel() {
         return !!this.label.length;
     }
     _fireChangeEvent(selectedOption) {
-        const changePrevented = !this.fireEvent("change", { selectedOption }, true);
+        const changePrevented = !this.fireDecoratorEvent("change", { selectedOption });
         //  Angular two way data binding
-        this.fireEvent("selected-item-changed");
+        this.fireDecoratorEvent("selected-item-changed");
+        // Fire input event for Vue.js two-way binding
+        this.fireDecoratorEvent("input");
         if (changePrevented) {
             this._select(this._selectedIndexBeforeOpen);
         }
@@ -489,7 +690,7 @@ let Select = Select_1 = class Select extends UI5Element {
             valueStateText = this.valueStateDefaultText;
         }
         else {
-            valueStateText = this.valueStateMessageText.map(el => el.textContent).join(" ");
+            valueStateText = this.valueStateMessage.map(el => el.textContent).join(" ");
         }
         return `${this.valueStateTypeText} ${valueStateText}`;
     }
@@ -505,19 +706,25 @@ let Select = Select_1 = class Select extends UI5Element {
     get valueStateTextId() {
         return this.hasValueState ? `${this._id}-valueStateDesc` : undefined;
     }
+    get responsivePopoverId() {
+        return `${this._id}-popover`;
+    }
     get isDisabled() {
         return this.disabled || undefined;
     }
     get _headerTitleText() {
-        return Select_1.i18nBundle.getText(INPUT_SUGGESTIONS_TITLE);
+        return Select_1.i18nBundle.getText(SELECT_LISTBOX_LABEL);
+    }
+    get _cancelButtonText() {
+        return Select_1.i18nBundle.getText(SELECT_DIALOG_CANCEL_BUTTON);
     }
     get _currentlySelectedOption() {
-        return this.options[this._selectedIndex];
+        return this._flatOptions[this._selectedIndex];
     }
     get _effectiveTabIndex() {
         return this.disabled
             || (this.responsivePopover // Handles focus on Tab/Shift + Tab when the popover is opened
-                && this.responsivePopover.open) ? "-1" : "0";
+                && this.responsivePopover.open) ? -1 : 0;
     }
     /**
     * This method is relevant for sap_horizon theme only
@@ -538,6 +745,7 @@ let Select = Select_1 = class Select extends UI5Element {
         return {
             popoverValueState: {
                 "ui5-valuestatemessage-root": true,
+                "ui5-valuestatemessage-header": !this._isPhone,
                 "ui5-valuestatemessage--success": this.valueState === ValueState.Positive,
                 "ui5-valuestatemessage--error": this.valueState === ValueState.Negative,
                 "ui5-valuestatemessage--warning": this.valueState === ValueState.Critical,
@@ -549,27 +757,40 @@ let Select = Select_1 = class Select extends UI5Element {
         };
     }
     get styles() {
+        const remSizeInPx = parseInt(getComputedStyle(document.documentElement).fontSize);
+        const flatOptionsCount = this._flatOptions.length;
         return {
             popoverHeader: {
-                "max-width": `${this.offsetWidth}px`,
+                "display": "block",
             },
             responsivePopoverHeader: {
-                "display": this.options.length && this._listWidth === 0 ? "none" : "inline-block",
-                "width": `${this.options.length ? this._listWidth : this.offsetWidth}px`,
+                "display": flatOptionsCount && this._listWidth === 0 ? "none" : "inline-block",
+                "width": `${flatOptionsCount ? this._listWidth : this.offsetWidth}px`,
+                "max-width": "100%",
             },
             responsivePopover: {
                 "min-width": `${this.offsetWidth}px`,
+                "max-width": (this.offsetWidth / remSizeInPx) > 40 ? `${this.offsetWidth}px` : "40rem",
+                "margin-top": "var(--sapField_BorderWidth)",
             },
         };
     }
     get ariaLabelText() {
-        return getEffectiveAriaLabelText(this);
+        return getEffectiveAriaLabelText(this) || getAssociatedLabelForTexts(this);
     }
-    get valueStateMessageText() {
-        return this.getSlottedNodes("valueStateMessage").map(el => el.cloneNode(true));
+    get _effectiveListAccessibleName() {
+        return this.ariaLabelText || this._headerTitleText;
+    }
+    get _effectivePopoverAccessibleName() {
+        const fieldName = this._effectiveListAccessibleName;
+        if (!fieldName) {
+            return undefined;
+        }
+        const prefix = Select_1.i18nBundle.getText(SELECT_POPOVER_ACCESSIBLE_NAME_PREFIX);
+        return `${prefix} ${fieldName}`;
     }
     get shouldDisplayDefaultValueStateMessage() {
-        return !this.valueStateMessageText.length && this.hasValueStateText;
+        return !this.valueStateMessage.length && this.hasValueStateText;
     }
     get hasValueStateText() {
         return this.hasValueState && this.valueState !== ValueState.Positive;
@@ -586,7 +807,7 @@ let Select = Select_1 = class Select extends UI5Element {
     }
     itemSelectionAnnounce() {
         let text;
-        const optionsCount = this.options.length;
+        const optionsCount = this._flatOptions.length;
         const itemPositionText = Select_1.i18nBundle.getText(LIST_ITEM_POSITION, this._selectedIndex + 1, optionsCount);
         if (this.focused && this._currentlySelectedOption) {
             text = `${this._currentlySelectedOption.textContent} ${this._isPickerOpen ? itemPositionText : ""}`;
@@ -614,16 +835,44 @@ let Select = Select_1 = class Select extends UI5Element {
     get selectedOptionIcon() {
         return this.selectedOption && this.selectedOption.icon;
     }
+    get ariaDescriptionText() {
+        return this._associatedDescriptionRefTexts || getEffectiveAriaDescriptionText(this);
+    }
+    get ariaDescriptionTextId() {
+        return this.ariaDescriptionText ? "accessibleDescription" : "";
+    }
+    get ariaDescribedByIds() {
+        const ids = [
+            this.valueStateTextId,
+            this.ariaDescriptionTextId,
+            this.hasGroups ? this._groupCountMessageId : undefined,
+        ].filter(Boolean);
+        return ids.length ? ids.join(" ") : undefined;
+    }
+    get accessibilityInfo() {
+        return {
+            role: "combobox",
+            type: this._ariaRoleDescription,
+            description: this.text,
+            label: this.ariaLabelText,
+            readonly: this.readonly,
+            required: this.required,
+            disabled: this.disabled,
+        };
+    }
+    _updateAssociatedLabelsTexts() {
+        this._associatedDescriptionRefTexts = getAllAccessibleDescriptionRefTexts(this);
+    }
     _getPopover() {
         return this.shadowRoot.querySelector("[ui5-popover]");
-    }
-    static async onDefine() {
-        Select_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
     }
 };
 __decorate([
     property({ type: Boolean })
 ], Select.prototype, "disabled", void 0);
+__decorate([
+    property()
+], Select.prototype, "icon", void 0);
 __decorate([
     property()
 ], Select.prototype, "name", void 0);
@@ -642,6 +891,21 @@ __decorate([
 __decorate([
     property()
 ], Select.prototype, "accessibleNameRef", void 0);
+__decorate([
+    property()
+], Select.prototype, "accessibleDescription", void 0);
+__decorate([
+    property()
+], Select.prototype, "accessibleDescriptionRef", void 0);
+__decorate([
+    property()
+], Select.prototype, "tooltip", void 0);
+__decorate([
+    property()
+], Select.prototype, "textSeparator", void 0);
+__decorate([
+    property({ type: String, noAttribute: true })
+], Select.prototype, "_associatedDescriptionRefTexts", void 0);
 __decorate([
     property({ type: Boolean, noAttribute: true })
 ], Select.prototype, "_iconPressed", void 0);
@@ -666,12 +930,15 @@ __decorate([
 __decorate([
     property()
 ], Select.prototype, "value", null);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Select, "i18nBundle", void 0);
 Select = Select_1 = __decorate([
     customElement({
         tag: "ui5-select",
         languageAware: true,
         formAssociated: true,
-        renderer: litRender,
+        renderer: jsxRenderer,
         template: SelectTemplate,
         styles: [
             selectCss,
@@ -686,22 +953,18 @@ Select = Select_1 = __decorate([
             List,
             Icon,
             Button,
+            OptionGroup,
         ],
     })
     /**
      * Fired when the selected option changes.
-     * @allowPreventDefault
      * @param {IOption} selectedOption the selected option.
      * @public
      */
     ,
     event("change", {
-        detail: {
-            /**
-            * @public
-            */
-            selectedOption: { type: HTMLElement },
-        },
+        bubbles: true,
+        cancelable: true,
     })
     /**
      * Fired when the user navigates through the options, but the selection is not finalized,
@@ -712,12 +975,7 @@ Select = Select_1 = __decorate([
      */
     ,
     event("live-change", {
-        detail: {
-            /**
-            * @public
-            */
-            selectedOption: { type: HTMLElement },
-        },
+        bubbles: true,
     })
     /**
      * Fired after the component's dropdown menu opens.
@@ -731,6 +989,22 @@ Select = Select_1 = __decorate([
      */
     ,
     event("close")
+    /**
+     * Fired to make Angular two way data binding work properly.
+     * @private
+     */
+    ,
+    event("selected-item-changed", {
+        bubbles: true,
+    })
+    /**
+     * Fired to make Vue.js two way data binding work properly.
+     * @private
+     */
+    ,
+    event("input", {
+        bubbles: true,
+    })
 ], Select);
 Select.define();
 export default Select;

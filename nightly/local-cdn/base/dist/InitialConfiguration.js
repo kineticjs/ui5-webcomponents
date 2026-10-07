@@ -1,8 +1,9 @@
 import merge from "./thirdparty/merge.js";
 import { getFeature } from "./FeaturesRegistry.js";
 import { DEFAULT_THEME } from "./generated/AssetParameters.js";
-import validateThemeRoot from "./validateThemeRoot.js";
 import AnimationMode from "./types/AnimationMode.js";
+import { resetConfiguration as resetConfigurationFn } from "./config/ConfigurationReset.js";
+import { getLocationSearch } from "./Location.js";
 let initialized = false;
 let initialConfig = {
     animationMode: AnimationMode.Full,
@@ -13,9 +14,12 @@ let initialConfig = {
     timezone: undefined,
     calendarType: undefined,
     secondaryCalendarType: undefined,
-    noConflict: false,
+    noConflict: false, // no URL
     formatSettings: {},
     fetchDefaultLanguage: false,
+    defaultFontLoading: true,
+    enableDefaultTooltips: true,
+    ignoreUrlParams: false,
 };
 /* General settings */
 const getAnimationMode = () => {
@@ -46,6 +50,18 @@ const getFetchDefaultLanguage = () => {
 const getNoConflict = () => {
     initConfiguration();
     return initialConfig.noConflict;
+};
+const getDefaultFontLoading = () => {
+    initConfiguration();
+    return initialConfig.defaultFontLoading;
+};
+const getEnableDefaultTooltips = () => {
+    initConfiguration();
+    return initialConfig.enableDefaultTooltips;
+};
+const getIgnoreUrlParams = () => {
+    initConfiguration();
+    return initialConfig.ignoreUrlParams;
 };
 /**
  * Get the configured calendar type
@@ -90,7 +106,7 @@ const parseConfigurationScript = () => {
     }
 };
 const parseURLParameters = () => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(getLocationSearch());
     // Process "sap-*" params first
     params.forEach((value, key) => {
         const parts = key.split("sap-").length;
@@ -109,7 +125,7 @@ const parseURLParameters = () => {
 };
 const normalizeThemeRootParamValue = (value) => {
     const themeRoot = value.split("@")[1];
-    return validateThemeRoot(themeRoot);
+    return themeRoot;
 };
 const normalizeThemeParamValue = (param, value) => {
     if (param === "theme" && value.includes("@")) { // the theme parameter might have @<URL-TO-THEME> in the value - strip this
@@ -145,13 +161,25 @@ const initConfiguration = () => {
     if (typeof document === "undefined" || initialized) {
         return;
     }
+    resetConfiguration();
+    initialized = true;
+};
+/**
+ * Internaly exposed method to enable configurations in tests.
+ * @private
+ */
+const resetConfiguration = (testEnv) => {
+    if (testEnv) {
+        resetConfigurationFn();
+    }
     // 1. Lowest priority - configuration script
     parseConfigurationScript();
     // 2. URL parameters overwrite configuration script parameters
-    parseURLParameters();
+    if (!initialConfig.ignoreUrlParams) {
+        parseURLParameters();
+    }
     // 3. If OpenUI5 is detected, it has the highest priority
     applyOpenUI5Configuration();
-    initialized = true;
 };
-export { getAnimationMode, getTheme, getThemeRoot, getLanguage, getFetchDefaultLanguage, getNoConflict, getCalendarType, getSecondaryCalendarType, getTimezone, getFormatSettings, };
+export { getAnimationMode, getTheme, getThemeRoot, getLanguage, getFetchDefaultLanguage, getNoConflict, getCalendarType, getSecondaryCalendarType, getTimezone, getFormatSettings, getDefaultFontLoading, resetConfiguration, getEnableDefaultTooltips, getIgnoreUrlParams, };
 //# sourceMappingURL=InitialConfiguration.js.map

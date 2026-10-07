@@ -1,6 +1,9 @@
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import SliderBase from "./SliderBase.js";
+import type SliderTooltip from "./SliderTooltip.js";
+import type { SliderTooltipChangeEventDetails } from "./SliderTooltip.js";
 /**
  * @class
  *
@@ -64,33 +67,44 @@ declare class Slider extends SliderBase implements IFormInputElement {
      * @public
      */
     value: number;
+    /**
+     * Defines the size of the slider's selection intervals (e.g. min = 0, max = 10, step = 5 would result in possible selection of the values 0, 5, 10).
+     *
+     * **Note:** If set to 0 the slider handle movement is disabled.
+     * @default 1
+     * @public
+     */
+    step: number;
+    tooltipValueState: `${ValueState}`;
+    tooltipValue: string;
     _valueInitial?: number;
     _valueOnInteractionStart?: number;
     _progressPercentage: number;
     _handlePositionFromStart: number;
+    _lastValidInputValue: string;
     get formFormattedValue(): string;
+    get _isTooltipVisible(): boolean;
+    get _ariaValueText(): string | undefined;
     static i18nBundle: I18nBundle;
     constructor();
     /**
-     *
-     * Check if the previously saved state is outdated. That would mean
-     * either it is the initial rendering or that a property has been changed
-     * programmatically - because the previous state is always updated in
-     * the interaction handlers.
-     *
-     * Normalize current properties, update the previously stored state.
-     * Update the visual UI representation of the Slider.
-     *
+     * The value is visually clamped to min/max but the property is not modified.
+     * @private
      */
     onBeforeRendering(): void;
-    syncUIAndState(): void;
+    onAfterRendering(): void;
     /**
      * Called when the user starts interacting with the slider
      * @private
      */
     _onmousedown(e: TouchEvent | MouseEvent): void;
     _onfocusin(): void;
-    _onfocusout(): void;
+    _onfocusout(e: FocusEvent): void;
+    _onTooltipChange(e: CustomEvent<SliderTooltipChangeEventDetails>): void;
+    _onTooltipFocusChange(): void;
+    _onTooltipKeydown(e: KeyboardEvent): void;
+    _onTooltipOpen(): void;
+    _onTooltipInput(e: CustomEvent): void;
     /**
      * Called when the user moves the slider
      * @private
@@ -100,6 +114,7 @@ declare class Slider extends SliderBase implements IFormInputElement {
      * @private
      */
     _handleUp(): void;
+    _onkeyup(e: KeyboardEvent): void;
     /** Determines if the press is over the handle
      * @private
      */
@@ -109,30 +124,16 @@ declare class Slider extends SliderBase implements IFormInputElement {
      */
     _updateHandleAndProgress(newValue: number): void;
     _handleActionKeyPress(e: KeyboardEvent): void;
-    get styles(): {
-        progress: {
-            transform: string;
-            "transform-origin": string;
-        };
-        handle: {
-            [x: string]: string;
-        };
-        label: {
-            width: string;
-        };
-        labelContainer: {
-            [x: string]: string;
-            width: string;
-        };
-        tooltip: {
-            visibility: string;
-        };
-    };
-    get _sliderHandle(): Element;
-    get tooltipValue(): string;
+    _onTooltopForwardFocus(e: CustomEvent): void;
+    get inputValue(): string;
+    get tooltip(): SliderTooltip | null | undefined;
+    focusInnerElement(): void;
+    get _sliderHandle(): HTMLElement;
     get _ariaDisabled(): true | undefined;
     get _ariaLabelledByText(): string;
-    static onDefine(): Promise<void>;
     get tickmarksObject(): boolean[];
+    get _ariaDescribedByInputText(): string;
+    get _ariaLabelledByInputText(): string;
+    _onkeydown(e: KeyboardEvent): void;
 }
 export default Slider;

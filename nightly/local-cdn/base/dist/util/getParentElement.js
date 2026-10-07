@@ -1,5 +1,5 @@
-const getParentElement = (el) => {
-    return (el.parentElement ? el.parentNode : el.parentNode.host);
+const getParentElement = (element) => {
+    return element.parentElement ? element.parentElement : element.parentNode.host;
 };
 export default getParentElement;
 //# sourceMappingURL=getParentElement.js.map

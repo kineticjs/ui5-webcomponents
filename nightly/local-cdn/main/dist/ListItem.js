@@ -6,24 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var ListItem_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import { isSpace, isEnter, isDelete, isF2, } from "@ui5/webcomponents-base/dist/Keys.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
-import { getFirstFocusableElement } from "@ui5/webcomponents-base/dist/util/FocusableElements.js";
+import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import "@ui5/webcomponents-icons/dist/decline.js";
 import "@ui5/webcomponents-icons/dist/edit.js";
+import DragRegistry from "@ui5/webcomponents-base/dist/util/dragAndDrop/DragRegistry.js";
 import Highlight from "./types/Highlight.js";
 import ListItemType from "./types/ListItemType.js";
 import ListSelectionMode from "./types/ListSelectionMode.js";
 import ListItemBase from "./ListItemBase.js";
-import RadioButton from "./RadioButton.js";
-import CheckBox from "./CheckBox.js";
-import Button from "./Button.js";
-import { DELETE, ARIA_LABEL_LIST_ITEM_CHECKBOX, ARIA_LABEL_LIST_ITEM_RADIO_BUTTON, LIST_ITEM_SELECTED, LIST_ITEM_NOT_SELECTED, } from "./generated/i18n/i18n-defaults.js";
+import { DELETE, ARIA_LABEL_LIST_ITEM_CHECKBOX, ARIA_LABEL_LIST_ITEM_RADIO_BUTTON, LIST_ITEM_ACTIVE, LIST_ITEM_SELECTED, LIST_ITEM_NOT_SELECTED, } from "./generated/i18n/i18n-defaults.js";
 // Styles
 import styles from "./generated/themes/ListItem.css.js";
 import listItemAdditionalTextCss from "./generated/themes/ListItemAdditionalText.css.js";
@@ -43,10 +41,15 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         super();
         /**
          * Defines the visual indication and behavior of the list items.
-         * Available options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.
+         * Available options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.
          *
          * **Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,
-         * while with type `Inactive` and `Detail` - will not.
+         * while with type `Inactive`, `InactiveSelectable` and `Detail` - will not.
+         *
+         * **Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the
+         * `item-click` event is not fired), but the item can still be selected. Clicking the item body,
+         * pressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio
+         * button in Single modes) toggles the selection when the list has a selection mode.
          * @default "Active"
          * @public
         */
@@ -87,15 +90,21 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
          * @since 1.24
          */
         this.highlight = "None";
-        /**
-         * Used to define the role of the list item.
-         * @private
-         * @default "ListItem"
-         * @since 1.3.0
-         *
-         */
-        this.accessibleRole = "ListItem";
         this._selectionMode = "None";
+        /**
+         * Indicates whether the list item is in edit mode.
+         * When active, Tab cycles through internal focusable elements
+         * instead of navigating to the next list item.
+         * Toggled by F2; also set by the parent List on F7.
+         * @private
+         */
+        this._editMode = false;
+        /**
+         * Defines the current media query size.
+         * @default "S"
+         * @private
+         */
+        this.mediaRange = "S";
         this.deactivateByKey = (e) => {
             if (isEnter(e)) {
                 this.deactivate();
@@ -105,13 +114,6 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
             if (this.active) {
                 this.active = false;
             }
-        };
-        const handleTouchStartEvent = (e) => {
-            this._onmousedown(e);
-        };
-        this._ontouchstart = {
-            handleEvent: handleTouchStartEvent,
-            passive: true,
         };
     }
     onBeforeRendering() {
@@ -129,22 +131,18 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         document.removeEventListener("keyup", this.deactivateByKey);
         document.removeEventListener("touchend", this.deactivate);
     }
-    async _onkeydown(e) {
+    _onkeydown(e) {
+        const isInternalElementFocused = e.target !== this.getFocusDomRef();
+        if ((isSpace(e) || isEnter(e)) && isInternalElementFocused) {
+            return;
+        }
         super._onkeydown(e);
         const itemActive = this.type === ListItemType.Active, itemNavigated = this.typeNavigation;
         if ((isSpace(e) || isEnter(e)) && (itemActive || itemNavigated)) {
             this.activate();
         }
         if (isF2(e)) {
-            const activeElement = getActiveElement();
-            const focusDomRef = this.getFocusDomRef();
-            if (activeElement === focusDomRef) {
-                const firstFocusable = await getFirstFocusableElement(focusDomRef);
-                firstFocusable?.focus();
-            }
-            else {
-                focusDomRef.focus();
-            }
+            this._handleF2();
         }
     }
     _onkeyup(e) {
@@ -156,22 +154,34 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
             this.onDelete();
         }
     }
-    _onmousedown(e) {
-        if (getEventMark(e) === "button") {
-            return;
-        }
+    _onmousedown() {
         this.activate();
     }
-    _onmouseup(e) {
-        if (getEventMark(e) === "button") {
+    _onmouseup() {
+        if (this.getFocusDomRef().matches(":has(:focus-within)")) {
             return;
         }
         this.deactivate();
     }
-    _ontouchend(e) {
-        this._onmouseup(e);
+    _ontouchend() {
+        this._onmouseup();
     }
-    _onfocusout() {
+    _onfocusin(e) {
+        super._onfocusin(e);
+        if (e.target !== this.getFocusDomRef()) {
+            this.deactivate();
+        }
+    }
+    _onfocusout(e) {
+        if (this._editMode) {
+            const relatedTarget = e.relatedTarget;
+            if (!relatedTarget || !(this.contains(relatedTarget) || this.shadowRoot.contains(relatedTarget))) {
+                this._editMode = false;
+            }
+        }
+        if (e.target !== this.getFocusDomRef()) {
+            return;
+        }
         this.deactivate();
     }
     _ondragstart(e) {
@@ -179,6 +189,7 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
             return;
         }
         if (e.target === this._listItem) {
+            DragRegistry.setDraggedElement(this, e);
             this.setAttribute("data-moving", "");
             e.dataTransfer.dropEffect = "move";
             e.dataTransfer.effectAllowed = "move";
@@ -186,6 +197,7 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
     }
     _ondragend(e) {
         if (e.target === this._listItem) {
+            DragRegistry.clearDraggedElement();
             this.removeAttribute("data-moving");
         }
     }
@@ -197,13 +209,13 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         if (this.isInactive) {
             return;
         }
-        this.fireEvent("_selection-requested", { item: this, selected: e.target.checked, selectionComponentPressed: true });
+        this.fireDecoratorEvent("selection-requested", { item: this, selected: e.target.checked, selectionComponentPressed: true });
     }
     onSingleSelectionComponentPress(e) {
         if (this.isInactive) {
             return;
         }
-        this.fireEvent("_selection-requested", { item: this, selected: !e.target.checked, selectionComponentPressed: true });
+        this.fireDecoratorEvent("selection-requested", { item: this, selected: !e.target.checked, selectionComponentPressed: true });
     }
     activate() {
         if (this.type === ListItemType.Active || this.type === ListItemType.Navigation) {
@@ -211,19 +223,25 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         }
     }
     onDelete() {
-        this.fireEvent("_selection-requested", { item: this, selectionComponentPressed: false });
+        this.fireDecoratorEvent("selection-requested", { item: this, selectionComponentPressed: false });
     }
     onDetailClick() {
-        this.fireEvent("detail-click", { item: this, selected: this.selected });
+        this.fireDecoratorEvent("detail-click", { item: this, selected: this.selected });
     }
     fireItemPress(e) {
         if (this.isInactive) {
             return;
         }
         super.fireItemPress(e);
+        if (document.activeElement !== this) {
+            this.focus();
+        }
     }
     get isInactive() {
         return this.type === ListItemType.Inactive || this.type === ListItemType.Detail;
+    }
+    get isInactiveSelectable() {
+        return this.type === ListItemType.InactiveSelectable;
     }
     get placeSelectionElementBefore() {
         return this._selectionMode === ListSelectionMode.Multiple
@@ -246,15 +264,6 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
     get modeDelete() {
         return this._selectionMode === ListSelectionMode.Delete;
     }
-    /**
-     * Used in UploadCollectionItem
-     */
-    get renderDeleteButton() {
-        return this.modeDelete;
-    }
-    /**
-     * End
-     */
     get typeDetail() {
         return this.type === ListItemType.Detail;
     }
@@ -271,7 +280,13 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         return undefined;
     }
     get listItemAccessibleRole() {
-        return this.accessibleRole.toLowerCase();
+        if (this._forcedAccessibleRole) {
+            return this._forcedAccessibleRole;
+        }
+        if (this.accessibleRole) {
+            return this.accessibleRole.toLowerCase();
+        }
+        return (this._inheritedAccessibleRole || "listitem");
     }
     get ariaSelectedText() {
         let ariaSelectedText;
@@ -298,6 +313,17 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
         // accessibleName is not set - return _accInfo.listItemAriaLabel including content
         return `${this._id}-content ${this._id}-invisibleText`;
     }
+    get ariaLabelledByText() {
+        const texts = [
+            this._accInfo.listItemAriaLabel,
+            this.accessibleName,
+            this.typeActive ? ListItem_1.i18nBundle.getText(LIST_ITEM_ACTIVE) : undefined,
+        ].filter(Boolean);
+        return texts.join(" ");
+    }
+    get _ariaDescribedByIds() {
+        return `${this._id}-invisibleText-describedby`;
+    }
     get _accInfo() {
         return {
             role: this.listItemAccessibleRole,
@@ -305,11 +331,13 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
             ariaLevel: undefined,
             ariaLabel: ListItem_1.i18nBundle.getText(ARIA_LABEL_LIST_ITEM_CHECKBOX),
             ariaLabelRadioButton: ListItem_1.i18nBundle.getText(ARIA_LABEL_LIST_ITEM_RADIO_BUTTON),
+            ariaSelected: this._ariaSelected,
             ariaSelectedText: this.ariaSelectedText,
             ariaHaspopup: this.accessibilityAttributes.hasPopup,
             setsize: this.accessibilityAttributes.ariaSetsize,
             posinset: this.accessibilityAttributes.ariaPosinset,
             tooltip: this.tooltip,
+            ariaDescribedBy: this._ariaDescribedByIds || undefined,
         };
     }
     get _hasHighlightColor() {
@@ -321,8 +349,82 @@ let ListItem = ListItem_1 = class ListItem extends ListItemBase {
     get _listItem() {
         return this.shadowRoot.querySelector("li");
     }
-    static async onDefine() {
-        ListItem_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
+    _handleF2() {
+        const focusDomRef = this.getFocusDomRef();
+        if (getActiveElement() === focusDomRef) {
+            const focusables = this._getFocusableElements();
+            if (!focusables.length) {
+                return;
+            }
+            this._editMode = true;
+            focusables[0].focus();
+        }
+        else {
+            this._editMode = false;
+            focusDomRef.focus();
+        }
+    }
+    _handleTabNext(e) {
+        if (this._editMode) {
+            const focusables = this._getFocusableElements();
+            const currentIndex = this._indexOfActiveElement(focusables);
+            const nextIndex = currentIndex + 1;
+            if (currentIndex !== -1 && nextIndex < focusables.length) {
+                e.preventDefault();
+                focusables[nextIndex].focus();
+            }
+            else if (!this.fireDecoratorEvent("forward-after")) {
+                e.preventDefault();
+            }
+            return;
+        }
+        if (!this.fireDecoratorEvent("forward-after")) {
+            e.preventDefault();
+        }
+    }
+    _handleTabPrevious(e) {
+        if (this._editMode) {
+            const focusables = this._getFocusableElements();
+            const currentIndex = this._indexOfActiveElement(focusables);
+            if (currentIndex > 0) {
+                e.preventDefault();
+                focusables[currentIndex - 1].focus();
+            }
+            else if (!this.fireDecoratorEvent("forward-before")) {
+                e.preventDefault();
+            }
+            return;
+        }
+        if (!this.fireDecoratorEvent("forward-before")) {
+            e.preventDefault();
+        }
+    }
+    _getFocusableElements() {
+        const focusDomRef = this.getFocusDomRef();
+        return focusDomRef ? getTabbableElements(focusDomRef) : [];
+    }
+    _indexOfActiveElement(focusables) {
+        const activeElement = getActiveElement();
+        return focusables.findIndex(el => el === activeElement || (el.shadowRoot !== null && el.shadowRoot.contains(activeElement)));
+    }
+    _getFocusedElementIndex() {
+        return this._indexOfActiveElement(this._getFocusableElements());
+    }
+    _hasFocusableElements() {
+        return this._getFocusableElements().length > 0;
+    }
+    _isFocusOnInternalElement() {
+        return this._indexOfActiveElement(this._getFocusableElements()) !== -1;
+    }
+    _focusInternalElement(targetIndex) {
+        const focusables = this._getFocusableElements();
+        if (!focusables.length) {
+            return;
+        }
+        const safeIndex = Math.min(targetIndex, focusables.length - 1);
+        const elementToFocus = focusables[safeIndex];
+        elementToFocus.focus();
+        return safeIndex;
     }
 };
 __decorate([
@@ -351,22 +453,30 @@ __decorate([
 ], ListItem.prototype, "accessibleRole", void 0);
 __decorate([
     property()
+], ListItem.prototype, "_forcedAccessibleRole", void 0);
+__decorate([
+    property({ noAttribute: true })
+], ListItem.prototype, "_inheritedAccessibleRole", void 0);
+__decorate([
+    property()
 ], ListItem.prototype, "_selectionMode", void 0);
+__decorate([
+    property()
+], ListItem.prototype, "mediaRange", void 0);
 __decorate([
     slot()
 ], ListItem.prototype, "deleteButton", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], ListItem, "i18nBundle", void 0);
 ListItem = ListItem_1 = __decorate([
     customElement({
         languageAware: true,
+        renderer: jsxRenderer,
         styles: [
             ListItemBase.styles,
             listItemAdditionalTextCss,
             styles,
-        ],
-        dependencies: [
-            Button,
-            RadioButton,
-            CheckBox,
         ],
     })
     /**
@@ -374,9 +484,12 @@ ListItem = ListItem_1 = __decorate([
      * @public
      */
     ,
-    event("detail-click"),
-    event("_focused"),
-    event("_selection-requested")
+    event("detail-click", {
+        bubbles: true,
+    }),
+    event("selection-requested", {
+        bubbles: true,
+    })
 ], ListItem);
 export default ListItem;
 //# sourceMappingURL=ListItem.js.map

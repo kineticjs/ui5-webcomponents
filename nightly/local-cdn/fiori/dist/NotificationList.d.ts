@@ -1,8 +1,9 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { ListItemClickEventDetail, ListItemToggleEventDetail, ListItemCloseEventDetail } from "@ui5/webcomponents/dist/List.js";
 import type NotificationListItemBase from "./NotificationListItemBase.js";
-import NotificationListInternal from "./NotificationListInternal.js";
+import type NotificationListInternal from "./NotificationListInternal.js";
 type NotificationItemEventDetail = {
     item: NotificationListItemBase;
 };
@@ -41,12 +42,18 @@ type NotificationItemCloseEventDetail = NotificationItemEventDetail;
  * @public
  */
 declare class NotificationList extends UI5Element {
+    eventDetails: {
+        "item-click": NotificationItemClickEventDetail;
+        "item-close": NotificationItemCloseEventDetail;
+        "item-toggle": NotificationItemToggleEventDetail;
+        "load-more": void;
+    };
     /**
      * Defines the items of the component.
      *
      * @public
      */
-    items: Array<NotificationListItemBase>;
+    items: DefaultSlot<NotificationListItemBase>;
     /**
      * Defines the text that is displayed when the component contains no items.
      * @default undefined
@@ -61,7 +68,6 @@ declare class NotificationList extends UI5Element {
     _onItemClose(e: CustomEvent<ListItemCloseEventDetail>): void;
     _onItemToggle(e: CustomEvent<ListItemToggleEventDetail>): void;
     _onLoadMore(): void;
-    static onDefine(): Promise<void>;
 }
 export default NotificationList;
 export type { NotificationItemClickEventDetail, NotificationItemToggleEventDetail, NotificationItemCloseEventDetail, };

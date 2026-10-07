@@ -6,33 +6,59 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var ShellBar_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
-import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import property from "@ui5/webcomponents-base/dist/decorators/property.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import AriaHasPopup from "@ui5/webcomponents-base/dist/types/AriaHasPopup.js";
-import { isSpace, isEnter } from "@ui5/webcomponents-base/dist/Keys.js";
-import ListItemStandard from "@ui5/webcomponents/dist/ListItemStandard.js";
-import List from "@ui5/webcomponents/dist/List.js";
-import Popover from "@ui5/webcomponents/dist/Popover.js";
+import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScopeUtils.js";
+import arraysAreEqual from "@ui5/webcomponents-base/dist/util/arraysAreEqual.js";
+import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
+import throttle from "@ui5/webcomponents-base/dist/util/throttle.js";
 import Button from "@ui5/webcomponents/dist/Button.js";
+import ButtonBadge from "@ui5/webcomponents/dist/ButtonBadge.js";
 import Icon from "@ui5/webcomponents/dist/Icon.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
-import "@ui5/webcomponents-icons/dist/search.js";
-import "@ui5/webcomponents-icons/dist/bell.js";
-import "@ui5/webcomponents-icons/dist/overflow.js";
-import "@ui5/webcomponents-icons/dist/grid.js";
-// Templates
-import ShellBarTemplate from "./generated/templates/ShellBarTemplate.lit.js";
-// Styles
+import Popover from "@ui5/webcomponents/dist/Popover.js";
+import Menu from "@ui5/webcomponents/dist/Menu.js";
+import List from "@ui5/webcomponents/dist/List.js";
+import ListItemStandard from "@ui5/webcomponents/dist/ListItemStandard.js";
+import searchIcon from "@ui5/webcomponents-icons/dist/search.js";
+import bellIcon from "@ui5/webcomponents-icons/dist/bell.js";
+import gridIcon from "@ui5/webcomponents-icons/dist/grid.js";
+import daIcon from "@ui5/webcomponents-icons/dist/da.js";
+import overflowIcon from "@ui5/webcomponents-icons/dist/overflow.js";
+import ShellBarTemplate from "./ShellBarTemplate.js";
 import shellBarStyles from "./generated/themes/ShellBar.css.js";
 import ShellBarPopoverCss from "./generated/themes/ShellBarPopover.css.js";
-import { SHELLBAR_LABEL, SHELLBAR_LOGO, SHELLBAR_NOTIFICATIONS, SHELLBAR_CANCEL, SHELLBAR_PROFILE, SHELLBAR_PRODUCTS, SHELLBAR_SEARCH, SHELLBAR_OVERFLOW, } from "./generated/i18n/i18n-defaults.js";
-const HANDLE_RESIZE_DEBOUNCE_RATE = 200; // ms
+import shellBarLegacyStyles from "./generated/themes/ShellBarLegacy.css.js";
+import ShellBarLegacy from "./shellbar/ShellBarLegacy.js";
+import ShellBarSearch from "./shellbar/ShellBarSearch.js";
+import ShellBarSearchLegacy from "./shellbar/ShellBarSearchLegacy.js";
+import ShellBarOverflow from "./shellbar/ShellBarOverflow.js";
+import ShellBarAccessibility from "./shellbar/ShellBarAccessibility.js";
+import ShellBarItemNavigation from "./shellbar/ShellBarItemNavigation.js";
+import ShellBarItem, { isInstanceOfShellBarItem } from "./ShellBarItem.js";
+import ShellBarSpacer from "./ShellBarSpacer.js";
+import { SHELLBAR_LABEL, SHELLBAR_NOTIFICATIONS, SHELLBAR_NOTIFICATIONS_NO_COUNT, SHELLBAR_PROFILE, SHELLBAR_PRODUCTS, SHELLBAR_SEARCH, SHELLBAR_ASSISTANT, SHELLBAR_OVERFLOW, SHELLBAR_ADDITIONAL_CONTEXT, } from "./generated/i18n/i18n-defaults.js";
+const ShellBarActions = {
+    Search: "search",
+    Profile: "profile",
+    Overflow: "overflow",
+    Assistant: "assistant",
+    ProductSwitch: "products",
+    Notifications: "notifications",
+};
+const ShellBarActionsSelectors = {
+    Search: ".ui5-shellbar-search-toggle",
+    Profile: ".ui5-shellbar-image-button",
+    Overflow: ".ui5-shellbar-overflow-button",
+    Assistant: ".ui5-shellbar-assistant-button",
+    ProductSwitch: ".ui5-shellbar-button-product-switch",
+    Notifications: ".ui5-shellbar-bell-button",
+};
 /**
  * @class
  * ### Overview
@@ -66,26 +92,8 @@ const HANDLE_RESIZE_DEBOUNCE_RATE = 200; // ms
  * @since 0.8.0
  */
 let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
-    static get FIORI_3_BREAKPOINTS() {
-        return [
-            599,
-            1023,
-            1439,
-            1919,
-            10000,
-        ];
-    }
-    static get FIORI_3_BREAKPOINTS_MAP() {
-        return {
-            "599": "S",
-            "1023": "M",
-            "1439": "L",
-            "1919": "XL",
-            "10000": "XXL",
-        };
-    }
     constructor() {
-        super();
+        super(...arguments);
         /**
          * Defines, if the notification icon would be displayed.
          * @default false
@@ -116,8 +124,9 @@ let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
          * - **notifications** - `notifications.expanded` and `notifications.hasPopup`.
          * - **profile** - `profile.expanded`, `profile.hasPopup` and `profile.name`.
          * - **product** - `product.expanded` and `product.hasPopup`.
-         * - **search** - `search.expanded` and `search.hasPopup`.
+         * - **search** - `search.hasPopup`.
          * - **overflow** - `overflow.expanded` and `overflow.hasPopup`.
+         * - **branding** - `branding.name`.
          *
          * The accessibility attributes support the following values:
          *
@@ -143,272 +152,489 @@ let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
         /**
          * @private
          */
-        this.withLogo = false;
-        this._menuPopoverItems = [];
-        this._menuPopoverExpanded = false;
-        this._overflowPopoverExpanded = false;
-        this._fullWidthSearch = false;
-        this._isXXLBreakpoint = false;
-        this._menuPopoverItems = [];
-        this._hiddenIcons = [];
-        this._itemsInfo = [];
-        this._isInitialRendering = true;
-        // marks if preventDefault() is called in item's press handler
-        this._defaultItemPressPrevented = false;
-        this.menuItemsObserver = new MutationObserver(() => {
-            this._updateClonedMenuItems();
-        });
-        this._headerPress = () => {
-            this._updateClonedMenuItems();
-            if (this.hasMenuItems) {
-                const menuPopover = this._getMenuPopover();
-                menuPopover.opener = this.shadowRoot.querySelector(".ui5-shellbar-menu-button");
-                menuPopover.open = true;
-            }
+        this.breakpointSize = "S";
+        /**
+         * Actions computed from controllers.
+         * @private
+         */
+        this.actions = [];
+        /**
+         * Show overflow button when items are hidden.
+         * @private
+         */
+        this.showOverflowButton = false;
+        /**
+         * Open state of the overflow popover.
+         * @private
+         */
+        this.overflowPopoverOpen = false;
+        /**
+         * IDs of items currently hidden due to overflow.
+         * Used to trigger rerender for conditional rendering.
+         * @private
+         */
+        this.hiddenItemsIds = [];
+        /**
+         * Show full-screen search overlay.
+         * @private
+         */
+        this.showFullWidthSearch = false;
+        this.RESIZE_THROTTLE_RATE = 100; // ms
+        this.handleResizeBound = throttle(this.handleResize.bind(this), this.RESIZE_THROTTLE_RATE);
+        this.breakpoints = [599, 1023, 1439, 1919, 10000];
+        this.breakpointMap = {
+            599: "S",
+            1023: "M",
+            1439: "L",
+            1919: "XL",
+            10000: "XXL",
         };
-        this._handleResize = () => {
-            this._debounce(() => {
-                this.menuPopover = this._getMenuPopover();
-                this.overflowPopover = this._getOverflowPopover();
-                this.overflowPopover.open = false;
-                this._overflowActions();
-            }, HANDLE_RESIZE_DEBOUNCE_RATE);
-        };
-    }
-    _debounce(fn, delay) {
-        clearTimeout(this._debounceInterval);
-        this._debounceInterval = setTimeout(() => {
-            this._debounceInterval = null;
-            fn();
-        }, delay);
-    }
-    _menuItemPress(e) {
-        const shouldContinue = this.fireEvent("menu-item-click", {
-            item: e.detail.selectedItems[0],
-        }, true);
-        if (shouldContinue) {
-            this.menuPopover.open = false;
-        }
-    }
-    _logoPress() {
-        this.fireEvent("logo-click", {
-            targetRef: this.shadowRoot.querySelector(".ui5-shellbar-logo"),
+        this.itemNavigation = new ShellBarItemNavigation({
+            getDomRef: () => this.getDomRef() || null,
         });
+        this.overflow = new ShellBarOverflow();
+        this.accessibility = new ShellBarAccessibility();
+        this._searchAdaptor = new ShellBarSearch(this.getSearchDeps());
+        this._searchAdaptorLegacy = new ShellBarSearchLegacy({
+            ...this.getSearchDeps(),
+            getDisableSearchCollapse: () => this.disableSearchCollapse,
+        });
+        /* =================== Legacy Members =================== */
+        /**
+         * Defines the visibility state of the search button.
+         *
+         * **Note:** The `hideSearchButton` property is in an experimental state and is a subject to change.
+         * @default false
+         * @public
+         */
+        this.hideSearchButton = false;
+        /**
+         * Disables the automatic search field expansion/collapse when the available space is not enough.
+         *
+         * **Note:** The `disableSearchCollapse` property is in an experimental state and is a subject to change.
+         * @default false
+         * @public
+         */
+        this.disableSearchCollapse = false;
+        /**
+         * Open state of the menu popover (legacy).
+         * @private
+         */
+        this.menuPopoverOpen = false;
     }
-    _menuPopoverBeforeOpen() {
-        this._menuPopoverExpanded = true;
-        if (this.menuPopover.content && this.menuPopover.content.length) {
-            this.menuPopover.content[0].focusFirstItem();
-        }
+    /* =================== Lifecycle Methods =================== */
+    onEnterDOM() {
+        ResizeHandler.register(this, this.handleResizeBound);
+        this.searchAdaptor?.subscribe();
     }
-    _menuPopoverAfterClose() {
-        this._menuPopoverExpanded = false;
-    }
-    _overflowPopoverBeforeOpen() {
-        this._overflowPopoverExpanded = true;
-        if (this.overflowPopover.content && this.overflowPopover.content.length) {
-            this.overflowPopover.content[0].focusFirstItem();
-        }
-    }
-    _overflowPopoverAfterClose() {
-        this._overflowPopoverExpanded = false;
-    }
-    _logoKeyup(e) {
-        if (isSpace(e)) {
-            this._logoPress();
-        }
-    }
-    _logoKeydown(e) {
-        if (isSpace(e)) {
-            e.preventDefault();
-            return;
-        }
-        if (isEnter(e)) {
-            this._logoPress();
-        }
+    onExitDOM() {
+        ResizeHandler.deregister(this, this.handleResizeBound);
+        this.searchAdaptor?.unsubscribe();
     }
     onBeforeRendering() {
-        this.withLogo = this.hasLogo;
-        this._hiddenIcons = this._itemsInfo.filter(info => {
-            const isHidden = (info.classes.indexOf("ui5-shellbar-hidden-button") !== -1);
-            const isSet = info.classes.indexOf("ui5-shellbar-invisible-button") === -1;
-            const isOverflowIcon = info.classes.indexOf("ui5-shellbar-overflow-button") !== -1;
-            const isImageIcon = info.classes.indexOf("ui5-shellbar-image-button") !== -1;
-            const shouldStayOnScreen = isOverflowIcon || (isImageIcon && this.hasProfile);
-            return isHidden && isSet && !shouldStayOnScreen;
+        if (!this.legacyAdaptor) {
+            this.initLegacyController();
+        }
+        // Sync branding breakpoint state
+        this.branding.forEach(brandingEl => {
+            brandingEl._isSBreakPoint = this.isSBreakPoint;
         });
-        this._observeMenuItems();
+        this.buildActions();
+        this.searchAdaptor?.syncShowSearchFieldState();
+        // subscribe to search adaptor for cases when search is added dynamically
+        this.searchAdaptor?.unsubscribe();
+        this.searchAdaptor?.subscribe();
     }
     onAfterRendering() {
-        this._overflowActions();
-        this._fullWidthSearch = this._showFullWidthSearch;
+        this.updateBreakpoint();
+        this.updateOverflow();
+    }
+    /* =================== Actions Management =================== */
+    buildActions() {
+        this.actions = [
+            {
+                id: ShellBarActions.Search,
+                icon: searchIcon,
+                enabled: this.enabledFeatures.search,
+                selector: ShellBarActionsSelectors.Search,
+                isProtected: false,
+                stableDomRef: "toggle-search",
+            },
+            {
+                id: ShellBarActions.Assistant,
+                icon: daIcon,
+                enabled: this.enabledFeatures.assistant,
+                selector: ShellBarActionsSelectors.Assistant,
+                isProtected: false,
+            },
+            {
+                id: ShellBarActions.Notifications,
+                icon: bellIcon,
+                count: this.notificationsCount,
+                enabled: this.enabledFeatures.notifications,
+                selector: ShellBarActionsSelectors.Notifications,
+                isProtected: false,
+                stableDomRef: "notifications",
+            },
+            {
+                id: ShellBarActions.Overflow,
+                icon: overflowIcon,
+                enabled: this.enabledFeatures.overflow,
+                selector: ShellBarActionsSelectors.Overflow,
+                isProtected: true,
+                stableDomRef: "overflow",
+            },
+            {
+                id: ShellBarActions.Profile,
+                enabled: this.enabledFeatures.profile,
+                selector: ShellBarActionsSelectors.Profile,
+                isProtected: true,
+                stableDomRef: "profile",
+            },
+            {
+                id: ShellBarActions.ProductSwitch,
+                icon: gridIcon,
+                enabled: this.enabledFeatures.productSwitch,
+                selector: ShellBarActionsSelectors.ProductSwitch,
+                isProtected: true,
+                stableDomRef: "product-switch",
+            },
+        ].filter(action => action.enabled);
+    }
+    getAction(actionId) {
+        return this.actions.find(action => action.id === actionId);
+    }
+    getActionOverflowText(actionId) {
+        const texts = {
+            [ShellBarActions.Search]: this.texts.search,
+            [ShellBarActions.Profile]: this.texts.profile,
+            [ShellBarActions.Overflow]: this.texts.overflow,
+            [ShellBarActions.Assistant]: this.texts.assistant,
+            [ShellBarActions.ProductSwitch]: this.texts.products,
+            [ShellBarActions.Notifications]: this.texts.notificationsNoCount,
+        };
+        return texts[actionId] || actionId;
+    }
+    /* =================== Breakpoint Management =================== */
+    get isSBreakPoint() {
+        return this.breakpointSize === "S";
+    }
+    updateBreakpoint() {
+        const width = this.getBoundingClientRect().width;
+        const bp = this.breakpoints.find(b => width <= b) || 10000;
+        const breakpoint = this.breakpointMap[bp];
+        if (this.breakpointSize !== breakpoint) {
+            this.breakpointSize = breakpoint;
+        }
+    }
+    /* =================== Overflow Management =================== */
+    updateOverflow() {
+        if (!this.overflow) {
+            return;
+        }
+        const result = this.overflow.updateOverflow({
+            actions: this.actions,
+            content: this.sortContent(this.content),
+            customItems: this._validItems,
+            hiddenItemsIds: this.hiddenItemsIds,
+            showSearchField: this.enabledFeatures.search && this.showSearchField,
+            overflowOuter: this.overflowOuter,
+            overflowInner: this.overflowInner,
+            setVisible: (selector, visible) => {
+                const element = this.shadowRoot.querySelector(selector);
+                if (element) {
+                    element.classList[visible ? "remove" : "add"]("ui5-shellbar-hidden");
+                }
+            },
+        });
+        this.handleUpdateOverflowResult(result);
+        return result.hiddenItemsIds;
+    }
+    handleUpdateOverflowResult(result) {
+        const { hiddenItemsIds, showOverflowButton } = result;
+        // Update items overflow state
+        this._validItems.forEach(item => {
+            item.inOverflow = hiddenItemsIds.includes(item._id);
+            if (item.inOverflow) {
+                // clear the hidden class to ensure the item is visible in the overflow popover
+                item.classList.remove("ui5-shellbar-hidden");
+            }
+        });
+        if (!arraysAreEqual(this.hiddenItemsIds, hiddenItemsIds)) {
+            this.handleContentVisibilityChanged(this.hiddenItemsIds, hiddenItemsIds);
+            this.hiddenItemsIds = hiddenItemsIds;
+            this.showOverflowButton = showOverflowButton;
+        }
+        this.showFullWidthSearch = this.searchAdaptor?.shouldShowFullScreen() || false;
+    }
+    handleContentVisibilityChanged(oldHiddenItemsIds, newHiddenItemsIds) {
+        const filterContentIds = (ids) => ids.filter(id => this.content.some(item => item._individualSlot === id));
+        const oldHiddenContentIds = filterContentIds(oldHiddenItemsIds);
+        const newHiddenContentIds = filterContentIds(newHiddenItemsIds);
+        if (!arraysAreEqual(oldHiddenContentIds, newHiddenContentIds)) {
+            this.fireDecoratorEvent("content-item-visibility-change", {
+                items: newHiddenContentIds.map(id => this.content.find(item => item._individualSlot === id)),
+            });
+        }
+    }
+    handleResize() {
+        this.overflowPopoverOpen = false;
+        this.updateBreakpoint();
+        const hiddenItemsIds = this.updateOverflow() ?? [];
+        const spacerWidth = this.spacer?.getBoundingClientRect().width || 0;
+        this.searchAdaptor?.autoManageSearchState(hiddenItemsIds.length, spacerWidth);
+    }
+    isHidden(itemId) {
+        return this.hiddenItemsIds.includes(itemId);
+    }
+    handleOverflowClick() {
+        this.overflowPopoverOpen = !this.overflowPopoverOpen;
+    }
+    onPopoverClose() {
+        this.overflowPopoverOpen = false;
     }
     /**
-     * Closes the overflow area.
-     * Useful to manually close the overflow after having suppressed automatic closing with preventDefault() of ShellbarItem's press event
+     * Closes the overflow popover.
      * @public
      */
     closeOverflow() {
-        if (this.overflowPopover) {
-            this.overflowPopover.open = false;
+        this.overflowPopoverOpen = false;
+    }
+    handleOverflowItemClick(e) {
+        const target = e.target;
+        const actionId = target.getAttribute("data-action-id");
+        let prevented = e.defaultPrevented; // for custom actions
+        if (actionId === ShellBarActions.Notifications) {
+            prevented = this.handleNotificationsClick();
+        }
+        else if (actionId === ShellBarActions.Search) {
+            prevented = this.handleSearchButtonClick();
+        }
+        if (!prevented) {
+            this.overflowPopoverOpen = false;
         }
     }
-    _handleBarBreakpoints() {
-        const width = this.getBoundingClientRect().width;
-        const breakpoints = ShellBar_1.FIORI_3_BREAKPOINTS;
-        const size = breakpoints.find(bp1 => width <= bp1) || ShellBar_1.FIORI_3_BREAKPOINTS[ShellBar_1.FIORI_3_BREAKPOINTS.length - 1];
-        const mappedSize = ShellBar_1.FIORI_3_BREAKPOINTS_MAP[size];
-        if (this.breakpointSize !== mappedSize) {
-            this.breakpointSize = mappedSize;
-        }
-        this._isXXLBreakpoint = this.breakpointSize === "XXL";
-        return mappedSize;
-    }
-    _handleSizeS() {
-        const hasIcons = this.showNotifications || this.showProductSwitch || !!this.searchField.length || !!this.items.length;
-        const newItems = this._getAllItems(hasIcons).map((info) => {
-            const isOverflowIcon = info.classes.indexOf("ui5-shellbar-overflow-button") !== -1;
-            const isImageIcon = info.classes.indexOf("ui5-shellbar-image-button") !== -1;
-            const shouldStayOnScreen = isOverflowIcon || (isImageIcon && this.hasProfile);
-            return {
-                ...info,
-                classes: `${info.classes} ${shouldStayOnScreen ? "" : "ui5-shellbar-hidden-button"} ui5-shellbar-button`,
-                styles: {
-                    order: shouldStayOnScreen ? 1 : -1,
-                },
-            };
+    get overflowItems() {
+        return this.overflow.getOverflowItems({
+            actions: this.actions,
+            customItems: this._validItems,
+            hiddenItemsIds: this.hiddenItemsIds,
         });
-        this._updateItemsInfo(newItems);
     }
-    _handleActionsOverflow() {
-        const rightContainerRect = this.shadowRoot.querySelector(".ui5-shellbar-overflow-container-right").getBoundingClientRect();
-        let overflowSelector = ".ui5-shellbar-button:not(.ui5-shellbar-overflow-button):not(.ui5-shellbar-invisible-button)";
-        if (this.showSearchField) {
-            overflowSelector += ",.ui5-shellbar-search-field";
+    /**
+     * Only entries that are actually `ui5-shellbar-item` instances participate in the
+     * overflow calculation and template rendering. The default slot's type is
+     * `HTMLElement`, so any stray child (e.g. a bare `<span>`) ends up in `this.items`;
+     * if such an element reaches the overflow algorithm it has no `_id` / `stableDomRef`,
+     * which writes `undefined` back into reactive properties on every pass and re-enters
+     * the render queue until `RenderQueue` throws "processed too many times".
+     */
+    get _validItems() {
+        return this.items.filter(isInstanceOfShellBarItem);
+    }
+    /**
+     * Returns badge text for overflow button.
+     * Shows count if only one item with count is overflowed, otherwise shows attention dot.
+     */
+    get overflowBadge() {
+        const itemsWithCount = this.overflowItems.filter(item => item.data.count);
+        if (itemsWithCount.length === 1) {
+            return itemsWithCount[0].data.count;
         }
-        const elementsToOverflow = this.shadowRoot.querySelectorAll(overflowSelector);
-        const isRTL = this.effectiveDir === "rtl";
-        const overflowButtons = [...elementsToOverflow].filter(icon => {
-            const iconRect = (icon).getBoundingClientRect();
-            if (isRTL) {
-                return (iconRect.left + iconRect.width) > (rightContainerRect.left + rightContainerRect.width);
-            }
-            return iconRect.left < rightContainerRect.left;
-        });
-        const showOverflowButton = !!overflowButtons.length;
-        const items = this._getAllItems(showOverflowButton).filter(item => item.show);
-        const itemsByPriority = items.sort((item1, item2) => {
-            if (item1.priority > item2.priority) {
-                return 1;
-            }
-            if (item1.priority < item2.priority) {
-                return -1;
-            }
-            return 0;
-        });
-        for (let i = 0; i < itemsByPriority.length; i++) {
-            if (i < overflowButtons.length) {
-                itemsByPriority[i].classes = `${itemsByPriority[i].classes} ui5-shellbar-hidden-button`;
-                itemsByPriority[i].styles = {
-                    order: -1,
-                };
-            }
+        if (itemsWithCount.length > 1) {
+            return " "; // Attention dot
         }
-        return itemsByPriority;
+        return undefined;
     }
-    _overflowActions() {
-        const size = this._handleBarBreakpoints();
-        if (size === "S") {
-            return this._handleSizeS();
+    /* =================== Search Management =================== */
+    get search() {
+        return this.searchField.length ? this.searchField[0] : null;
+    }
+    get isSelfCollapsibleSearch() {
+        const searchField = this.search;
+        if (searchField) {
+            return "collapsed" in searchField && "open" in searchField;
         }
-        const newItems = this._handleActionsOverflow();
-        this._updateItemsInfo(newItems);
+        return false;
     }
-    _toggleActionPopover() {
-        const overflowButton = this.shadowRoot.querySelector(".ui5-shellbar-overflow-button");
-        const overflowPopover = this._getOverflowPopover();
-        overflowPopover.opener = overflowButton;
-        overflowPopover.open = true;
+    getSearchDeps() {
+        return {
+            getSearchField: () => this.search,
+            getSearchState: () => this.enabledFeatures.search && this.showSearchField,
+            getCSSVariable: (cssVar) => this.getCSSVariable(cssVar),
+            setSearchState: (expanded) => this.setSearchState(expanded),
+            handleSearchButtonClick: () => this.handleSearchButtonClick(),
+            getOverflowed: () => this.overflow.isOverflowing(this.overflowOuter, this.overflowInner),
+        };
     }
-    onEnterDOM() {
-        ResizeHandler.register(this, this._handleResize);
-        if (isDesktop()) {
-            this.setAttribute("desktop", "");
+    get searchAdaptor() {
+        if (this.isSelfCollapsibleSearch) {
+            return this._searchAdaptor;
         }
+        return this._searchAdaptorLegacy;
     }
-    onExitDOM() {
-        this.menuItemsObserver.disconnect();
-        ResizeHandler.deregister(this, this._handleResize);
-        clearTimeout(this._debounceInterval);
-        this._debounceInterval = null;
-    }
-    _handleSearchIconPress() {
-        const searchButtonRef = this.shadowRoot.querySelector(".ui5-shellbar-search-button");
-        const defaultPrevented = !this.fireEvent("search-button-click", {
-            targetRef: searchButtonRef,
+    handleSearchButtonClick() {
+        const searchButton = this.isSelfCollapsibleSearch
+            ? this.search?.shadowRoot?.querySelector(".ui5-shell-search-field-button") ?? null
+            : this.shadowRoot.querySelector(".ui5-shellbar-search-button");
+        const defaultPrevented = !this.fireDecoratorEvent("search-button-click", {
+            targetRef: searchButton,
             searchFieldVisible: this.showSearchField,
-        }, true);
+        });
         if (defaultPrevented) {
-            return;
+            return defaultPrevented;
         }
-        this.showSearchField = !this.showSearchField;
+        this.setSearchState(!this.showSearchField);
         if (!this.showSearchField) {
-            return;
+            return defaultPrevented;
         }
         const input = this.searchField[0];
-        // update the state immediately
         if (input) {
             input.focused = true;
-        }
-        // move the focus later
-        setTimeout(() => {
-            if (input) {
+            setTimeout(() => {
                 input.focus();
-            }
-        }, 100);
-    }
-    async _handleActionListClick() {
-        if (!this._defaultItemPressPrevented) {
-            this.closeOverflow();
-            // wait for DOM to be updated when ui5-popover is closed, otherwise if Enter key is hold
-            // there will be no visual indication that this has happened
-            await renderFinished();
+            }, 100);
         }
-        this._defaultItemPressPrevented = false;
+        return defaultPrevented;
     }
-    _handleCustomActionPress(e) {
-        const target = e.target;
-        const refItemId = target.getAttribute("data-ui5-external-action-item-id");
-        if (refItemId) {
-            const shellbarItem = this.items.find(item => {
-                return item._id === refItemId;
+    async setSearchState(expanded) {
+        if (expanded === this.showSearchField) {
+            return;
+        }
+        this.showSearchField = expanded;
+        await renderFinished();
+        this.fireDecoratorEvent("search-field-toggle", { expanded });
+    }
+    handleCancelButtonClick() {
+        const cancelBtn = this.shadowRoot.querySelector(".ui5-shellbar-cancel-button");
+        if (!cancelBtn) {
+            return;
+        }
+        const clearDefaultPrevented = !this.fireDecoratorEvent("search-field-clear", {
+            targetRef: cancelBtn,
+        });
+        this.showFullWidthSearch = false;
+        this.setSearchState(false);
+        if (!clearDefaultPrevented && this.search) {
+            this.search.value = "";
+        }
+    }
+    /* =================== Legacy Features Management =================== */
+    initLegacyController() {
+        if (this.hasLegacyFeatures) {
+            this.legacyAdaptor = new ShellBarLegacy({
+                component: this,
+                getShadowRoot: () => this.shadowRoot,
             });
-            const prevented = shellbarItem.fireClickEvent(e);
-            this._defaultItemPressPrevented = prevented;
         }
     }
-    _handleOverflowPress() {
-        this._toggleActionPopover();
+    get hasLegacyFeatures() {
+        return this.logo.length > 0
+            || !!this.primaryTitle
+            || !!this.secondaryTitle
+            || this.menuItems.length > 0;
     }
-    _handleNotificationsPress(e) {
-        const notificationIconRef = this.shadowRoot.querySelector(".ui5-shellbar-bell-button"), target = e.target;
-        this._defaultItemPressPrevented = !this.fireEvent("notifications-click", {
-            targetRef: notificationIconRef.classList.contains("ui5-shellbar-hidden-button") ? target : notificationIconRef,
-        }, true);
+    /* =================== Keyboard Navigation =================== */
+    _onKeyDown(e) {
+        this.itemNavigation.handleKeyDown(e);
     }
-    _handleProfilePress() {
-        this.fireEvent("profile-click", {
-            targetRef: this.shadowRoot.querySelector(".ui5-shellbar-image-button"),
+    /* =================== Content Management =================== */
+    get startContent() {
+        return this.splitContent(this.content).start;
+    }
+    get endContent() {
+        return this.splitContent(this.content).end;
+    }
+    get separatorConfig() {
+        if (this.isSBreakPoint) {
+            return {
+                showStartSeparator: false,
+                showEndSeparator: false,
+            };
+        }
+        const { start, end } = this.splitContent(this.content);
+        return {
+            showStartSeparator: start.some(item => !this.hiddenItemsIds.includes(item._individualSlot)),
+            showEndSeparator: end.some(item => !this.hiddenItemsIds.includes(item._individualSlot)),
+        };
+    }
+    splitContent(content) {
+        const spacerIndex = content.findIndex(child => child.hasAttribute("ui5-shellbar-spacer"));
+        if (spacerIndex === -1) {
+            return { start: [...content], end: [] };
+        }
+        return {
+            start: content.slice(0, spacerIndex),
+            end: content.slice(spacerIndex + 1),
+        };
+    }
+    sortContent(content) {
+        // reverse so items on the right are hidden first
+        // then sort by hide order to apply custom preferences
+        return content.toReversed().toSorted((a, b) => {
+            const aOrder = parseInt(a.getAttribute("data-hide-order") || "0");
+            const bOrder = parseInt(b.getAttribute("data-hide-order") || "0");
+            return aOrder - bOrder;
         });
     }
-    _handleCancelButtonPress() {
-        this.showSearchField = false;
+    /*
+     * Determines whether a separator should be packed with an item.
+     * Separators are packed with the last item that is hidden to account for
+     * the space they occupy when next overflow calculation occurs.
+     */
+    getPackedSeparatorInfo(item, isStartGroup) {
+        const group = isStartGroup ? this.startContent : this.endContent;
+        const sorted = this.sortContent(group);
+        const isHidden = this.hiddenItemsIds.includes(item._individualSlot);
+        const isLastItem = sorted.at(-1) === item;
+        return { shouldPack: isHidden && isLastItem };
     }
-    _handleProductSwitchPress(e) {
-        const buttonRef = this.shadowRoot.querySelector(".ui5-shellbar-button-product-switch"), target = e.target;
-        this._defaultItemPressPrevented = !this.fireEvent("product-switch-click", {
-            targetRef: buttonRef.classList.contains("ui5-shellbar-hidden-button") ? target : buttonRef,
-        }, true);
+    /* =================== Items Management =================== */
+    /* =================== Accessibility =================== */
+    get actionsAccessibilityInfo() {
+        return this.accessibility.getActionsAccessibilityAttributes(this.texts, {
+            overflowPopoverOpen: this.overflowPopoverOpen,
+            accessibilityAttributes: this.accessibilityAttributes,
+            showSearchField: this.showSearchField,
+        });
+    }
+    get actionsRole() {
+        const visibleCount = this.actions.filter(a => !this.hiddenItemsIds.includes(a.id)).length;
+        return this.accessibility.getActionsRole(visibleCount);
+    }
+    get contentRole() {
+        const visibleItemsCount = this.content.filter(item => !this.hiddenItemsIds.includes(item._individualSlot)).length;
+        return this.accessibility.getContentRole(visibleItemsCount);
+    }
+    /* =================== Common Members =================== */
+    get enabledFeatures() {
+        return {
+            search: this.searchField.length > 0,
+            profile: this.profile.length > 0,
+            content: this.content.length > 0,
+            branding: this.branding.length > 0,
+            overflow: this.showOverflowButton,
+            assistant: this.assistant.length > 0,
+            startButton: this.startButton.length > 0,
+            notifications: this.showNotifications,
+            productSwitch: this.showProductSwitch,
+        };
+    }
+    get texts() {
+        return {
+            search: ShellBar_1.i18nBundle.getText(SHELLBAR_SEARCH),
+            profile: ShellBar_1.i18nBundle.getText(SHELLBAR_PROFILE),
+            shellbar: ShellBar_1.i18nBundle.getText(SHELLBAR_LABEL),
+            products: ShellBar_1.i18nBundle.getText(SHELLBAR_PRODUCTS),
+            overflow: ShellBar_1.i18nBundle.getText(SHELLBAR_OVERFLOW),
+            assistant: ShellBar_1.i18nBundle.getText(SHELLBAR_ASSISTANT),
+            notifications: ShellBar_1.i18nBundle.getText(SHELLBAR_NOTIFICATIONS, this.notificationsCount || 0),
+            notificationsNoCount: ShellBar_1.i18nBundle.getText(SHELLBAR_NOTIFICATIONS_NO_COUNT),
+            contentItems: this.content.length > 1 ? ShellBar_1.i18nBundle.getText(SHELLBAR_ADDITIONAL_CONTEXT) : undefined,
+        };
+    }
+    get popoverHorizontalAlign() {
+        return this.effectiveDir === "rtl" ? "Start" : "End";
     }
     /**
      * Returns the `logo` DOM ref.
@@ -426,6 +652,9 @@ let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
      * @since 1.0.0-rc.16
      */
     get notificationsDomRef() {
+        if (this.isHidden(ShellBarActions.Notifications)) {
+            return this.overflowDomRef;
+        }
         return this.shadowRoot.querySelector(`*[data-ui5-stable="notifications"]`);
     }
     /**
@@ -456,313 +685,54 @@ let ShellBar = ShellBar_1 = class ShellBar extends UI5Element {
         return this.shadowRoot.querySelector(`*[data-ui5-stable="product-switch"]`);
     }
     /**
-     * Returns all items that will be placed in the right of the bar as icons / dom elements.
-     * @param showOverflowButton Determines if overflow button should be visible (not overflowing)
+     * Returns the search button DOM reference.
+     * @public
      */
-    _getAllItems(showOverflowButton) {
-        let domOrder = -1;
-        const search = {
-            icon: "search",
-            text: this._searchText,
-            classes: `${this.searchField.length ? "" : "ui5-shellbar-invisible-button"} ui5-shellbar-search-button ui5-shellbar-button`,
-            priority: 4,
-            domOrder: this.searchField.length ? (++domOrder) : -1,
-            styles: {
-                order: this.searchField.length ? 1 : -10,
-            },
-            id: `${this._id}-item-${1}`,
-            press: this._handleSearchIconPress.bind(this),
-            show: !!this.searchField.length,
-        };
-        const items = [
-            ...this.items.map((item) => {
-                item._getRealDomRef = () => this.getDomRef().querySelector(`*[data-ui5-stable=${item.stableDomRef}]`);
-                return {
-                    icon: item.icon,
-                    id: item._id,
-                    count: item.count || undefined,
-                    refItemid: item._id,
-                    text: item.text,
-                    classes: "ui5-shellbar-custom-item ui5-shellbar-button",
-                    priority: 1,
-                    domOrder: (++domOrder),
-                    styles: {
-                        order: 2,
-                    },
-                    show: true,
-                    press: this._handleCustomActionPress.bind(this),
-                    custom: true,
-                    title: item.title,
-                    stableDomRef: item.stableDomRef,
-                };
-            }),
-            {
-                icon: "bell",
-                text: this._notificationsText,
-                classes: `${this.showNotifications ? "" : "ui5-shellbar-invisible-button"} ui5-shellbar-bell-button ui5-shellbar-button`,
-                priority: 3,
-                styles: {
-                    order: this.showNotifications ? 3 : -10,
-                },
-                id: `${this._id}-item-${2}`,
-                show: this.showNotifications,
-                domOrder: this.showNotifications ? (++domOrder) : -1,
-                press: this._handleNotificationsPress.bind(this),
-            },
-            {
-                icon: "overflow",
-                text: "Overflow",
-                classes: `${showOverflowButton ? "" : "ui5-shellbar-hidden-button"} ui5-shellbar-overflow-button-shown ui5-shellbar-overflow-button ui5-shellbar-button`,
-                priority: 5,
-                order: 4,
-                styles: {
-                    order: showOverflowButton ? 4 : -1,
-                },
-                domOrder: showOverflowButton ? (++domOrder) : -1,
-                id: `${this.id}-item-${5}`,
-                press: this._handleOverflowPress.bind(this),
-                show: true,
-            },
-            {
-                text: "Person",
-                classes: `${this.hasProfile ? "" : "ui5-shellbar-invisible-button"} ui5-shellbar-image-button ui5-shellbar-button`,
-                priority: 4,
-                styles: {
-                    order: this.hasProfile ? 5 : -10,
-                },
-                profile: true,
-                id: `${this._id}-item-${3}`,
-                domOrder: this.hasProfile ? (++domOrder) : -1,
-                show: this.hasProfile,
-                press: this._handleProfilePress.bind(this),
-            },
-            {
-                icon: "grid",
-                text: this._productsText,
-                classes: `${this.showProductSwitch ? "" : "ui5-shellbar-invisible-button"} ui5-shellbar-button ui5-shellbar-button-product-switch`,
-                priority: 2,
-                styles: {
-                    order: this.showProductSwitch ? 6 : -10,
-                },
-                id: `${this._id}-item-${4}`,
-                show: this.showProductSwitch,
-                domOrder: this.showProductSwitch ? (++domOrder) : -1,
-                press: this._handleProductSwitchPress.bind(this),
-            },
-        ];
-        if (this.midContent.length < 1 && items[0].text !== this._searchText) {
-            items.unshift(search);
+    async getSearchButtonDomRef() {
+        await renderFinished();
+        if (this.isSelfCollapsibleSearch) {
+            return this.search.getSearchButtonDomRef();
         }
-        return items;
+        return this.shadowRoot.querySelector(`*[data-ui5-stable="toggle-search"]`);
     }
-    _updateItemsInfo(newItems) {
-        const isDifferent = JSON.stringify(this._itemsInfo) !== JSON.stringify(newItems);
-        if (isDifferent) {
-            this._itemsInfo = newItems;
-        }
+    _fireClickEvent(eventName, domRef) {
+        return domRef ? !this.fireDecoratorEvent(eventName, { targetRef: domRef }) : false;
     }
-    _updateClonedMenuItems() {
-        this._menuPopoverItems = [];
-        this.menuItems.forEach(item => {
-            // clone the menuItem and remove the slot="menuItems",
-            // otherwise would not be slotted in the internal ui5-li
-            const clonedItem = item.cloneNode(true);
-            clonedItem.removeAttribute("slot");
-            this._menuPopoverItems.push(clonedItem);
-        });
+    handleNotificationsClick() {
+        return this._fireClickEvent("notifications-click", this.notificationsDomRef);
     }
-    _observeMenuItems() {
-        this.menuItems.forEach(item => {
-            this.menuItemsObserver.observe(item, {
-                characterData: true,
-                childList: true,
-                subtree: true,
-                attributes: true,
-            });
-        });
+    handleProfileClick() {
+        return this._fireClickEvent("profile-click", this.profileDomRef);
     }
-    _getOverflowPopover() {
-        return this.shadowRoot.querySelector(".ui5-shellbar-overflow-popover");
+    handleProductSwitchClick() {
+        return this._fireClickEvent("product-switch-click", this.productSwitchDomRef);
     }
-    _getMenuPopover() {
-        return this.shadowRoot.querySelector(".ui5-shellbar-menu-popover");
-    }
-    isIconHidden(name) {
-        const itemInfo = this._itemsInfo.find(item => item.icon === name);
-        if (!itemInfo) {
-            return false;
-        }
-        return itemInfo.classes.indexOf("ui5-shellbar-hidden-button") !== -1;
-    }
-    get classes() {
-        return {
-            wrapper: {
-                "ui5-shellbar-root": true,
-                "ui5-shellbar-with-searchfield": this.hasSearchField,
-            },
-            button: {
-                "ui5-shellbar-menu-button--interactive": this.hasMenuItems,
-                "ui5-shellbar-menu-button": true,
-            },
-            items: {
-                notification: {
-                    "ui5-shellbar-hidden-button": this.isIconHidden("bell"),
-                },
-                product: {
-                    "ui5-shellbar-hidden-button": this.isIconHidden("grid"),
-                },
-                search: {
-                    "ui5-shellbar-hidden-button": this.isIconHidden("search"),
-                },
-                overflow: {
-                    "ui5-shellbar-hidden-button": this.isIconHidden("overflow"),
-                },
-            },
-        };
-    }
-    get styles() {
-        return {
-            items: {
-                notification: {
-                    "order": this.isIconHidden("bell") ? "-1" : "3",
-                },
-                overflow: {
-                    "order": this.isIconHidden("overflow") ? "-1" : "4",
-                },
-                profile: {
-                    "order": this.hasProfile ? "5" : "-1",
-                },
-                product: {
-                    "order": this.isIconHidden("grid") ? "-1" : "6",
-                },
-            },
-            searchField: {
-                "display": this.correctSearchFieldStyles,
-            },
-        };
-    }
-    get correctSearchFieldStyles() {
-        if (this.showSearchField) {
-            return "flex";
-        }
-        return "none";
-    }
-    get customItemsInfo() {
-        return this._itemsInfo.filter(itemInfo => !!itemInfo.custom);
-    }
-    get hasLogo() {
-        return !!this.logo.length;
-    }
-    get showLogoInMenuButton() {
-        return this.hasLogo && this.breakpointSize === "S";
-    }
-    get showTitleInMenuButton() {
-        return this.primaryTitle && !(this.showLogoInMenuButton);
-    }
-    get showMenuButton() {
-        return this.primaryTitle || this.showLogoInMenuButton;
-    }
-    get popoverHorizontalAlign() {
-        return this.effectiveDir === "rtl" ? "Start" : "End";
-    }
-    get hasAssistant() {
-        return !!this.assistant.length;
-    }
-    get hasSearchField() {
-        return !!this.searchField.length;
-    }
-    get hasMidContent() {
-        return !!this.midContent.length;
-    }
-    get hasProfile() {
-        return !!this.profile.length;
-    }
-    get hasMenuItems() {
-        return this.menuItems.length > 0;
-    }
-    get _shellbarText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_LABEL);
-    }
-    get _logoText() {
-        return this.accessibilityAttributes.logo?.name || ShellBar_1.i18nBundle.getText(SHELLBAR_LOGO);
-    }
-    get _notificationsText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_NOTIFICATIONS, this.notificationsCount || 0);
-    }
-    get _cancelBtnText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_CANCEL);
-    }
-    get _showFullWidthSearch() {
-        const size = this._handleBarBreakpoints();
-        const searchBtnHidden = !!this.shadowRoot.querySelector(".ui5-shellbar-search-button.ui5-shellbar-hidden-button");
-        return ((size === "S") || searchBtnHidden);
-    }
-    get _profileText() {
-        return this.accessibilityAttributes.profile?.name || ShellBar_1.i18nBundle.getText(SHELLBAR_PROFILE);
-    }
-    get _productsText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_PRODUCTS);
-    }
-    get _searchText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_SEARCH);
-    }
-    get _overflowText() {
-        return ShellBar_1.i18nBundle.getText(SHELLBAR_OVERFLOW);
-    }
-    get accInfo() {
-        const searchExpanded = this.accessibilityAttributes.search?.expanded;
-        const overflowExpanded = this.accessibilityAttributes.overflow?.expanded;
-        return {
-            notifications: {
-                "title": this._notificationsText,
-                "accessibilityAttributes": {
-                    expanded: this.accessibilityAttributes.notifications?.expanded,
-                    hasPopup: this.accessibilityAttributes.notifications?.hasPopup,
-                },
-            },
-            profile: {
-                "title": this._profileText,
-                "accessibilityAttributes": {
-                    hasPopup: this.accessibilityAttributes.profile?.hasPopup,
-                    expanded: this.accessibilityAttributes.profile?.expanded,
-                },
-            },
-            products: {
-                "title": this._productsText,
-                "accessibilityAttributes": {
-                    hasPopup: this.accessibilityAttributes.product?.hasPopup,
-                    expanded: this.accessibilityAttributes.product?.expanded,
-                },
-            },
-            search: {
-                "title": this._searchText,
-                "accessibilityAttributes": {
-                    hasPopup: this.accessibilityAttributes.search?.hasPopup,
-                    expanded: searchExpanded === undefined ? this.showSearchField : searchExpanded,
-                },
-            },
-            overflow: {
-                "title": this._overflowText,
-                "accessibilityAttributes": {
-                    hasPopup: this.accessibilityAttributes.overflow?.hasPopup || AriaHasPopup.Menu.toLowerCase(),
-                    expanded: overflowExpanded === undefined ? this._overflowPopoverExpanded : overflowExpanded,
-                },
-            },
-        };
-    }
-    get accLogoRole() {
-        return this.accessibilityAttributes.logo?.role || "button";
-    }
-    static async onDefine() {
-        ShellBar_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
+    getCSSVariable(cssVar) {
+        const styleSet = getComputedStyle(this.getDomRef());
+        return styleSet.getPropertyValue(getScopedVarName(cssVar));
     }
 };
 __decorate([
-    property()
-], ShellBar.prototype, "primaryTitle", void 0);
+    slot()
+], ShellBar.prototype, "startButton", void 0);
 __decorate([
-    property()
-], ShellBar.prototype, "secondaryTitle", void 0);
+    slot()
+], ShellBar.prototype, "branding", void 0);
+__decorate([
+    slot({ type: HTMLElement, individualSlots: true })
+], ShellBar.prototype, "content", void 0);
+__decorate([
+    slot({ type: HTMLElement })
+], ShellBar.prototype, "searchField", void 0);
+__decorate([
+    slot()
+], ShellBar.prototype, "assistant", void 0);
+__decorate([
+    slot({ type: HTMLElement, "default": true, individualSlots: true })
+], ShellBar.prototype, "items", void 0);
+__decorate([
+    slot()
+], ShellBar.prototype, "profile", void 0);
 __decorate([
     property()
 ], ShellBar.prototype, "notificationsCount", void 0);
@@ -782,35 +752,41 @@ __decorate([
     property()
 ], ShellBar.prototype, "breakpointSize", void 0);
 __decorate([
+    property({ type: Object })
+], ShellBar.prototype, "actions", void 0);
+__decorate([
     property({ type: Boolean })
-], ShellBar.prototype, "withLogo", void 0);
+], ShellBar.prototype, "showOverflowButton", void 0);
+__decorate([
+    property({ type: Boolean })
+], ShellBar.prototype, "overflowPopoverOpen", void 0);
 __decorate([
     property({ type: Object })
-], ShellBar.prototype, "_itemsInfo", void 0);
+], ShellBar.prototype, "hiddenItemsIds", void 0);
 __decorate([
-    property({ type: Array, noAttribute: true })
-], ShellBar.prototype, "_menuPopoverItems", void 0);
+    property({ type: Boolean })
+], ShellBar.prototype, "showFullWidthSearch", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
-], ShellBar.prototype, "_menuPopoverExpanded", void 0);
+    query(".ui5-shellbar-spacer")
+], ShellBar.prototype, "spacer", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
-], ShellBar.prototype, "_overflowPopoverExpanded", void 0);
+    query(".ui5-shellbar-overflow-container")
+], ShellBar.prototype, "overflowOuter", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
-], ShellBar.prototype, "_fullWidthSearch", void 0);
+    query(".ui5-shellbar-overflow-container-inner")
+], ShellBar.prototype, "overflowInner", void 0);
 __decorate([
-    property({ type: Boolean, noAttribute: true })
-], ShellBar.prototype, "_isXXLBreakpoint", void 0);
+    property({ type: Boolean })
+], ShellBar.prototype, "hideSearchButton", void 0);
 __decorate([
-    slot()
-], ShellBar.prototype, "assistant", void 0);
+    property({ type: Boolean })
+], ShellBar.prototype, "disableSearchCollapse", void 0);
 __decorate([
-    slot({ type: HTMLElement, "default": true, invalidateOnChildChange: true })
-], ShellBar.prototype, "items", void 0);
+    property()
+], ShellBar.prototype, "primaryTitle", void 0);
 __decorate([
-    slot()
-], ShellBar.prototype, "profile", void 0);
+    property()
+], ShellBar.prototype, "secondaryTitle", void 0);
 __decorate([
     slot()
 ], ShellBar.prototype, "logo", void 0);
@@ -818,45 +794,45 @@ __decorate([
     slot()
 ], ShellBar.prototype, "menuItems", void 0);
 __decorate([
-    slot()
-], ShellBar.prototype, "searchField", void 0);
-__decorate([
-    slot()
-], ShellBar.prototype, "startButton", void 0);
+    property({ type: Boolean })
+], ShellBar.prototype, "menuPopoverOpen", void 0);
 __decorate([
     slot()
 ], ShellBar.prototype, "midContent", void 0);
+__decorate([
+    i18n("@ui5/webcomponents-fiori")
+], ShellBar, "i18nBundle", void 0);
 ShellBar = ShellBar_1 = __decorate([
     customElement({
         tag: "ui5-shellbar",
+        styles: [shellBarStyles, shellBarLegacyStyles, ShellBarPopoverCss],
+        renderer: jsxRenderer,
+        template: ShellBarTemplate,
         fastNavigation: true,
         languageAware: true,
-        renderer: litRender,
-        template: ShellBarTemplate,
-        styles: [shellBarStyles, ShellBarPopoverCss],
         dependencies: [
-            Button,
             Icon,
             List,
+            Button,
+            ButtonBadge,
             Popover,
+            ShellBarSpacer,
+            ShellBarItem,
             ListItemStandard,
+            // legacy dependencies
+            Menu,
         ],
     })
     /**
      *
      * Fired, when the notification icon is activated.
-     * @allowPreventDefault
      * @param {HTMLElement} targetRef dom ref of the activated element
      * @public
      */
     ,
     event("notifications-click", {
-        detail: {
-            /**
-             * @public
-             */
-            targetRef: { type: HTMLElement },
-        },
+        cancelable: true,
+        bubbles: true,
     })
     /**
      * Fired, when the profile slot is present.
@@ -865,29 +841,19 @@ ShellBar = ShellBar_1 = __decorate([
      */
     ,
     event("profile-click", {
-        detail: {
-            /**
-             * @public
-             */
-            targetRef: { type: HTMLElement },
-        },
+        bubbles: true,
     })
     /**
      * Fired, when the product switch icon is activated.
      *
      * **Note:** You can prevent closing of overflow popover by calling `event.preventDefault()`.
-     * @allowPreventDefault
      * @param {HTMLElement} targetRef dom ref of the activated element
      * @public
      */
     ,
     event("product-switch-click", {
-        detail: {
-            /**
-             * @public
-             */
-            targetRef: { type: HTMLElement },
-        },
+        cancelable: true,
+        bubbles: true,
     })
     /**
      * Fired, when the logo is activated.
@@ -897,12 +863,7 @@ ShellBar = ShellBar_1 = __decorate([
      */
     ,
     event("logo-click", {
-        detail: {
-            /**
-             * @public
-             */
-            targetRef: { type: HTMLElement },
-        },
+        bubbles: true,
     })
     /**
      * Fired, when a menu item is activated
@@ -914,30 +875,60 @@ ShellBar = ShellBar_1 = __decorate([
      */
     ,
     event("menu-item-click", {
-        detail: {
-            /**
-             * @public
-             */
-            item: { type: HTMLElement },
-        },
+        bubbles: true,
+        cancelable: true,
     })
     /**
      * Fired, when the search button is activated.
      *
      * **Note:** You can prevent expanding/collapsing of the search field by calling `event.preventDefault()`.
-     * @allowPreventDefault
      * @param {HTMLElement} targetRef dom ref of the activated element
      * @param {Boolean} searchFieldVisible whether the search field is visible
      * @public
      */
     ,
     event("search-button-click", {
-        detail: {
-            targetRef: { type: HTMLElement },
-            searchFieldVisible: { type: Boolean },
-        },
+        cancelable: true,
+        bubbles: true,
+    })
+    /**
+     * Fired, when the search field is expanded or collapsed.
+     * @since 2.10.0
+     * @param {Boolean} expanded whether the search field is expanded
+     * @public
+     */
+    ,
+    event("search-field-toggle", {
+        bubbles: true,
+    })
+    /**
+     * Fired, when the search cancel button is activated.
+     *
+     * **Note:** You can prevent the default behavior (clearing the search field value) by calling `event.preventDefault()`. The search will still be closed.
+     * **Note:** The `search-field-clear` event is in an experimental state and is a subject to change.
+     * @param {HTMLElement} targetRef dom ref of the cancel button element
+     * @since 2.14.0
+     * @public
+     */
+    ,
+    event("search-field-clear", {
+        cancelable: true,
+        bubbles: true,
+    })
+    /**
+     * Fired, when an item from the content slot is hidden or shown.
+     * **Note:** The `content-item-visibility-change` event is in an experimental state and is a subject to change.
+     *
+     * @param {Array<HTMLElement>} array of all the items that are hidden
+     * @public
+     * @since 2.7.0
+     */
+    ,
+    event("content-item-visibility-change", {
+        bubbles: true,
     })
 ], ShellBar);
 ShellBar.define();
 export default ShellBar;
+export { ShellBarActions, ShellBarActionsSelectors, };
 //# sourceMappingURL=ShellBar.js.map

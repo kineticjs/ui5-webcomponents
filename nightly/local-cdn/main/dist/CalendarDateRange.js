@@ -18,7 +18,7 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
  * @implements {ICalendarSelectedDates}
  * @abstract
  * @public
- * @since 2.0
+ * @since 2.0.0
  */
 let CalendarDateRange = class CalendarDateRange extends UI5Element {
     constructor() {

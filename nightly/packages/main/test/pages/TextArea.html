@@ -19,12 +19,10 @@
 	</script>
 
 
-	
 
 
-	
-		<script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-779694d5.js"></script>
-		<link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/TextArea-76f953a2.css">
+		<script type="module" crossorigin src="/webcomponents/nightly/assets/bundle.esm-D_WAeXdP.js"></script>
+		<link rel="stylesheet" crossorigin href="/webcomponents/nightly/assets/TextArea-Cg2dAGD5.css">
 	</head>
 
 	<body class="textarea1auto">
@@ -41,7 +39,12 @@
 	<section class="group">
 		<ui5-title>Value State Message</ui5-title>
 		<br>
-		<ui5-textarea id="textarea-value-state-msg" value="Test" value-state="Negative">
+		<ui5-textarea id="textarea-value-state-msg" value="Test" value-state="Negative" growing rows="1" growing-max-rows="2">
+			<div id="value-state-msg" slot="valueStateMessage">Information message. This is a <a href="#">Link</a>. Extra long text used as an information message. Extra long text used as an information message - 2. Extra long text used as an information message - 3.</div>
+		</ui5-textarea>
+
+		<br>
+		<ui5-textarea id="textarea-value-state-msg" value="Test" value-state="Positive" growing rows="1">
 			<div id="value-state-msg" slot="valueStateMessage">Information message. This is a <a href="#">Link</a>. Extra long text used as an information message. Extra long text used as an information message - 2. Extra long text used as an information message - 3.</div>
 		</ui5-textarea>
 	</section>
@@ -120,6 +123,25 @@
 	<section class="group">
 		<ui5-title>Text Area: Growing with initial rows 4 and growing up to 12</ui5-title>
 		<ui5-textarea class="fixed-width" placeholder="Growing Text Area" rows="4" growing-max-rows="12" growing></ui5-textarea>
+	</section>
+
+	<section class="group">
+		<ui5-title>Text Area: Growing with long text</ui5-title>
+		<ui5-textarea 
+			class="fixed-width"
+			growing
+			growing-max-rows="30"
+			rows="4"
+			value="some text line 1
+some text line 2
+some text line 3
+some text line 4
+some text line 5
+some text line 6
+some text line 7
+some text line 8
+some text line 9">
+		</ui5-textarea>
 	</section>
 
 	<section class="group">
@@ -207,7 +229,83 @@
 		<ui5-textarea id="taWithLabelID2" class="textarea-width" placeholder="Enter some text here" accessible-name="Here aria label should be this one"></ui5-textarea>
 	</section>
 
+	<section class="group">
+		<ui5-label>Text Area: Escape Prevention</ui5-title>
+		<ui5-textarea id="textarea-prevent-escape" class="textarea-width" placeholder="Escape prevention test"></ui5-textarea>
+	</section>
+
+	<section class="group">
+		<ui5-title>Text Area: Accessible Description</ui5-title>
+		<div id="external-desc">This is an external description element</div>
+		<div id="another-desc">Additional description text</div>
+		<ui5-textarea id="textarea-accessible-description" class="textarea-width" accessible-description="Direct accessible description" placeholder="TextArea with direct accessible description"></ui5-textarea>
+		<ui5-textarea id="textarea-accessible-description-ref" class="textarea-width" accessible-description-ref="external-desc" placeholder="TextArea with referenced accessible description"></ui5-textarea>
+		<ui5-textarea id="textarea-accessible-description-multiple-refs" class="textarea-width" accessible-description-ref="external-desc another-desc" placeholder="TextArea with multiple referenced descriptions"></ui5-textarea>
+		<ui5-textarea id="textarea-accessible-description-both" class="textarea-width" accessible-description="Direct description" accessible-description-ref="external-desc" placeholder="TextArea with both direct and referenced descriptions"></ui5-textarea>
+	</section>
+
+	<section class="group">
+		<ui5-title>Form validation</ui5-title>
+		<form id="formValidation">
+			<ui5-message-strip id="formValidationMessage" hidden></ui5-message-strip>
+			<ui5-textarea id="textareaForm" required maxlength="10" show-exceeded-text="true" rows="1"></ui5-textarea>
+			<ui5-button id="btnCheckFormValidity">Check Validity</ui5-button>
+		</form>
+	</section>
+		<br><br>
+
+	<section class="group">
+		<ui5-title>counterMode="Auto" - Counter visible on focus only</ui5-title>
+		<p>Counter appears when focused, disappears on blur</p>
+		<ui5-textarea
+			id="textarea-focus-counter-basic"
+			class="fixed-width"
+			maxlength="100"
+			counter-mode="Auto"
+			placeholder="Click to see counter, blur to hide">
+		</ui5-textarea>
+	</section>
+
+	<section class="group">
+		<ui5-title>App-controlled threshold</ui5-title>
+		<p>App sets valueState based on character count threshold (75%)</p>
+		<ui5-textarea
+			id="textarea-threshold-coloring"
+			class="fixed-width"
+			maxlength="100"
+			counter-mode="Auto"
+			placeholder="Type to see threshold coloring at 75%">
+		</ui5-textarea>
+		<div id="threshold-info">0/100 characters (0%)</div>
+	</section>
+
 	<script>
+		const btnCheckFormValidity = document.getElementById('btnCheckFormValidity');
+		const formValidationMessage = document.getElementById('formValidationMessage');
+		const textareaForm = document.getElementById('textareaForm');
+
+		btnCheckFormValidity.addEventListener('click', function () {
+			checkFormValidity('textareaForm');
+		});
+
+		textareaForm.addEventListener('ui5-change', function () {
+			setTimeout(() => {
+				checkFormValidity('textareaForm', true);
+			}, 0);
+		});
+
+		function checkFormValidity(elementId, delayed = false) {
+			const element = document.getElementById(elementId);
+			const isValid = element.checkValidity();
+
+			element.reportValidity();
+
+			// Show result
+			formValidationMessage.hidden = false;
+			formValidationMessage.innerText = `checkValidity(): ${isValid} ${delayed ? '( Delayed check )' : ''}`;
+			formValidationMessage.design = isValid ? "Positive" : "Negative";
+		}
+
 		var changeCounter = 0;
 		var inputCounter = 0;
 
@@ -219,6 +317,29 @@
 		document.getElementById('textarea-input').addEventListener("ui5-input", function (event) {
 			inputCounter += 1;
 			document.getElementById('inputResult').value = `${inputCounter}`;
+		});
+
+		document.getElementById('textarea-prevent-escape').addEventListener("ui5-input", function (event) {
+			if (event.detail.escapePressed) {
+				event.preventDefault();
+			}
+		});
+
+		const thresholdTextarea = document.getElementById('textarea-threshold-coloring');
+		const thresholdInfo = document.getElementById('threshold-info');
+
+		thresholdTextarea.addEventListener('ui5-input', function(e) {
+			const maxLength = 100;
+			const currentLength = e.target.value.length;
+			const percentage = (currentLength / maxLength) * 100;
+
+			thresholdInfo.textContent = `${currentLength}/${maxLength} characters (${Math.round(percentage)}%)`;
+
+			if (percentage >= 75) {
+				e.target.valueState = 'Critical';
+			} else {
+				e.target.valueState = 'None';
+			}
 		});
 	</script>
 

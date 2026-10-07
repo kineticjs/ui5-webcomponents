@@ -1,22 +1,23 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import type { ITabbable } from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
-import ColorPaletteItem from "./ColorPaletteItem.js";
-import Button from "./Button.js";
-import type Dialog from "./Dialog.js";
-import type ColorPaletteMoreColors from "./features/ColorPaletteMoreColors.js";
+import type { JsxTemplate } from "@ui5/webcomponents-base/dist/index.js";
+import type ColorPaletteItem from "./ColorPaletteItem.js";
+import type Button from "./Button.js";
 import type ColorPicker from "./ColorPicker.js";
+import "./ColorPaletteItem.js";
 /**
  * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
  * @public
  */
-interface IColorPaletteItem extends HTMLElement, ITabbable {
+interface IColorPaletteItem extends UI5Element, ITabbable {
     value?: string;
     index?: number;
     selected?: boolean;
 }
-type ColorPaletteNavigationItem = IColorPaletteItem | Button;
+type ColorPaletteNavigationItem = ColorPaletteItem | Button;
 type ColorPaletteItemClickEventDetail = {
     color: string;
 };
@@ -40,6 +41,9 @@ type ColorPaletteItemClickEventDetail = {
  * @public
  */
 declare class ColorPalette extends UI5Element {
+    eventDetails: {
+        "item-click": ColorPaletteItemClickEventDetail;
+    };
     /**
      * Defines whether the user can see the last used colors in the bottom of the component
      * @private
@@ -49,7 +53,6 @@ declare class ColorPalette extends UI5Element {
     /**
      * Defines whether the user can choose a custom color from a color picker
      *
-     * **Note:** In order to use this property you need to import the following module: `"@ui5/webcomponents/dist/features/ColorPaletteMoreColors.js"`
      * @private
      * @since 1.0.0-rc.15
      */
@@ -70,6 +73,20 @@ declare class ColorPalette extends UI5Element {
      */
     defaultColor?: string;
     /**
+     * Defines the accessible name of the component.
+     * @default undefined
+     * @public
+     * @since 2.20.0
+     */
+    accessibleName?: string;
+    /**
+     * Receives id(or many ids) of the elements that label the component.
+     * @default undefined
+     * @public
+     * @since 2.20.0
+     */
+    accessibleNameRef?: string;
+    /**
      * Defines the selected color, only valid CSS color values accepted
      * @private
      */
@@ -85,74 +102,195 @@ declare class ColorPalette extends UI5Element {
      */
     onPhone: boolean;
     /**
+
+     * The showMoreColors template.
+     * @private
+     */
+    showMoreColorsTemplate?: JsxTemplate;
+    /**
+     * @private
+     */
+    dialogOpen: boolean;
+    /**
+     * @private
+     */
+    colorPickerValue: string;
+    /**
      * Defines the `ui5-color-palette-item` elements.
      * @public
      */
-    colors: Array<IColorPaletteItem>;
+    colors: DefaultSlot<ColorPaletteItem>;
     _itemNavigation: ItemNavigation;
     _itemNavigationRecentColors: ItemNavigation;
     _recentColors: Array<string>;
-    moreColorsFeature: ColorPaletteMoreColors | Record<string, any>;
     _currentlySelected?: ColorPaletteItem;
     _shouldFocusRecentColors: boolean;
+    _defaultColorButton: Button;
+    _moreColorsButton: Button;
+    _colorPicker?: ColorPicker;
     static i18nBundle: I18nBundle;
-    static onDefine(): Promise<void>;
     constructor();
     onBeforeRendering(): void;
     onAfterRendering(): void;
     selectColor(item: ColorPaletteItem): void;
     _setColor(color: string): void;
-    get effectiveColorItems(): IColorPaletteItem[];
+    get effectiveColorItems(): ColorPaletteItem[];
     /**
      * Ensures that only one item is selected or only the last selected item remains active if more than one are explicitly set as 'selected'.
      * @private
      */
     _ensureSingleSelectionOrDeselectAll(): void;
     _onclick(e: MouseEvent): void;
+    _onmousedown(e: MouseEvent): void;
     _onkeyup(e: KeyboardEvent): void;
     _onkeydown(e: KeyboardEvent): void;
     handleSelection(target: ColorPaletteItem): void;
+    getFocusDomRef(): HTMLElement | undefined;
     _handleDefaultColorClick(e: KeyboardEvent): void;
     _onDefaultColorKeyUp(e: KeyboardEvent): void;
     _onDefaultColorKeyDown(e: KeyboardEvent): void;
     _onMoreColorsKeyDown(e: KeyboardEvent): void;
-    _isUpOrDownNavigatableColorPaletteItem(e: KeyboardEvent): boolean | undefined;
     _onColorContainerKeyDown(e: KeyboardEvent): void;
     _onRecentColorsContainerKeyDown(e: KeyboardEvent): void;
+    /**
+     * Checks if the keyboard event is up/down navigation on a displayed color palette item
+     * @private
+     */
+    _isUpOrDownNavigatableColorPaletteItem(e: KeyboardEvent): boolean;
+    _isPrevious(e: KeyboardEvent): boolean;
+    _isNext(e: KeyboardEvent): boolean;
+    _isFirstSwatch(target: ColorPaletteItem, swatches: Array<ColorPaletteItem>): boolean;
+    _getColorPaletteItemFromEvent(e: KeyboardEvent, swatches: Array<ColorPaletteItem>): ColorPaletteItem | undefined;
+    _isLastSwatch(target: ColorPaletteItem, swatches: Array<ColorPaletteItem>): boolean;
+    /**
+     * Checks if the target swatch is the first swatch in its row.
+     * @private
+     */
+    _isFirstSwatchInRow(target: ColorPaletteItem): boolean;
+    /**
+     * Checks if the target swatch is the last swatch in its row.
+     * @private
+     */
+    _isLastSwatchInRow(target: ColorPaletteItem): boolean;
+    /**
+     * Checks if the given color swatch is the last swatch of the last full row.
+     *
+     * Example 1: 12 colors with rowSize 5
+     * Row 1: [0, 1, 2, 3, 4]  ← Complete row
+     * Row 2: [5, 6, 7, 8, 9]  ← Complete row (last complete row)
+     * Row 3: [10, 11]         ← Incomplete row
+     *
+     * @param target The color swatch to check.
+     * @returns True if the swatch is the last of the last full row, false otherwise.
+     */
+    _isLastSwatchOfLastFullRow(target: ColorPaletteItem): boolean;
+    _isSwatchInLastRow(target: ColorPaletteItem): boolean;
+    /**
+     * Checks if HOME/END navigation should be prevented in embedded mode.
+     * In embedded mode, HOME/END keys are blocked as they only work in popup mode per design.
+     * @private
+     * @param e The keyboard event to check
+     * @returns True if the event should be prevented, false otherwise
+     */
+    _shouldPreventHomeEnd(e: KeyboardEvent): boolean;
+    /**
+     * Helper to check if all displayed colors fit in a single row
+     * @private
+     */
+    _isSingleRow(): boolean;
+    /**
+     * Helper to focus the first available element from a list of candidates.
+     *
+     * This method implements a fallback chain pattern for keyboard navigation in the color palette.
+     * It attempts to execute focus actions in priority order, stopping at the first successful one.
+     *
+     * For example when navigating left from the default color button, try these options in order:
+     * this._focusFirstAvailable(
+     *   () => this._focusLastRecentColor(),    // 1st choice: focus last recent color if available
+     *   () => this._focusMoreColors(),         // 2nd choice: focus "More Colors" button if available
+     *   () => this._focusLastDisplayedColor()  // 3rd choice: focus last color in the main palette
+     * );
+     *
+     * @private
+     * @param candidates - Functions that attempt to focus an element. Each function should return true if focus was successful, false otherwise.
+     * @returns True if any candidate successfully focused an element, false if all failed.
+     */
+    _focusFirstAvailable(...candidates: Array<() => boolean>): boolean;
+    /**
+     * Helper to focus default color button if available
+     * @private
+     */
+    _focusDefaultColor(): boolean;
+    /**
+     * Helper to focus more colors button if available
+     * @private
+     */
+    _focusMoreColors(): boolean;
+    /**
+     * Helper to focus first displayed color if available
+     * @private
+     */
+    _focusFirstDisplayedColor(): boolean;
+    /**
+     * Helper to focus last displayed color if available
+     * @private
+     */
+    _focusLastDisplayedColor(): boolean;
+    /**
+     * Helper to focus last swatch of last full row if available
+     * @private
+     */
+    _focusLastSwatchOfLastFullRow(): boolean;
+    /**
+     * Returns the index of the last swatch in the last complete row.
+     * @private
+     */
+    _getLastCompleteRowEndIndex(total: number, rowSize: number): number;
+    /**
+     * Helper to focus first recent color if available
+     * @private
+     */
+    _focusFirstRecentColor(): boolean;
+    /**
+     * Helper to focus last recent color if available
+     * @private
+     */
+    _focusLastRecentColor(): boolean;
     focusColorElement(element: ColorPaletteNavigationItem, itemNavigation: ItemNavigation): void;
-    get firstFocusableElement(): ColorPaletteNavigationItem;
+    onColorPickerChange(e: Event): void;
     _chooseCustomColor(): void;
     _addRecentColor(color: string): void;
     _closeDialog(): void;
     _openMoreColorsDialog(): void;
+    _onColorPickerDialogOpen(): void;
     _onDefaultColorClick(): void;
     /**
      * Returns the selected item.
      */
-    get selectedItem(): IColorPaletteItem | undefined;
-    get allColorsInPalette(): IColorPaletteItem[];
+    get selectedItem(): ColorPaletteItem | undefined;
+    get allColorsInPalette(): ColorPaletteItem[];
+    get colorPaletteDialogTitle(): string;
+    get colorPaletteDialogOKButton(): string;
+    get colorPaletteCancelButton(): string;
     /**
      * Returns the selected color.
      */
     get selectedColor(): string | undefined;
-    get displayedColors(): IColorPaletteItem[];
+    get displayedColors(): Array<ColorPaletteItem>;
     get colorContainerLabel(): string;
     get colorPaletteMoreColorsText(): string;
     get colorPaletteDefaultColorText(): string;
-    get _showMoreColors(): false | ColorPaletteMoreColors | Record<string, any>;
     get rowSize(): number;
     get hasRecentColors(): string | false;
     get recentColors(): string[];
     get recentColorsElements(): Array<ColorPaletteItem>;
-    get colorPaletteNavigationElements(): ColorPaletteNavigationItem[];
     get classes(): {
         colorPaletteRoot: {
             "ui5-cp-root": boolean;
             "ui5-cp-root-phone": boolean;
         };
     };
-    _getDialog(): Dialog;
-    getColorPicker(): ColorPicker;
+    static ColorPaletteMoreColorsTemplate?: JsxTemplate;
 }
 export default ColorPalette;
 export type { ColorPaletteItemClickEventDetail, IColorPaletteItem, };

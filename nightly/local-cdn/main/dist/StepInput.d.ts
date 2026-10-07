@@ -1,16 +1,12 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import type { Timeout } from "@ui5/webcomponents-base/dist/types.js";
+import type { Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import "@ui5/webcomponents-icons/dist/less.js";
-import "@ui5/webcomponents-icons/dist/add.js";
-import Input from "./Input.js";
-import InputType from "./types/InputType.js";
-type StepInputValueStateChangeEventDetail = {
-    valueState: `${ValueState}`;
-    valid: boolean;
-};
+import type ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { InputEventDetail } from "./Input.js";
+import type NumericInput from "./NumericInput.js";
+import type { NumericInputValueStateChangeEventDetail } from "./NumericInput.js";
+type StepInputValueStateChangeEventDetail = NumericInputValueStateChangeEventDetail;
 /**
  * @class
  *
@@ -53,6 +49,11 @@ type StepInputValueStateChangeEventDetail = {
  * @public
  */
 declare class StepInput extends UI5Element implements IFormInputElement {
+    eventDetails: {
+        change: void;
+        input: InputEventDetail;
+        "value-state-change": StepInputValueStateChangeEventDetail;
+    };
     /**
      * Defines a value of the component.
      * @default 0
@@ -104,17 +105,12 @@ declare class StepInput extends UI5Element implements IFormInputElement {
     /**
      * Defines a short hint, intended to aid the user with data entry when the
      * component has no value.
-     *
-     * **Note:** When no placeholder is set, the format pattern is displayed as a placeholder.
-     * Passing an empty string as the value of this property will make the component appear empty - without placeholder or format pattern.
      * @default undefined
      * @public
      */
     placeholder?: string;
     /**
      * Determines the name by which the component will be identified upon submission in an HTML form.
-     *
-     * **Note:** This property is only applicable within the context of an HTML Form element.
      * @default undefined
      * @public
      */
@@ -139,100 +135,25 @@ declare class StepInput extends UI5Element implements IFormInputElement {
      * @since 1.0.0-rc.15
      */
     accessibleNameRef?: string;
-    _decIconDisabled: boolean;
-    _incIconDisabled: boolean;
-    focused: boolean;
-    _inputFocused: boolean;
-    _previousValue: number;
-    _waitTimeout: number;
-    _speed: number;
-    _btnDown?: boolean;
-    _spinTimeoutId?: Timeout;
-    _spinStarted: boolean;
     /**
      * Defines the value state message that will be displayed as pop up under the component.
-     *
-     * **Note:** If not specified, a default text (in the respective language) will be displayed.
-     *
-     * **Note:** The `valueStateMessage` would be displayed,
-     * when the component is in `Information`, `Warning` or `Error` value state.
      * @public
      */
-    valueStateMessage: Array<HTMLElement>;
-    _initialValueState?: `${ValueState}`;
+    valueStateMessage: Slot<HTMLElement>;
     static i18nBundle: I18nBundle;
+    get _innerNumberInput(): NumericInput;
     formElementAnchor(): Promise<HTMLElement | undefined>;
+    get formValidityMessage(): string;
+    get formValidity(): ValidityStateFlags;
     get formFormattedValue(): FormData | string | null;
-    static onDefine(): Promise<void>;
-    get type(): InputType;
-    get decIconTitle(): string;
-    get decIconName(): string;
-    get incIconTitle(): string;
-    get incIconName(): string;
-    get _decIconClickable(): boolean;
-    get _incIconClickable(): boolean;
-    get _isFocused(): boolean;
-    get _displayValue(): string;
-    get accInfo(): {
-        ariaRequired: boolean;
-        ariaLabel: string | undefined;
-    };
-    get inputAttributes(): {
-        min: number | undefined;
-        max: number | undefined;
-        step: number;
-    };
-    onBeforeRendering(): void;
-    get input(): Input;
-    get innerInput(): HTMLInputElement;
-    get inputOuter(): Element;
-    _onButtonFocusOut(): void;
-    _onInputFocusIn(): void;
-    _onInputFocusOut(): void;
-    _setButtonState(): void;
-    _validate(): void;
-    _updateValueState(): void;
-    _preciseValue(value: number): number;
-    _fireChangeEvent(): void;
-    /**
-     * Value modifier - modifies the value of the component, validates the new value and enables/disables increment and
-     * decrement buttons according to the value and min/max values (if set). Fires `change` event when requested
-     * @private
-     * @param modifier modifies the value of the component with the given modifier (positive or negative)
-     * @param fireChangeEvent if `true`, fires `change` event when the value is changed
-     */
-    _modifyValue(modifier: number, fireChangeEvent?: boolean): void;
-    _incValue(e: CustomEvent): void;
-    _decValue(e: CustomEvent): void;
-    get _isValueWithCorrectPrecision(): boolean;
-    _onInputChange(): void;
-    _setDefaultInputValueIfNeeded(): void;
-    _isValueChanged(inputValue: number): boolean;
-    _updateValueAndValidate(inputValue: number): void;
-    _onfocusin(): void;
-    _onfocusout(): void;
-    _onkeydown(e: KeyboardEvent): void;
-    _decSpin(): void;
-    _incSpin(): void;
-    /**
-     * Calculates the time which should be waited until _spinValue function is called.
-     */
-    _calcWaitTimeout(): number;
-    /**
-     * Called when the increment or decrement button is pressed and held to set new value.
-     * @private
-     * @param increment - is this the increment button or not so the values should be spin accordingly up or down
-     * @param resetVariables - whether to reset the spin-related variables or not
-     */
-    _spinValue(increment: boolean, resetVariables?: boolean): void;
-    /**
-    * Resets spin process
-    */
-    _resetSpin(): void;
-    /**
-    * Resets spin process when mouse outs + or - buttons
-    */
-    _resetSpinOut(): void;
+    getFocusDomRef(): HTMLElement | undefined;
+    getFocusDomRefAsync(): Promise<HTMLElement | undefined>;
+    get _associatedLabelText(): string | undefined;
+    _onNumberInputChange(e: Event): void;
+    _onNumberInputInput(e: CustomEvent<InputEventDetail>): void;
+    _onNumberInputValueStateChange(e: CustomEvent<StepInputValueStateChangeEventDetail>): void;
+    _syncFromInner(): void;
+    _onRequestSubmit(): void;
 }
 export default StepInput;
 export type { StepInputValueStateChangeEventDetail, };

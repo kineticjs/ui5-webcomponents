@@ -1,4 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 /**
  * @class
  *
@@ -22,6 +24,10 @@ import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
  * The responsive behavior of the `DynamicPageHeader` depends on the behavior of the
  * content that is displayed.
  *
+ * ### Accessibility
+ *
+ * The `DynamicPageHeader` provides an accessible label for the header region.
+ *
  * @constructor
  * @extends UI5Element
  * @public
@@ -33,6 +39,27 @@ declare class DynamicPageHeader extends UI5Element {
      *
      * @public
      */
-    content: HTMLElement[];
+    content: DefaultSlot<HTMLElement>;
+    /**
+     * Defines if the header is snapped.
+     *
+     * @default false
+     * @private
+     */
+    _snapped: boolean;
+    /**
+     * Defines the accessible ARIA label for the header region.
+     * Overrides the default "Header Expanded" / "Header Snapped" text.
+     * @public
+     * @default undefined
+     * @since 2.24.0
+     */
+    accessibleName?: string;
+    static i18nBundle: I18nBundle;
+    /**
+     * Returns the aria-label for the header region.
+     * @internal
+     */
+    get _headerRegionAriaLabel(): string;
 }
 export default DynamicPageHeader;

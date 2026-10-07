@@ -1,26 +1,30 @@
 import type UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type { ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { ChangeInfo, DefaultSlot, Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
+import CalendarDateComponent from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-left.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
+import CalendarDateRange from "./CalendarDateRange.js";
+import "./SpecialCalendarDate.js";
 import CalendarPart from "./CalendarPart.js";
-import type { DayPickerChangeEventDetail } from "./DayPicker.js";
+import type { DayPickerChangeEventDetail, DayPickerNavigateEventDetail } from "./DayPicker.js";
 import type { MonthPickerChangeEventDetail } from "./MonthPicker.js";
 import type { YearPickerChangeEventDetail } from "./YearPicker.js";
 import CalendarSelectionMode from "./types/CalendarSelectionMode.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
-import CalendarLegend from "./CalendarLegend.js";
+import type CalendarLegend from "./CalendarLegend.js";
 import type { CalendarLegendItemSelectionChangeEventDetail } from "./CalendarLegend.js";
-import SpecialCalendarDate from "./SpecialCalendarDate.js";
+import type SpecialCalendarDate from "./SpecialCalendarDate.js";
 import type CalendarLegendItemType from "./types/CalendarLegendItemType.js";
+import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
-interface ICalendarPicker {
+import type { YearRangePickerChangeEventDetail } from "./YearRangePicker.js";
+interface ICalendarPicker extends HTMLElement {
     _showPreviousPage: () => void;
     _showNextPage: () => void;
     _hasPreviousPage: () => boolean;
     _hasNextPage: () => boolean;
-    _autoFocus?: boolean;
-    _firstYear?: number;
-    _lastYear?: number;
+    _currentYearRange?: CalendarYearRangeT;
 }
 /**
  * Interface for components that may be slotted inside a `ui5-calendar`.
@@ -41,6 +45,15 @@ type CalendarSelectionChangeEventDetail = {
 type SpecialCalendarDateT = {
     specialDateTimestamp: number;
     type: `${CalendarLegendItemType}`;
+    tooltip?: string;
+};
+type CalendarYearRangeT = {
+    startYear: number;
+    endYear: number;
+};
+type DisabledDateRangeT = {
+    startValue?: string;
+    endValue?: string;
 };
 /**
  * @class
@@ -137,9 +150,32 @@ type SpecialCalendarDateT = {
  * @constructor
  * @extends CalendarPart
  * @public
+ * @csspart day-cell - Used to style the day cells.
+ * @csspart day-cell-selected - Used to style the day cells when selected.
+ * @csspart day-cell-selected-between - Used to style the day cells in between of selected dates in range.
+ * @csspart month-cell - Used to style the month cells.
+ * @csspart month-cell-selected - Used to style the month cells when selected.
+ * @csspart month-cell-selected-between - Used to style the day cells in between of selected months in range.
+ * @csspart month-picker-root - Used to style the month picker root container.
+ * @csspart year-cell - Used to style the year cells.
+ * @csspart year-cell-selected - Used to style the year cells when selected.
+ * @csspart year-cell-selected-between - Used to style the year cells in between of selected years in range.
+ * @csspart year-picker-root - Used to style the year picker root container.
+ * @csspart year-range-cell - Used to style the year range cells.
+ * @csspart year-range-cell-selected - Used to style the year range cells when selected.
+ * @csspart year-range-cell-selected-between - Used to style the year range cells in between of selected year ranges.
+ * @csspart year-range-picker-root - Used to style the year range picker root container.
+ * @csspart calendar-header-middle-button - Used to style the calendar header middle buttons (month/year/year-range buttons).
+ * @csspart calendar-header-arrow-button - Used to style the calendar header navigation arrow buttons (previous/next buttons).
  * @since 1.0.0-rc.11
  */
 declare class Calendar extends CalendarPart {
+    eventDetails: CalendarPart["eventDetails"] & {
+        "selection-change": CalendarSelectionChangeEventDetail;
+        "show-month-view": void;
+        "show-year-view": void;
+        "show-year-range-view": void;
+    };
     /**
      * Defines the type of selection used in the calendar component.
      * Accepted property values are:
@@ -161,43 +197,87 @@ declare class Calendar extends CalendarPart {
      */
     hideWeekNumbers: boolean;
     /**
-     * Which picker is currently visible to the user: day/month/year
+     * Defines whether the component displays two months side by side in the picker popup.
+     * @default false
+     * @private
+     * @since 2.22.0
+     */
+    _showTwoMonths: boolean;
+    /**
+     * Which picker is currently visible to the user: day/month/year/yearRange
      * @private
      */
-    _currentPicker: "day" | "month" | "year";
+    _currentPicker: "day" | "month" | "year" | "yearrange";
     _previousButtonDisabled: boolean;
     _nextButtonDisabled: boolean;
     _headerMonthButtonText?: string;
     _headerYearButtonText?: string;
     _headerYearButtonTextSecType?: string;
+    _headerYearRangeButtonText?: string;
+    _headerYearRangeButtonTextSecType?: string;
     _pickersMode: `${CalendarPickersMode}`;
     _valueIsProcessed: boolean;
+    _rangeStartYear?: number;
     /**
      * Defines the calendar legend of the component.
      * @public
      * @since 1.23.0
      */
-    calendarLegend: Array<CalendarLegend>;
+    calendarLegend: Slot<CalendarLegend>;
     /**
      * Defines the selected date or dates (depending on the `selectionMode` property)
      * for this calendar as instances of `ui5-date` or `ui5-date-range`.
      * Use `ui5-date` for single or multiple selection, and `ui5-date-range` for range selection.
      * @public
      */
-    dates: Array<ICalendarSelectedDates>;
+    dates: DefaultSlot<ICalendarSelectedDates>;
     /**
      * Defines the special dates, visually emphasized in the calendar.
      * @public
      * @since 1.23.0
      */
-    specialDates: Array<SpecialCalendarDate>;
+    specialDates: Slot<SpecialCalendarDate>;
+    /**
+     * Defines the disabled date ranges that cannot be selected in the calendar.
+     * Use `ui5-date-range` elements to specify ranges of disabled dates.
+     * Each range can define a start date, an end date, or both.
+     * @public
+     * @since 2.16.0
+     */
+    disabledDates: Slot<CalendarDateRange>;
     /**
      * Defines the selected item type of the calendar legend item (if such exists).
      * @private
      */
     _selectedItemType: `${CalendarLegendItemType}`;
+    _phoneMode: boolean;
+    _handleResizeBound: ResizeObserverCallback;
+    static i18nBundle: I18nBundle;
     constructor();
-    static onDefine(): Promise<void>;
+    onEnterDOM(): void;
+    get _phoneView(): boolean;
+    get _portraitView(): boolean;
+    /**
+     * Handles document resize to switch between `phoneMode` and `portraitMode`.
+     * - `_phoneMode`: When resolution is under PHONE_MODE_BREAKPOINT (regardless of device type)
+     */
+    _handleResize(): void;
+    onExitDOM(): void;
+    /**
+     * Returns the timestamp for a specific month index when displaying multiple months
+     * @private
+     */
+    _getMonthTimestamp(monthIndex: number): number;
+    /**
+     * Generates header button text (month and year) for a specific month timestamp
+     * @private
+     */
+    _getHeaderTextForMonth(monthTimestamp: number): {
+        monthText: string;
+        yearText: string;
+        secondMonthText?: string;
+        secondYearText?: string;
+    };
     /**
      * @private
      */
@@ -207,6 +287,10 @@ declare class Calendar extends CalendarPart {
      */
     _setSelectedDates(selectedDates: Array<number>): void;
     _isValidCalendarDate(dateString: string): boolean;
+    get _disabledDates(): {
+        startValue: string;
+        endValue: string;
+    }[];
     get _specialCalendarDates(): SpecialCalendarDateT[];
     _onCalendarLegendSelectionChange(e: CustomEvent<CalendarLegendItemSelectionChangeEventDetail>): void;
     /**
@@ -214,19 +298,30 @@ declare class Calendar extends CalendarPart {
      */
     _normalizeCurrentPicker(): void;
     onBeforeRendering(): void;
-    onAfterRendering(): Promise<void>;
+    onAfterRendering(): void;
     onInvalidation(changeInfo: ChangeInfo): void;
     /**
      * The user clicked the "month" button in the header
      */
-    onHeaderShowMonthPress(e: CustomEvent): void;
-    showMonth(): void;
+    onHeaderMonthButtonPress(): void;
+    switchToDayPicker(suppressFocus?: boolean): Promise<void>;
+    switchToMonthPicker(suppressFocus?: boolean): Promise<void>;
     /**
      * The user clicked the "year" button in the header
      */
-    onHeaderShowYearPress(e: CustomEvent): void;
-    showYear(): void;
+    onHeaderYearButtonPress(): void;
+    switchToYearPicker(suppressFocus?: boolean): Promise<void>;
+    /**
+     * The user clicked the "year range" button in the YearPicker header
+     */
+    onHeaderYearRangeButtonPress(): void;
+    switchToYearRangePicker(suppressFocus?: boolean): Promise<void>;
     get _currentPickerDOM(): ICalendarPicker;
+    /**
+     * Returns the focusable element inside the Calendar (the current picker)
+     * @override
+     */
+    getFocusDomRef(): HTMLElement | undefined;
     /**
      * The year clicked the "Previous" button in the header
      */
@@ -238,27 +333,39 @@ declare class Calendar extends CalendarPart {
     _setSecondaryCalendarTypeButtonText(): void;
     get secondaryCalendarTypeButtonText(): {
         yearButtonText: string;
-        monthButtonText: any;
-        monthButtonInfo: any;
+        monthButtonText: string;
+        monthButtonInfo: string;
     } | undefined;
+    get _monthsToShow(): 1 | 2;
     /**
      * The month button is hidden when the month picker or year picker is shown
      * @private
      */
     get _isHeaderMonthButtonHidden(): boolean;
     /**
-     * The year button is hidden when the year picker is shown
+     * The year range picker button is shown only in the year picker
+     * @private
+     */
+    get _isHeaderYearRangeButtonHidden(): boolean;
+    /**
+     * The year button is shown only in the day & month pickers
      * @private
      */
     get _isHeaderYearButtonHidden(): boolean;
     get _isDayPickerHidden(): boolean;
     get _isMonthPickerHidden(): boolean;
     get _isYearPickerHidden(): boolean;
+    get _isYearRangePickerHidden(): boolean;
+    get _isDefaultHeaderModeInMultipleMonths(): boolean;
+    get _shouldShowOnePickerHeaderButtonInMultipleMonths(): boolean;
+    get _inert(): boolean;
+    get _currentYearRange(): CalendarYearRangeT;
     _fireEventAndUpdateSelectedDates(selectedDates: Array<number>): void;
     onSelectedDatesChange(e: CustomEvent<DayPickerChangeEventDetail>): void;
     onSelectedMonthChange(e: CustomEvent<MonthPickerChangeEventDetail>): void;
     onSelectedYearChange(e: CustomEvent<YearPickerChangeEventDetail>): void;
-    onNavigate(e: CustomEvent): void;
+    onSelectedYearRangeChange(e: CustomEvent<YearRangePickerChangeEventDetail>): void;
+    onNavigate(e: CustomEvent<DayPickerNavigateEventDetail>): Promise<void>;
     _onkeydown(e: KeyboardEvent): void;
     _onLegendFocusOut(): void;
     get _specialDates(): SpecialCalendarDate[];
@@ -274,16 +381,53 @@ declare class Calendar extends CalendarPart {
     };
     get accInfo(): {
         ariaLabelMonthButton: string;
+        ariaLabelYearButton: string;
+        ariaLabelYearRangeButton: string;
+        ariaLabelNextButton: string;
+        ariaLabelPrevButton: string;
+        keyShortcutMonthButton: string;
+        keyShortcutYearButton: string;
+        keyShortcutYearRangeButton: string;
+        keyShortcutNextButton: string;
+        keyShortcutPrevButton: string;
+        tooltipMonthButton: string;
+        tooltipYearButton: string;
+        tooltipYearRangeButton: string;
+        tooltipNextButton: string;
+        tooltipPrevButton: string;
     };
-    get headerPreviousButtonText(): string | undefined;
-    get headerNextButtonText(): string | undefined;
+    /**
+     * Helper method to create CalendarDateComponent instances for year range
+     * @private
+     */
+    _createYearRangeDates(yearRange: CalendarYearRangeT, calendarType?: string): {
+        rangeStart: CalendarDateComponent;
+        rangeEnd: CalendarDateComponent;
+    };
+    /**
+     * Helper method to format year range text
+     * @private
+     */
+    _formatYearRangeText(yearRange: CalendarYearRangeT): {
+        rangeStartText: string;
+        rangeEndText: string;
+    };
     get secondMonthButtonText(): string;
     onMonthButtonKeyDown(e: KeyboardEvent): void;
     onMonthButtonKeyUp(e: KeyboardEvent): void;
     onYearButtonKeyDown(e: KeyboardEvent): void;
     onYearButtonKeyUp(e: KeyboardEvent): void;
+    onYearRangeButtonKeyDown(e: KeyboardEvent): void;
+    onYearRangeButtonKeyUp(e: KeyboardEvent): void;
+    _handleNavigationButtonClick(e: MouseEvent, isDisabled: boolean, action: () => void): void;
+    _handlePrevNextButtonKeyDown(e: KeyboardEvent, isDisabled: boolean, action: () => void): void;
+    _handlePrevNextButtonKeyUp(e: KeyboardEvent, isDisabled: boolean, action: () => void): void;
     onPrevButtonClick(e: MouseEvent): void;
     onNextButtonClick(e: MouseEvent): void;
+    onPrevButtonKeyDown(e: KeyboardEvent): void;
+    onPrevButtonKeyUp(e: KeyboardEvent): void;
+    onNextButtonKeyDown(e: KeyboardEvent): void;
+    onNextButtonKeyUp(e: KeyboardEvent): void;
     /**
      * Returns an array of UTC timestamps, representing the selected dates.
      * @protected
@@ -299,4 +443,4 @@ declare class Calendar extends CalendarPart {
     set selectedDates(selectedDates: Array<number>);
 }
 export default Calendar;
-export type { ICalendarPicker, ICalendarSelectedDates, CalendarSelectionChangeEventDetail, SpecialCalendarDateT, };
+export type { ICalendarPicker, CalendarYearRangeT, ICalendarSelectedDates, CalendarSelectionChangeEventDetail, SpecialCalendarDateT, DisabledDateRangeT, };

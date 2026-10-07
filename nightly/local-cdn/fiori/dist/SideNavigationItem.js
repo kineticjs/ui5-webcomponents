@@ -4,20 +4,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var SideNavigationItem_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import jsxRender from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import { isLeft, isRight } from "@ui5/webcomponents-base/dist/Keys.js";
-import "@ui5/webcomponents-icons/dist/navigation-right-arrow.js";
-import "@ui5/webcomponents-icons/dist/navigation-down-arrow.js";
-import "@ui5/webcomponents-icons/dist/circle-task-2.js";
-import "@ui5/webcomponents-icons/dist/arrow-right.js";
-import Icon from "@ui5/webcomponents/dist/Icon.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import { isLeft, isRight, isMinus, isPlus, isEnter, } from "@ui5/webcomponents-base/dist/Keys.js";
 import SideNavigationSelectableItemBase from "./SideNavigationSelectableItemBase.js";
-import SideNavigationItemTemplate from "./generated/templates/SideNavigationItemTemplate.lit.js";
+import { SIDE_NAVIGATION_ICON_COLLAPSE, SIDE_NAVIGATION_ICON_EXPAND, SIDE_NAVIGATION_OVERFLOW_ITEM_LABEL, SIDE_NAVIGATION_PARENT_ITEM_SELECTABLE_DESCRIPTION, } from "./generated/i18n/i18n-defaults.js";
+import "@ui5/webcomponents/dist/Tag.js";
+// Templates
+import SideNavigationItemTemplate from "./SideNavigationItemTemplate.js";
 // Styles
 import SideNavigationItemCss from "./generated/themes/SideNavigationItem.css.js";
+import createInstanceChecker from "@ui5/webcomponents-base/dist/util/createInstanceChecker.js";
 /**
  * @class
  *
@@ -36,7 +37,7 @@ import SideNavigationItemCss from "./generated/themes/SideNavigationItem.css.js"
  * @public
  * @since 1.0.0-rc.8
  */
-let SideNavigationItem = class SideNavigationItem extends SideNavigationSelectableItemBase {
+let SideNavigationItem = SideNavigationItem_1 = class SideNavigationItem extends SideNavigationSelectableItemBase {
     constructor() {
         super(...arguments);
         /**
@@ -54,58 +55,33 @@ let SideNavigationItem = class SideNavigationItem extends SideNavigationSelectab
          * @since 1.10.0
          */
         this._fixed = false;
-        this._onToggleClick = (e) => {
-            e.stopPropagation();
-            this.expanded = !this.expanded;
-        };
-        this._onkeydown = (e) => {
-            if (isLeft(e)) {
-                this.expanded = false;
-                return;
-            }
-            if (isRight(e)) {
-                this.expanded = true;
-                return;
-            }
-            super._onkeydown(e);
-        };
-        this._onkeyup = (e) => {
-            super._onkeyup(e);
-        };
-        this._onfocusin = (e) => {
-            super._onfocusin(e);
-        };
-        this._onclick = (e) => {
-            super._onclick(e);
-        };
-        this._onfocusout = () => {
-            if (!this.sideNavCollapsed) {
-                return;
-            }
-            this.getDomRef().classList.remove("ui5-sn-item-no-hover-effect");
-        };
-        this._onmouseenter = () => {
-            if (!this.sideNavCollapsed) {
-                return;
-            }
-            this.getDomRef().classList.remove("ui5-sn-item-no-hover-effect");
-        };
-        this._onmouseleave = () => {
-            if (!this.sideNavCollapsed || !this._selected) {
-                return;
-            }
-            this.getDomRef().classList.add("ui5-sn-item-no-hover-effect");
-        };
+    }
+    onBeforeRendering() {
+        this.items.forEach(item => {
+            item._parentDisabled = this.effectiveDisabled;
+        });
     }
     get overflowItems() {
         return [this];
     }
+    get hasSubItems() {
+        return this.items.length > 0;
+    }
+    get effectiveDisabled() {
+        return this.disabled || this._groupDisabled;
+    }
     get selectableItems() {
+        if (this.inPopover && this.unselectable && this.items.length) {
+            return [...this.items];
+        }
         return [this, ...this.items];
     }
     get focusableItems() {
         if (this.sideNavCollapsed) {
             return [this];
+        }
+        if (this.inPopover && this.unselectable && this.items.length) {
+            return [...this.items];
         }
         if (this.expanded) {
             return [this, ...this.items];
@@ -115,36 +91,73 @@ let SideNavigationItem = class SideNavigationItem extends SideNavigationSelectab
     get allItems() {
         return [this, ...this.items];
     }
+    get effectiveTabIndex() {
+        if (this.inPopover && this.unselectable) {
+            return undefined;
+        }
+        return super.effectiveTabIndex;
+    }
     get _ariaHasPopup() {
-        if (!this.disabled && this.sideNavCollapsed && this.items.length) {
+        if (this.inPopover && this.accessibilityAttributes?.hasPopup) {
+            return this.accessibilityAttributes.hasPopup;
+        }
+        if (!this.effectiveDisabled && this.sideNavCollapsed && this.items.length) {
             return "tree";
+        }
+        if (this.accessibilityAttributes?.hasPopup) {
+            return this.accessibilityAttributes.hasPopup;
+        }
+        if (this.isOverflow) {
+            return "menu";
         }
         return undefined;
     }
     get _ariaChecked() {
-        if (this.isOverflow) {
+        if (this.isOverflow || this.unselectable || !this.sideNavCollapsed) {
             return undefined;
         }
         return this.selected;
     }
     get _groupId() {
-        if (!this.items.length) {
+        if (!this.items.length || this.sideNavCollapsed) {
             return undefined;
         }
         return `${this._id}-group`;
     }
     get _expanded() {
-        if (!this.items.length) {
+        if (!this.items.length || this.sideNavCollapsed) {
             return undefined;
         }
         return this.expanded;
     }
-    get _toggleIconName() {
-        return this.expanded ? "navigation-down-arrow" : "navigation-right-arrow";
+    get _describedBy() {
+        const parts = [];
+        if (this.hasTag) {
+            parts.push(this._tagId);
+        }
+        if (!this.effectiveDisabled && this.items.length && !this.unselectable) {
+            parts.push(this._selectableItemDescriptionId);
+        }
+        return parts.length > 0 ? parts.join(" ") : undefined;
+    }
+    get _selectableItemDescriptionId() {
+        return `${this._id}-selectable-description`;
+    }
+    get _selectableItemDescriptionText() {
+        if (!this.effectiveDisabled && this.items.length && !this.unselectable) {
+            return SideNavigationItem_1.i18nBundle.getText(SIDE_NAVIGATION_PARENT_ITEM_SELECTABLE_DESCRIPTION, this.text ?? "");
+        }
+        return undefined;
+    }
+    get hasTag() {
+        return !!this.tag.length;
+    }
+    get _textId() {
+        return `${this._id}-text`;
     }
     get classesArray() {
         const classes = super.classesArray;
-        if (!this.disabled && this.parentNode.collapsed && this.items.length) {
+        if (!this.effectiveDisabled && this.items.length) {
             classes.push("ui5-sn-item-with-expander");
         }
         if (this._fixed) {
@@ -153,10 +166,124 @@ let SideNavigationItem = class SideNavigationItem extends SideNavigationSelectab
         return classes;
     }
     get _selected() {
-        if (this.sideNavCollapsed) {
+        if (this.sideNavCollapsed || !this.expanded) {
             return this.selected || this.items.some(item => item.selected);
         }
         return this.selected;
+    }
+    get _arrowTooltip() {
+        return this.expanded ? SideNavigationItem_1.i18nBundle.getText(SIDE_NAVIGATION_ICON_COLLAPSE)
+            : SideNavigationItem_1.i18nBundle.getText(SIDE_NAVIGATION_ICON_EXPAND);
+    }
+    get _ariaLabel() {
+        if (this.accessibleName) {
+            return this.accessibleName;
+        }
+        if (this.isOverflow) {
+            return SideNavigationItem_1.i18nBundle.getText(SIDE_NAVIGATION_OVERFLOW_ITEM_LABEL);
+        }
+        return undefined;
+    }
+    applyInitialFocusInPopover() {
+        if (this.unselectable && this.items.length) {
+            this.items[0]?.focus();
+        }
+        else {
+            this.focus();
+        }
+    }
+    _onToggleClick(e) {
+        e.stopPropagation();
+        this._toggle(!this.expanded);
+    }
+    _onkeydown(e) {
+        if (this.effectiveDisabled) {
+            return;
+        }
+        const isRTL = this.effectiveDir === "rtl";
+        if (this.sideNavigation.classList.contains("ui5-side-navigation-in-popover") || this.sideNavCollapsed) {
+            super._onkeydown(e);
+            return;
+        }
+        if (isLeft(e)) {
+            e.preventDefault();
+            this._toggle(isRTL);
+            return;
+        }
+        if (isRight(e)) {
+            e.preventDefault();
+            this._toggle(!isRTL);
+            return;
+        }
+        if (isMinus(e)) {
+            e.preventDefault();
+            this._toggle(false);
+            return;
+        }
+        if (isPlus(e)) {
+            e.preventDefault();
+            this._toggle(true);
+            return;
+        }
+        if (isEnter(e)) {
+            if (!this.inPopover && this.unselectable && !this.isExternalLink) {
+                e.preventDefault();
+            }
+        }
+        super._onkeydown(e);
+    }
+    _onkeyup(e) {
+        super._onkeyup(e);
+    }
+    _onfocusin(e) {
+        if (this.inPopover && this.unselectable && this.items.length) {
+            this.sideNavigation?.focusItem(this.items[0]);
+        }
+        else {
+            super._onfocusin(e);
+        }
+    }
+    _onclick(e) {
+        if (!this.inPopover && this.unselectable) {
+            this._toggle(!this.expanded);
+        }
+        super._onclick(e);
+    }
+    _onfocusout() {
+        if (!this.sideNavCollapsed) {
+            return;
+        }
+        this.getDomRef().classList.remove("ui5-sn-item-no-hover-effect");
+    }
+    _onmouseenter() {
+        if (!this.sideNavCollapsed) {
+            return;
+        }
+        this.getDomRef().classList.remove("ui5-sn-item-no-hover-effect");
+    }
+    _onmouseleave() {
+        if (!this.sideNavCollapsed || !this._selected) {
+            return;
+        }
+        this.getDomRef().classList.add("ui5-sn-item-no-hover-effect");
+    }
+    /**
+     * Handles the user-driven expand/collapse of the item.
+     *
+     * Fires the cancelable `item-toggle` event and, unless it is prevented, applies the
+     * new `expanded` value. The event is only fired for user interaction - programmatic
+     * changes to `expanded` stay silent.
+     *
+     * @private
+     */
+    _toggle(expanded) {
+        if (!this.items.length || this.effectiveDisabled || this.expanded === expanded) {
+            return;
+        }
+        // The event was prevented - keep the old value, suppressing the toggle.
+        if (this.sideNavigation?.fireDecoratorEvent("item-toggle", { item: this })) {
+            this.expanded = expanded;
+        }
     }
     get isSideNavigationItem() {
         return true;
@@ -171,21 +298,21 @@ __decorate([
 __decorate([
     slot({ type: HTMLElement, invalidateOnChildChange: true, "default": true })
 ], SideNavigationItem.prototype, "items", void 0);
-SideNavigationItem = __decorate([
+__decorate([
+    slot({ type: HTMLElement })
+], SideNavigationItem.prototype, "tag", void 0);
+__decorate([
+    i18n("@ui5/webcomponents-fiori")
+], SideNavigationItem, "i18nBundle", void 0);
+SideNavigationItem = SideNavigationItem_1 = __decorate([
     customElement({
         tag: "ui5-side-navigation-item",
-        renderer: litRender,
+        renderer: jsxRender,
         template: SideNavigationItemTemplate,
         styles: SideNavigationItemCss,
-        dependencies: [
-            Icon,
-        ],
     })
 ], SideNavigationItem);
 SideNavigationItem.define();
-const isInstanceOfSideNavigationItem = (object) => {
-    return "isSideNavigationItem" in object;
-};
 export default SideNavigationItem;
-export { isInstanceOfSideNavigationItem };
+export const isInstanceOfSideNavigationItem = createInstanceChecker("isSideNavigationItem");
 //# sourceMappingURL=SideNavigationItem.js.map

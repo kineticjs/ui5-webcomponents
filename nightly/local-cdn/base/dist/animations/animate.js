@@ -1,3 +1,4 @@
+import { getAnimationMode } from "../config/AnimationMode.js";
 import AnimationQueue from "./AnimationQueue.js";
 const animate = (options) => {
     let start = null;
@@ -42,7 +43,9 @@ const animate = (options) => {
         stop: () => stop,
     };
 };
-const duration = 400;
+const duration = () => {
+    return getAnimationMode() === "none" ? 0 : 400;
+};
 export { duration };
 export default animate;
 //# sourceMappingURL=animate.js.map

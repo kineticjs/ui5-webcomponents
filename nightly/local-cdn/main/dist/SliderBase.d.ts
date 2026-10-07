@@ -1,7 +1,6 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import type { PassiveEventListenerObject } from "@ui5/webcomponents-base/dist/types.js";
-import "@ui5/webcomponents-icons/dist/direction-arrows.js";
+import type { Tickmark } from "./SliderScale.js";
 type StateStorage = {
     [key: string]: number | undefined;
 };
@@ -11,6 +10,10 @@ type DirectionStart = "left" | "right";
  * @public
  */
 declare abstract class SliderBase extends UI5Element {
+    eventDetails: {
+        "change": void;
+        "input": void;
+    };
     /**
      * Defines the minimum value of the slider.
      * @default 0
@@ -46,6 +49,9 @@ declare abstract class SliderBase extends UI5Element {
      * **Note:** The step and tickmarks properties must be enabled.
      * Example - if the step value is set to 2 and the label interval is also specified to 2 - then every second
      * tickmark will be labelled, which means every 4th value number.
+     *
+     * **Note:** This property is ignored when the `tickmarks` property is used.
+     * In that case every custom tickmark is labelled with its own `label`.
      * @default 0
      * @public
      */
@@ -59,11 +65,39 @@ declare abstract class SliderBase extends UI5Element {
      */
     showTickmarks: boolean;
     /**
+     * Defines custom tickmarks with labels on the slider scale.
+     * Each tickmark object has a numeric `value` and an optional `label` string.
+     * Tickmarks are purely visual — they display labeled markers at specific positions
+     * but do not affect the slider's movement behavior. The slider still moves
+     * according to `min`, `max`, and `step`.
+     *
+     * When the current value matches a tickmark value, the tickmark's label
+     * is shown in the tooltip and announced via `aria-valuetext`.
+     *
+     * **Note:** When `tickmarks` is provided, the scale is automatically shown
+     * (equivalent to `showTickmarks`), and `labelInterval` is ignored - every
+     * custom tickmark is rendered with its own `label`.
+     * @default []
+     * @public
+     * @since 2.23.0
+     */
+    tickmarks: Array<Tickmark>;
+    /**
      * Enables handle tooltip displaying the current value.
      * @default false
      * @public
      */
     showTooltip: boolean;
+    /**
+     *
+     * Indicates whether input fields should be used as tooltips for the handles.
+     *
+     * **Note:** Setting this option to true will only work if showTooltip is set to true.
+     * **Note:** In order for the component to comply with the accessibility standard, it is recommended to set the editableTooltip property to true.
+     * @default false
+     * @public
+     */
+    editableTooltip: boolean;
     /**
      * Defines whether the slider is in disabled state.
      * @default false
@@ -80,14 +114,18 @@ declare abstract class SliderBase extends UI5Element {
     /**
      * @private
      */
-    _tooltipVisibility: string;
+    value: number;
+    /**
+     * @private
+     */
+    _tooltipsOpen: boolean;
     _labelsOverlapping: boolean;
     _hiddenTickmarks: boolean;
     _resizeHandler: ResizeObserverCallback;
     _moveHandler: (e: TouchEvent | MouseEvent) => void;
-    _upHandler: () => void;
+    _upHandler: (e: TouchEvent | MouseEvent) => void;
+    _windowMouseoutHandler: (e: MouseEvent) => void;
     _stateStorage: StateStorage;
-    _ontouchstart: PassiveEventListenerObject;
     notResized: boolean;
     _isUserInteraction: boolean;
     _isInnerElementFocusing: boolean;
@@ -96,17 +134,20 @@ declare abstract class SliderBase extends UI5Element {
     _oldMax?: number;
     _labelWidth: number;
     _labelValues?: Array<string>;
+    _valueOnInteractionStart?: number;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     constructor();
     _handleMove(e: TouchEvent | MouseEvent): void;
-    _handleUp(): void;
+    _handleUp(e: TouchEvent | MouseEvent): void;
     _onmousedown(e: TouchEvent | MouseEvent): void;
     _handleActionKeyPress(e: Event): void;
-    abstract styles: {
-        label: object;
-        labelContainer: object;
-    };
-    abstract tickmarksObject: any;
+    /**
+     * Checks if the mouse event is a non-primary button click (e.g., right-click).
+     * Returns true if the event should be ignored.
+     * @protected
+     */
+    _isNonPrimaryClick(e: TouchEvent | MouseEvent): boolean;
+    abstract tickmarksObject: Array<boolean>;
     abstract _ariaLabelledByText: string;
     static get ACTION_KEYS(): ((event: KeyboardEvent) => boolean)[];
     static get MIN_SPACE_BETWEEN_TICKMARKS(): number;
@@ -115,7 +156,7 @@ declare abstract class SliderBase extends UI5Element {
         HIDDEN: string;
     };
     static get renderer(): import("@ui5/webcomponents-base/dist/UI5Element.js").Renderer;
-    static get styles(): import("@ui5/webcomponents-base/dist/types.js").StyleData;
+    static get styles(): string;
     get classes(): {
         root: {
             "ui5-slider-root-phone": boolean;
@@ -137,7 +178,7 @@ declare abstract class SliderBase extends UI5Element {
      */
     _onmouseout(): void;
     _onkeydown(e: KeyboardEvent): void;
-    _onkeyup(): void;
+    _onKeyupBase(): void;
     /**
      * Flags if an inner element is currently being focused
      * @private
@@ -224,6 +265,12 @@ declare abstract class SliderBase extends UI5Element {
      * @private
      */
     static _getDecimalPrecisionOfNumber(value: number): number;
+    get _hasCustomTickmarks(): boolean;
+    /**
+     * Returns the label of the custom tickmark matching the given value, or `undefined` if none matches.
+     * @private
+     */
+    _getCustomLabel(value: number): string | undefined;
     /**
      * In order to always keep the visual UI representation and the internal
      * state in sync, the component has a 'state storage' that is updated when the
@@ -264,8 +311,7 @@ declare abstract class SliderBase extends UI5Element {
      */
     _createLabels(): void;
     _handleActionKeyPressBase(e: KeyboardEvent, affectedPropName: string): number;
-    static _isDecreaseValueAction(e: KeyboardEvent): boolean;
-    static _isIncreaseValueAction(e: KeyboardEvent): boolean;
+    static _isIncreaseValueAction(e: KeyboardEvent, directionStart: DirectionStart): boolean;
     static _isBigStepAction(e: KeyboardEvent): boolean;
     get _tickmarksCount(): number;
     /**
@@ -287,7 +333,11 @@ declare abstract class SliderBase extends UI5Element {
     get _effectiveStep(): number;
     get _effectiveMin(): number;
     get _effectiveMax(): number;
-    get _tabIndex(): "-1" | "0";
-    get _ariaLabelledByHandleRefs(): string;
+    get _tabIndex(): 0 | -1;
+    get _isDesktop(): boolean;
+    get _ariaDescribedByHandleText(): "ui5-slider-InputDesc" | undefined;
+    get _ariaLabel(): string;
+    get _ariaDescribedByInputText(): string;
+    get _ariaLabelledByInputText(): string;
 }
 export default SliderBase;

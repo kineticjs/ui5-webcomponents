@@ -1,7 +1,5 @@
-commit 654306a6e78af70a118afefd24fc4ec4ab15c6e5
-Author: TeodorTaushanov <teodor.taushanov@sap.com>
-Date:   Thu Jul 11 16:29:24 2024 +0300
+commit 2cf00a7c57b8b0878cc608bb27ad7f38a63b6afb
+Author: Svilen Darvenyashki <106313486+SvilenDarvenyashki@users.noreply.github.com>
+Date:   Tue Oct 6 11:31:18 2026 +0300
 
-    fix(ui5-dialog): fix draggable dialog header focusing with mouse (#9420)
-    
-    fix(ui5-tabcontainer): fix selected sub items screen readers announcement
+    fix(ui5-user-menu): add correct heading levels (#14123)

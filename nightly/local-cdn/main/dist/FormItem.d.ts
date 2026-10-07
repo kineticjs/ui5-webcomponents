@@ -1,6 +1,8 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { Slot, DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IFormItem } from "./Form.js";
 import type FormItemSpacing from "./types/FormItemSpacing.js";
+import type FormAccessibleMode from "./types/FormAccessibleMode.js";
 /**
  * @class
  *
@@ -25,7 +27,6 @@ import type FormItemSpacing from "./types/FormItemSpacing.js";
  * @implements {IFormItem}
  * @public
  * @since 2.0.0
- * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 declare class FormItem extends UI5Element implements IFormItem {
@@ -37,6 +38,8 @@ declare class FormItem extends UI5Element implements IFormItem {
      * or the Form. The available columns can be affected by the FormGroup#columnSpan and/or the Form#layout.
      * A number bigger than the available columns won't take effect.
      *
+     * @deprecated As of version 2.23.0, this property is deprecated.
+     * **Note:** This property will not have any effect on the layout of the form item
      * @default undefined
      * @public
      */
@@ -45,21 +48,21 @@ declare class FormItem extends UI5Element implements IFormItem {
      * Defines the label of the component.
      * @public
      */
-    labelContent: Array<HTMLElement>;
+    labelContent: Slot<HTMLElement>;
     /**
      * Defines the content of the component,
      * associated to `labelContent`.
      * @public
      */
-    content: Array<HTMLElement>;
-    /**
-     * @private
-     */
-    labelSpan: string;
+    content: DefaultSlot<HTMLElement>;
     /**
      * @private
      */
     itemSpacing: `${FormItemSpacing}`;
+    /**
+     * @private
+     */
+    accessibleMode: `${FormAccessibleMode}`;
     get isGroup(): boolean;
 }
 export default FormItem;

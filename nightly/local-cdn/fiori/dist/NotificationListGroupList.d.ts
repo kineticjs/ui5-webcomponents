@@ -1,5 +1,5 @@
 import List from "@ui5/webcomponents/dist/List.js";
-import type ListItemBase from "@ui5/webcomponents/dist/ListItemBase";
+import type ListItemBase from "@ui5/webcomponents/dist/ListItemBase.js";
 /**
  * @class
  *
@@ -7,6 +7,7 @@ import type ListItemBase from "@ui5/webcomponents/dist/ListItemBase";
  * that is used to support keyboard navigation of the notification group internal list.
  *
  * @private
+ * @extends List
  */
 declare class NotificationListGroupList extends List {
     getEnabledItems(): never[];
@@ -15,6 +16,9 @@ declare class NotificationListGroupList extends List {
     onForwardAfter(): void;
     onItemTabIndexChange(): void;
     onItemFocused(): void;
+    _onfocusin(e: FocusEvent): void;
+    _onkeydown(): void;
     focusItem(item: ListItemBase): void;
+    _onLoadMoreKeydown(e: KeyboardEvent): void;
 }
 export default NotificationListGroupList;

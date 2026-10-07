@@ -7,14 +7,12 @@
 	<title>ui5-multi-input</title>
 
 
-	
 
 
 	<script>// delete Document.prototype.adoptedStyleSheets;</script>
 
-	
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-779694d5.js"></script>
-  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/MultiInput-715aafd5.css">
+  <script type="module" crossorigin src="/webcomponents/nightly/assets/bundle.esm-D_WAeXdP.js"></script>
+  <link rel="stylesheet" crossorigin href="/webcomponents/nightly/assets/MultiInput-ky9oRWpY.css">
 </head>
 
 <body class="multiinput1auto ui5-content-density-compact" >
@@ -143,7 +141,7 @@
 			<ui5-token slot="tokens" text="eu"></ui5-token>
 			<ui5-token slot="tokens" text="amet"></ui5-token>
 			<ui5-token slot="tokens" text="do"></ui5-token>
-			<div slot="valueStateMessage">Information message. This is a <a href="#">Link</a>. Extra long text used as an information message. Extra long text used as an information message - 2. Extra long text used as an information message - 3.</div>
+			<div slot="valueStateMessage">Information message. This is a <ui5-link href="#">Link</ui5-link>. Extra long text used as an information message. Extra long text used as an information message - 2. Extra long text used as an information message - 3.</div>
 		</ui5-multi-input>
 
 		<br>
@@ -278,8 +276,7 @@
 
 	<div class="sample-container">
 		<h1>Tokens + Suggestions</h1>
-
-		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-token">
+		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-token" value-state="Information">
 			<ui5-suggestion-item text="Aute"></ui5-suggestion-item>
 			<ui5-suggestion-item text="ad"></ui5-suggestion-item>
 			<ui5-suggestion-item text="exercitation"></ui5-suggestion-item>
@@ -288,6 +285,7 @@
 			<ui5-suggestion-item text="amet"></ui5-suggestion-item>
 			<ui5-suggestion-item text="aute"></ui5-suggestion-item>
 			<ui5-suggestion-item text="excepteur"></ui5-suggestion-item>
+			<div slot="valueStateMessage">Information message. This is a <ui5-link href="#">Link</ui5-link>. Extra long text used as an information message. Extra long text used as an information message - 2. Extra long text used as an information message - 3.</div>
 		</ui5-multi-input>
 
 		<ui5-dialog id="dialog" header-text="Add Competency">
@@ -304,9 +302,38 @@
 	</div>
 
 	<div class="sample-container">
+		<h1>Composition</h1>
+
+		<ui5-title>Korean</ui5-title>
+		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-token-korean" placeholder="Type in Korean ...">
+			<ui5-suggestion-item text="안녕하세요"></ui5-suggestion-item>
+			<ui5-suggestion-item text="고맙습니다"></ui5-suggestion-item>
+			<ui5-suggestion-item text="사랑"></ui5-suggestion-item>
+			<ui5-suggestion-item text="한국"></ui5-suggestion-item>
+		</ui5-multi-input>
+
+		<ui5-title>Japanese</ui5-title>
+		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-token-japanese" placeholder="Type in Japanese ...">
+			<ui5-suggestion-item text="こんにちは"></ui5-suggestion-item>
+			<ui5-suggestion-item text="ありがとう"></ui5-suggestion-item>
+			<ui5-suggestion-item text="日本"></ui5-suggestion-item>
+			<ui5-suggestion-item text="東京"></ui5-suggestion-item>
+		</ui5-multi-input>
+
+		<ui5-title>Chinese</ui5-title>
+		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-token-chinese" placeholder="Type in Chinese ...">
+			<ui5-suggestion-item text="你好"></ui5-suggestion-item>
+			<ui5-suggestion-item text="謝謝"></ui5-suggestion-item>
+			<ui5-suggestion-item text="北京"></ui5-suggestion-item>
+			<ui5-suggestion-item text="上海"></ui5-suggestion-item>
+		</ui5-multi-input>
+
+	</div>
+
+	<div class="sample-container">
 		<h1>Suggestions + showing wrapping</h1>
 
-		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-wrapping">
+		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-wrapping" filter="Contains">
 			<ui5-suggestion-item text="Lorem ipsum Text"></ui5-suggestion-item>
 			<ui5-suggestion-item text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam id justo sed nisl consequat tincidunt. Vivamus tincidunt, sapien a tincidunt consequat, leo libero lacinia justo, a lacinia orci enim vel justo. Integer ultricies ex eu eros luctus, eu cursus nisl volutpat."></ui5-suggestion-item>
 			<ui5-suggestion-item text="Enim do esse anim magna enim fugiat Lorem enim nostrud sit laborum ea."></ui5-suggestion-item>
@@ -389,7 +416,67 @@
 		</ui5-multi-input>
 	</div>
 
+
+	<h1 class="sample-container-title">Token delete</h1>
+
+	<ui5-multi-input show-suggestions id="test-token-delete">
+		<ui5-token slot="tokens" text="Aute"></ui5-token>
+		<ui5-token slot="tokens" text="ad"></ui5-token>
+		<ui5-token slot="tokens" text="exercitation"></ui5-token>
+		<ui5-token slot="tokens" text="esse"></ui5-token>
+		<ui5-token slot="tokens" text="labore"></ui5-token>
+		<ui5-token slot="tokens" text="amet"></ui5-token>
+		<ui5-token slot="tokens" text="aute"></ui5-token>
+		<ui5-token slot="tokens" text="excepteur"></ui5-token>
+	</ui5-multi-input>
+
+	<ui5-title>Form validation</ui5-title>
+	<form id="formValidation">
+		<ui5-message-strip id="formValidationMessage" hidden></ui5-message-strip>
+		<ui5-multi-input show-suggestions show-value-help-icon id="suggestion-token-inform" required>
+			<ui5-suggestion-item text="Aute"></ui5-suggestion-item>
+			<ui5-suggestion-item text="ad"></ui5-suggestion-item>
+			<ui5-suggestion-item text="exercitation"></ui5-suggestion-item>
+		</ui5-multi-input>
+		<ui5-button id="btnCheckFormValidity">Check Validity</ui5-button>
+	</form>
+
+	<h3>Capitalization suggestions</h3>
+	<ui5-multi-input id="capitalization-suggestions" show-suggestions>
+		<ui5-suggestion-item text="Apple"></ui5-suggestion-item>
+		<ui5-suggestion-item text="apple"></ui5-suggestion-item>
+		<ui5-suggestion-item text="ApplY"></ui5-suggestion-item>
+		<ui5-suggestion-item text="Apples"></ui5-suggestion-item>
+		<ui5-suggestion-item text="application"></ui5-suggestion-item>
+	</ui5-multi-input>
+	<br><br>
+
 	<script>
+		const btnCheckFormValidity = document.getElementById('btnCheckFormValidity');
+		const formValidationMessage = document.getElementById('formValidationMessage');
+		const miInForm = document.getElementById('suggestion-token-inform');
+
+		btnCheckFormValidity.addEventListener('click', function () {
+			checkFormValidity('suggestion-token-inform');
+		});
+
+		miInForm.addEventListener('ui5-change', function () {
+			setTimeout(() => {
+				checkFormValidity('suggestion-token-inform', true);
+			}, 0);
+		});
+
+		function checkFormValidity(elementId, delayed = false) {
+			const element = document.getElementById(elementId);
+			const isValid = element.checkValidity();
+
+			element.reportValidity();
+
+			// Show result
+			formValidationMessage.hidden = false;
+			formValidationMessage.innerText = `checkValidity(): ${isValid} ${delayed ? '( Delayed check )' : ''}`;
+			formValidationMessage.design = isValid ? "Positive" : "Negative";
+		}
 
 		var createTokenFromText = function (text) {
 			var token = document.createElement("ui5-token");
@@ -446,10 +533,33 @@
 			document.getElementById("dialog").open = true;
 		});
 
+		document.getElementById("suggestion-token-inform").addEventListener("ui5-value-help-trigger", function (event) {
+			var list = document.getElementById("tokens-list");
+
+			list.innerHTML = "";
+
+			event.target.tokens.forEach(function (token) {
+				var li = document.createElement("ui5-li");
+				li.innerHTML = token.text;
+
+				list.appendChild(li);
+			});
+
+			document.getElementById("dialog").open = true;
+		});
+
 		document.getElementById("suggestion-token").addEventListener("ui5-change", function (event) {
 			var text = event.target.value;
 
 			addTokenToMI(createTokenFromText(text), "suggestion-token");
+
+			event.target.value = "";
+		});
+
+		document.getElementById("suggestion-token-inform").addEventListener("ui5-change", function (event) {
+			var text = event.target.value;
+
+			addTokenToMI(createTokenFromText(text), "suggestion-token-inform");
 
 			event.target.value = "";
 		});
@@ -472,7 +582,9 @@
 		}
 
 		document.getElementById("token-unique").addEventListener("ui5-token-delete", handleTokenDelete);
+		document.getElementById("test-token-delete").addEventListener("ui5-token-delete", handleTokenDelete);
 		document.getElementById("suggestion-token").addEventListener("ui5-token-delete", handleTokenDelete);
+		document.getElementById("suggestion-token-inform").addEventListener("ui5-token-delete", handleTokenDelete);
 		document.getElementById("two-tokens").addEventListener("ui5-token-delete", handleTokenDelete);
 		document.getElementById("readonly-mi").addEventListener("ui5-token-delete", handleTokenDelete);
 
@@ -492,7 +604,7 @@
 		}
 		document.getElementById("mi-event").addEventListener("ui5-token-delete", handleTokenDelete2);
 
-		document.getElementById("token-unique").addEventListener("ui5-paste", function (event) {
+		document.getElementById("token-unique").addEventListener("paste", function (event) {
 			event.preventDefault();
 
 			let pastedText = (event.clipboardData || window.clipboardData).getData('text/plain');;
@@ -559,6 +671,16 @@
 			multiInput.appendChild(token);
 		});
 	</script>
+
+	<h1 class="sample-container-title">Dialog Header Title from Label</h1>
+	<ui5-label for="labeled-mi">Tags</ui5-label>
+	<ui5-multi-input id="labeled-mi" show-suggestions>
+		<ui5-token slot="tokens" text="Token 1"></ui5-token>
+		<ui5-token slot="tokens" text="Token 2"></ui5-token>
+		<ui5-token slot="tokens" text="Token 3"></ui5-token>
+		<ui5-suggestion-item text="Argentina"></ui5-suggestion-item>
+		<ui5-suggestion-item text="Brazil"></ui5-suggestion-item>
+	</ui5-multi-input>
 </body>
 
 </html>

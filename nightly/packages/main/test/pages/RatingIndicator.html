@@ -15,14 +15,16 @@
 			display: inline-block;
 			margin-right: 20px;
 		}
+
+		body{
+			margin: 0;
+		}
 	</style>
 
-	
 
 
-
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-779694d5.js"></script>
-  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/RatingIndicator-d544882e.css">
+  <script type="module" crossorigin src="/webcomponents/nightly/assets/bundle.esm-D_WAeXdP.js"></script>
+  <link rel="stylesheet" crossorigin href="/webcomponents/nightly/assets/RatingIndicator-BIooUXww.css">
 </head>
 
 <body class="ratingindicator1auto">
@@ -42,7 +44,6 @@
 	<ui5-button id="btnToggle">Toggle 'Compact'</ui5-button>
 	<br />
 	<br />
-
 	<ui5-rating-indicator id="rating-indicator1" accessible-name="Hello World"></ui5-rating-indicator>
 	<br />
 	<ui5-rating-indicator id="rating-indicator-test" value="3.7" readonly></ui5-rating-indicator>
@@ -113,6 +114,14 @@
 	<br>
 	<br>
 
+	<h3>Different sizes due to size property</h3>
+		<ui5-rating-indicator size="S"></ui5-rating-indicator>
+		<br>
+		<ui5-rating-indicator size="M" value="4" disabled></ui5-rating-indicator>
+		<br>
+		<ui5-rating-indicator size="L" value="3.5" readonly></ui5-rating-indicator>
+		<br>
+
 	<h3>sizes</h3>
 	<section>
 		<ui5-rating-indicator class="ratingindicator2auto"></ui5-rating-indicator>
@@ -125,6 +134,68 @@
 		<br>
 
 	</section>
+
+	<h3>Custom Icons - Hearts</h3>
+	<ui5-rating-indicator id="rating-hearts" value="3" rated-icon="heart" unrated-icon="heart-2"></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Custom Icons - Thumbs Up</h3>
+	<ui5-rating-indicator id="rating-thumbs" value="2.5" rated-icon="thumb-up" unrated-icon="border"></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Custom Icons - Hearts (readonly)</h3>
+	<ui5-rating-indicator id="rating-hearts-readonly" value="2.5" rated-icon="heart" unrated-icon="heart-2" readonly></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Custom Icons - Hearts (disabled)</h3>
+	<ui5-rating-indicator id="rating-hearts-disabled" value="3" rated-icon="heart" unrated-icon="heart-2" disabled></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Custom Icons - Only selected icon (circles)</h3>
+	<ui5-rating-indicator id="rating-circle" value="2" rated-icon="circle-task-2"></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Half-star readonly (default icons)</h3>
+	<ui5-rating-indicator value="2.5" readonly></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Half-star readonly with custom icons</h3>
+	<ui5-rating-indicator value="3.5" rated-icon="heart" unrated-icon="heart-2" readonly></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Half-star disabled with custom icons</h3>
+	<ui5-rating-indicator value="3.5" rated-icon="heart" unrated-icon="heart-2" disabled></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Half-star readonly - different sizes</h3>
+	<ui5-rating-indicator value="2.5" size="S" readonly></ui5-rating-indicator>
+	<br>
+	<ui5-rating-indicator value="2.5" size="M" readonly></ui5-rating-indicator>
+	<br>
+	<ui5-rating-indicator value="2.5" size="L" readonly></ui5-rating-indicator>
+	<br>
+	<br>
+
+	<h3>Half-star readonly with custom icons - different sizes</h3>
+	<ui5-rating-indicator value="2.5" size="S" rated-icon="heart" unrated-icon="heart-2" readonly></ui5-rating-indicator>
+	<br>
+	<ui5-rating-indicator value="2.5" size="M" rated-icon="heart" unrated-icon="heart-2" readonly></ui5-rating-indicator>
+	<br>
+	<ui5-rating-indicator value="2.5" size="L" rated-icon="heart" unrated-icon="heart-2" readonly></ui5-rating-indicator>
+	<br>
+	<br>
+	<p>Display Only (cannot receive focus):</p>
+	<ui5-rating-indicator value="3.5" display-only></ui5-rating-indicator>
+	<br>
+	<br>
 
 	<script>
 		var changeCount = 0;

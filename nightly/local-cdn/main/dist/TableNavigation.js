@@ -1,5 +1,4 @@
 import { isUp, isUpShift, isDown, isDownShift, isLeft, isRight, isPageUp, isPageDown, isHome, isEnd, isTabNext, isTabPrevious, } from "@ui5/webcomponents-base/dist/Keys.js";
-import isElementClickable from "@ui5/webcomponents-base/dist/util/isElementClickable.js";
 import isElementHidden from "@ui5/webcomponents-base/dist/util/isElementHidden.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
@@ -14,11 +13,11 @@ import GridWalker from "./GridWalker.js";
 class TableNavigation extends TableExtension {
     constructor(table) {
         super();
+        this._rowsCount = 0;
         this._colPosition = 0;
         this._tabPosition = 0;
         this._table = table;
         this._gridWalker = new GridWalker();
-        this._gridWalker.setGrid(this._getNavigationItemsOfGrid());
         this._onKeyDownCaptureBound = this._onKeyDownCapture.bind(this);
         // we register the keydown handler on the table element at the capturing phase since the
         // busy indicator stops the propagation of the keydown event and it never reaches the table
@@ -28,7 +27,7 @@ class TableNavigation extends TableExtension {
         return [row, ...row.shadowRoot.children].map(element => {
             return element.localName === "slot" ? element.assignedElements() : element;
         }).flat().filter(element => {
-            return element.localName.includes("ui5-table-") && !element.hasAttribute("excluded-from-navigation");
+            return element.localName.includes("ui5-table-") && !element.hasAttribute("data-excluded-from-navigation");
         });
     }
     _getNavigationItemsOfGrid() {
@@ -40,18 +39,12 @@ class TableNavigation extends TableExtension {
         else {
             this._gridWalker.setFirstRowPos(0);
         }
-        if (this._table.rows.length) {
+        this._rowsCount = this._table.rows.length;
+        if (this._rowsCount) {
             this._table.rows.forEach(row => items.push(this._getNavigationItemsOfRow(row)));
         }
-        else {
-            items.push(this._getNavigationItemsOfRow(this._table._nodataRow));
-        }
-        if (this._table._shouldRenderGrowing) {
-            items.push([this._table._growing.getFocusDomRef()]);
-            this._gridWalker.setLastRowPos(-1);
-        }
-        else {
-            this._gridWalker.setLastRowPos(0);
+        else if (this._table._noDataRow) {
+            items.push(this._getNavigationItemsOfRow(this._table._noDataRow));
         }
         if (!this._gridWalker.getCurrent()) {
             this._gridWalker.setRowPos(this._gridWalker.getFirstRowPos());
@@ -75,15 +68,15 @@ class TableNavigation extends TableExtension {
             return;
         }
         const navigationItems = this._getNavigationItemsOfGrid().flat();
-        if (navigationItems.includes(this._lastFocusedItem)) {
-            this._lastFocusedItem?.removeAttribute("tabindex");
+        if (this._lastFocusedItem && navigationItems.includes(this._lastFocusedItem)) {
+            this._lastFocusedItem.removeAttribute("tabindex");
         }
         if (navigationItems.includes(element)) {
             element.setAttribute("tabindex", "-1");
             this._lastFocusedItem = element;
         }
         this._ignoreFocusIn = ignoreFocusIn;
-        element.focus();
+        element.focus({ preventScroll: element === this._table._beforeElement || element === this._table._afterElement });
         if (element instanceof HTMLInputElement) {
             element.select();
         }
@@ -142,7 +135,19 @@ class TableNavigation extends TableExtension {
         }
     }
     _handleArrowUpDown(e, eventOrigin, direction) {
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented || this._isEventFromCurrentItem(e) || /^(input|textarea)$/i.test(eventOrigin.nodeName)) {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented || /^(input|textarea)$/i.test(eventOrigin.nodeName)) {
+            return false;
+        }
+        const lastRow = this._table.rows.at(-1);
+        const growingButton = this._table._getGrowing()?.getFocusDomRef();
+        const shouldFocusGrowingButton = direction === 1 && eventOrigin === lastRow;
+        const shouldFocusLastRow = direction === -1 && eventOrigin === growingButton;
+        if (lastRow && growingButton && (shouldFocusGrowingButton || shouldFocusLastRow)) {
+            this._focusElement(shouldFocusGrowingButton ? growingButton : lastRow);
+            e.preventDefault();
+            return;
+        }
+        if (this._isEventFromCurrentItem(e)) {
             return false;
         }
         this._setCurrentItem(e, currentItem => {
@@ -166,8 +171,15 @@ class TableNavigation extends TableExtension {
         if (e.defaultPrevented) {
             return;
         }
-        if (!this._isEventFromCurrentItem(e) && this._getNavigationItemsOfGrid().flat().includes(eventOrigin)) {
+        if (this._rowsCount !== this._table.rows.length) {
+            this._getNavigationItemsOfGrid();
+        }
+        if (!this._isEventFromCurrentItem(e) && this._gridWalker.includes(eventOrigin)) {
             this._gridWalker.setCurrent(eventOrigin);
+        }
+        this._table._getVirtualizer()?._onKeyDown(e);
+        if (e.defaultPrevented) {
+            return;
         }
         const keydownHandlerName = `_handle${e.code}`;
         const keydownHandler = this[keydownHandlerName];
@@ -216,7 +228,10 @@ class TableNavigation extends TableExtension {
         for (const target of e.composedPath()) {
             if (target.nodeType === Node.ELEMENT_NODE) {
                 const element = target;
-                if (element.getAttribute("tabindex") === "-1" || isElementClickable(element)) {
+                if (element.getAttribute("data-excluded-from-navigation") === "nofocus") {
+                    break;
+                }
+                if (element.matches(":focus-within")) {
                     focusableElement = element;
                     break;
                 }
@@ -245,6 +260,7 @@ class TableNavigation extends TableExtension {
                 this._table._loadingElement.focus();
             }
             else {
+                this._getNavigationItemsOfGrid();
                 this._gridWalker.setColPos(0);
                 this._focusCurrentItem();
             }

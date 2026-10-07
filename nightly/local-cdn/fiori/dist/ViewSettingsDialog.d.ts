@@ -1,29 +1,38 @@
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type { ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
-import Dialog from "@ui5/webcomponents/dist/Dialog.js";
-import List from "@ui5/webcomponents/dist/List.js";
-import type { ListItemClickEventDetail } from "@ui5/webcomponents/dist/List.js";
+import type { Slot, ChangeInfo } from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type Dialog from "@ui5/webcomponents/dist/Dialog.js";
+import type List from "@ui5/webcomponents/dist/List.js";
+import type { ListItemClickEventDetail, ListSelectionChangeEventDetail } from "@ui5/webcomponents/dist/List.js";
 import ViewSettingsDialogMode from "./types/ViewSettingsDialogMode.js";
 import "@ui5/webcomponents-icons/dist/sort.js";
 import "@ui5/webcomponents-icons/dist/filter.js";
+import "@ui5/webcomponents-icons/dist/group-2.js";
 import "@ui5/webcomponents-icons/dist/nav-back.js";
 import type SortItem from "./SortItem.js";
 import type FilterItem from "./FilterItem.js";
+import type GroupItem from "./GroupItem.js";
+import type ViewSettingsDialogCustomTab from "./ViewSettingsDialogCustomTab.js";
 type VSDFilter = Record<string, Array<string>>;
 type VSDFilters = Array<VSDFilter>;
 type VSDSettings = {
     sortOrder: string;
     sortBy: string;
     filters: VSDFilters;
+    groupOrder: string;
+    groupBy: string;
 };
 type ViewSettingsDialogConfirmEventDetail = VSDSettings & {
     sortByItem: SortItem;
     sortDescending: boolean;
+    groupByItem: GroupItem;
+    groupDescending: boolean;
 };
 type ViewSettingsDialogCancelEventDetail = VSDSettings & {
     sortByItem: SortItem;
     sortDescending: boolean;
+    groupByItem: GroupItem;
+    groupDescending: boolean;
 };
 type VSDItem = {
     text?: string;
@@ -37,7 +46,14 @@ type VSDInternalSettings = {
     filters: Array<VSDItem & {
         filterOptions: Array<VSDItem>;
     }>;
+    groupOrder: Array<VSDItem>;
+    groupBy: Array<VSDItem & {
+        index: number;
+    }>;
 };
+declare const CUSTOM_MODE_PREFIX = "customTabs-";
+type ViewSettingsCustomMode = `${typeof CUSTOM_MODE_PREFIX}${number}`;
+type ViewSettingsDialogInternalMode = `${ViewSettingsDialogMode}` | ViewSettingsCustomMode;
 /**
  * @class
  * ### Overview
@@ -64,8 +80,17 @@ type VSDInternalSettings = {
  * @extends UI5Element
  * @since 1.0.0-rc.16
  * @public
+ * @csspart header - Used to style the header.
  */
 declare class ViewSettingsDialog extends UI5Element {
+    eventDetails: {
+        "confirm": ViewSettingsDialogConfirmEventDetail;
+        "cancel": ViewSettingsDialogCancelEventDetail;
+        "before-open": void;
+        "open": void;
+        "close": void;
+        "reset": void;
+    };
     /**
      * Defines the initial sort order.
      * @default false
@@ -73,12 +98,36 @@ declare class ViewSettingsDialog extends UI5Element {
      */
     sortDescending: boolean;
     /**
+     * Defines the initial group order.
+     * @default false
+     * @since 2.13.0
+     * @public
+     */
+    groupDescending: boolean;
+    /**
      * Indicates if the dialog is open.
      * @public
      * @default false
      * @since 2.0.0
      */
     open: boolean;
+    /**
+     * Controls whether the Reset button is always enabled.
+     *
+     * By default, the Reset button is enabled only when the built-in settings (Sort, Filter, Group)
+     * differ from their initial state — the component can detect these changes automatically.
+     * However, when the dialog contains custom tabs, the component has no way to detect
+     * whether the custom tab content has been modified by the user.
+     *
+     * Set this property to `true` when the user has made changes inside a custom tab, so that
+     * the Reset button becomes enabled and the user can trigger a reset.
+     * Set it back to `false` once the custom tab content is back to its initial state
+     * (e.g. after the user confirms or after a reset is applied).
+     * @default false
+     * @public
+     * @since 2.22.0
+     */
+    resetEnabled: boolean;
     /**
      * Keeps recently focused list in order to focus it on next dialog open.
      * @private
@@ -104,7 +153,7 @@ declare class ViewSettingsDialog extends UI5Element {
      * @since 1.0.0-rc.16
      * @private
      */
-    _currentMode: `${ViewSettingsDialogMode}`;
+    _currentMode: ViewSettingsDialogInternalMode;
     /**
      * When in Filter By mode, defines whether we need to show the list of keys, or the list with values.
      * @since 1.0.0-rc.16
@@ -117,28 +166,54 @@ declare class ViewSettingsDialog extends UI5Element {
      * **Note:** If you want to use this slot, you need to import used item: `import "@ui5/webcomponents-fiori/dist/SortItem.js";`
      * @public
      */
-    sortItems: Array<SortItem>;
+    sortItems: Slot<SortItem>;
     /**
      * Defines the `filterItems` list.
      *
      * **Note:** If you want to use this slot, you need to import used item: `import "@ui5/webcomponents-fiori/dist/FilterItem.js";`
      * @public
      */
-    filterItems: Array<FilterItem>;
+    filterItems: Slot<FilterItem>;
+    /**
+     * Defines the list of items against which the user could group data.
+     *
+     * **Note:** If you want to use this slot, you need to import used item: `import "@ui5/webcomponents-fiori/dist/GroupItem.js";`
+     * @public
+     */
+    groupItems: Slot<GroupItem>;
+    /**
+     * Defines custom tabs for the dialog.
+     *
+     * The custom tabs are rendered after the built-in tabs (`Sort`, `Filter`, `Group`).
+     *
+     * **Note:** If you want to use this slot, you need to import the item: `import "@ui5/webcomponents-fiori/dist/ViewSettingsDialogCustomTab.js";`
+     * @public
+     * @since 2.22.0
+     */
+    customTabs: Slot<ViewSettingsDialogCustomTab>;
+    _list: List;
     _dialog?: Dialog;
     _sortOrder?: List;
     _sortBy?: List;
+    _groupOrder?: List;
+    _groupBy?: List;
+    _filterList?: List;
+    _filterOptions?: List;
     static i18nBundle: I18nBundle;
     onBeforeRendering(): void;
     onInvalidation(changeInfo: ChangeInfo): void;
     _setAdditionalTexts(): void;
-    static onDefine(): Promise<void>;
     get _selectedFilter(): (VSDItem & {
-        filterOptions: VSDItem[];
+        filterOptions: Array<VSDItem>;
     }) | undefined;
+    _selectedFiltersLabel(item: FilterItem): string;
     get shouldBuildSort(): boolean;
     get shouldBuildFilter(): boolean;
+    get shouldBuildGroup(): boolean;
+    get shouldBuildCustomTabs(): boolean;
     get hasPagination(): boolean;
+    get _defaultMode(): ViewSettingsDialogInternalMode;
+    get _selectedCustomTab(): ViewSettingsDialogCustomTab | undefined;
     get _filterByTitle(): string;
     get _dialogTitle(): string;
     get _okButtonLabel(): string;
@@ -147,8 +222,14 @@ declare class ViewSettingsDialog extends UI5Element {
     get _ascendingLabel(): string;
     get _descendingLabel(): string;
     get _sortOrderLabel(): string;
+    get _groupOrderLabel(): string;
     get _filterByLabel(): string;
     get _sortByLabel(): string;
+    get _groupByLabel(): string;
+    get _sortButtonTooltip(): string;
+    get _filterButtonTooltip(): string;
+    get _groupButtonTooltip(): string;
+    get _resetButtonAction(): string;
     get _isPhone(): boolean;
     get _sortAscending(): boolean;
     get _title(): string;
@@ -156,7 +237,7 @@ declare class ViewSettingsDialog extends UI5Element {
      * Determines disabled state of the `Reset` button.
      */
     get _disableResetButton(): boolean | undefined;
-    get _sortSetttingsAreInitial(): boolean;
+    get _settingsAreInitial(): boolean;
     get _filteresAreInitial(): boolean;
     /**
      * Returns the current settings (current state of all lists).
@@ -167,17 +248,25 @@ declare class ViewSettingsDialog extends UI5Element {
         selected: boolean;
         index: number;
     }[];
+    get initGroupByItems(): {
+        text: string | undefined;
+        selected: boolean;
+        index: number;
+    }[];
     get initSortOrderItems(): {
+        text: string;
+        selected: boolean;
+    }[];
+    get initGroupOrderItems(): {
         text: string;
         selected: boolean;
     }[];
     get expandContent(): boolean;
     get isModeSort(): boolean;
     get isModeFilter(): boolean;
+    get isModeGroup(): boolean;
+    get isModeCustom(): boolean;
     get showBackButton(): boolean;
-    get _sortOrderListDomRef(): List;
-    get _sortByList(): List;
-    get _dialogDomRef(): Dialog;
     /**
      * Shows the dialog.
      */
@@ -185,9 +274,14 @@ declare class ViewSettingsDialog extends UI5Element {
     afterDialogOpen(): void;
     afterDialogClose(): void;
     _handleModeChange(e: CustomEvent): void;
-    _handleFilterValueItemClick(e: CustomEvent<ListItemClickEventDetail>): void;
-    _navigateToFilters(): void;
-    _changeCurrentFilter(e: CustomEvent<ListItemClickEventDetail>): void;
+    _handleFilterValueItemClick(e: CustomEvent<ListSelectionChangeEventDetail>): void;
+    /**
+     * Sets the selected property of the clicked item.
+     * @private
+     */
+    _setSelectedProp(itemText: string): void;
+    _navigateToFilters(): Promise<void>;
+    _changeCurrentFilter(e: CustomEvent<ListItemClickEventDetail>): Promise<void>;
     /**
      * Sets focus on recently used control within the dialog.
      */
@@ -205,7 +299,12 @@ declare class ViewSettingsDialog extends UI5Element {
         sortDescending: boolean;
         sortBy: string;
         sortByItem: SortItem;
+        groupOrder: string;
+        groupDescending: boolean;
+        groupBy: string;
+        groupByItem: GroupItem;
         filters: VSDFilters;
+        filterItems: FilterItem[];
     };
     get selectedFilters(): VSDFilters;
     /**
@@ -222,14 +321,26 @@ declare class ViewSettingsDialog extends UI5Element {
      * @param settings
      */
     _restoreSettings(settings: VSDInternalSettings): void;
+    isCurrentCustomTabMode(tab: ViewSettingsDialogCustomTab): boolean;
+    _customTabMode(tab: ViewSettingsDialogCustomTab): ViewSettingsCustomMode;
+    _isCustomMode(mode: string): mode is ViewSettingsCustomMode;
+    _isValidMode(mode: string): mode is ViewSettingsDialogInternalMode;
     /**
      * Stores `Sort Order` list as recently used control and its selected item in current state.
      */
-    _onSortOrderChange(e: CustomEvent<ListItemClickEventDetail>): void;
+    _onSortOrderChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
     /**
      * Stores `Sort By` list as recently used control and its selected item in current state.
      */
-    _onSortByChange(e: CustomEvent<ListItemClickEventDetail>): void;
+    _onSortByChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
+    /**
+     * Stores `Group Order` list as recently used control and its selected item in current state.
+     */
+    _onGroupOrderChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
+    /**
+     * Stores `Group By` list as recently used control and its selected item in current state.
+     */
+    _onGroupByChange(e: CustomEvent<ListSelectionChangeEventDetail>): void;
     /**
      * Sets a JavaScript object, as settings to the `ui5-view-settings-dialog`.
      * This method can be used after the dialog is initially open, as the dialog needs

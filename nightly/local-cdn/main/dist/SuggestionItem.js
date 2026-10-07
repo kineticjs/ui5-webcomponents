@@ -8,7 +8,7 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import ListItemBase from "./ListItemBase.js";
-import SuggestionItemTemplate from "./generated/templates/SuggestionItemTemplate.lit.js";
+import SuggestionItemTemplate from "./SuggestionItemTemplate.js";
 import styles from "./generated/themes/SuggestionItem.css.js";
 /**
  * @class
@@ -35,6 +35,9 @@ let SuggestionItem = class SuggestionItem extends ListItemBase {
         if (isDesktop()) {
             this.setAttribute("desktop", "");
         }
+    }
+    get _effectiveTabIndex() {
+        return -1;
     }
 };
 __decorate([

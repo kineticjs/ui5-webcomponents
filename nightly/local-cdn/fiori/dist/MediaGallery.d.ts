@@ -1,5 +1,6 @@
 import ItemNavigation from "@ui5/webcomponents-base/dist/delegate/ItemNavigation.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import Button from "@ui5/webcomponents/dist/Button.js";
 import type { CarouselNavigateEventDetail } from "@ui5/webcomponents/dist/Carousel.js";
 import Carousel from "@ui5/webcomponents/dist/Carousel.js";
@@ -13,7 +14,7 @@ import type MediaGalleryMenuVerticalAlign from "./types/MediaGalleryMenuVertical
  * Interface for components that can be slotted inside `ui5-media-gallery` as items.
  * @public
  */
-interface IMediaGalleryItem extends HTMLElement, ITabbable {
+interface IMediaGalleryItem extends UI5Element, ITabbable {
     selected: boolean;
     disabled: boolean;
     displayedContent: HTMLElement | null;
@@ -58,6 +59,11 @@ type MediaGallerySelectionChangeEventDetail = {
  * @since 1.1.0
  */
 declare class MediaGallery extends UI5Element {
+    eventDetails: {
+        "selection-change": MediaGallerySelectionChangeEventDetail;
+        "overflow-click": void;
+        "display-area-click": void;
+    };
     /**
      * If set to `true`, all thumbnails are rendered in a scrollable container.
      * If `false`, only up to five thumbnails are rendered, followed by
@@ -122,7 +128,7 @@ declare class MediaGallery extends UI5Element {
      * **Note:** Use the `ui5-media-gallery-item` component to define the desired items.
      * @public
      */
-    items: Array<IMediaGalleryItem>;
+    items: DefaultSlot<IMediaGalleryItem>;
     _itemNavigation: ItemNavigation;
     _onResize: () => void;
     _selectedItem?: IMediaGalleryItem;
@@ -142,6 +148,7 @@ declare class MediaGallery extends UI5Element {
     _getMaxAllowedThumbnailsInColumn(columnHeight: number): number;
     _getOverflowSize(columnHeight: number, columnsCount: number): number;
     _getFocusableItems(): ITabbable[];
+    getFocusDomRef(): HTMLElement | undefined;
     _selectItem(item: IMediaGalleryItem, userInteraction?: boolean): void;
     _updateSelectedFlag(itemToSelect: IMediaGalleryItem): void;
     _selectItemOnPhone(item: IMediaGalleryItem): void;

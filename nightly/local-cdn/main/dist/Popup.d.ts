@@ -1,5 +1,6 @@
-import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
+import type { ClassMap, AriaRole } from "@ui5/webcomponents-base/dist/types.js";
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import PopupAccessibleRole from "./types/PopupAccessibleRole.js";
 type PopupScrollEventDetail = {
@@ -35,6 +36,13 @@ type PopupBeforeCloseEventDetail = {
  * @public
  */
 declare abstract class Popup extends UI5Element {
+    eventDetails: {
+        "before-open": void;
+        "open": void;
+        "before-close": PopupBeforeCloseEventDetail;
+        "close": void;
+        "scroll": PopupScrollEventDetail;
+    };
     /**
      * Defines the ID of the HTML Element, which will get the initial focus.
      *
@@ -74,6 +82,25 @@ declare abstract class Popup extends UI5Element {
      */
     accessibleRole: `${PopupAccessibleRole}`;
     /**
+     * Defines the accessible description of the component.
+     * @default undefined
+     * @public
+     * @since 2.11.0
+     */
+    accessibleDescription?: string;
+    /**
+     * Receives id(or many ids) of the elements that describe the component.
+     * @default undefined
+     * @public
+     * @since 2.11.0
+     */
+    accessibleDescriptionRef?: string;
+    /**
+     * Constantly updated value of texts collected from the associated labels.
+     * @private
+     */
+    _associatedDescriptionRefTexts?: string;
+    /**
      * Defines the current media query size.
      * @private
      */
@@ -97,7 +124,7 @@ declare abstract class Popup extends UI5Element {
      * Defines the content of the Popup.
      * @public
      */
-    content: Array<HTMLElement>;
+    content: DefaultSlot<HTMLElement>;
     /**
      * @private
      */
@@ -111,10 +138,12 @@ declare abstract class Popup extends UI5Element {
     _focusedElementBeforeOpen?: HTMLElement | null;
     _opened: boolean;
     _open: boolean;
+    _resizeHandlerRegistered: boolean;
     constructor();
     onBeforeRendering(): void;
     onAfterRendering(): void;
     onEnterDOM(): void;
+    handleOpenOnEnterDOM(): void;
     onExitDOM(): void;
     /**
      * Indicates if the element is open
@@ -130,6 +159,8 @@ declare abstract class Popup extends UI5Element {
      * Prevents the user from interacting with the content under the block layer
      */
     _preventBlockLayerFocus(e: KeyboardEvent | MouseEvent): void;
+    _attachBrowserEvents(): void;
+    _detachBrowserEvents(): void;
     /**
      * Temporarily removes scrollbars from the html element
      * @protected
@@ -168,8 +199,10 @@ declare abstract class Popup extends UI5Element {
      * @returns Promise that resolves when the focus is applied
      */
     applyFocus(): Promise<void>;
+    _getFirstFocusableElement(): Promise<HTMLElement | null>;
     isFocusWithin(): boolean;
     _updateMediaRange(): void;
+    _updateAssociatedLabelsTexts(): void;
     /**
      * Adds the popup to the "opened popups registry"
      * @protected
@@ -185,6 +218,23 @@ declare abstract class Popup extends UI5Element {
      */
     _removeOpenedPopup(): void;
     /**
+     * Asks the InvisibleMessage to render its aria-live region inside the popup, so that announcements
+     * made while the popup is open are read out.
+     *
+     * A screen reader scopes its accessibility tree to a modal popup (aria-modal="true"), so a body-level
+     * aria-live region is silenced while the popup is open. Non-modal popups (e.g. a ComboBox dropdown) do
+     * not cause this scoping, so their announcements are still heard from the default body-level region and
+     * must not be routed into the popup subtree.
+     * @protected
+     */
+    _registerInvisibleMessageRegion(): void;
+    /**
+     * Asks the InvisibleMessage to stop rendering its aria-live region inside the popup, restoring
+     * the default region.
+     * @protected
+     */
+    _deregisterInvisibleMessageRegion(): void;
+    /**
      * Returns the focus to the previously focused element
      * @protected
      */
@@ -194,6 +244,8 @@ declare abstract class Popup extends UI5Element {
      * @protected
      */
     _show(): void;
+    _registerResizeHandler(): void;
+    _deregisterResizeHandler(): void;
     /**
      * Sets "none" display to the popup
      * @protected
@@ -214,10 +266,17 @@ declare abstract class Popup extends UI5Element {
      * @protected
      */
     get _ariaLabel(): string | undefined;
+    get _accInfoAriaDescription(): string;
+    get ariaDescriptionText(): string | undefined;
+    get ariaDescriptionTextId(): "" | "accessibleDescription";
+    get ariaDescribedByIds(): string;
     get _root(): HTMLElement;
-    get _role(): string | undefined;
-    get _ariaModal(): string | undefined;
+    get _role(): "dialog" | "alertdialog" | undefined;
+    get _contentRole(): AriaRole | undefined;
+    get _contentAriaLabel(): string | undefined;
+    get _ariaModal(): "true" | undefined;
     get contentDOM(): HTMLElement;
+    get footerDOM(): HTMLElement | null;
     get styles(): {
         root: {};
         content: {};
@@ -225,4 +284,4 @@ declare abstract class Popup extends UI5Element {
     get classes(): ClassMap;
 }
 export default Popup;
-export type { PopupScrollEventDetail, PopupBeforeCloseEventDetail, };
+export type { PopupScrollEventDetail, PopupBeforeCloseEventDetail };

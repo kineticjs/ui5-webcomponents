@@ -1,29 +1,40 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { Slot, DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { AriaRole } from "@ui5/webcomponents-base";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { Breakpoint } from "./form-utils/FormUtils.js";
 import type FormItemSpacing from "./types/FormItemSpacing.js";
+import type FormAccessibleMode from "./types/FormAccessibleMode.js";
+import type TitleLevel from "./types/TitleLevel.js";
 /**
  * Interface for components that can be slotted inside `ui5-form` as items.
  * @public
- * @experimental
  * @since 2.0.0
  */
-interface IFormItem extends HTMLElement {
-    labelSpan: string;
+interface IFormItem extends UI5Element {
     itemSpacing: `${FormItemSpacing}`;
     readonly isGroup: boolean;
     colsXl?: number;
     colsL?: number;
     colsM?: number;
     colsS?: number;
+    colSpan?: string;
     columnSpan?: number;
+    headerText?: string;
+    headerLevel?: `${TitleLevel}`;
+    accessibleMode?: `${FormAccessibleMode}`;
 }
 type GroupItemsInfo = {
     groupItem: IFormItem;
-    classes: string;
     items: Array<ItemsInfo>;
+    accessibleName: string | undefined;
+    accessibleNameInner: string | undefined;
+    accessibleNameRef: string | undefined;
+    accessibleNameRefInner: string | undefined;
+    role: AriaRole | undefined;
 };
 type ItemsInfo = {
     item: IFormItem;
-    classes: string;
 };
 /**
  * @class
@@ -32,6 +43,9 @@ type ItemsInfo = {
  *
  * The Form is a layout component that arranges labels and form fields (like input fields) pairs
  * into a specific number of columns.
+ *
+ * **Note:** The Form web component is a layout component, it isn't a replacement for the native `form` HTML element.
+ * The Form web component does not provide any APIs for form submission.
  *
  * ### Structure
  *
@@ -47,14 +61,14 @@ type ItemsInfo = {
  * This is enabled by the FormGroup (`ui5-form-group`) component.
  * In this case, the Form is structured into FormGroups and each FormGroup consists of FormItems.
  *
- *  ### Responsiveness
+ * ### Responsiveness
  *
  * The Form component reacts and changes its layout on predefined breakpoints.
  * Depending on its size, the Form content (FormGroups and FormItems) gets divided into one or more columns as follows:
- * - **S** (< 600px) – 1 column is recommended (default: 1)
- * - **M** (600px - 1022px) – up to 2 columns are recommended (default: 1)
- * - **L** (1023px - 1439px) - up to 3 columns are recommended (default: 2)
- * - **XL** (> 1439px) – up to 6 columns are recommended (default: 2)
+ * - **S** (0 - 599px) – 1 column is recommended (default: 1)
+ * - **M** (600px - 1023px) – up to 2 columns are recommended (default: 1)
+ * - **L** (1024px - 1439px) - up to 3 columns are recommended (default: 2)
+ * - **XL** (>= 1440px) – up to 6 columns are recommended (default: 3)
  *
  * To change the layout, use the `layout` property - f.e. layout="S1 M2 L3 XL6".
  *
@@ -97,6 +111,47 @@ type ItemsInfo = {
  *
  * **For example:** To always place the labels on top set: `labelSpan="S12 M12 L12 XL12"` property.
  *
+ * ### Items Empty Span
+ *
+ * By default, a form item spans 12 cells, fully divided between its label and field, with no empty space at the end:
+ * - **Label:** occupies 4 cells.
+ * - **Field:** occupies 8 cells.
+ *
+ * The `emptySpan` property provides additional layout flexibility by defining empty space at the form item’s end.
+ *
+ * **For example:** Setting "S0 M0 L3 XL3" (or just "L3 XL3") adjusts the layout as follows:
+ * - **Label:** remains 4 cells.
+ * - **Field:** is reduced to 5 cells.
+ * - **Empty space:** 3 cells are added at the end.
+ *
+ * Greater values increase the empty space at the end of the form item, reducing the space available for the label and its field.
+ * However, setting `emptySpan` to 1 cell is recommended and typically sufficient to achieve a balanced layout.
+ *
+ * ### Navigation flow
+ *
+ * Items are grouped into `ui5-form-group` elements, allowing the following navigation:
+ *
+ * - **Single-Column Group**: Focus moves vertically down from one item to the next.
+ *   ```
+ *   | 1 |
+ *   | 2 |
+ *   | 3 |
+ *   ```
+ *
+ * - **Multi-Column Group**: Focus moves horizontally within each row, advancing to the next row after completing the current one.
+ *   ```
+ *   | 1 | 4 |
+ *   | 2 | 5 |
+ *   | 3 | 6 |
+ *   ```
+ *
+ * ### Keyboard Handling
+ *
+ * - [Tab] - Moves the focus to the next interactive element within the Form/FormGroup (if available) or to the next element in the tab chain outside the Form
+ * - [Shift] + [Tab] - Moves the focus to the previous interactive element within the Form/FormGroup (if available) or to the previous element in the tab chain outside the Form
+ * - [F6] - Moves the focus to the first interactive element of the next FormGroup (if available) or to the next element in the tab chain outside the Form
+ * - [Shift] + [F6] - Moves the focus to the first interactive element of the previous FormGroup (if available) or to the previous element in the tab chain outside the Form
+ *
  * ### ES6 Module Import
  *
  * - import @ui5/webcomponents/dist/Form.js";
@@ -109,10 +164,38 @@ type ItemsInfo = {
  *
  * @public
  * @since 2.0.0
- * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
 declare class Form extends UI5Element {
+    /**
+     * Defines the accessible ARIA name of the component.
+     * @default undefined
+     * @public
+     * @since 2.10.0
+     */
+    accessibleName?: string;
+    /**
+     * Defines id (or many ids) of the element (or elements) that label the component.
+     * @default undefined
+     * @public
+     * @since 2.16.0
+     */
+    accessibleNameRef?: string;
+    /**
+     * Defines the accessibility mode of the component in "edit" and "display" use-cases.
+     *
+     * Based on the mode, the component renders different HTML elements and ARIA attributes,
+     * which are appropriate for the use-case.
+     *
+     * **Usage:**
+     * - Set this property to "Display", when the form consists of non-editable (e.g. texts) form items.
+     * - Set this property to "Edit", when the form consists of editable (e.g. input fields) form items.
+     *
+     * @default "Display"
+     * @since 2.16.0
+     * @public
+     */
+    accessibleMode: `${FormAccessibleMode}`;
     /**
      * Defines the number of columns to distribute the form content by breakpoint.
      *
@@ -120,14 +203,14 @@ declare class Form extends UI5Element {
      * - `S` - 1 column by default (1 column is recommended)
      * - `M` - 1 column by default (up to 2 columns are recommended)
      * - `L` - 2 columns by default (up to 3 columns are recommended)
-     * - `XL` - 2 columns by default (up to 6 columns  are recommended)
+     * - `XL` - 3 columns by default (up to 6 columns  are recommended)
      *
-     * @default "S1 M1 L2 XL2"
+     * @default "S1 M1 L2 XL3"
      * @public
      */
     layout: string;
     /**
-     * Defines the width proportion of the labels and fields of a FormItem by breakpoint.
+     * Defines the width proportion of the labels and fields of a form item by breakpoint.
      *
      * By default, the labels take 4/12 (or 1/3) of the form item in M,L and XL sizes,
      * and 12/12 in S size, e.g in S the label is on top of its associated field.
@@ -135,10 +218,26 @@ declare class Form extends UI5Element {
      * The supported values are between 1 and 12. Greater the number, more space the label will use.
      *
      * **Note:** If "12" is set, the label will be displayed on top of its assosiated field.
+     *
      * @default "S12 M4 L4 XL4"
      * @public
      */
     labelSpan: string;
+    /**
+     * Defines the number of cells that are empty at the end of each form item, configurable by breakpoint.
+     *
+     * By default, a form item spans 12 cells, fully divided between its label (4 cells) and field (8 cells), with no empty space at the end.
+     * The `emptySpan` provides additional layout flexibility by defining empty space at the form item’s end.
+     *
+     * **Note:**
+     * - The maximum allowable empty space is 10 cells. At least 1 cell each must remain for the label and the field.
+     * - When `emptySpan` is specified (greater than 0), ensure that the combined value of `emptySpan` and `labelSpan` does not exceed 11. This guarantees a minimum of 1 cell for the field.
+     *
+     * @default "S0 M0 L0 XL0"
+     * @since 2.5.0
+     * @public
+     */
+    emptySpan: string;
     /**
      * Defines the header text of the component.
      *
@@ -149,11 +248,19 @@ declare class Form extends UI5Element {
      */
     headerText?: string;
     /**
+     * Defines the compoennt heading level,
+     * set by the `headerText`.
+     * @default "H2"
+     * @since 2.10.0
+     * @public
+    */
+    headerLevel: `${TitleLevel}`;
+    /**
      * Defines the vertical spacing between form items.
      *
-     * **Note:** If the Form is meant to be switched between "non-edit" and "edit" modes,
-     * we recommend using "Large" item spacing in "non-edit" mode, and "Normal" - for "edit" mode,
-     * to avoid "jumping" effect, caused by the hight difference between texts in "non-edit" mode and the input fields in "edit" mode.
+     * **Note:** If the Form is meant to be switched between "display"("non-edit") and "edit" modes,
+     * we recommend using "Large" item spacing in "display"("non-edit") mode, and "Normal" - for "edit" mode,
+     * to avoid "jumping" effect, caused by the hight difference between texts in "display"("non-edit") mode and the input fields in "edit" mode.
      *
      * @default "Normal"
      * @public
@@ -165,42 +272,52 @@ declare class Form extends UI5Element {
      * **Note:** When a `header` is provided, the `headerText` property is ignored.
      * @public
      */
-    header: Array<HTMLElement>;
+    header: Slot<HTMLElement>;
     /**
      * Defines the component content - FormGroups or FormItems.
      *
      * **Note:** Mixing FormGroups and standalone FormItems (not belonging to a group) is not supported.
      * Either use FormGroups and make sure all FormItems are part of a FormGroup, or use just FormItems without any FormGroups.
+     *
+     * **Note:** As of version 2.23.0 the support for standalone FormItems (not belonging to a group) is deprecated.
+     * We recommend using FormGroups, as they provide better accessibility and layout options.
+     *
      * @public
      */
-    items: Array<IFormItem>;
+    items: DefaultSlot<IFormItem>;
+    static i18nBundle: I18nBundle;
     /**
      * @private
      */
     columnsS: number;
     labelSpanS: number;
+    emptySpanS: number;
     columnsM: number;
     labelSpanM: number;
+    emptySpanM: number;
     columnsL: number;
     labelSpanL: number;
+    emptySpanL: number;
     columnsXl: number;
     labelSpanXl: number;
+    emptySpanXl: number;
     onBeforeRendering(): void;
     onAfterRendering(): void;
-    setColumnLayout(): void;
-    setLabelSpan(): void;
+    parseLayoutConfiguration(): void;
+    getFormItemLayout(breakpoint: Breakpoint): string;
+    setFastNavGroup(): void;
     setGroupsColSpan(): void;
-    getGroupsColSpan(cols: number, groups: number, index: number, group: IFormItem): number;
+    setItemsState(): void;
     get hasGroupItems(): boolean;
     get hasHeader(): boolean;
+    get hasHeaderText(): boolean;
     get hasCustomHeader(): boolean;
-    get ariaLabelledByID(): string | undefined;
+    get effectiveAccessibleName(): string | undefined;
+    get effectiveAccessibleNameRef(): string | undefined;
+    get effectiveAccessibleRole(): "form" | "region";
     get groupItemsInfo(): Array<GroupItemsInfo>;
     get itemsInfo(): Array<ItemsInfo>;
     getItemsInfo(items?: Array<IFormItem>): Array<ItemsInfo>;
-    createAdditionalCSSStyleSheet(): void;
-    getAdditionalCSS(step: string, colsNumber: number): string | undefined;
-    getCSSStyleSheet(cssText: string): CSSStyleSheet;
 }
 export default Form;
-export { IFormItem, };
+export type { IFormItem, };

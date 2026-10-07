@@ -4,13 +4,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var NotificationListItemBase_1;
 import { isSpace, isF2 } from "@ui5/webcomponents-base/dist/Keys.js";
+import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import { getTabbableElements } from "@ui5/webcomponents-base/dist/util/TabbableElements.js";
 import getActiveElement from "@ui5/webcomponents-base/dist/util/getActiveElement.js";
 import ListItemBase from "@ui5/webcomponents/dist/ListItemBase.js";
-import { getEventMark } from "@ui5/webcomponents-base/dist/MarkedEvents.js";
 import { getFirstFocusableElement } from "@ui5/webcomponents-base/dist/util/FocusableElements.js";
 // Texts
 import { NOTIFICATION_LIST_ITEM_LOADING, } from "./generated/i18n/i18n-defaults.js";
@@ -23,7 +24,7 @@ import { NOTIFICATION_LIST_ITEM_LOADING, } from "./generated/i18n/i18n-defaults.
  * @since 1.0.0-rc.8
  * @public
  */
-class NotificationListItemBase extends ListItemBase {
+let NotificationListItemBase = NotificationListItemBase_1 = class NotificationListItemBase extends ListItemBase {
     constructor() {
         super(...arguments);
         /**
@@ -53,14 +54,14 @@ class NotificationListItemBase extends ListItemBase {
         return !!this.titleText?.length;
     }
     get loadingText() {
-        return NotificationListItemBase.i18nFioriBundle.getText(NOTIFICATION_LIST_ITEM_LOADING);
+        return NotificationListItemBase_1.i18nFioriBundle.getText(NOTIFICATION_LIST_ITEM_LOADING);
     }
     /**
      * Event handlers
      */
     async _onkeydown(e) {
         super._onkeydown(e);
-        if (isSpace(e) && getEventMark(e) !== "button") {
+        if (isSpace(e) && this.getFocusDomRef().matches(":has(:focus-within)")) {
             e.preventDefault();
             return;
         }
@@ -84,10 +85,7 @@ class NotificationListItemBase extends ListItemBase {
         const aContent = getTabbableElements(this.getHeaderDomRef());
         return aContent.length === 0 || (aContent[aContent.length - 1] === getActiveElement());
     }
-    static async onDefine() {
-        NotificationListItemBase.i18nFioriBundle = await getI18nBundle("@ui5/webcomponents-fiori");
-    }
-}
+};
 __decorate([
     property()
 ], NotificationListItemBase.prototype, "titleText", void 0);
@@ -100,5 +98,11 @@ __decorate([
 __decorate([
     property({ type: Number })
 ], NotificationListItemBase.prototype, "loadingDelay", void 0);
+__decorate([
+    i18n("@ui5/webcomponents-fiori")
+], NotificationListItemBase, "i18nFioriBundle", void 0);
+NotificationListItemBase = NotificationListItemBase_1 = __decorate([
+    customElement({})
+], NotificationListItemBase);
 export default NotificationListItemBase;
 //# sourceMappingURL=NotificationListItemBase.js.map

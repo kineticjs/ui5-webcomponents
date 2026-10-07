@@ -4,23 +4,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var Form_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
+// Utils
+import { getFormItemLayoutValue, getGroupsColSpan } from "./form-utils/FormUtils.js";
 // Template
-import FormTemplate from "./generated/templates/FormTemplate.lit.js";
+import FormTemplate from "./FormTemplate.js";
 // Styles
 import FormCss from "./generated/themes/Form.css.js";
-import Title from "./Title.js";
-const additionalStylesMap = new Map();
-const StepColumn = {
-    "S": 1,
-    "M": 2,
-    "L": 3,
-    "XL": 6,
-};
+import { FORM_ACCESSIBLE_NAME } from "./generated/i18n/i18n-defaults.js";
 /**
  * @class
  *
@@ -28,6 +26,9 @@ const StepColumn = {
  *
  * The Form is a layout component that arranges labels and form fields (like input fields) pairs
  * into a specific number of columns.
+ *
+ * **Note:** The Form web component is a layout component, it isn't a replacement for the native `form` HTML element.
+ * The Form web component does not provide any APIs for form submission.
  *
  * ### Structure
  *
@@ -43,14 +44,14 @@ const StepColumn = {
  * This is enabled by the FormGroup (`ui5-form-group`) component.
  * In this case, the Form is structured into FormGroups and each FormGroup consists of FormItems.
  *
- *  ### Responsiveness
+ * ### Responsiveness
  *
  * The Form component reacts and changes its layout on predefined breakpoints.
  * Depending on its size, the Form content (FormGroups and FormItems) gets divided into one or more columns as follows:
- * - **S** (< 600px) – 1 column is recommended (default: 1)
- * - **M** (600px - 1022px) – up to 2 columns are recommended (default: 1)
- * - **L** (1023px - 1439px) - up to 3 columns are recommended (default: 2)
- * - **XL** (> 1439px) – up to 6 columns are recommended (default: 2)
+ * - **S** (0 - 599px) – 1 column is recommended (default: 1)
+ * - **M** (600px - 1023px) – up to 2 columns are recommended (default: 1)
+ * - **L** (1024px - 1439px) - up to 3 columns are recommended (default: 2)
+ * - **XL** (>= 1440px) – up to 6 columns are recommended (default: 3)
  *
  * To change the layout, use the `layout` property - f.e. layout="S1 M2 L3 XL6".
  *
@@ -93,6 +94,47 @@ const StepColumn = {
  *
  * **For example:** To always place the labels on top set: `labelSpan="S12 M12 L12 XL12"` property.
  *
+ * ### Items Empty Span
+ *
+ * By default, a form item spans 12 cells, fully divided between its label and field, with no empty space at the end:
+ * - **Label:** occupies 4 cells.
+ * - **Field:** occupies 8 cells.
+ *
+ * The `emptySpan` property provides additional layout flexibility by defining empty space at the form item’s end.
+ *
+ * **For example:** Setting "S0 M0 L3 XL3" (or just "L3 XL3") adjusts the layout as follows:
+ * - **Label:** remains 4 cells.
+ * - **Field:** is reduced to 5 cells.
+ * - **Empty space:** 3 cells are added at the end.
+ *
+ * Greater values increase the empty space at the end of the form item, reducing the space available for the label and its field.
+ * However, setting `emptySpan` to 1 cell is recommended and typically sufficient to achieve a balanced layout.
+ *
+ * ### Navigation flow
+ *
+ * Items are grouped into `ui5-form-group` elements, allowing the following navigation:
+ *
+ * - **Single-Column Group**: Focus moves vertically down from one item to the next.
+ *   ```
+ *   | 1 |
+ *   | 2 |
+ *   | 3 |
+ *   ```
+ *
+ * - **Multi-Column Group**: Focus moves horizontally within each row, advancing to the next row after completing the current one.
+ *   ```
+ *   | 1 | 4 |
+ *   | 2 | 5 |
+ *   | 3 | 6 |
+ *   ```
+ *
+ * ### Keyboard Handling
+ *
+ * - [Tab] - Moves the focus to the next interactive element within the Form/FormGroup (if available) or to the next element in the tab chain outside the Form
+ * - [Shift] + [Tab] - Moves the focus to the previous interactive element within the Form/FormGroup (if available) or to the previous element in the tab chain outside the Form
+ * - [F6] - Moves the focus to the first interactive element of the next FormGroup (if available) or to the next element in the tab chain outside the Form
+ * - [Shift] + [F6] - Moves the focus to the first interactive element of the previous FormGroup (if available) or to the previous element in the tab chain outside the Form
+ *
  * ### ES6 Module Import
  *
  * - import @ui5/webcomponents/dist/Form.js";
@@ -105,12 +147,26 @@ const StepColumn = {
  *
  * @public
  * @since 2.0.0
- * @experimental This component is availabe since 2.0 under an experimental flag and its API and behaviour are subject to change.
  * @extends UI5Element
  */
-let Form = class Form extends UI5Element {
+let Form = Form_1 = class Form extends UI5Element {
     constructor() {
         super(...arguments);
+        /**
+         * Defines the accessibility mode of the component in "edit" and "display" use-cases.
+         *
+         * Based on the mode, the component renders different HTML elements and ARIA attributes,
+         * which are appropriate for the use-case.
+         *
+         * **Usage:**
+         * - Set this property to "Display", when the form consists of non-editable (e.g. texts) form items.
+         * - Set this property to "Edit", when the form consists of editable (e.g. input fields) form items.
+         *
+         * @default "Display"
+         * @since 2.16.0
+         * @public
+         */
+        this.accessibleMode = "Display";
         /**
          * Defines the number of columns to distribute the form content by breakpoint.
          *
@@ -118,14 +174,14 @@ let Form = class Form extends UI5Element {
          * - `S` - 1 column by default (1 column is recommended)
          * - `M` - 1 column by default (up to 2 columns are recommended)
          * - `L` - 2 columns by default (up to 3 columns are recommended)
-         * - `XL` - 2 columns by default (up to 6 columns  are recommended)
+         * - `XL` - 3 columns by default (up to 6 columns  are recommended)
          *
-         * @default "S1 M1 L2 XL2"
+         * @default "S1 M1 L2 XL3"
          * @public
          */
-        this.layout = "S1 M1 L2 XL2";
+        this.layout = "S1 M1 L2 XL3";
         /**
-         * Defines the width proportion of the labels and fields of a FormItem by breakpoint.
+         * Defines the width proportion of the labels and fields of a form item by breakpoint.
          *
          * By default, the labels take 4/12 (or 1/3) of the form item in M,L and XL sizes,
          * and 12/12 in S size, e.g in S the label is on top of its associated field.
@@ -133,16 +189,40 @@ let Form = class Form extends UI5Element {
          * The supported values are between 1 and 12. Greater the number, more space the label will use.
          *
          * **Note:** If "12" is set, the label will be displayed on top of its assosiated field.
+         *
          * @default "S12 M4 L4 XL4"
          * @public
          */
         this.labelSpan = "S12 M4 L4 XL4";
         /**
+         * Defines the number of cells that are empty at the end of each form item, configurable by breakpoint.
+         *
+         * By default, a form item spans 12 cells, fully divided between its label (4 cells) and field (8 cells), with no empty space at the end.
+         * The `emptySpan` provides additional layout flexibility by defining empty space at the form item’s end.
+         *
+         * **Note:**
+         * - The maximum allowable empty space is 10 cells. At least 1 cell each must remain for the label and the field.
+         * - When `emptySpan` is specified (greater than 0), ensure that the combined value of `emptySpan` and `labelSpan` does not exceed 11. This guarantees a minimum of 1 cell for the field.
+         *
+         * @default "S0 M0 L0 XL0"
+         * @since 2.5.0
+         * @public
+         */
+        this.emptySpan = "S0 M0 L0 XL0";
+        /**
+         * Defines the compoennt heading level,
+         * set by the `headerText`.
+         * @default "H2"
+         * @since 2.10.0
+         * @public
+        */
+        this.headerLevel = "H2";
+        /**
          * Defines the vertical spacing between form items.
          *
-         * **Note:** If the Form is meant to be switched between "non-edit" and "edit" modes,
-         * we recommend using "Large" item spacing in "non-edit" mode, and "Normal" - for "edit" mode,
-         * to avoid "jumping" effect, caused by the hight difference between texts in "non-edit" mode and the input fields in "edit" mode.
+         * **Note:** If the Form is meant to be switched between "display"("non-edit") and "edit" modes,
+         * we recommend using "Large" item spacing in "display"("non-edit") mode, and "Normal" - for "edit" mode,
+         * to avoid "jumping" effect, caused by the hight difference between texts in "display"("non-edit") mode and the input fields in "edit" mode.
          *
          * @default "Normal"
          * @public
@@ -153,28 +233,30 @@ let Form = class Form extends UI5Element {
          */
         this.columnsS = 1;
         this.labelSpanS = 12;
+        this.emptySpanS = 0;
         this.columnsM = 1;
         this.labelSpanM = 4;
+        this.emptySpanM = 0;
         this.columnsL = 2;
         this.labelSpanL = 4;
-        this.columnsXl = 2;
+        this.emptySpanL = 0;
+        this.columnsXl = 3;
         this.labelSpanXl = 4;
+        this.emptySpanXl = 0;
     }
     onBeforeRendering() {
         // Parse the layout and set it to the FormGroups/FormItems.
-        this.setColumnLayout();
-        // Parse the labelSpan and set it to the FormGroups/FormItems.
-        this.setLabelSpan();
+        this.parseLayoutConfiguration();
         // Define how many columns a group should take.
         this.setGroupsColSpan();
+        // Set item spacing
+        this.setItemsState();
     }
     onAfterRendering() {
-        // Create additional CSS for number of columns that are not supported by default.
-        this.createAdditionalCSSStyleSheet();
+        this.setFastNavGroup();
     }
-    setColumnLayout() {
-        const layoutArr = this.layout.split(" ");
-        layoutArr.forEach((breakpoint) => {
+    parseLayoutConfiguration() {
+        this.layout.split(" ").forEach((breakpoint) => {
             if (breakpoint.startsWith("S")) {
                 this.columnsS = parseInt(breakpoint.slice(1));
             }
@@ -188,8 +270,6 @@ let Form = class Form extends UI5Element {
                 this.columnsXl = parseInt(breakpoint.slice(2));
             }
         });
-    }
-    setLabelSpan() {
         this.labelSpan.split(" ").forEach((breakpoint) => {
             if (breakpoint.startsWith("S")) {
                 this.labelSpanS = parseInt(breakpoint.slice(1));
@@ -204,10 +284,48 @@ let Form = class Form extends UI5Element {
                 this.labelSpanXl = parseInt(breakpoint.slice(2));
             }
         });
-        this.items.forEach((item) => {
-            item.labelSpan = this.labelSpan;
-            item.itemSpacing = this.itemSpacing;
+        this.emptySpan.split(" ").forEach((breakpoint) => {
+            if (breakpoint.startsWith("S")) {
+                this.emptySpanS = parseInt(breakpoint.slice(1));
+            }
+            else if (breakpoint.startsWith("M")) {
+                this.emptySpanM = parseInt(breakpoint.slice(1));
+            }
+            else if (breakpoint.startsWith("L")) {
+                this.emptySpanL = parseInt(breakpoint.slice(1));
+            }
+            else if (breakpoint.startsWith("XL")) {
+                this.emptySpanXl = parseInt(breakpoint.slice(2));
+            }
         });
+    }
+    getFormItemLayout(breakpoint) {
+        let labelSpan, emptySpan;
+        if (breakpoint === "S") {
+            labelSpan = this.labelSpanS;
+            emptySpan = this.emptySpanS;
+        }
+        else if (breakpoint === "M") {
+            labelSpan = this.labelSpanM;
+            emptySpan = this.emptySpanM;
+        }
+        else if (breakpoint === "L") {
+            labelSpan = this.labelSpanL;
+            emptySpan = this.emptySpanL;
+        }
+        else if (breakpoint === "XL") {
+            labelSpan = this.labelSpanXl;
+            emptySpan = this.emptySpanXl;
+        }
+        return getFormItemLayoutValue(breakpoint, labelSpan, emptySpan);
+    }
+    setFastNavGroup() {
+        if (this.hasGroupItems) {
+            this.removeAttribute("data-sap-ui-fastnavgroup");
+        }
+        else {
+            this.setAttribute("data-sap-ui-fastnavgroup", "true");
+        }
     }
     setGroupsColSpan() {
         if (!this.hasGroupItems) {
@@ -218,55 +336,56 @@ let Form = class Form extends UI5Element {
             return itemB?.items.length - itemA?.items.length;
         });
         sortedItems.forEach((item, idx) => {
-            item.colsXl = this.getGroupsColSpan(this.columnsXl, itemsCount, idx, item);
-            item.colsL = this.getGroupsColSpan(this.columnsL, itemsCount, idx, item);
-            item.colsM = this.getGroupsColSpan(this.columnsM, itemsCount, idx, item);
-            item.colsS = this.getGroupsColSpan(this.columnsS, itemsCount, idx, item);
+            item.colsXl = getGroupsColSpan(this.columnsXl, itemsCount, idx, item, "XL");
+            item.colsL = getGroupsColSpan(this.columnsL, itemsCount, idx, item, "L");
+            item.colsM = getGroupsColSpan(this.columnsM, itemsCount, idx, item, "M");
+            item.colsS = getGroupsColSpan(this.columnsS, itemsCount, idx, item, "S");
         });
     }
-    getGroupsColSpan(cols, groups, index, group) {
-        // Case 0: column span is set from outside.
-        if (group.columnSpan) {
-            return group.columnSpan;
-        }
-        // CASE 1: The number of available columns match the number of groups, or only 1 column is available - each group takes 1 column.
-        // For example: 1 column - 1 group, 2 columns - 2 groups, 3 columns - 3 groups, 4columns - 4 groups
-        if (cols === 1 || cols <= groups) {
-            return 1;
-        }
-        // CASE 2: The number of available columns IS multiple of the number of groups.
-        // For example: 2 column - 1 group, 3 columns - 1 groups, 4 columns - 1 group, 4 columns - 2 groups
-        if (cols % groups === 0) {
-            return cols / groups;
-        }
-        // CASE 3: The number of available columns IS NOT multiple of the number of groups.
-        const MIN_COL_SPAN = 1;
-        const delta = cols - groups;
-        // 7 cols & 4 groups => 2, 2, 2, 1
-        if (delta <= groups) {
-            return index < delta ? MIN_COL_SPAN + 1 : MIN_COL_SPAN;
-        }
-        // 7 cols & 3 groups => 3, 2, 2
-        return index === 0 ? MIN_COL_SPAN + (delta - groups) + 1 : MIN_COL_SPAN + 1;
+    setItemsState() {
+        this.items.forEach((item) => {
+            item.itemSpacing = this.itemSpacing;
+            item.accessibleMode = this.accessibleMode;
+        });
     }
     get hasGroupItems() {
         return this.items.some((item) => item.isGroup);
     }
     get hasHeader() {
-        return this.hasCustomHeader || !!this.headerText;
+        return this.hasCustomHeader || this.hasHeaderText;
+    }
+    get hasHeaderText() {
+        return !!this.headerText;
     }
     get hasCustomHeader() {
         return !!this.header.length;
     }
-    get ariaLabelledByID() {
-        return this.hasCustomHeader ? undefined : `${this._id}-header-text`;
+    get effectiveAccessibleName() {
+        if (this.accessibleName || this.accessibleNameRef) {
+            return getEffectiveAriaLabelText(this);
+        }
+        return this.hasHeader ? undefined : Form_1.i18nBundle.getText(FORM_ACCESSIBLE_NAME);
+    }
+    get effectiveAccessibleNameRef() {
+        if (this.accessibleName || this.accessibleNameRef) {
+            return;
+        }
+        return this.hasHeaderText && !this.hasCustomHeader ? `${this._id}-header-text` : undefined;
+    }
+    get effectiveAccessibleRole() {
+        return this.hasGroupItems ? "region" : "form";
     }
     get groupItemsInfo() {
-        return this.items.map((groupItem) => {
+        return this.items.map((groupItem, index) => {
+            const accessibleNameRef = groupItem.effectiveAccessibleNameRef;
             return {
                 groupItem,
-                classes: `ui5-form-column-spanL-${groupItem.colsL} ui5-form-column-spanXL-${groupItem.colsXl} ui5-form-column-spanM-${groupItem.colsM} ui5-form-column-spanS-${groupItem.colsS}`,
+                accessibleName: this.accessibleMode === "Edit" ? groupItem.getEffectiveAccessibleName(index) : undefined,
+                accessibleNameInner: this.accessibleMode === "Edit" ? undefined : groupItem.getEffectiveAccessibleName(index),
+                accessibleNameRef: this.accessibleMode === "Edit" ? accessibleNameRef : undefined,
+                accessibleNameRefInner: this.accessibleMode === "Edit" ? undefined : accessibleNameRef,
                 items: this.getItemsInfo(Array.from(groupItem.children)),
+                role: this.accessibleMode === "Edit" ? "form" : undefined,
             };
         });
     }
@@ -277,77 +396,19 @@ let Form = class Form extends UI5Element {
         return (items || this.items).map((item) => {
             return {
                 item,
-                classes: item.columnSpan ? `ui5-form-item-span-${item.columnSpan}` : "",
             };
         });
     }
-    createAdditionalCSSStyleSheet() {
-        [
-            { breakpoint: "S", columns: this.columnsS },
-            { breakpoint: "M", columns: this.columnsM },
-            { breakpoint: "L", columns: this.columnsL },
-            { breakpoint: "XL", columns: this.columnsXl },
-        ].forEach(step => {
-            const additionalStyle = this.getAdditionalCSS(step.breakpoint, step.columns);
-            if (additionalStyle) {
-                this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, this.getCSSStyleSheet(additionalStyle)];
-            }
-        });
-    }
-    getAdditionalCSS(step, colsNumber) {
-        if (StepColumn[step] >= colsNumber) {
-            return;
-        }
-        const key = `${step}-${colsNumber}`;
-        if (!additionalStylesMap.has(key)) {
-            let containerQuery;
-            let supporedColumnsNumber = StepColumn.S;
-            let stepSpanCSS = "";
-            let cols = colsNumber;
-            if (step === "S") {
-                supporedColumnsNumber = StepColumn.S;
-                containerQuery = `@container (max-width: 599px) {`;
-            }
-            else if (step === "M") {
-                supporedColumnsNumber = StepColumn.M;
-                containerQuery = `@container (width > 599px) and (width < 1024px) {`;
-            }
-            else if (step === "L") {
-                supporedColumnsNumber = StepColumn.L;
-                containerQuery = `@container (width > 1023px) and (width < 1439px) {`;
-            }
-            else if (step === "XL") {
-                containerQuery = `@container (min-width: 1440px) {`;
-                supporedColumnsNumber = StepColumn.XL;
-            }
-            while (cols > supporedColumnsNumber) {
-                stepSpanCSS += `
-				:host([columns-${step.toLocaleLowerCase()}="${cols}"]) .ui5-form-layout {
-					grid-template-columns: repeat(${cols}, 1fr);
-				}
-
-				.ui5-form-column-span${step}-${cols},
-				.ui5-form-item-span-${cols} {
-					grid-column: span ${cols};
-				}
-
-				.ui5-form-column-span${step}-${cols} .ui5-form-group-layout {
-					grid-template-columns: repeat(${cols}, 1fr);
-				}
-				`;
-                cols--;
-            }
-            const css = `${containerQuery}${stepSpanCSS}}`;
-            additionalStylesMap.set(key, css);
-        }
-        return additionalStylesMap.get(key);
-    }
-    getCSSStyleSheet(cssText) {
-        const style = new CSSStyleSheet();
-        style.replaceSync(cssText);
-        return style;
-    }
 };
+__decorate([
+    property()
+], Form.prototype, "accessibleName", void 0);
+__decorate([
+    property()
+], Form.prototype, "accessibleNameRef", void 0);
+__decorate([
+    property()
+], Form.prototype, "accessibleMode", void 0);
 __decorate([
     property()
 ], Form.prototype, "layout", void 0);
@@ -356,12 +417,18 @@ __decorate([
 ], Form.prototype, "labelSpan", void 0);
 __decorate([
     property()
+], Form.prototype, "emptySpan", void 0);
+__decorate([
+    property()
 ], Form.prototype, "headerText", void 0);
+__decorate([
+    property()
+], Form.prototype, "headerLevel", void 0);
 __decorate([
     property()
 ], Form.prototype, "itemSpacing", void 0);
 __decorate([
-    slot({ type: HTMLElement })
+    slot()
 ], Form.prototype, "header", void 0);
 __decorate([
     slot({
@@ -372,36 +439,50 @@ __decorate([
     })
 ], Form.prototype, "items", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "columnsS", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "labelSpanS", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
+], Form.prototype, "emptySpanS", void 0);
+__decorate([
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "columnsM", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "labelSpanM", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
+], Form.prototype, "emptySpanM", void 0);
+__decorate([
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "columnsL", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "labelSpanL", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
+], Form.prototype, "emptySpanL", void 0);
+__decorate([
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "columnsXl", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, noAttribute: true })
 ], Form.prototype, "labelSpanXl", void 0);
-Form = __decorate([
+__decorate([
+    property({ type: Number, noAttribute: true })
+], Form.prototype, "emptySpanXl", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], Form, "i18nBundle", void 0);
+Form = Form_1 = __decorate([
     customElement({
         tag: "ui5-form",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: FormCss,
         template: FormTemplate,
-        dependencies: [Title],
     })
 ], Form);
 Form.define();

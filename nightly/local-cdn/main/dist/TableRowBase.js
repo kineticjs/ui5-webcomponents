@@ -4,59 +4,72 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var TableRowBase_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import { isEnter, isSpace } from "@ui5/webcomponents-base/dist/Keys.js";
-import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import { customElement, property, i18n } from "@ui5/webcomponents-base/dist/decorators.js";
+import { isInstanceOfTable, toggleAttribute } from "./TableUtils.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import TableRowBaseCss from "./generated/themes/TableRowBase.css.js";
-import CheckBox from "./CheckBox.js";
-import { isInstanceOfTable } from "./TableUtils.js";
-import { TABLE_ROW_SELECTOR, } from "./generated/i18n/i18n-defaults.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
 /**
  * @class
  * A class to serve as a foundation for the `TableRow` and `TableHeaderRow` classes.
  * @constructor
  * @abstract
  * @extends UI5Element
- * @since 2.0
+ * @since 2.0.0
  * @public
  */
-let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
+let TableRowBase = class TableRowBase extends UI5Element {
     constructor() {
         super(...arguments);
         this._invalidate = 0;
-    }
-    static async onDefine() {
-        TableRowBase_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
-    }
-    onEnterDOM() {
-        this.setAttribute("role", "row");
-        this.toggleAttribute("ui5-table-row-base", true);
-    }
-    onBeforeRendering() {
-        if (this._isSelectable) {
-            this.setAttribute("aria-selected", `${this._isSelected}`);
-        }
-        else {
-            this.removeAttribute("aria-selected");
-        }
-    }
-    getFocusDomRef() {
-        return this;
-    }
-    _informSelectionChange() {
-        this._tableSelection?.informSelectionChange(this);
+        this._rowActionCount = 0;
+        this._renderNavigated = false;
+        this._alternate = false;
+        this._renderDummyCell = false;
     }
     isHeaderRow() {
         return false;
     }
-    _onkeydown(e, eventOrigin) {
-        if ((eventOrigin === this && this._isSelectable && isSpace(e)) || (eventOrigin === this._selectionCell && (isSpace(e) || isEnter(e)))) {
-            this._informSelectionChange();
-            e.preventDefault();
+    isGroupRow() {
+        return false;
+    }
+    onEnterDOM() {
+        !this.role && this.setAttribute("role", "row");
+        this.toggleAttribute("ui5-table-row-base", true);
+    }
+    onBeforeRendering() {
+        toggleAttribute(this, "aria-selected", this._isSelectable, `${this._isSelected}`);
+        toggleAttribute(this, "_has-popin", this._hasPopin);
+    }
+    onAfterRendering() {
+        this._handleCustomFocusOutline();
+    }
+    getFocusDomRef() {
+        return this;
+    }
+    async focus(focusOptions) {
+        this.setAttribute("tabindex", "-1");
+        HTMLElement.prototype.focus.call(this, focusOptions);
+        this._handleCustomFocusOutline();
+        return Promise.resolve();
+    }
+    _handleCustomFocusOutline() {
+        if (this._renderDummyCell && !this._hasPopin && document.activeElement === this) {
+            const cells = [...this.shadowRoot.children].flatMap(element => {
+                return element.localName === "slot" ? element.assignedElements() : [element];
+            });
+            const customOutlineAttribute = "data-ui5-custom-outline";
+            cells.forEach(cell => cell.removeAttribute(customOutlineAttribute));
+            const firstVisibleCell = cells.at(0);
+            const lastVisibleCell = cells.at(-2);
+            if (firstVisibleCell === lastVisibleCell) {
+                firstVisibleCell?.setAttribute(customOutlineAttribute, "startend");
+            }
+            else {
+                firstVisibleCell?.setAttribute(customOutlineAttribute, "start");
+                lastVisibleCell?.setAttribute(customOutlineAttribute, "end");
+            }
         }
     }
     get _table() {
@@ -70,41 +83,64 @@ let TableRowBase = TableRowBase_1 = class TableRowBase extends UI5Element {
         return this._table?._getSelection();
     }
     get _isSelected() {
-        return this._tableSelection?.isSelected(this);
+        return !!this._tableSelection?.isSelected(this);
     }
     get _isSelectable() {
-        return this._tableSelection?.isSelectable();
+        return !!this._tableSelection?.isSelectable();
     }
     get _isMultiSelect() {
-        return this._tableSelection?.isMultiSelect();
+        return !!this._tableSelection?.isMultiSelectable();
     }
-    get _hasRowSelector() {
-        return this._tableSelection?.hasRowSelector();
-    }
-    get _selectionCell() {
-        return this.shadowRoot.getElementById("selection-cell");
+    get _hasSelector() {
+        return !!this._table?._isRowSelectorRequired;
     }
     get _visibleCells() {
         return this.cells.filter(c => !c._popin);
     }
+    get _firstVisibleCell() {
+        return this.cells.find(c => !c._popin);
+    }
     get _popinCells() {
-        return this.cells.filter(c => c._popin);
+        return this.cells.filter(c => c._popin && !c._popinHidden);
     }
-    get _i18nRowSelector() {
-        return TableRowBase_1.i18nBundle.getText(TABLE_ROW_SELECTOR);
+    get _hasPopin() {
+        return (this._table?.rows.length ?? 0) > 0 && this.cells.some(c => c._popin && !c._popinHidden);
     }
-    get isTableRowBase() {
-        return true;
+    get _stickyCells() {
+        return [this._selectionCell, this._actionsCell, this._navigatedCell].filter(Boolean);
     }
 };
 __decorate([
     property({ type: Number, noAttribute: true })
 ], TableRowBase.prototype, "_invalidate", void 0);
-TableRowBase = TableRowBase_1 = __decorate([
+__decorate([
+    property({ type: Number, noAttribute: true })
+], TableRowBase.prototype, "_rowActionCount", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], TableRowBase.prototype, "_renderNavigated", void 0);
+__decorate([
+    property({ type: Boolean, noAttribute: true })
+], TableRowBase.prototype, "_alternate", void 0);
+__decorate([
+    property({ type: Boolean })
+], TableRowBase.prototype, "_renderDummyCell", void 0);
+__decorate([
+    query("#selection-cell")
+], TableRowBase.prototype, "_selectionCell", void 0);
+__decorate([
+    query("#actions-cell")
+], TableRowBase.prototype, "_actionsCell", void 0);
+__decorate([
+    query("#navigated-cell")
+], TableRowBase.prototype, "_navigatedCell", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], TableRowBase, "i18nBundle", void 0);
+TableRowBase = __decorate([
     customElement({
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: TableRowBaseCss,
-        dependencies: [CheckBox],
     })
 ], TableRowBase);
 export default TableRowBase;

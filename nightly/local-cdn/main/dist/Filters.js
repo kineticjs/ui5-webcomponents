@@ -7,7 +7,7 @@ const StartsWithPerTerm = (value, items, propName) => {
     return items.filter(item => {
         const text = item[propName];
         reg.lastIndex = 0;
-        return reg.test(text.toLowerCase());
+        return reg.test((text ?? "").toLowerCase());
     });
 };
 const StartsWith = (value, items, propName) => items.filter(item => (item[propName] || "").toLowerCase().startsWith(value.toLowerCase()));

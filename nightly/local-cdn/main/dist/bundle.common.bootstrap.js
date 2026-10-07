@@ -1,7 +1,7 @@
 import { setRuntimeAlias } from "@ui5/webcomponents-base/dist/Runtimes.js";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // OpenUI5 integration
-import "@ui5/webcomponents-base/dist/features/OpenUI5Support.js";
+import OpenUI5Support from "@ui5/webcomponents-base/dist/features/OpenUI5Support.js";
 // Assets
 import "./Assets.js";
 // Icons
@@ -43,6 +43,7 @@ import getLocaleData from "@ui5/webcomponents-localization/dist/locale/getLocale
 // });
 // used in test pages
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
+import { resetConfiguration } from "@ui5/webcomponents-base/dist/InitialConfiguration.js";
 import { sanitizeHTML, URLListValidator } from "@ui5/webcomponents-base/dist/util/HTMLSanitizer.js";
 import { getAnimationMode, setAnimationMode } from "@ui5/webcomponents-base/dist/config/AnimationMode.js";
 import { getTheme, setTheme, isLegacyThemeFamily } from "@ui5/webcomponents-base/dist/config/Theme.js";
@@ -55,10 +56,14 @@ import { getFirstDayOfWeek } from "@ui5/webcomponents-base/dist/config/FormatSet
 import { _getRegisteredNames as getIconNames, getIconAccessibleName } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 import applyDirection from "@ui5/webcomponents-base/dist/locale/applyDirection.js";
 import { attachDirectionChange } from "@ui5/webcomponents-base/dist/locale/directionChange.js";
+import { attachLanguageChange, detachLanguageChange } from "@ui5/webcomponents-base/dist/locale/languageChange.js";
 import ResizeHandler from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
-import announce from "@ui5/webcomponents-base/dist/util/InvisibleMessage.js";
+import announce, { registerInvisibleMessageRegion, deregisterInvisibleMessageRegion } from "@ui5/webcomponents-base/dist/util/InvisibleMessage.js";
 import { ignoreCustomElements, shouldIgnoreCustomElement } from "@ui5/webcomponents-base/dist/IgnoreCustomElements.js";
+import { startMultipleDrag } from "@ui5/webcomponents-base/dist/DragAndDrop.js";
+import getElementSelection from "@ui5/webcomponents-base/dist/util/SelectionAssistant.js";
 import * as defaultTexts from "./generated/i18n/i18n-defaults.js";
+// OpenUI5Support.enablePolling = true;
 setRuntimeAlias("UI5 Web Components Playground");
 // @ts-ignore
 window.sanitizeHTML = sanitizeHTML;
@@ -67,6 +72,7 @@ window.URLListValidator = URLListValidator;
 ignoreCustomElements("app-");
 ignoreCustomElements("my-");
 const testAssets = {
+    resetConfiguration,
     configuration: {
         getAnimationMode,
         setAnimationMode,
@@ -84,10 +90,15 @@ const testAssets = {
     },
     invisibleMessage: {
         announce,
+        registerInvisibleMessageRegion,
+        deregisterInvisibleMessageRegion,
     },
+    getElementSelection,
     getLocaleData,
     applyDirection,
     attachDirectionChange,
+    attachLanguageChange,
+    detachLanguageChange,
     ResizeHandler,
     addCustomCSS,
     attachThemeLoaded,
@@ -99,6 +110,7 @@ const testAssets = {
     getEffectiveIconCollection,
     ignoreCustomElements,
     shouldIgnoreCustomElement,
+    startMultipleDrag,
 };
 // @ts-ignore
 window["sap-ui-webcomponents-bundle"] = testAssets;

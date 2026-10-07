@@ -1,5 +1,6 @@
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
+import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import SliderBase from "./SliderBase.js";
 type AriaHandlesText = {
     startHandleText?: string;
@@ -68,7 +69,8 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
      * @formProperty
      * @public
      */
-    startValue: number;
+    set startValue(value: number);
+    get startValue(): number;
     /**
      * Defines end point of a selection - position of a second handle on the slider.
      * @default 100
@@ -76,8 +78,18 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
      * @formProperty
      * @public
      */
-    endValue: number;
+    set endValue(value: number);
+    get endValue(): number;
+    tooltipStartValue: string;
+    tooltipEndValue: string;
+    tooltipStartValueState: `${ValueState}`;
+    tooltipEndValueState: `${ValueState}`;
     rangePressed: boolean;
+    _progressFocused: boolean;
+    _isStartValueValid: boolean;
+    _isEndValueValid: boolean;
+    _startValue: number;
+    _endValue: number;
     _startValueInitial?: number;
     _endValueInitial?: number;
     _valueAffected?: AffectedValue;
@@ -91,15 +103,29 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
     _secondHandlePositionFromStart?: number;
     _selectedRange?: number;
     _reversedValues: boolean;
+    _lastValidStartValue: string;
+    _lastValidEndValue: string;
+    _areInputValuesSwapped: boolean;
+    _onDocumentClickBound: (e: MouseEvent) => void;
     static i18nBundle: I18nBundle;
     get formFormattedValue(): FormData;
     constructor();
-    get tooltipStartValue(): string;
-    get tooltipEndValue(): string;
+    onEnterDOM(): void;
+    onExitDOM(): void;
+    /**
+     * Handles document-level clicks to clear progress focus when clicking outside.
+     * @private
+     */
+    _onDocumentClick(e: MouseEvent): void;
     get _ariaDisabled(): true | undefined;
+    get _isStartTooltipVisible(): boolean;
+    get _isEndTooltipVisible(): boolean;
+    get _ariaValueTextStart(): string | undefined;
+    get _ariaValueTextEnd(): string | undefined;
     get _ariaLabelledByText(): string;
     get _ariaHandlesText(): AriaHandlesText;
     get _ariaValueNow(): number;
+    get _progressRole(): "slider";
     /**
      * Check if the previously saved state is outdated. That would mean
      * either it is the initial rendering or that a property has been changed
@@ -111,6 +137,7 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
      *
      */
     onBeforeRendering(): void;
+    onAfterRendering(): void;
     syncUIAndState(): void;
     _onfocusin(): void;
     /**
@@ -124,14 +151,14 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
      * Resets the stored Range Slider's initial values saved when it was first focused
      * @private
      */
-    _onfocusout(): void;
+    _onfocusout(e: FocusEvent): void;
     /**
     * Handles keyup logic. If one of the handles came across the other
     * swap the start and end values. Reset the affected value by the finished
     * user interaction.
     * @private
     */
-    _onkeyup(): void;
+    _onkeyup(e: KeyboardEvent): void;
     _handleActionKeyPress(e: KeyboardEvent): void;
     /**
      * Determines affected value (start/end) depending on the currently
@@ -261,6 +288,14 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
      * @private
      */
     _updateHandlesAndRange(newValue: number): void;
+    bringToFrontTooltip(handle: "start" | "end"): void;
+    _onTooltopForwardFocus(e: CustomEvent): void;
+    _onTooltipChange(e: CustomEvent): void;
+    _onTooltipFocusChange(e: CustomEvent): void;
+    _onTooltipOpen(): void;
+    _onTooltipInput(e: CustomEvent): void;
+    _onTooltipKeydown(e: KeyboardEvent): void;
+    _getFormattedValue(value: string): string;
     /**
      * Swaps the start and end values of the handles if one came accros the other:
      * - If the start value is greater than the endValue swap them and their handles
@@ -285,10 +320,20 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
     get tickmarksObject(): boolean[];
     get _startHandle(): HTMLElement;
     get _endHandle(): HTMLElement;
-    get _progressBar(): HTMLElement;
-    get _ariaLabelledByStartHandleRefs(): string;
-    get _ariaLabelledByEndHandleRefs(): string;
-    get _ariaLabelledByProgressBarRefs(): string;
+    get _progressBar(): HTMLElement | null;
+    get _ariaLabelledByStartHandleText(): string;
+    get _ariaLabelledByEndHandleText(): string;
+    /**
+     * @private
+     */
+    get _ariaLabelStartHandle(): string;
+    /**
+     * @private
+     */
+    get _ariaLabelEndHandle(): string;
+    _getAriaLabelHandle(handleDescription: string): string;
+    get _ariaLabelledByInputText(): string;
+    get _ariaDescribedByInputText(): string;
     get styles(): {
         progress: {
             [x: string]: string;
@@ -301,17 +346,6 @@ declare class RangeSlider extends SliderBase implements IFormInputElement {
         endHandle: {
             [x: string]: string;
         };
-        label: {
-            width: string;
-        };
-        labelContainer: {
-            [x: string]: string;
-            width: string;
-        };
-        tooltip: {
-            visibility: string;
-        };
     };
-    static onDefine(): Promise<void>;
 }
 export default RangeSlider;

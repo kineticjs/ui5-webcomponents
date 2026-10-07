@@ -6,6 +6,6 @@ declare class OpenUI5Enablement {
     static enrichBusyIndicatorSettings(klass: typeof UI5Element): void;
     static enrichBusyIndicatorMetadata(klass: typeof UI5Element): void;
     static enrichBusyIndicatorMethods(UI5ElementPrototype: typeof OpenUI5Element.prototype): void;
-    static getBusyIndicatorStyles(): import("../types.js").StyleData;
+    static getBusyIndicatorStyles(): string;
 }
 export default OpenUI5Enablement;

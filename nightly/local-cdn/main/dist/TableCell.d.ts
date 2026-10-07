@@ -13,12 +13,28 @@ import TableCellBase from "./TableCellBase.js";
  *
  * @constructor
  * @extends TableCellBase
- * @since 2.0
+ * @since 2.0.0
  * @public
- * @experimental This web component is available since 2.0 with an experimental flag and its API and behavior are subject to change.
  */
 declare class TableCell extends TableCellBase {
-    get _popinHeader(): Node;
+    /**
+     * Defines whether the cell is visually merged with the cell directly above it.
+     *
+     * This is useful if consecutive cells in a column have the same value and should visually appear as a single merged cell.
+     * Although the cell is visually merged with the previous one, its content must still be provided for accessibility purposes.
+     * **Note:** This feature is disabled when cells are rendered as a popin, and should remain `false` for interactive cell content.
+     *
+     * @default false
+     * @since 2.21.0
+     * @public
+     */
+    merged: boolean;
+    _popinHeader?: HTMLElement;
+    _popinContent?: HTMLElement;
+    onBeforeRendering(): void;
+    _injectHeaderNodes(ref: HTMLElement | null): void;
+    get _headerCell(): import("./TableHeaderCell.js").default | null | undefined;
+    get _popinHeaderNodes(): Node[];
     get _i18nPopinColon(): string;
 }
 export default TableCell;

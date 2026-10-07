@@ -33,8 +33,12 @@ import type WrappingType from "./types/WrappingType.js";
  * @public
  * @csspart outer-ring - Used to style the outer ring of the `ui5-radio-button`.
  * @csspart inner-ring - Used to style the inner ring of the `ui5-radio-button`.
+ * @csspart root - Used to style the root DOM element of the component.
  */
 declare class RadioButton extends UI5Element implements IFormInputElement {
+    eventDetails: {
+        change: void;
+    };
     /**
      * Defines whether the component is disabled.
      *
@@ -46,8 +50,8 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
     /**
      * Defines whether the component is read-only.
      *
-     * **Note:** A read-only component is not editable,
-     * but still provides visual feedback upon user interaction.
+     * **Note:** A read-only component isn't editable or selectable.
+     * However, because it's focusable, it still provides visual feedback upon user interaction.
      * @default false
      * @public
      */
@@ -65,6 +69,9 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
      * **Note:** The property value can be changed with user interaction,
      * either by clicking/tapping on the component,
      * or by using the Space or Enter key.
+     *
+     * **Note:** Only enabled radio buttons can be checked.
+     * Read-only radio buttons are not selectable, and therefore are always unchecked.
      * @default false
      * @formEvents change
      * @formProperty
@@ -128,7 +135,7 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
      * @since 1.1.0
      */
     accessibleNameRef?: string;
-    _tabIndex?: string;
+    _tabIndex?: number;
     /**
      * Defines the active state (pressed or not) of the component.
      * @default false
@@ -151,7 +158,6 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
     get formFormattedValue(): string | null;
     static i18nBundle: I18nBundle;
     constructor();
-    static onDefine(): Promise<void>;
     onAfterRendering(): void;
     onEnterDOM(): void;
     onExitDOM(): void;
@@ -166,16 +172,12 @@ declare class RadioButton extends UI5Element implements IFormInputElement {
     _onfocusout(): void;
     toggle(): this;
     canToggle(): boolean;
-    get classes(): {
-        inner: {
-            "ui5-radio-inner--hoverable": boolean;
-        };
-    };
-    get effectiveAriaDisabled(): "true" | null;
-    get ariaLabelText(): string;
+    get effectiveAriaDisabled(): true | undefined;
+    get ariaLabelText(): string | undefined;
+    get ariaLabelledBy(): string | undefined;
     get effectiveAriaDescribedBy(): string | undefined;
     get hasValueState(): boolean;
     get valueStateText(): string;
-    get effectiveTabIndex(): string | undefined;
+    get effectiveTabIndex(): number | undefined;
 }
 export default RadioButton;

@@ -1,14 +1,12 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import type { IFormInputElement } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import Popover from "./Popover.js";
-import type PopoverHorizontalAlign from "./types/PopoverHorizontalAlign.js";
-import "@ui5/webcomponents-icons/dist/error.js";
-import "@ui5/webcomponents-icons/dist/alert.js";
-import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
-import "@ui5/webcomponents-icons/dist/information.js";
+import type Popover from "./Popover.js";
+import type InputComposition from "./features/InputComposition.js";
+import type TextAreaCounterMode from "./types/TextAreaCounterMode.js";
 type TokenizedText = Array<string>;
 type IndexedTokenizedText = Array<{
     text: string;
@@ -18,6 +16,9 @@ type ExceededText = {
     exceededText?: string;
     leftCharactersCount?: number;
     calcedMaxLength?: number;
+};
+type TextAreaInputEventDetail = {
+    escapePressed?: boolean;
 };
 /**
  * @class
@@ -38,6 +39,13 @@ type ExceededText = {
  * @csspart textarea - Used to style the native textarea
  */
 declare class TextArea extends UI5Element implements IFormInputElement {
+    eventDetails: {
+        "change": void;
+        "input": TextAreaInputEventDetail;
+        "select": void;
+        "scroll": void;
+        "value-changed": void;
+    };
     /**
      * Defines the value of the component.
      * @formEvents change input
@@ -80,8 +88,8 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      * Defines the value state of the component.
      *
      * **Note:** If `maxlength` property is set,
-     * the component turns into "Warning" state once the characters exceeds the limit.
-     * In this case, only the "Error" state is considered and can be applied.
+     * the component turns into "Critical" state once the characters exceeds the limit.
+     * In this case, only the "Negative" state is considered and can be applied.
      * @default "None"
      * @since 1.0.0-rc.7
      * @public
@@ -115,8 +123,27 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      * paste and the counter below the component displays their number.
      * @default false
      * @public
+     * @deprecated Use `counterMode="Always"` instead.
      */
     showExceededText: boolean;
+    /**
+     * Determines when the character counter of the component is displayed.
+     *
+     * Available options are:
+     *
+     * - `None` - The counter is never shown and `maxlength` acts as a hard cap.
+     * - `Always` - The counter is always visible below the component.
+     * - `Auto` - The counter is shown only when the component is focused, when the character limit
+     * is exceeded, or when `valueState` is `Critical` or `Negative`. Space is always reserved to
+     * prevent layout shifts.
+     *
+     * **Note:** When set to a value other than `None`, this property takes precedence over the
+     * deprecated `showExceededText` property.
+     * @default "None"
+     * @public
+     * @since 2.28.0
+     */
+    counterMode: `${TextAreaCounterMode}`;
     /**
      * Enables the component to automatically grow and shrink dynamically with its content.
      * @default false
@@ -152,6 +179,20 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      */
     accessibleNameRef?: string;
     /**
+     * Defines the accessible description of the component.
+     * @default undefined
+     * @public
+     * @since 2.16.0
+     */
+    accessibleDescription?: string;
+    /**
+     * Receives id(or many ids) of the elements that describe the textarea.
+     * @default undefined
+     * @public
+     * @since 2.16.0
+     */
+    accessibleDescriptionRef?: string;
+    /**
      * @private
      */
     focused: boolean;
@@ -172,6 +213,12 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      */
     _width?: number;
     /**
+     * Indicates whether IME composition is currently active
+     * @default false
+     * @private
+     */
+    _isComposing: boolean;
+    /**
      * Defines the value state message that will be displayed as pop up under the component.
      * The value state message slot should contain only one root element.
      *
@@ -182,7 +229,7 @@ declare class TextArea extends UI5Element implements IFormInputElement {
      * @since 1.0.0-rc.7
      * @public
      */
-    valueStateMessage: Array<HTMLElement>;
+    valueStateMessage: Slot<HTMLElement>;
     _fnOnResize: ResizeObserverCallback;
     _firstRendering: boolean;
     _openValueStateMsgPopover: boolean;
@@ -190,12 +237,13 @@ declare class TextArea extends UI5Element implements IFormInputElement {
     _keyDown?: boolean;
     previousValue: string;
     valueStatePopover?: Popover;
+    _composition?: InputComposition;
     static i18nBundle: I18nBundle;
-    get formValidityMessage(): string;
+    static composition: typeof InputComposition;
+    get formValidityMessage(): string | undefined;
     get formValidity(): ValidityStateFlags;
     formElementAnchor(): Promise<HTMLElement | undefined>;
     get formFormattedValue(): FormData | string | null;
-    static onDefine(): Promise<void>;
     constructor();
     onEnterDOM(): void;
     onExitDOM(): void;
@@ -229,10 +277,14 @@ declare class TextArea extends UI5Element implements IFormInputElement {
         leftCharactersCount: number | undefined;
         calcedMaxLength: number | undefined;
     };
+    _enableComposition(): void;
     get classes(): {
         root: {
             "ui5-textarea-root": boolean;
-            "ui5-content-native-scrollbars": boolean;
+        };
+        exceededText: {
+            "ui5-textarea-exceeded-text": boolean;
+            "ui5-textarea-exceeded-text--hidden": boolean;
         };
         valueStateMsg: {
             "ui5-valuestatemessage-header": boolean;
@@ -241,26 +293,18 @@ declare class TextArea extends UI5Element implements IFormInputElement {
             "ui5-valuestatemessage--information": boolean;
         };
     };
-    get styles(): {
-        valueStateMsgPopover: {
-            "max-width": string;
-        };
-    };
     get tabIndex(): 0 | -1;
     get ariaLabelText(): string | undefined;
+    get ariaDescriptionText(): string | undefined;
+    get ariaDescriptionTextId(): "" | "accessibleDescription";
     get ariaDescribedBy(): string | undefined;
     get ariaValueStateHiddenText(): string | undefined;
     get valueStateDefaultText(): string;
-    get ariaInvalid(): "true" | null;
+    get _ariaInvalid(): "true" | undefined;
     get openValueStateMsgPopover(): boolean;
     get displayValueStateMessagePopover(): boolean;
     get hasCustomValueState(): boolean;
     get hasValueState(): boolean;
-    get _valueStatePopoverHorizontalAlign(): `${PopoverHorizontalAlign}`;
-    /**
-     * This method is relevant for sap_horizon theme only
-     */
-    get _valueStateMessageIcon(): string;
     get valueStateTextMappings(): {
         Positive: string;
         Information: string;
@@ -273,5 +317,30 @@ declare class TextArea extends UI5Element implements IFormInputElement {
         Negative: string;
         Critical: string;
     };
+    /**
+     * Resolves the effective counter mode, bridging the deprecated `showExceededText` Boolean.
+     * The `counterMode` enum wins when set to anything other than `None`; otherwise the
+     * deprecated Boolean maps to `Always`/`None`.
+     * @private
+     */
+    get _effectiveCounterMode(): `${TextAreaCounterMode}`;
+    /**
+     * Determines whether the exceeded text counter should be visible.
+     * Consulted only in `Auto` mode.
+     *
+     * The counter is visible when:
+     * - The component is focused, OR
+     * - The character limit is exceeded, OR
+     * - The valueState is "Critical" or "Negative" (for accessibility - users should always see warnings/errors)
+     * @private
+     */
+    get _isExceededTextVisible(): boolean;
+    /**
+     * Determines whether the exceeded text feature is active (any mode other than `None`).
+     * @private
+     */
+    get _hasExceededText(): boolean;
 }
 export default TextArea;
+export { TextArea as BaseTextArea };
+export type { TextAreaInputEventDetail };

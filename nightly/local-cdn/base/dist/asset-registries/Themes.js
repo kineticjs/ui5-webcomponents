@@ -4,11 +4,11 @@ import { fireThemeRegistered } from "../theming/ThemeRegistered.js";
 const themeStyles = new Map();
 const loaders = new Map();
 const customLoaders = new Map();
-const registeredPackages = new Set();
+const registeredPackages = new Map();
 const registeredThemes = new Set();
-const registerThemePropertiesLoader = (packageName, themeName, loader) => {
+const registerThemePropertiesLoader = (packageName, themeName, loader, cssVariablesTarget = "root") => {
     loaders.set(`${packageName}/${themeName}`, loader);
-    registeredPackages.add(packageName);
+    registeredPackages.set(packageName, { cssVariablesTarget });
     registeredThemes.add(themeName);
     fireThemeRegistered(themeName);
 };
@@ -55,8 +55,7 @@ const _getThemeProperties = async (packageName, themeName, forCustomTheme = fals
         console.error(packageName, e.message); /* eslint-disable-line */
         return;
     }
-    const themeProps = data._ || data; // Refactor: remove _ everywhere
-    return themeProps;
+    return data;
 };
 const getRegisteredPackages = () => {
     return registeredPackages;

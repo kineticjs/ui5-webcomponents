@@ -1,4 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 /**
  * @class
@@ -24,6 +25,9 @@ import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
  * @csspart additional-text - Used to style the additional text of the CardHeader
  */
 declare class CardHeader extends UI5Element {
+    eventDetails: {
+        click: void;
+    };
     /**
      * Defines the title text.
      * @default undefined
@@ -44,7 +48,7 @@ declare class CardHeader extends UI5Element {
     additionalText?: string;
     /**
      * Defines if the component would be interactive,
-     * e.g gets hover effect, gets focus outline and `click` event is fired, when pressed.
+     * e.g gets hover effect and `click` event is fired, when pressed.
      * @default false
      * @public
     */
@@ -62,30 +66,21 @@ declare class CardHeader extends UI5Element {
      * Defines an avatar image, displayed in the left most part of the header.
      * @public
     */
-    avatar: Array<HTMLElement>;
+    avatar: Slot<HTMLElement>;
     /**
      * Defines an action, displayed in the right most part of the header.
      * @public
     */
-    action: Array<HTMLElement>;
+    action: Slot<HTMLElement>;
     static i18nBundle: I18nBundle;
     onEnterDOM(): void;
-    get classes(): {
-        root: {
-            "ui5-card-header": boolean;
-            "ui5-card-header--interactive": boolean;
-            "ui5-card-header--active": boolean;
-            "ui5-card-header-ff": boolean;
-        };
-    };
     get _root(): HTMLElement;
     get ariaRoleDescription(): string;
-    get ariaRoleFocusableElement(): "button" | null;
+    get ariaRoleFocusableElement(): "button" | "group";
     get ariaCardAvatarLabel(): string;
     get ariaLabelledBy(): string | undefined;
     get hasAvatar(): boolean;
     get hasAction(): boolean;
-    static onDefine(): Promise<void>;
     _actionsFocusin(): void;
     _actionsFocusout(): void;
     _click(e: MouseEvent): void;

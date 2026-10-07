@@ -8,31 +8,39 @@ import type Table from "./Table.js";
  * @constructor
  * @abstract
  * @extends UI5Element
- * @since 2.0
+ * @since 2.0.0
  * @public
  */
-declare abstract class TableRowBase extends UI5Element {
-    cells: Array<TableCellBase>;
+declare abstract class TableRowBase<TCell extends TableCellBase = TableCellBase> extends UI5Element {
+    cells: Array<TCell>;
     _invalidate: number;
+    _rowActionCount: number;
+    _renderNavigated: boolean;
+    _alternate: boolean;
+    _renderDummyCell: boolean;
+    _selectionCell?: HTMLElement;
+    _actionsCell?: HTMLElement;
+    _navigatedCell?: HTMLElement;
     static i18nBundle: I18nBundle;
-    static onDefine(): Promise<void>;
+    isHeaderRow(): boolean;
+    isGroupRow(): boolean;
     onEnterDOM(): void;
     onBeforeRendering(): void;
+    onAfterRendering(): void;
     getFocusDomRef(): this;
-    _informSelectionChange(): void;
-    isHeaderRow(): boolean;
-    _onkeydown(e: KeyboardEvent, eventOrigin: HTMLElement): void;
+    focus(focusOptions?: FocusOptions | undefined): Promise<void>;
+    _handleCustomFocusOutline(): void;
     get _table(): Table | undefined;
     get _tableId(): string | undefined;
-    get _tableSelection(): import("./TableSelection.js").default | undefined;
-    get _isSelected(): boolean | undefined;
-    get _isSelectable(): boolean | undefined;
-    get _isMultiSelect(): boolean | undefined;
-    get _hasRowSelector(): boolean | undefined;
-    get _selectionCell(): HTMLElement | null;
-    get _visibleCells(): TableCellBase[];
-    get _popinCells(): TableCellBase[];
-    get _i18nRowSelector(): string;
-    get isTableRowBase(): boolean;
+    get _tableSelection(): import("./TableSelectionBase.js").default | import("./TableSelection.js").default | undefined;
+    get _isSelected(): boolean;
+    get _isSelectable(): boolean;
+    get _isMultiSelect(): boolean;
+    get _hasSelector(): boolean;
+    get _visibleCells(): TCell[];
+    get _firstVisibleCell(): TCell | undefined;
+    get _popinCells(): TCell[];
+    get _hasPopin(): boolean;
+    get _stickyCells(): HTMLElement[];
 }
 export default TableRowBase;

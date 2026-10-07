@@ -1,2 +1,2 @@
-"use strict";const t={packageName:"@ui5/webcomponents-base",fileName:"SystemCSSVars.css",content:":root{--_ui5_content_density:cozy}.sapUiSizeCompact,.ui5-content-density-compact,[data-ui5-compact-size]{--_ui5_content_density:compact}"};export default t;
+"use strict";export default":root{--_ui5-cozy-size:var(--_ui5-f2d95f8);--_ui5-compact-size: ;--_ui5_content_density:cozy}.sapUiSizeCompact,.ui5-content-density-compact,[data-ui5-compact-size]{--_ui5-cozy-size: ;--_ui5-compact-size:var(--_ui5-f2d95f8);--_ui5_content_density:compact}";
 //# sourceMappingURL=SystemCSSVars.css.js.map

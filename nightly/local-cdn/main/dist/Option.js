@@ -5,12 +5,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import ListItemBase from "./ListItemBase.js";
-import Icon from "./Icon.js";
 // Template
-import OptionTemplate from "./generated/templates/OptionTemplate.lit.js";
+import OptionTemplate from "./OptionTemplate.js";
 // Styles
 import optionBaseCss from "./generated/themes/OptionBase.css.js";
 import listItemIconCss from "./generated/themes/ListItemIcon.css.js";
@@ -56,6 +55,12 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Option.prototype, "selected", void 0);
+__decorate([
+    property({ type: Number, noAttribute: true })
+], Option.prototype, "_forcedSetsize", void 0);
+__decorate([
+    property({ type: Number, noAttribute: true })
+], Option.prototype, "_forcedPosinset", void 0);
 Option = __decorate([
     customElement({
         tag: "ui5-option",
@@ -65,9 +70,6 @@ Option = __decorate([
             listItemAdditionalTextCss,
             listItemIconCss,
             optionBaseCss,
-        ],
-        dependencies: [
-            Icon,
         ],
     })
 ], Option);

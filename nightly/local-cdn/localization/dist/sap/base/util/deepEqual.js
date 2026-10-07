@@ -1,11 +1,10 @@
 /*!
  * OpenUI5
- * (c) Copyright 2009-2024 SAP SE or an SAP affiliate company.
+ * (c) Copyright 2026 SAP SE or an SAP affiliate company.
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 /*global Node */
 //@evo-todo check isEqualNode dependency: not yet available...
-//@evo-todo dependency to global name 'Node' contradicts sap/base package
 import Log from "../Log.js";
 /**
  * Compares the two given values for equality, especially by comparing the content.
@@ -65,7 +64,8 @@ var fnEqual = function (a, b, maxDepth, contains, depth) {
     if (!contains && Object.keys(a).length !== Object.keys(b).length) {
       return false;
     }
-    if (a instanceof Node) {
+    // 'Node' is a browser-only global; the typeof guard avoids a ReferenceError in non-browser environments.
+    if (typeof Node !== "undefined" && a instanceof Node) {
       return a.isEqualNode(b);
     }
     if (a instanceof Date) {

@@ -36,6 +36,12 @@ let SpecialCalendarDate = class SpecialCalendarDate extends UI5Element {
          * @public
          */
         this.type = "None";
+        /**
+         * Defines a tooltip text for the special date.
+         * @default ""
+         * @private
+         */
+        this._tooltip = "";
     }
 };
 __decorate([
@@ -44,6 +50,9 @@ __decorate([
 __decorate([
     property()
 ], SpecialCalendarDate.prototype, "type", void 0);
+__decorate([
+    property()
+], SpecialCalendarDate.prototype, "_tooltip", void 0);
 SpecialCalendarDate = __decorate([
     customElement("ui5-special-date")
 ], SpecialCalendarDate);

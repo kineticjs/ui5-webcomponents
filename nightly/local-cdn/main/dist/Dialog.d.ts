@@ -1,12 +1,13 @@
+import type { Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
 import Popup from "./Popup.js";
-import type { PopupBeforeCloseEventDetail as DialogBeforeCloseEventDetail } from "./Popup.js";
-import "@ui5/webcomponents-icons/dist/resize-corner.js";
 import "@ui5/webcomponents-icons/dist/error.js";
 import "@ui5/webcomponents-icons/dist/alert.js";
 import "@ui5/webcomponents-icons/dist/sys-enter-2.js";
 import "@ui5/webcomponents-icons/dist/information.js";
+import "@ui5/webcomponents-icons/dist/full-screen.js";
+import "@ui5/webcomponents-icons/dist/exit-full-screen.js";
 /**
  * @class
  * ### Overview
@@ -29,8 +30,7 @@ import "@ui5/webcomponents-icons/dist/information.js";
 
  *
  * ### Responsive Behavior
- * The `stretch` property can be used to stretch the
- * `ui5-dialog` on full screen.
+ * The `stretch` property can be used to stretch the `ui5-dialog` to full screen. For better usability, it's recommended to stretch the dialog to full screen on phone devices.
  *
  * **Note:** When a `ui5-bar` is used in the header or in the footer, you should remove the default dialog's paddings.
  *
@@ -39,18 +39,24 @@ import "@ui5/webcomponents-icons/dist/information.js";
  * ### Keyboard Handling
  *
  * #### Basic Navigation
- * When the `ui5-dialog` has the `draggable` property set to `true` and the header is focused, the user can move the dialog
+ * When the `ui5-dialog` has the `draggable` property set to `true`, the user can move the dialog
  * with the following keyboard shortcuts:
  *
  * - [Up] or [Down] arrow keys - Move the dialog up/down.
  * - [Left] or [Right] arrow keys - Move the dialog left/right.
  *
  * #### Resizing
- * When the `ui5-dialog` has the `resizable` property set to `true` and the header is focused, the user can change the size of the dialog
+ * When the `ui5-dialog` has the `resizable` property set to `true`, the user can change the size of the dialog
  * with the following keyboard shortcuts:
  *
  * - [Shift] + [Up] or [Down] - Decrease/Increase the height of the dialog.
  * - [Shift] + [Left] or [Right] - Decrease/Increase the width of the dialog.
+ *
+ * #### Fullscreen
+ * When the `ui5-dialog` has the `showFullscreenButton` property set to `true`, the user can toggle fullscreen mode
+ * with the following keyboard shortcut:
+ *
+ * - [Shift] + [Ctrl] + [F] - Toggle fullscreen mode.
  *
  * ### ES6 Module Import
  *
@@ -64,6 +70,7 @@ import "@ui5/webcomponents-icons/dist/information.js";
  * @csspart footer - Used to style the footer of the component
  */
 declare class Dialog extends Popup {
+    eventDetails: Popup["eventDetails"];
     /**
      * Defines the header text.
      *
@@ -73,10 +80,10 @@ declare class Dialog extends Popup {
      */
     headerText?: string;
     /**
-     * Determines whether the component should be stretched to fullscreen.
+     * Determines if the dialog will be stretched to full screen on mobile. On desktop,
+     * the dialog will be stretched to approximately 90% of the viewport.
      *
-     * **Note:** The component will be stretched to approximately
-     * 90% of the viewport.
+     * **Note:** For better usability of the component it is recommended to set this property to "true" when the dialog is opened on phone.
      * @default false
      * @public
      */
@@ -109,6 +116,19 @@ declare class Dialog extends Popup {
      */
     resizable: boolean;
     /**
+     * Defines whether a fullscreen toggle button is shown in the dialog header.
+     * When pressed, it toggles the `stretch` property.
+     * The fullscreen button is not available on phone devices.
+     *
+     * **Note:** The fullscreen button is not available on phone devices,
+     * nor when a custom header slot is provided — the application is expected
+     * to render its own toggle inside the custom header in those cases.
+     * @default false
+     * @since 2.25.0
+     * @public
+     */
+    showFullscreenButton: boolean;
+    /**
      * Defines the state of the `Dialog`.
      *
      * **Note:** If `"Negative"` and `"Critical"` states is set, it will change the
@@ -118,12 +138,17 @@ declare class Dialog extends Popup {
      * @since 1.0.0-rc.15
      */
     state: `${ValueState}`;
+    /**
+     * @private
+     */
+    _showFullscreenButton: boolean;
     _screenResizeHandler: () => void;
     _dragMouseMoveHandler: (e: MouseEvent) => void;
     _dragMouseUpHandler: (e: MouseEvent) => void;
     _resizeMouseMoveHandler: (e: MouseEvent) => void;
     _resizeMouseUpHandler: (e: MouseEvent) => void;
     _dragStartHandler: (e: DragEvent) => void;
+    _fullscreenKeydownHandler: (e: KeyboardEvent) => void;
     _y?: number;
     _x?: number;
     _isRTL?: boolean;
@@ -137,62 +162,83 @@ declare class Dialog extends Popup {
     _minWidth?: number;
     _cachedMinHeight?: number;
     _draggedOrResized: boolean;
+    _dragHandlerRegistered: boolean;
+    _fullscreenKeydownHandlerRegistered: boolean;
     /**
      * Defines the header HTML Element.
-     *
-     * **Note:** When a `ui5-bar` is used in the header, you should remove the default dialog's paddings.
      *
      * **Note:** If `header` slot is provided, the labelling of the dialog is a responsibility of the application developer.
      * `accessibleName` should be used.
      * @public
      */
-    header: Array<HTMLElement>;
+    header: Slot<HTMLElement>;
     /**
      * Defines the footer HTML Element.
      *
-     * **Note:** When a `ui5-bar` is used in the footer, you should remove the default dialog's paddings.
      * @public
      */
-    footer: Array<HTMLElement>;
+    footer: Slot<HTMLElement>;
     static i18nBundle: I18nBundle;
     constructor();
-    static onDefine(): Promise<void>;
     static _isHeader(element: HTMLElement): boolean;
     get isModal(): boolean;
     get _ariaLabelledBy(): string | undefined;
-    get ariaRoleDescriptionHeaderText(): string | undefined;
     get effectiveAriaDescribedBy(): string | undefined;
-    get ariaDescribedByHeaderTextResizable(): string;
-    get ariaDescribedByHeaderTextDraggable(): string;
-    get ariaDescribedByHeaderTextDraggableAndResizable(): string;
+    get ariaDescribedByIds(): string;
+    get dialogAriaDescribedByText(): string;
+    get ariaDescribedByTextResizable(): string;
+    get ariaDescribedByTextDraggable(): string;
+    get ariaDescribedByTextDraggableAndResizable(): string;
+    get ariaDescribedByHandlerText(): string;
     /**
      * Determines if the header should be shown.
      */
     get _displayHeader(): string | number | boolean;
     get _movable(): boolean;
-    get _headerTabIndex(): "0" | undefined;
+    get _dragResizeHandleTabIndex(): 0 | undefined;
+    get _dragResizeHandleAriaLabel(): string;
+    get _dragResizeHandleAriaRoleDescription(): string | undefined;
+    get _dragResizeHandleAriaDescribedBy(): string | undefined;
     get _showResizeHandle(): boolean;
+    get _fullscreenButtonIcon(): "exit-full-screen" | "full-screen";
+    get _fullscreenButtonTooltip(): string;
+    get _fullscreenButtonAccessibilityAttributes(): {
+        ariaKeyShortcuts: string;
+    };
+    get _resizeHandleTooltip(): string | undefined;
     get _minHeight(): number;
     get hasValueState(): boolean;
     get _dialogStateIcon(): string;
-    get _role(): string | undefined;
+    get _role(): "dialog" | "alertdialog" | undefined;
+    get _contentRole(): "region";
+    get _headerAriaLabel(): string;
+    get _contentAriaLabel(): string;
+    get _footerAriaLabel(): string;
     _show(): void;
     onBeforeRendering(): void;
-    onEnterDOM(): void;
-    onExitDOM(): void;
     /**
      * @override
      */
     _resize(): void;
     _screenResize(): void;
+    _attachBrowserEvents(): void;
+    _detachBrowserEvents(): void;
     _attachScreenResizeHandler(): void;
     _detachScreenResizeHandler(): void;
+    _registerDragHandler(): void;
+    _deregisterDragHandler(): void;
+    _registerFullscreenKeydownHandler(): void;
+    _deregisterFullscreenKeydownHandler(): void;
     _center(): void;
     _revertSize: () => void;
     /**
      * Event handlers
      */
-    _onDragMouseDown(e: DragEvent): void;
+    _toggleFullscreen(): void;
+    _onHeaderDblClick(e: MouseEvent): void;
+    _onFullscreenKeydown(e: KeyboardEvent): void;
+    _isFullscreenShortcut(e: KeyboardEvent): boolean;
+    _onDragMouseDown(e: MouseEvent): void;
     _onDragMouseMove(e: MouseEvent): void;
     _onDragMouseUp(): void;
     _onDragOrResizeKeyDown(e: KeyboardEvent): void;
@@ -206,6 +252,12 @@ declare class Dialog extends Popup {
     _handleDragStart(e: DragEvent): void;
     _attachMouseResizeHandlers(): void;
     _detachMouseResizeHandlers(): void;
+    _getFirstFocusableElement(): Promise<HTMLElement | null>;
+    /**
+     * Overrides Popup's forwardToLast to prioritize the drag/resize handler
+     * when Shift+Tab is pressed from the first focusable element.
+     * @private
+     */
+    forwardToLast(): Promise<void>;
 }
 export default Dialog;
-export type { DialogBeforeCloseEventDetail, };

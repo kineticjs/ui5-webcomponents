@@ -6,10 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import { isSpaceShift } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isSafari } from "@ui5/webcomponents-base/dist/Device.js";
 import Button from "./Button.js";
-import ToggleButtonTemplate from "./generated/templates/ToggleButtonTemplate.lit.js";
+import ToggleButtonTemplate from "./ToggleButtonTemplate.js";
 // Styles
 import toggleBtnCss from "./generated/themes/ToggleButton.css.js";
 /**
@@ -43,18 +42,30 @@ let ToggleButton = class ToggleButton extends Button {
          */
         this.pressed = false;
     }
-    _onclick() {
-        this.pressed = !this.pressed;
+    _onclick(e) {
+        e.stopImmediatePropagation();
+        if (this.nonInteractive) {
+            return;
+        }
+        const { altKey, ctrlKey, metaKey, shiftKey, } = e;
+        const oldValue = this.pressed;
+        this.pressed = !oldValue;
+        const prevented = !this.fireDecoratorEvent("click", {
+            originalEvent: e,
+            altKey,
+            ctrlKey,
+            metaKey,
+            shiftKey,
+        });
+        if (prevented) {
+            e.preventDefault();
+            // value should be restored if click is prevented
+            this.pressed = oldValue;
+            return;
+        }
         if (isSafari()) {
             this.getDomRef().focus();
         }
-    }
-    _onkeyup(e) {
-        if (isSpaceShift(e)) {
-            e.preventDefault();
-            return;
-        }
-        super._onkeyup(e);
     }
 };
 __decorate([

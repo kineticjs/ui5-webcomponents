@@ -9,15 +9,15 @@ import customElement from "@ui5/webcomponents-base/dist/decorators/customElement
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
 import { renderFinished } from "@ui5/webcomponents-base/dist/Render.js";
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
+import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
 import modifyDateBy from "@ui5/webcomponents-localization/dist/dates/modifyDateBy.js";
 import getTodayUTCTimestamp from "@ui5/webcomponents-localization/dist/dates/getTodayUTCTimestamp.js";
-import { DATERANGE_DESCRIPTION, DATERANGEPICKER_POPOVER_ACCESSIBLE_NAME, } from "./generated/i18n/i18n-defaults.js";
-import DateRangePickerTemplate from "./generated/templates/DateRangePickerTemplate.lit.js";
+import { DATERANGE_DESCRIPTION, DATERANGEPICKER_POPOVER_ACCESSIBLE_NAME, DATETIME_COMPONENTS_PLACEHOLDER_PREFIX, DATERANGE_VALUE_MISSING, DATERANGE_PATTERN_MISMATCH, DATERANGE_UNDERFLOW, DATERANGE_OVERFLOW, CALENDAR_FOOTER_CANCEL_BUTTON, CALENDAR_FOOTER_OK_BUTTON, } from "./generated/i18n/i18n-defaults.js";
+import DateRangePickerTemplate from "./DateRangePickerTemplate.js";
 // Styles
 import DateRangePickerCss from "./generated/themes/DateRangePicker.css.js";
 import DatePicker from "./DatePicker.js";
-import CalendarPickersMode from "./types/CalendarPickersMode.js";
-import CalendarDateRange from "./CalendarDateRange.js";
+import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
 const DEFAULT_DELIMITER = "-";
 /**
  * @class
@@ -28,7 +28,10 @@ const DEFAULT_DELIMITER = "-";
  * ### Usage
  * The user can enter a date by:
  * Using the calendar that opens in a popup or typing it in directly in the input field (not available for mobile devices).
- * For the `ui5-daterange-picker`
+ * For the `ui5-daterange-picker`:
+ *
+ * **Note:** Relative date values such as "today", "yesterday", or "tomorrow" are not supported.
+ * Entering a relative date sets the component to an error state.
  * ### ES6 Module Import
  *
  * `import "@ui5/webcomponents/dist/DateRangePicker.js";`
@@ -52,6 +55,32 @@ const DEFAULT_DELIMITER = "-";
  * @public
  */
 let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePicker {
+    get formValidityMessage() {
+        const validity = this.formValidity;
+        if (validity.valueMissing) {
+            // @ts-ignore oFormatOptions is a private API of DateFormat
+            return DateRangePicker_1.i18nBundle.getText(DATERANGE_VALUE_MISSING, this.getFormat().oFormatOptions.pattern);
+        }
+        if (validity.patternMismatch) {
+            // @ts-ignore oFormatOptions is a private API of DateFormat
+            return DateRangePicker_1.i18nBundle.getText(DATERANGE_PATTERN_MISMATCH, this.getFormat().oFormatOptions.pattern);
+        }
+        if (validity.rangeUnderflow) {
+            return DateRangePicker_1.i18nBundle.getText(DATERANGE_UNDERFLOW, this.minDate);
+        }
+        if (validity.rangeOverflow) {
+            return DateRangePicker_1.i18nBundle.getText(DATERANGE_OVERFLOW, this.maxDate);
+        }
+        return "";
+    }
+    get formValidity() {
+        return {
+            valueMissing: this.required && !this.value,
+            patternMismatch: !!this.value && !this.isValidValue(this.value),
+            rangeUnderflow: !!this.value && !this.isValidMin(this.value),
+            rangeOverflow: !!this.value && !this.isValidMax(this.value),
+        };
+    }
     get formFormattedValue() {
         const values = this._splitValueByDelimiter(this.value || "").filter(Boolean);
         if (values.length && this.name) {
@@ -72,7 +101,39 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         * @public
         */
         this.delimiter = "-";
+        /**
+         * Defines whether the component displays two months side by side in the picker popup.
+         *
+         * When enabled, two consecutive months are shown, making it easier to select date ranges
+         * that span multiple months without the need to navigate between months.
+         *
+         * **Note:** On mobile devices only a single month
+         * will be displayed regardless of this setting.
+         *
+         * @default false
+         * @public
+         * @since 2.22.0
+         */
+        this.showTwoMonths = false;
         this._prevDelimiter = null;
+    }
+    /**
+     * Checks if a date string is a relative date (e.g. "today", "tomorrow")
+     * that would be resolved by DateFormat.parseRelative().
+     * Relative dates are not supported in DateRangePicker.
+     * @private
+     */
+    _isRelativeValue(dateString, format) {
+        const trimmed = dateString.trim();
+        if (!trimmed) {
+            return false;
+        }
+        const parsed = format.parse(trimmed);
+        if (!parsed) {
+            return false;
+        }
+        const formatted = format.format(parsed);
+        return formatted !== trimmed;
     }
     /**
      * **Note:** The getter method is inherited and not supported. If called it will return an empty value.
@@ -97,7 +158,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         return this._extractLastTimestamp(this.value);
     }
     get _tempTimestamp() {
-        return this._tempValue && this.getFormat().parse(this._tempValue, true).getTime() / 1000;
+        return this._tempValue && this.getValueFormat().parse(this._tempValue, true).getTime() / 1000; // valueformat
     }
     /**
      * Required by DatePicker.js
@@ -126,6 +187,9 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         }
         return [];
     }
+    get _isPhone() {
+        return isPhone();
+    }
     /**
      * Returns the start date of the currently selected range as JavaScript Date instance.
      * @public
@@ -148,32 +212,61 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
     get endValue() {
         return this._calendarSelectedDates[1] || "";
     }
-    /**
-     * @override
-     */
-    get _placeholder() {
-        return this.placeholder !== undefined ? this.placeholder : `${this._displayFormat} ${this._effectiveDelimiter} ${this._displayFormat}`;
+    get _lastDateRangeForTheCurrentYear() {
+        const currentYear = UI5Date.getInstance().getFullYear();
+        const lastDayOfTheYear = UI5Date.getInstance(currentYear, 11, 31, 23, 59, 59);
+        const sevenDaysBeforeLastDayOfYear = UI5Date.getInstance(currentYear, 11, 24, 23, 59, 59);
+        return `${this.getFormat().format(sevenDaysBeforeLastDayOfYear)} ${this._effectiveDelimiter} ${this.getFormat().format(lastDayOfTheYear)}`;
     }
     /**
      * @override
      */
-    get dateAriaDescription() {
+    get _placeholder() {
+        if (this.placeholder) {
+            return this.placeholder;
+        }
+        // translatable placeholder – for example "e.g. 2025-12-27 - 2025-12-31"
+        return `${DateRangePicker_1.i18nBundle.getText(DATETIME_COMPONENTS_PLACEHOLDER_PREFIX)} ${this._lastDateRangeForTheCurrentYear}`;
+    }
+    get _submitDisabled() {
+        return !this._startDateTimestamp || !this._endDateTimestamp;
+    }
+    get _cancelButtonText() {
+        return DateRangePicker_1.i18nBundle.getText(CALENDAR_FOOTER_CANCEL_BUTTON);
+    }
+    get _okButtonText() {
+        return DateRangePicker_1.i18nBundle.getText(CALENDAR_FOOTER_OK_BUTTON);
+    }
+    /**
+     * Handles clicking on the `submit` button, within the picker`s footer in mobile devices.
+     */
+    _submitClick() {
+        if (!this._startDateTimestamp || !this._endDateTimestamp) {
+            return;
+        }
+        const newValue = this._buildValue(this._startDateTimestamp, this._endDateTimestamp);
+        this._updateValueAndFireEvents(newValue, true, ["change", "value-changed"]);
+        this._togglePicker();
+    }
+    /**
+     * Handles clicking on the `cancel` button, within the picker`s footer,
+     * that would disregard the user selection.
+     */
+    _cancelClick() {
+        this._tempValue = "";
+        this._togglePicker();
+    }
+    /**
+     * @override
+     */
+    get roleDescription() {
         return DateRangePicker_1.i18nBundle.getText(DATERANGE_DESCRIPTION);
     }
     /**
      * @override
      */
     get pickerAccessibleName() {
-        return DateRangePicker_1.i18nBundle.getText(DATERANGEPICKER_POPOVER_ACCESSIBLE_NAME);
-    }
-    /**
-     * @override
-     */
-    async _onInputSubmit() {
-        const input = this._getInput();
-        const caretPos = input.getCaretPosition();
-        await renderFinished();
-        input.setCaretPosition(caretPos); // Return the caret on the previous position after rendering
+        return DateRangePicker_1.i18nBundle.getText(DATERANGEPICKER_POPOVER_ACCESSIBLE_NAME, this.ariaLabelText);
     }
     /**
      * @override
@@ -183,17 +276,57 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         super.onResponsivePopoverAfterClose();
     }
     /**
-     * @override
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
      */
     isValid(value) {
-        const parts = this._splitValueByDelimiter(value);
+        const parts = this._splitValueByDelimiter(value).filter(str => str.trim() !== "");
+        if (parts.some(dateString => this._isRelativeValue(dateString, this.getFormat()))) {
+            return false;
+        }
         return parts.length <= 2 && parts.every(dateString => super.isValid(dateString)); // must be at most 2 dates and each must be valid
     }
     /**
-     * @override
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
+     */
+    isValidValue(value) {
+        const parts = this._splitValueByDelimiter(value).filter(str => str.trim() !== "");
+        if (parts.some(dateString => this._isRelativeValue(dateString, this.getValueFormat()))) {
+            return false;
+        }
+        return parts.length <= 2 && parts.every(dateString => super.isValidValue(dateString)); // must be at most 2 dates and each must be valid
+    }
+    /**
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
+     */
+    isValidDisplayValue(value) {
+        const parts = this._splitValueByDelimiter(value).filter(str => str.trim() !== "");
+        if (parts.some(dateString => this._isRelativeValue(dateString, this.getDisplayFormat()))) {
+            return false;
+        }
+        return parts.length <= 2 && parts.every(dateString => super.isValidDisplayValue(dateString)); // must be at most 2 dates and each must be valid
+    }
+    /**
+     * Checks if a date is between the minimum and maximum date.
+     * @public
+     * @param value A value to be checked
      */
     isInValidRange(value) {
-        return this._splitValueByDelimiter(value).every(dateString => super.isInValidRange(dateString));
+        const parts = this._splitValueByDelimiter(value).filter(str => str.trim() !== "");
+        return parts.length <= 2 && parts.every(dateString => super.isInValidRange(dateString));
+    }
+    isValidMin(value) {
+        const parts = this._splitValueByDelimiter(value).filter(str => str.trim() !== "");
+        return parts.length <= 2 && parts.every(dateString => super.isValidMin(dateString));
+    }
+    isValidMax(value) {
+        const parts = this._splitValueByDelimiter(value).filter(str => str.trim() !== "");
+        return parts.length <= 2 && parts.every(dateString => super.isValidMax(dateString));
     }
     /**
      * Extract both dates as timestamps, flip if necessary, and build (which will use the desired format so we enforce the format too)
@@ -206,6 +339,37 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
             return this._buildValue(lastDateTimestamp, firstDateTimestamp);
         }
         return this._buildValue(firstDateTimestamp, lastDateTimestamp);
+    }
+    /**
+     * The parser understands many formats, but we need one format
+     * @override
+     * @protected
+     */
+    normalizeDisplayValue(value) {
+        const values = this._splitValueByDelimiter(value);
+        const firstDateTimestamp = this._exctractDisplayTimestamp(values[0]);
+        const lastDateTimestamp = this._exctractDisplayTimestamp(values[1]);
+        if (!firstDateTimestamp || !lastDateTimestamp) {
+            return value;
+        }
+        if (firstDateTimestamp && lastDateTimestamp && firstDateTimestamp > lastDateTimestamp) { // if both are timestamps (not undefined), flip if necessary
+            return this._buildDisplayValue(lastDateTimestamp, firstDateTimestamp);
+        }
+        return this._buildDisplayValue(firstDateTimestamp, lastDateTimestamp);
+    }
+    /**
+     * @override
+     */
+    getValueFromDisplayValue(value) {
+        const values = this._splitValueByDelimiter(value);
+        let firstDateString = "";
+        let lastDateString = "";
+        firstDateString = this._getValueStringFromTimestamp(this._exctractDisplayTimestamp(values[0]) * 1000);
+        lastDateString = this._getValueStringFromTimestamp(this._exctractDisplayTimestamp(values[1]) * 1000);
+        if (!firstDateString || !lastDateString) {
+            return value;
+        }
+        return `${firstDateString} ${this._effectiveDelimiter} ${lastDateString}`;
     }
     /**
      * @override
@@ -221,8 +385,13 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
             return;
         }
         const newValue = this._buildValue(event.detail.selectedDates[0], event.detail.selectedDates[1]); // the value will be normalized so we don't need to order them here
-        this._updateValueAndFireEvents(newValue, true, ["change", "value-changed"]);
-        this._togglePicker();
+        if (!this._isPhone) { // on desktop we update the value immediately, on mobile we wait for the user to confirm the selection with the "OK" button
+            this._updateValueAndFireEvents(newValue, true, ["change", "value-changed"]);
+            this._togglePicker();
+        }
+        else {
+            this._updateValueAndFireEvents(newValue, true, ["value-changed"]); // fire value-changed immediately on mobile so the app can react to the change (e.g. update the input field), but wait with firing "change" until the user clicks "OK"
+        }
     }
     /**
      * @override
@@ -231,8 +400,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         if (!this._endDateTimestamp) { // If empty or only one date -> treat as datepicker entirely
             return super._modifyDateValue(amount, unit, preserveDate);
         }
-        const input = this._getInput();
-        let caretPos = input.getCaretPosition(); // caret position is always number for input of type text;
+        let caretPos = this._dateTimeInput.getCaretPosition(); // caret position is always number for input of type text;
         let newValue;
         if (caretPos <= this.value.indexOf(this._effectiveDelimiter)) { // The user is focusing the first date -> change it and keep the second date
             const startDateModified = modifyDateBy(CalendarDate.fromTimestamp(this._startDateTimestamp * 1000), amount, unit, preserveDate, this._minDate, this._maxDate);
@@ -252,7 +420,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         }
         this._updateValueAndFireEvents(newValue, true, ["change", "value-changed"]);
         await renderFinished();
-        input.setCaretPosition(caretPos); // Return the caret to the previous (or the adjusted, if dates flipped) position after rendering
+        this._dateTimeInput.setCaretPosition(caretPos); // Return the caret to the previous (or the adjusted, if dates flipped) position after rendering
     }
     get _effectiveDelimiter() {
         return this.delimiter || DEFAULT_DELIMITER;
@@ -261,7 +429,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         const valuesArray = [];
         const partsArray = value.split(this._prevDelimiter || this._effectiveDelimiter);
         // if format successfully parse the value, the value contains only single date
-        if (this.getFormat().parse(value)) {
+        if (this.getValueFormat().parse(value)) {
             valuesArray[0] = partsArray.join(this._effectiveDelimiter);
             valuesArray[1] = "";
         }
@@ -272,6 +440,23 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         return valuesArray;
     }
     /**
+     * The parser understands many formats, but we need one format
+     * @protected
+     */
+    normalizeFormattedValue(value) {
+        if (value === "") {
+            return value;
+        }
+        let firstDateString = "";
+        let lastDateString = "";
+        firstDateString = this._getValueStringFromTimestamp(this._extractFirstTimestamp(value) * 1000);
+        lastDateString = this._getValueStringFromTimestamp(this._extractLastTimestamp(value) * 1000);
+        if (!firstDateString && !lastDateString) {
+            return value;
+        }
+        return `${firstDateString} ${this._effectiveDelimiter} ${lastDateString}`;
+    }
+    /**
      * Returns a UTC timestamp, representing the first date in the value string or undefined if the value is empty
      * @private
      */
@@ -280,7 +465,7 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
             return undefined;
         }
         const dateStrings = this._splitValueByDelimiter(value); // at least one item guaranteed due to the checks above (non-empty and valid)
-        const parsedDate = this.getFormat().parse(dateStrings[0], true);
+        const parsedDate = this.getValueFormat().parse(dateStrings[0], true);
         return parsedDate.getTime() / 1000;
     }
     /**
@@ -291,12 +476,22 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
         if (!value || !this._checkValueValidity(value)) {
             return undefined;
         }
-        const dateStrings = this._splitValueByDelimiter(value);
+        let dateStrings = this._splitValueByDelimiter(value);
+        dateStrings = dateStrings.filter(str => str !== " "); // remove empty strings
         if (dateStrings[1]) {
-            const parsedDate = this.getFormat().parse(dateStrings[1], true);
+            const parsedDate = this.getValueFormat().parse(dateStrings[1], true);
             return parsedDate.getTime() / 1000;
         }
         return undefined;
+    }
+    _exctractDisplayTimestamp(value) {
+        if (!value || !this._checkDisplayValueValidity(value)) {
+            return undefined;
+        }
+        if (value) {
+            const parsedDate = this.getDisplayFormat().parse(value, true);
+            return parsedDate.getTime() / 1000;
+        }
     }
     /**
      * Builds a string value out of two UTC timestamps - this method is the counterpart to _extractFirstTimestamp/_extractLastTimestamp
@@ -305,25 +500,57 @@ let DateRangePicker = DateRangePicker_1 = class DateRangePicker extends DatePick
     _buildValue(firstDateTimestamp, lastDateTimestamp) {
         this._prevDelimiter = this._effectiveDelimiter;
         if (firstDateTimestamp) {
-            const firstDateString = this._getStringFromTimestamp(firstDateTimestamp * 1000);
+            const firstDateString = this._getValueStringFromTimestamp(firstDateTimestamp * 1000);
             if (!lastDateTimestamp) {
                 return firstDateString;
             }
-            const lastDateString = this._getStringFromTimestamp(lastDateTimestamp * 1000);
+            const lastDateString = this._getValueStringFromTimestamp(lastDateTimestamp * 1000);
             return `${firstDateString} ${this._effectiveDelimiter} ${lastDateString}`;
         }
         return "";
     }
     /**
-     * @override
+     * Builds a string value out of two UTC timestamps - this method is the counterpart to _extractFirstTimestamp/_extractLastTimestamp
+     * @private
      */
-    get _calendarPickersMode() {
-        return CalendarPickersMode.DAY_MONTH_YEAR;
+    _buildDisplayValue(firstDateTimestamp, lastDateTimestamp) {
+        this._prevDelimiter = this._effectiveDelimiter;
+        if (firstDateTimestamp) {
+            const firstDateString = this._getDisplayStringFromTimestamp(firstDateTimestamp * 1000);
+            if (!lastDateTimestamp) {
+                return firstDateString;
+            }
+            const lastDateString = this._getDisplayStringFromTimestamp(lastDateTimestamp * 1000);
+            return `${firstDateString} ${this._effectiveDelimiter} ${lastDateString}`;
+        }
+        return "";
+    }
+    getDisplayValueFromValue(value) {
+        if (this.isLiveUpdate) {
+            return value;
+        }
+        let firstDateString = "";
+        let lastDateString = "";
+        firstDateString = this._getDisplayStringFromTimestamp(this._extractFirstTimestamp(value) * 1000);
+        lastDateString = this._getDisplayStringFromTimestamp(this._extractLastTimestamp(value) * 1000);
+        if (!firstDateString || !lastDateString) {
+            return value;
+        }
+        return `${firstDateString} ${this._effectiveDelimiter} ${lastDateString}`;
+    }
+    get displayValue() {
+        if (!this.value) {
+            return "";
+        }
+        return this.getDisplayValueFromValue(this.value);
     }
 };
 __decorate([
     property()
 ], DateRangePicker.prototype, "delimiter", void 0);
+__decorate([
+    property({ type: Boolean })
+], DateRangePicker.prototype, "showTwoMonths", void 0);
 __decorate([
     property()
 ], DateRangePicker.prototype, "_tempValue", void 0);
@@ -332,7 +559,6 @@ DateRangePicker = DateRangePicker_1 = __decorate([
         tag: "ui5-daterange-picker",
         styles: [DatePicker.styles, DateRangePickerCss],
         template: DateRangePickerTemplate,
-        dependencies: [...DatePicker.dependencies, CalendarDateRange],
     })
 ], DateRangePicker);
 DateRangePicker.define();

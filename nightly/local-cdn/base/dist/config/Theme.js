@@ -1,10 +1,21 @@
 import { getTheme as getConfiguredTheme } from "../InitialConfiguration.js";
 import { reRenderAllUI5Elements } from "../Render.js";
 import applyTheme from "../theming/applyTheme.js";
-import getThemeDesignerTheme from "../theming/getThemeDesignerTheme.js";
 import { DEFAULT_THEME, SUPPORTED_THEMES } from "../generated/AssetParameters.js";
 import { boot, isBooted } from "../Boot.js";
+import { attachConfigurationReset } from "./ConfigurationReset.js";
+import { fireConfigChange, attachConfigChange, getSharedValue } from "./ConfigurationSync.js";
 let curTheme;
+let curBaseTheme;
+attachConfigurationReset(() => {
+    curTheme = undefined;
+});
+attachConfigChange("theme", (theme) => {
+    curTheme = theme;
+    if (isBooted()) {
+        applyTheme(curTheme).then(() => reRenderAllUI5Elements({ themeAware: true }));
+    }
+});
 /**
  * Returns the current theme.
  * @public
@@ -12,7 +23,7 @@ let curTheme;
  */
 const getTheme = () => {
     if (curTheme === undefined) {
-        curTheme = getConfiguredTheme();
+        curTheme = getSharedValue("theme") ?? getConfiguredTheme();
     }
     return curTheme;
 };
@@ -27,6 +38,7 @@ const setTheme = async (theme) => {
         return;
     }
     curTheme = theme;
+    fireConfigChange("theme", theme);
     if (isBooted()) {
         // Update CSS Custom Properties
         await applyTheme(curTheme);
@@ -51,8 +63,7 @@ const getDefaultTheme = () => {
  * @returns {boolean}
  */
 const isTheme = (theme) => {
-    const currentTheme = getTheme();
-    return currentTheme === theme || currentTheme === `${theme}_exp`;
+    return getTheme() === theme;
 };
 /**
  * Returns if the currently set theme is part of legacy theme families ("sap_fiori_3").
@@ -64,7 +75,7 @@ const isTheme = (theme) => {
 const isLegacyThemeFamily = () => {
     const currentTheme = getTheme();
     if (!isKnownTheme(currentTheme)) {
-        return !getThemeDesignerTheme()?.baseThemeName?.startsWith("sap_horizon");
+        return !getBaseTheme()?.startsWith("sap_horizon");
     }
     return !currentTheme.startsWith("sap_horizon");
 };
@@ -73,5 +84,21 @@ const isLegacyThemeFamilyAsync = async () => {
     return isLegacyThemeFamily();
 };
 const isKnownTheme = (theme) => SUPPORTED_THEMES.includes(theme);
-export { getTheme, setTheme, isTheme, isLegacyThemeFamily, isLegacyThemeFamilyAsync, getDefaultTheme, };
+/**
+ * Returns the base theme of external theme.
+ * @private
+ * @returns {string | undefined} the base theme name
+ */
+const getBaseTheme = () => {
+    return curBaseTheme;
+};
+/**
+ * Sets the base theme of the current external theme.
+ * @param { string | undefined } theme the name of the new base theme
+ * @private
+ */
+const setBaseTheme = (theme) => {
+    curBaseTheme = theme;
+};
+export { getTheme, setTheme, isTheme, isLegacyThemeFamily, isLegacyThemeFamilyAsync, getDefaultTheme, getBaseTheme, setBaseTheme, };
 //# sourceMappingURL=Theme.js.map

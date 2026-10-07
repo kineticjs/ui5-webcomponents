@@ -1,9 +1,32 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
-import type { ResizeObserverCallback } from "@ui5/webcomponents-base/dist/delegate/ResizeHandler.js";
 import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { AriaLandmarkRole } from "@ui5/webcomponents-base";
 import DynamicPageHeader from "./DynamicPageHeader.js";
 import DynamicPageTitle from "./DynamicPageTitle.js";
-import DynamicPageHeaderActions from "./DynamicPageHeaderActions.js";
+import type DynamicPageHeaderActions from "./DynamicPageHeaderActions.js";
+import type { Slot, DefaultSlot } from "@ui5/webcomponents-base/dist/UI5Element.js";
+type DynamicPageHeaderRoles = Extract<AriaLandmarkRole, "none" | "banner" | "region">;
+type DynamicPageContentRoles = Extract<AriaLandmarkRole, "none" | "main" | "region" | "form">;
+type DynamicPageFooterRoles = Extract<AriaLandmarkRole, "none" | "contentinfo" | "region">;
+type DynamicPageRootRoles = Extract<AriaLandmarkRole, "none" | "main" | "region">;
+type DynamicPageAccessibilityAttributes = {
+    root?: {
+        role?: DynamicPageRootRoles;
+        name?: string;
+    };
+    header?: {
+        role?: DynamicPageHeaderRoles;
+        name?: string;
+    };
+    content?: {
+        role?: DynamicPageContentRoles;
+        name?: string;
+    };
+    footer?: {
+        role?: DynamicPageFooterRoles;
+        name?: string;
+    };
+};
 /**
  * @class
  *
@@ -66,6 +89,10 @@ import DynamicPageHeaderActions from "./DynamicPageHeaderActions.js";
  * @csspart footer - Used to style the footer of the component
  */
 declare class DynamicPage extends UI5Element {
+    eventDetails: {
+        "pin-button-toggle": void;
+        "title-toggle": void;
+    };
     /**
      * Defines if the pin button is hidden.
      *
@@ -88,61 +115,91 @@ declare class DynamicPage extends UI5Element {
      */
     showFooter: boolean;
     /**
-     * Defines the current media query size.
-     *
-     * @private
-     */
-    mediaRange?: string;
-    /**
      * Defines the content of the Dynamic Page.
      *
      * @public
      */
-    content: HTMLElement[];
+    content: DefaultSlot<HTMLElement>;
     /**
      * Defines the title HTML Element.
      *
      * @public
      */
-    titleArea: Array<DynamicPageTitle>;
+    titleArea: Slot<DynamicPageTitle>;
     /**
      * Defines the header HTML Element.
      *
      * @public
      */
-    headerArea: Array<DynamicPageHeader>;
+    headerArea: Slot<DynamicPageHeader>;
     /**
      * Defines the footer HTML Element.
      *
      * @public
      */
-    footerArea: HTMLElement[];
+    footerArea: Slot<HTMLElement>;
+    /**
+    * Defines additional accessibility attributes on different areas of the component.
+    *
+    * The accessibilityAttributes object has the following fields,
+    * where each field is an object supporting one or more accessibility attributes:
+    *
+    *  - **root**: `root.role` and `root.name`.
+    *  - **header**: `header.role` and `header.name`.
+    *  - **content**: `content.role` and `content.name`.
+    *  - **footer**: `footer.role` and `footer.name`.
+    *
+    * The accessibility attributes support the following values:
+    *
+    * - **role**: Defines the accessible ARIA landmark role of the area.
+    * Accepts the following values per section:
+    * `root` — `none`, `main`, `region`;
+    * `header` — `none`, `banner`, `region`;
+    * `content` — `none`, `main`, `region`, `form`;
+    * `footer` — `none`, `contentinfo`, `region`.
+    *
+    * - **name**: Defines the accessible ARIA name of the area.
+    * Accepts any string.
+    *
+    * @default {}
+    * @public
+    * @since 2.24.0
+    */
+    accessibilityAttributes: DynamicPageAccessibilityAttributes;
     static i18nBundle: I18nBundle;
     skipSnapOnScroll: boolean;
     showHeaderInStickArea: boolean;
+    isToggled: boolean;
     _headerSnapped: boolean;
-    _updateMediaRange: ResizeObserverCallback;
+    scrollContainer?: HTMLElement;
+    headerActions?: DynamicPageHeaderActions;
     constructor();
-    static onDefine(): Promise<void>;
-    onEnterDOM(): void;
-    onExitDOM(): void;
     onBeforeRendering(): void;
+    get endAreaHeight(): number;
+    get scrollPaddingTop(): number;
     get dynamicPageTitle(): DynamicPageTitle | null;
     get dynamicPageHeader(): DynamicPageHeader | null;
-    get scrollContainer(): HTMLElement | null;
-    get headerActions(): DynamicPageHeaderActions | null;
+    get footerWrapper(): Element | null | undefined;
     get actionsInTitle(): boolean;
     get headerInTitle(): boolean;
     get headerInContent(): boolean;
     get _headerLabel(): string;
     get _headerExpanded(): boolean;
-    get _accAttributesForHeaderActions(): {
-        controls: string;
-    };
-    get headerTabIndex(): -1 | 0;
+    get headerTabIndex(): 0 | -1;
     get headerAriaHidden(): boolean;
     get hasHeading(): boolean;
     get headerSnapped(): boolean;
+    get hasSnappedTitleOnMobile(): number | false | undefined;
+    get headerAriaLabel(): string | undefined;
+    get _headerRole(): DynamicPageHeaderRoles | undefined;
+    get _rootRole(): DynamicPageRootRoles | undefined;
+    get _rootAriaLabel(): string | undefined;
+    get _contentRole(): DynamicPageContentRoles | undefined;
+    get _contentAriaLabel(): string | undefined;
+    get _footerRole(): DynamicPageFooterRoles | undefined;
+    get _footerAriaLabel(): string | undefined;
+    get _hidePinButton(): boolean;
+    get _actionsBarStickyTop(): number;
     /**
      * Defines if the header is snapped.
      *
@@ -156,8 +213,14 @@ declare class DynamicPage extends UI5Element {
     onPinClick(): Promise<void>;
     onToggleTitle(): Promise<void>;
     _toggleHeader(): Promise<void>;
-    onExpandHoverIn(): Promise<void>;
-    onExpandHoverOut(): Promise<void>;
-    updateMediaRange(): void;
+    onExpandHoverIn(): void;
+    onExpandHoverOut(): void;
+    onContentFocusIn(e: FocusEvent): void;
+    onContentFocusOut(): void;
+    setScrollPadding(padding: {
+        start: number;
+        end: number;
+    }): void;
 }
 export default DynamicPage;
+export type { DynamicPageAccessibilityAttributes };

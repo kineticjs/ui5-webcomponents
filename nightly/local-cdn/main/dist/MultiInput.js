@@ -6,20 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var MultiInput_1;
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { isShow, isBackSpace, isLeft, isRight, isRightCtrl, isHome, isEnd, isDown, } from "@ui5/webcomponents-base/dist/Keys.js";
-import { getScopedVarName } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
-import { MULTIINPUT_ROLEDESCRIPTION_TEXT } from "./generated/i18n/i18n-defaults.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
+import { isShow, isBackSpace, isLeft, isRight, isRightCtrl, isHome, isEnd, isDown, isEnter, isTabNext, } from "@ui5/webcomponents-base/dist/Keys.js";
+import { isPhone } from "@ui5/webcomponents-base/dist/Device.js";
+import { MULTIINPUT_ROLEDESCRIPTION_TEXT, MULTIINPUT_VALUE_HELP_LABEL, MULTIINPUT_VALUE_HELP, FORM_MIXED_TEXTFIELD_REQUIRED, MULTIINPUT_FILTER_BUTTON_LABEL, } from "./generated/i18n/i18n-defaults.js";
 import Input from "./Input.js";
-import MultiInputTemplate from "./generated/templates/MultiInputTemplate.lit.js";
+import MultiInputTemplate from "./MultiInputTemplate.js";
 import styles from "./generated/themes/MultiInput.css.js";
-import Token from "./Token.js";
-import Tokenizer, { getTokensCountText } from "./Tokenizer.js";
-import Icon from "./Icon.js";
-import "@ui5/webcomponents-icons/dist/value-help.js";
+import { getTokensCountText } from "./Tokenizer.js";
 /**
  * @class
  * ### Overview
@@ -41,6 +38,9 @@ import "@ui5/webcomponents-icons/dist/value-help.js";
  * @public
  */
 let MultiInput = MultiInput_1 = class MultiInput extends Input {
+    get formValidityMessage() {
+        return MultiInput_1.i18nBundle.getText(FORM_MIXED_TEXTFIELD_REQUIRED);
+    }
     get formValidity() {
         const tokens = (this.tokens || []);
         return { valueMissing: this.required && !this.value && !tokens.length };
@@ -72,13 +72,26 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
          * @private
          */
         this.tokenizerAvailable = false;
+        /**
+         * Indicates whether to show tokens in suggestions popover
+         * @default false
+         * @private
+         */
+        this._showTokensInSuggestions = false;
+        /**
+         * Tracks whether user has explicitly toggled the show tokens state
+         * @default false
+         * @private
+         */
+        this._userToggledShowTokens = false;
         // Prevent suggestions' opening.
         this._skipOpenSuggestions = false;
         this._valueHelpIconPressed = false;
+        this._focusInTokenizer = false;
     }
     valueHelpPress() {
         this.closeValueStatePopover();
-        this.fireEvent("value-help-trigger");
+        this.fireDecoratorEvent("value-help-trigger");
     }
     tokenDelete(e) {
         const deletedTokens = e.detail.tokens;
@@ -88,24 +101,24 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
             return;
         }
         if (deletedTokens) {
-            this.fireEvent("token-delete", { tokens: deletedTokens });
+            this.fireDecoratorEvent("token-delete", { tokens: deletedTokens });
             if (shouldFocusInput) {
                 this.focus();
             }
         }
     }
     valueHelpMouseDown(e) {
-        const target = e.target;
+        e.preventDefault();
+        this.focus();
         this.closeValueStatePopover();
         this.tokenizer.open = false;
         this._valueHelpIconPressed = true;
-        target.focus();
     }
     _tokenizerFocusOut(e) {
         if (!this.contains(e.relatedTarget) && !this.shadowRoot.contains(e.relatedTarget)) {
             this.tokenizer._tokens.forEach(token => { token.selected = false; });
-            this.tokenizer.scrollToStart();
         }
+        this._focusInTokenizer = false;
     }
     valueHelpMouseUp() {
         setTimeout(() => {
@@ -113,15 +126,19 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         }, 0);
     }
     innerFocusIn() {
-        this.tokenizer.expanded = true;
         this.focused = true;
-        this.tokenizer.scrollToEnd();
+        this.tokenizer._scrollToEndOnExpand = true;
+        this.tokenizer.expanded = true;
         this.tokens.forEach(token => {
             token.selected = false;
         });
     }
+    _showMoreItemsPress() {
+        this.tokenizer._scrollToEndOnExpand = true;
+    }
     _onkeydown(e) {
-        super._onkeydown(e);
+        !this._isComposing && super._onkeydown(e);
+        this._isKeyNavigation = true;
         const target = e.target;
         const isHomeInBeginning = isHome(e) && target.selectionStart === 0;
         if (isHomeInBeginning) {
@@ -137,9 +154,15 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
             return this._handleBackspace(e);
         }
         this._skipOpenSuggestions = false;
+        if ((isEnter(e) || isTabNext(e)) && this.previousValue !== this.value) {
+            this._handleChange();
+            return;
+        }
         if (isShow(e)) {
+            e.preventDefault();
             this.valueHelpPress();
         }
+        this._isKeyNavigation = false;
     }
     _onTokenizerKeydown(e) {
         const rightCtrl = isRightCtrl(e);
@@ -160,21 +183,30 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         // selectionStart property applies only to inputs of types text, search, URL, tel, and password
         if (((cursorPosition === null && !this.value) || cursorPosition === 0) && lastToken) {
             e.preventDefault();
-            lastToken.focus();
-            this.tokenizer._itemNav.setCurrentItem(lastToken);
+            this._focusToken(lastToken);
         }
     }
+    _focusToken(tokenToFocus) {
+        this._focusInTokenizer = true;
+        tokenToFocus.focus();
+        this.tokenizer._itemNav.setCurrentItem(tokenToFocus);
+    }
+    /**
+     * @override
+     */
+    _handleChange() {
+        if (this._focusInTokenizer) {
+            return;
+        }
+        super._handleChange();
+    }
     _handleBackspace(e) {
-        const cursorPosition = this.getDomRef().querySelector(`input`).selectionStart;
-        const selectionEnd = this.getDomRef().querySelector(`input`).selectionEnd;
-        const isValueSelected = cursorPosition === 0 && selectionEnd === this.value.length;
         const tokens = this.tokens;
         const lastToken = tokens.length && tokens[tokens.length - 1];
-        // selectionStart property applies only to inputs of types text, search, URL, tel, and password
-        if ((!this.value || (this.value && cursorPosition === 0 && !isValueSelected)) && lastToken) {
+        // Only move focus to the last token if the input is empty
+        if (!this.value && lastToken) {
             e.preventDefault();
-            lastToken.focus();
-            this.tokenizer._itemNav.setCurrentItem(lastToken);
+            this._focusToken(lastToken);
         }
     }
     _focusFirstToken(e) {
@@ -182,8 +214,7 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         const firstToken = tokens.length && tokens[0];
         if (firstToken) {
             e.preventDefault();
-            firstToken.focus();
-            this.tokenizer._itemNav.setCurrentItem(firstToken);
+            this._focusToken(firstToken);
         }
     }
     _onfocusout(e) {
@@ -191,7 +222,8 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         const relatedTarget = e.relatedTarget;
         const insideDOM = this.contains(relatedTarget);
         const insideShadowDom = this.shadowRoot.contains(relatedTarget);
-        if (!insideDOM && !insideShadowDom) {
+        const hasTokenToBeDeleted = this.tokenizer._tokens.some(token => token.toBeDeleted);
+        if (!insideDOM && !insideShadowDom && !hasTokenToBeDeleted) {
             this.tokenizer.expanded = false;
         }
         if (this.contains(relatedTarget) && relatedTarget.hasAttribute("ui5-token")) {
@@ -203,24 +235,49 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
      */
     _onfocusin(e) {
         const inputDomRef = this.getInputDOMRef();
+        const wasTokenFocused = e.relatedTarget instanceof HTMLElement && e.relatedTarget.hasAttribute("ui5-token");
         if (e.target === inputDomRef) {
-            super._onfocusin(e);
+            if (wasTokenFocused) {
+                this.focused = true;
+                this.open = true;
+                this._inputIconFocused = false;
+                this._focusedAfterClear = false;
+            }
+            else {
+                super._onfocusin(e);
+            }
         }
     }
     onBeforeRendering() {
         super.onBeforeRendering();
-        this.style.setProperty(getScopedVarName("--_ui5-input-icons-count"), `${this.iconsCount}`);
+        this.style.setProperty("--_ui5-input-icons-count", `${this.iconsCount}`);
         this.tokenizerAvailable = this.tokens && this.tokens.length > 0;
+        if (this.tokenizer) {
+            this.tokenizer.readonly = this.readonly;
+            // Set the CSS variable on the tokenizer element so it's available in the shadow DOM
+            this.tokenizer.style.setProperty("--_ui5-input-icons-count", `${this.iconsCount}`);
+        }
+    }
+    /**
+     * Override the _handlePickerAfterOpen method to handle token display based on device type
+     */
+    _handlePickerAfterOpen() {
+        if (this.tokens.length > 0) {
+            // On mobile: show tokens by default (for filter dialog feature)
+            // On desktop: keep showing suggestions (default behavior)
+            if (isPhone()) {
+                this._showTokensInSuggestions = true;
+            }
+            this._userToggledShowTokens = false;
+            // Expand tokenizer to show all tokens and prevent cut-off
+            this.tokenizer._scrollToEndOnExpand = true;
+            this.tokenizer.expanded = true;
+        }
+        super._handlePickerAfterOpen();
     }
     onAfterRendering() {
         super.onAfterRendering();
         this.tokenizer.preventInitialFocus = true;
-        if (this.tokenizer.expanded) {
-            this.tokenizer.scrollToEnd();
-        }
-        else {
-            this.tokenizer.scrollToStart();
-        }
     }
     get iconsCount() {
         return super.iconsCount + (this.showValueHelpIcon ? 1 : 0);
@@ -234,8 +291,17 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
     get _tokensCountText() {
         return getTokensCountText(this.tokens.length);
     }
+    get _valueHelpText() {
+        return MultiInput_1.i18nBundle.getText(MULTIINPUT_VALUE_HELP);
+    }
+    get _filterButtonAccessibleName() {
+        return MultiInput_1.i18nBundle.getText(MULTIINPUT_FILTER_BUTTON_LABEL);
+    }
     get _tokensCountTextId() {
         return `hiddenText-nMore`;
+    }
+    get _valueHelpTextId() {
+        return this.showValueHelpIcon ? `hiddenText-value-help` : "";
     }
     /**
      * Returns the placeholder value when there are no tokens.
@@ -248,14 +314,15 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
         return this.placeholder;
     }
     get accInfo() {
-        const ariaDescribedBy = `${this._tokensCountTextId} ${this.suggestionsTextId} ${this.valueStateTextId}`.trim();
+        const ariaDescribedBy = `${this._tokensCountTextId} ${this.suggestionsTextId} ${this.valueStateTextId} ${this._valueStateLinksShortcutsTextAccId} ${this._valueHelpTextId}`.trim();
         return {
-            "input": {
-                ...super.accInfo.input,
-                "ariaRoledescription": this.ariaRoleDescription,
-                "ariaDescribedBy": ariaDescribedBy,
-            },
+            ...super.accInfo,
+            "ariaRoledescription": this.ariaRoleDescription,
+            "ariaDescribedBy": ariaDescribedBy,
         };
+    }
+    get valueHelpLabel() {
+        return MultiInput_1.i18nBundle.getText(MULTIINPUT_VALUE_HELP_LABEL);
     }
     get ariaRoleDescription() {
         return MultiInput_1.i18nBundle.getText(MULTIINPUT_ROLEDESCRIPTION_TEXT);
@@ -269,6 +336,18 @@ let MultiInput = MultiInput_1 = class MultiInput extends Input {
     get shouldDisplayOnlyValueStateMessage() {
         return this.hasValueStateMessage && !this.readonly && !this.open && this.focused && !this.tokenizer.open;
     }
+    /**
+     * Computes the effective state for showing tokens in suggestions.
+     * Returns false (show suggestions) by default, true only when explicitly set.
+     */
+    get _effectiveShowTokensInSuggestions() {
+        // If no tokens exist, always show suggestions
+        if (this.tokens.length === 0) {
+            return false;
+        }
+        // Return the current state (will be true on mobile after picker opens, false otherwise)
+        return this._showTokensInSuggestions;
+    }
 };
 __decorate([
     property({ type: Boolean })
@@ -280,24 +359,21 @@ __decorate([
     property()
 ], MultiInput.prototype, "name", void 0);
 __decorate([
+    property({ type: Boolean })
+], MultiInput.prototype, "_showTokensInSuggestions", void 0);
+__decorate([
+    property({ type: Boolean })
+], MultiInput.prototype, "_userToggledShowTokens", void 0);
+__decorate([
     slot({ type: HTMLElement, individualSlots: true })
 ], MultiInput.prototype, "tokens", void 0);
 MultiInput = MultiInput_1 = __decorate([
     customElement({
         tag: "ui5-multi-input",
-        renderer: litRender,
+        renderer: jsxRenderer,
         formAssociated: true,
         template: MultiInputTemplate,
         styles: [Input.styles, styles],
-        get dependencies() {
-            return [
-                ...Input.dependencies,
-                Input,
-                Tokenizer,
-                Token,
-                Icon,
-            ];
-        },
     })
     /**
      * Fired when the value help icon is pressed
@@ -305,7 +381,9 @@ MultiInput = MultiInput_1 = __decorate([
      * @public
      */
     ,
-    event("value-help-trigger")
+    event("value-help-trigger", {
+        bubbles: true,
+    })
     /**
      * Fired when tokens are being deleted.
      * @param {Array} tokens An array containing the deleted tokens.
@@ -313,12 +391,7 @@ MultiInput = MultiInput_1 = __decorate([
      */
     ,
     event("token-delete", {
-        detail: {
-            /**
-             * @public
-             */
-            tokens: { type: Array },
-        },
+        bubbles: true,
     })
 ], MultiInput);
 MultiInput.define();

@@ -1,13 +1,16 @@
+import { hasRegisteredTags } from "./CustomElementsRegistry.js";
 import VersionInfo from "./generated/VersionInfo.js";
 let suf;
 let rulesObj = {
-    include: [/^ui5-/],
+    include: [/./],
     exclude: [],
 };
 const tagsCache = new Map(); // true/false means the tag should/should not be cached, undefined means not known yet.
 /**
  * Sets the suffix to be used for custom elements scoping, f.e. pass "demo" to get tags such as "ui5-button-demo".
- * Note: by default all tags starting with "ui5-" will be scoped, unless you change this by calling "setCustomElementsScopingRules"
+ *
+ * **Note:** By default all tags registered by the current runtime will be scoped, unless you change this by calling "setCustomElementsScopingRules"
+ * **Note:** Setting the scoping suffix must be done before importing any components.
  *
  * @public
  * @param suffix The scoping suffix
@@ -15,6 +18,10 @@ const tagsCache = new Map(); // true/false means the tag should/should not be ca
 const setCustomElementsScopingSuffix = (suffix) => {
     if (!suffix.match(/^[a-zA-Z0-9_-]+$/)) {
         throw new Error("Only alphanumeric characters and dashes allowed for the scoping suffix");
+    }
+    if (hasRegisteredTags()) {
+        // eslint-disable-next-line no-console
+        console.warn("Setting the scoping suffix must be done before importing any components. For proper usage, read the scoping section: https://github.com/UI5/webcomponents/blob/main/docs/2-advanced/06-scoping.md.");
     }
     suf = suffix;
 };
@@ -52,7 +59,7 @@ const setCustomElementsScopingRules = (rules) => {
 };
 /**
  * Returns the rules, governing which custom element tags to scope and which not. By default, all elements
- * starting with "ui5-" are scoped. The default rules are: {include: [/^ui5-/]}.
+ * are scoped. The default rules are: {include: [/./]}.
  *
  * @public
  * @returns {Object}
@@ -90,10 +97,20 @@ const getEffectiveScopingSuffixForTag = (tag) => {
 /**
  * @public
  * Used for getting a scoped name for a CSS variable using the same transformation used in the build
- * @name the name of the css variable as written in the code
+ * @param name the name of the css variable as written in the code
+ * @param withVersion whether to include the version in the scoped name
  * @returns a variable name with the current version inserted as available at runtime
+ * @deprecated As of version 2.19.0 this method is no longer required. Variables can now be defined at the component level
+ * and are automatically encapsulated within each component’s Shadow DOM.
+ * As a result, runtime scoping logic is no longer necessary.
+ *
+ * It is still needed for third-party packages that have not yet migrated to the
+ * component-level variable approach.
  */
-const getScopedVarName = (name) => {
+const getScopedVarName = (name, withVersion = false) => {
+    if (!withVersion) {
+        return name;
+    }
     const versionStr = `v${VersionInfo.version.replaceAll(".", "-")}`;
     const expr = /(--_?ui5)([^,:)\s]+)/g;
     return name.replaceAll(expr, `$1-${versionStr}$2`);

@@ -1,3 +1,2 @@
-import type { StyleData } from "@ui5/webcomponents-base/dist/types.js";
-declare const styleData: StyleData;
-export default styleData;
+declare const _default: ":host{display:contents}th{width:inherit;font-weight:var(--ui5_table_header_row_font_weight);font-size:var(--sapFontMediumSize);font-family:var(--ui5_table_header_row_font_family);padding:.5rem;box-sizing:border-box;text-align:start;vertical-align:middle}:host([first]) th{padding-inline-start:1rem}th ::slotted([ui5-label]){font-weight:var(--ui5_table_header_row_font_weight);font-size:var(--sapFontMediumSize);font-family:var(--ui5_table_header_row_font_family)}\n";
+export default _default;

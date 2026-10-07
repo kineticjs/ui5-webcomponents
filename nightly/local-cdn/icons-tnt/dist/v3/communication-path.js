@@ -1,13 +1,14 @@
 import { registerIcon } from "@ui5/webcomponents-base/dist/asset-registries/Icons.js";
 
 const name = "communication-path";
-const pathData = "M36.875 453l416-416c7-7 15-7 22 0s7 15 0 22l-416 416c-7 7-15 7-22 0s-7-15 0-22z";
+const pathData = "M28.5 509q-11 0-18-7-7-8-7-18.5t7-17.5l456-456q8-8 18-8 12 0 18 8 8 8 8 18t-8 17l-456 457q-7 7-18 7z";
 const ltr = false;
 const accData = null;
+const viewBox = "0 0 512 512";
 const collection = "tnt-v3";
 const packageName = "@ui5/webcomponents-icons-tnt";
 
-registerIcon(name, { pathData, ltr, collection, packageName });
+registerIcon(name, { pathData, ltr, viewBox, collection, packageName });
 
 export default "tnt-v3/communication-path";
-export { pathData, ltr, accData };
+export { pathData, ltr, viewBox, accData };

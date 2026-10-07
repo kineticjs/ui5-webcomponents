@@ -7,38 +7,35 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var DatePicker_1;
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
+import query from "@ui5/webcomponents-base/dist/decorators/query.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
 import CalendarDate from "@ui5/webcomponents-localization/dist/dates/CalendarDate.js";
+import UI5Date from "@ui5/webcomponents-localization/dist/dates/UI5Date.js";
 import modifyDateBy from "@ui5/webcomponents-localization/dist/dates/modifyDateBy.js";
 import getRoundedTimestamp from "@ui5/webcomponents-localization/dist/dates/getRoundedTimestamp.js";
 import getTodayUTCTimestamp from "@ui5/webcomponents-localization/dist/dates/getTodayUTCTimestamp.js";
 import ValueState from "@ui5/webcomponents-base/dist/types/ValueState.js";
-import { getEffectiveAriaLabelText } from "@ui5/webcomponents-base/dist/util/AriaLabelHelper.js";
+import { getEffectiveAriaLabelText, getAssociatedLabelForTexts, getAllAccessibleNameRefTexts, getEffectiveAriaDescriptionText, getAllAccessibleDescriptionRefTexts, } from "@ui5/webcomponents-base/dist/util/AccessibilityTextsHelper.js";
 import { submitForm } from "@ui5/webcomponents-base/dist/features/InputElementsFormSupport.js";
-import { isPageUp, isPageDown, isPageUpShift, isPageDownShift, isPageUpShiftCtrl, isPageDownShiftCtrl, isShow, isF4, isEnter, isTabNext, isTabPrevious, isF6Next, isF6Previous, } from "@ui5/webcomponents-base/dist/Keys.js";
-import AriaHasPopup from "@ui5/webcomponents-base/dist/types/AriaHasPopup.js";
+import willShowContent from "@ui5/webcomponents-base/dist/util/willShowContent.js";
+import { isPageUp, isPageDown, isPageUpShift, isPageDownShift, isPageUpShiftCtrl, isPageDownShiftCtrl, isShow, isF4, isTabNext, isTabPrevious, isF6Next, isF6Previous, } from "@ui5/webcomponents-base/dist/Keys.js";
 import { isPhone, isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
 import CalendarPickersMode from "./types/CalendarPickersMode.js";
 import "@ui5/webcomponents-icons/dist/appointment-2.js";
-import "@ui5/webcomponents-icons/dist/decline.js";
-import { DATEPICKER_OPEN_ICON_TITLE, DATEPICKER_DATE_DESCRIPTION, INPUT_SUGGESTIONS_TITLE, FORM_TEXTFIELD_REQUIRED, DATEPICKER_POPOVER_ACCESSIBLE_NAME, } from "./generated/i18n/i18n-defaults.js";
+import { DATEPICKER_OPEN_ICON_TITLE, DATEPICKER_OPEN_ICON_TITLE_OPENED, DATEPICKER_DATE_DESCRIPTION, DATETIME_COMPONENTS_PLACEHOLDER_PREFIX, DATEPICKER_MOBILE_HEADER_TITLE, DATEPICKER_POPOVER_ACCESSIBLE_NAME, VALUE_STATE_ERROR, VALUE_STATE_INFORMATION, VALUE_STATE_SUCCESS, VALUE_STATE_WARNING, DATEPICKER_VALUE_MISSING, DATEPICKER_PATTERN_MISSMATCH, DATEPICKER_RANGE_UNDERFLOW, DATEPICKER_RANGE_OVERFLOW, TIMEPICKER_CANCEL_BUTTON, } from "./generated/i18n/i18n-defaults.js";
 import DateComponentBase from "./DateComponentBase.js";
-import Icon from "./Icon.js";
-import Button from "./Button.js";
-import ResponsivePopover from "./ResponsivePopover.js";
-import Calendar from "./Calendar.js";
-import CalendarDateComponent from "./CalendarDate.js";
-import Input from "./Input.js";
 import InputType from "./types/InputType.js";
 import IconMode from "./types/IconMode.js";
-import DatePickerTemplate from "./generated/templates/DatePickerTemplate.lit.js";
+import DatePickerTemplate from "./DatePickerTemplate.js";
 // default calendar for bundling
 import "@ui5/webcomponents-localization/dist/features/calendar/Gregorian.js";
 // Styles
 import datePickerCss from "./generated/themes/DatePicker.css.js";
 import datePickerPopoverCss from "./generated/themes/DatePickerPopover.css.js";
 import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverCommon.css.js";
+import ValueStateMessageCss from "./generated/themes/ValueStateMessage.css.js";
 /**
  * @class
  *
@@ -65,10 +62,24 @@ import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverComm
  * the input field, it must fit to the used date format.
  *
  * Supported format options are pattern-based on Unicode LDML Date Format notation.
- * For more information, see [UTS #35: Unicode Locale Data Markup Language](http://unicode.org/reports/tr35/#Date_Field_Symbol_Table).
+ * For more information, see [UTS #35: Unicode Locale Data Markup Language](https://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
  *
- * For example, if the `format-pattern` is "yyyy-MM-dd",
- * a valid value string is "2015-07-30" and the same is displayed in the input.
+ * For example, if the valueFormat is "yyyy-MM-dd", the displayFormat is "MMM d, y", and the used locale is English, a valid value string is "2015-07-30", which leads to an output of "Jul 30, 2015".
+ * If no placeholder is set to the DatePicker, the used displayFormat is displayed as a placeholder. If another placeholder is needed, it must be set.
+ *
+ * ### Relative date input
+ *
+ * The input field also accepts locale-aware relative date expressions sourced from the Unicode CLDR.
+ * The following expressions are supported in English:
+ *
+ * - Day: "today", "yesterday", "tomorrow", "in N days", "N days ago"
+ * - Week: "this week", "last week", "next week", "in N weeks", "N weeks ago"
+ * - Month: "this month", "last month", "next month", "in N months", "N months ago"
+ * - Year: "this year", "last year", "next year", "in N years", "N years ago"
+ *
+ * The recognized expressions are locale-specific — the equivalent terms in the user's language are used (for example, "heute" in German, "bugün" in Turkish).
+ * Week, month, and year expressions resolve to an offset from today (for example, "next week" = today + 7 days).
+ * For the full list of supported fields and patterns, see [CLDR Date Fields](https://unicode.org/reports/tr35/tr35-dates.html#Calendar_Fields).
  *
  * ### Keyboard Handling
  * The `ui5-date-picker` provides advanced keyboard handling.
@@ -118,6 +129,7 @@ import ResponsivePopoverCommonCss from "./generated/themes/ResponsivePopoverComm
  * @constructor
  * @extends DateComponentBase
  * @public
+ * @csspart input - Used to style the input element. This part is forwarded to the underlying ui5-input element.
  */
 let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
     constructor() {
@@ -172,13 +184,40 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
          * @since 2.0.0
          */
         this.open = false;
+        /**
+         * Defines whether the clear icon of the input will be shown.
+         * @default false
+         * @public
+         * @since 2.20.0
+         */
+        this.showClearIcon = false;
         this._calendarCurrentPicker = "day";
     }
     get formValidityMessage() {
-        return DatePicker_1.i18nBundle.getText(FORM_TEXTFIELD_REQUIRED);
+        const validity = this.formValidity;
+        if (validity.valueMissing) {
+            // @ts-ignore oFormatOptions is a private API of DateFormat
+            return DatePicker_1.i18nBundle.getText(DATEPICKER_VALUE_MISSING, this.getFormat().oFormatOptions.pattern);
+        }
+        if (validity.patternMismatch) {
+            // @ts-ignore oFormatOptions is a private API of DateFormat
+            return DatePicker_1.i18nBundle.getText(DATEPICKER_PATTERN_MISSMATCH, this.getFormat().oFormatOptions.pattern);
+        }
+        if (validity.rangeUnderflow) {
+            return DatePicker_1.i18nBundle.getText(DATEPICKER_RANGE_UNDERFLOW, this.minDate);
+        }
+        if (validity.rangeOverflow) {
+            return DatePicker_1.i18nBundle.getText(DATEPICKER_RANGE_OVERFLOW, this.maxDate);
+        }
+        return "";
     }
     get formValidity() {
-        return { valueMissing: this.required && !this.value };
+        return {
+            valueMissing: this.required && !this.value,
+            patternMismatch: !this.isValidValue(this.value),
+            rangeUnderflow: !this.isValidMin(this.value),
+            rangeOverflow: !this.isValidMax(this.value),
+        };
     }
     async formElementAnchor() {
         return (await this.getFocusDomRefAsync())?.getFocusDomRefAsync();
@@ -195,10 +234,15 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
             this.blur(); // close device's keyboard and prevent further typing
         }
         else {
-            this._getInput()?.focus();
+            this._dateTimeInput?.focus();
         }
+        this.fireDecoratorEvent("close");
+    }
+    onResponsivePopoverAfterOpen() {
+        this.fireDecoratorEvent("open");
     }
     onResponsivePopoverBeforeOpen() {
+        this._calendar.timestamp = this._calendarTimestamp;
         this._calendarCurrentPicker = this.firstPicker;
     }
     onBeforeRendering() {
@@ -208,7 +252,9 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
                 console.warn(`Invalid value for property "${prop}": ${propValue} is not compatible with the configured format pattern: "${this._displayFormat}"`); // eslint-disable-line
             }
         });
-        this.value = this.normalizeValue(this.value) || this.value;
+        if (!this.isLiveUpdate) {
+            this.value = this.normalizeFormattedValue(this.value) || this.value;
+        }
         this.liveValue = this.value;
     }
     /**
@@ -255,18 +301,13 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
             }
         }
         const target = e.target;
-        if (target && this.open && this._getInput().id === target.id && (isTabNext(e) || isTabPrevious(e) || isF6Next(e) || isF6Previous(e))) {
+        if (target && this.open && this._dateTimeInput.id === target.id && (isTabNext(e) || isTabPrevious(e) || isF6Next(e) || isF6Previous(e))) {
             this._togglePicker();
         }
         if (this.open) {
             return;
         }
-        if (isEnter(e)) {
-            if (this._internals?.form) {
-                submitForm(this);
-            }
-        }
-        else if (isPageUpShiftCtrl(e)) {
+        if (isPageUpShiftCtrl(e)) {
             e.preventDefault();
             this._modifyDateValue(1, "year");
         }
@@ -307,27 +348,29 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
     }
     _updateValueAndFireEvents(value, normalizeValue, events, updateValue = true) {
         const valid = this._checkValueValidity(value);
-        if (valid && normalizeValue) {
-            value = this.normalizeValue(value); // transform valid values (in any format) to the correct format
+        this.isLiveUpdate = !updateValue;
+        if ((valid && normalizeValue) || !this.isLiveUpdate) { // in case that value is not valid we format it in change event
+            value = this.getDisplayValueFromValue(value);
+            value = this.normalizeDisplayValue(value); // transform valid values (in any format) to the correct format
         }
         let executeEvent = true;
         this.liveValue = value;
         const previousValue = this.value;
         if (updateValue) {
-            this._getInput().value = value;
-            this.value = value;
-            this._updateValueState(); // Change the value state to Error/None, but only if needed
+            this._dateTimeInput.value = value;
+            this.value = this.getValueFromDisplayValue(value);
+            this._updateValueState();
         }
-        events.forEach((e) => {
-            if (!this.fireEvent(e, { value, valid }, true)) {
+        events.forEach(e => {
+            if (!this.fireDecoratorEvent(e, { value: this.value, valid })) {
                 executeEvent = false;
             }
         });
         if (!executeEvent && updateValue) {
-            if (this.value !== previousValue && this.value !== this._getInput().value) {
+            if (this.value !== previousValue && this.value !== this._dateTimeInput.value) {
                 return; // If the value was changed in the change event, do not revert it
             }
-            this._getInput().value = previousValue;
+            this._dateTimeInput.value = previousValue;
             this.value = previousValue;
         }
     }
@@ -335,19 +378,32 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
         const valid = this._checkValueValidity(this.value);
         const previousValueState = this.valueState;
         this.valueState = valid ? ValueState.None : ValueState.Negative;
-        const eventPrevented = !this.fireEvent("value-state-change", { valueState: this.valueState, valid }, true);
+        const eventPrevented = !this.fireDecoratorEvent("value-state-change", { valueState: this.valueState, valid });
         if (eventPrevented) {
             this.valueState = previousValueState;
         }
     }
-    _getInput() {
-        return this.shadowRoot.querySelector("[ui5-input]");
+    getValueFromDisplayValue(value) {
+        if (!this.getDisplayFormat().parse(value)) {
+            return value;
+        }
+        return this.getValueFormat().format(this.getDisplayFormat().parse(value));
+    }
+    getDisplayValueFromValue(value) {
+        if (!this.getValueFormat().parse(value)) {
+            return value;
+        }
+        return this.getDisplayFormat().format(this.getValueFormat().parse(value));
     }
     /**
      * The ui5-input "submit" event handler - fire change event when the user presses enter
      * @protected
      */
-    _onInputSubmit() { }
+    _onInputRequestSubmit() {
+        if (this._internals.form) {
+            submitForm(this);
+        }
+    }
     /**
      * The ui5-input "change" event handler - fire change event when the user focuses out of the input
      * @protected
@@ -371,7 +427,18 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
         if (value === "") {
             return true;
         }
-        return this.isValid(value) && this.isInValidRange(value);
+        return this.isValidValue(value) && this.isInValidRange(value);
+    }
+    /**
+     * Checks if the provided value is valid and within valid range.
+     * @protected
+     * @param value
+     */
+    _checkDisplayValueValidity(value) {
+        if (value === "") {
+            return true;
+        }
+        return this.isValidDisplayValue(value) && this.isInValidRangeDisplayValue(value);
     }
     _click(e) {
         if (isPhone()) {
@@ -384,12 +451,35 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
      * Checks if a value is valid against the current date format of the DatePicker.
      * @public
      * @param value A value to be tested against the current date format
+     * @deprecated Use isValidValue or isValidDisplayValue instead
      */
     isValid(value) {
         if (value === "" || value === undefined) {
             return true;
         }
         return !!this.getFormat().parse(value);
+    }
+    /**
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
+     */
+    isValidValue(value) {
+        if (value === "" || value === undefined) {
+            return true;
+        }
+        return !!this.getValueFormat().parse(value);
+    }
+    /**
+     * Checks if a value is valid against the current date format of the DatePicker.
+     * @public
+     * @param value A value to be tested against the current date format
+     */
+    isValidDisplayValue(value) {
+        if (value === "" || value === undefined) {
+            return true;
+        }
+        return !!this.getDisplayFormat().parse(value);
     }
     /**
      * Checks if a date is between the minimum and maximum date.
@@ -406,6 +496,36 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
         }
         return calendarDate.valueOf() >= this._minDate.valueOf() && calendarDate.valueOf() <= this._maxDate.valueOf();
     }
+    isValidMin(value) {
+        if (value === "" || value === undefined) {
+            return true;
+        }
+        const calendarDate = this._getCalendarDateFromString(value);
+        if (!calendarDate || !this._minDate) {
+            return false;
+        }
+        return calendarDate.valueOf() >= this._minDate.valueOf();
+    }
+    isValidMax(value) {
+        if (value === "" || value === undefined) {
+            return true;
+        }
+        const calendarDate = this._getCalendarDateFromString(value);
+        if (!calendarDate || !this._maxDate) {
+            return false;
+        }
+        return calendarDate.valueOf() <= this._maxDate.valueOf();
+    }
+    isInValidRangeDisplayValue(value) {
+        if (value === "" || value === undefined) {
+            return true;
+        }
+        const calendarDate = this._getCalendarDateFromStringDisplayValue(value);
+        if (!calendarDate || !this._minDate || !this._maxDate) {
+            return false;
+        }
+        return calendarDate.valueOf() >= this._minDate.valueOf() && calendarDate.valueOf() <= this._maxDate.valueOf();
+    }
     /**
      * The parser understands many formats, but we need one format
      * @protected
@@ -416,47 +536,117 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
         }
         return this.getFormat().format(this.getFormat().parse(value, true), true); // it is important to both parse and format the date as UTC
     }
-    get _displayFormat() {
-        // @ts-ignore oFormatOptions is a private API of DateFormat
-        return this.getFormat().oFormatOptions.pattern;
+    /**
+     * The parser understands many formats, but we need one format
+     * @protected
+     */
+    normalizeFormattedValue(value) {
+        if (!this.getValueFormat().parse(value, true)) {
+            return "";
+        }
+        if (value === "") {
+            return value;
+        }
+        return this.getValueFormat().format(this.getValueFormat().parse(value, true), true); // it is important to both parse and format the date as UTC
+    }
+    /**
+     * The parser understands many formats, but we need one format
+     * @protected
+     */
+    normalizeDisplayValue(value) {
+        if (value === "" || !this.getDisplayFormat().parse(value, true)) {
+            return value;
+        }
+        return this.getDisplayFormat().format(this.getDisplayFormat().parse(value, true), true); // it is important to both parse and format the date as UTC
+    }
+    get _lastDayOfTheYear() {
+        const currentYear = UI5Date.getInstance().getFullYear();
+        const lastDayOfTheYear = UI5Date.getInstance(currentYear, 11, 31, 23, 59, 59);
+        return this.getFormat().format(lastDayOfTheYear);
     }
     /**
      * @protected
      */
     get _placeholder() {
-        return this.placeholder !== undefined ? this.placeholder : this._displayFormat;
+        if (this.placeholder) {
+            return this.placeholder;
+        }
+        // translatable placeholder – for example "e.g. 2025-12-31"
+        return `${DatePicker_1.i18nBundle.getText(DATETIME_COMPONENTS_PLACEHOLDER_PREFIX)} ${this._lastDayOfTheYear}`;
     }
     get _headerTitleText() {
-        return DatePicker_1.i18nBundle.getText(INPUT_SUGGESTIONS_TITLE);
-    }
-    get phone() {
-        return isPhone();
+        return this.ariaLabelText || DatePicker_1.i18nBundle.getText(DATEPICKER_MOBILE_HEADER_TITLE);
     }
     get showHeader() {
-        return this.phone;
+        return isPhone();
     }
     get showFooter() {
-        return this.phone;
+        return isPhone();
+    }
+    get displayValue() {
+        if (!this.getValueFormat().parse(this.value, true)) {
+            return this.value;
+        }
+        if (!this.value) {
+            return "";
+        }
+        if (this.isLiveUpdate) {
+            return this.liveValue;
+        }
+        return this.getDisplayFormat().format(this.getValueFormat().parse(this.value, true), true);
     }
     get accInfo() {
         return {
-            "ariaRoledescription": this.dateAriaDescription,
-            "ariaHasPopup": AriaHasPopup.Grid.toLowerCase(),
+            "ariaRoledescription": this.roleDescription,
+            "ariaHasPopup": "grid",
             "ariaRequired": this.required,
-            "ariaLabel": getEffectiveAriaLabelText(this),
+            "ariaLabel": this.ariaLabelText || undefined,
+            "ariaDescription": getAllAccessibleDescriptionRefTexts(this) || getEffectiveAriaDescriptionText(this) || undefined,
         };
     }
+    get ariaLabelText() {
+        return getAllAccessibleNameRefTexts(this) || getEffectiveAriaLabelText(this) || getAssociatedLabelForTexts(this) || "";
+    }
+    get valueStateDefaultText() {
+        if (this.valueState === ValueState.None) {
+            return;
+        }
+        return this.valueStateTextMappings[this.valueState];
+    }
+    get valueStateTextMappings() {
+        return {
+            [ValueState.Positive]: DatePicker_1.i18nBundle.getText(VALUE_STATE_SUCCESS),
+            [ValueState.Negative]: DatePicker_1.i18nBundle.getText(VALUE_STATE_ERROR),
+            [ValueState.Critical]: DatePicker_1.i18nBundle.getText(VALUE_STATE_WARNING),
+            [ValueState.Information]: DatePicker_1.i18nBundle.getText(VALUE_STATE_INFORMATION),
+        };
+    }
+    get shouldDisplayDefaultValueStateMessage() {
+        return !willShowContent(this.valueStateMessage) && this.hasValueStateText;
+    }
+    get hasValueStateText() {
+        return this.hasValueState && this.valueState !== ValueState.Positive;
+    }
+    get hasValueState() {
+        return this.valueState !== ValueState.None;
+    }
     get openIconTitle() {
+        if (this.open) {
+            return DatePicker_1.i18nBundle.getText(DATEPICKER_OPEN_ICON_TITLE_OPENED);
+        }
         return DatePicker_1.i18nBundle.getText(DATEPICKER_OPEN_ICON_TITLE);
     }
     get openIconName() {
         return "appointment-2";
     }
-    get dateAriaDescription() {
+    get roleDescription() {
         return DatePicker_1.i18nBundle.getText(DATEPICKER_DATE_DESCRIPTION);
     }
     get pickerAccessibleName() {
-        return DatePicker_1.i18nBundle.getText(DATEPICKER_POPOVER_ACCESSIBLE_NAME);
+        return DatePicker_1.i18nBundle.getText(DATEPICKER_POPOVER_ACCESSIBLE_NAME, this.ariaLabelText);
+    }
+    get btnCancelLabel() {
+        return DatePicker_1.i18nBundle.getText(TIMEPICKER_CANCEL_BUTTON);
     }
     /**
      * Defines whether the dialog on mobile should have header
@@ -485,9 +675,6 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
      */
     get _iconMode() {
         return isDesktop() ? IconMode.Decorative : IconMode.Interactive;
-    }
-    _respPopover() {
-        return this.shadowRoot.querySelector("[ui5-responsive-popover]");
     }
     _canOpenPicker() {
         return !this.disabled && !this.readonly;
@@ -536,25 +723,42 @@ let DatePicker = DatePicker_1 = class DatePicker extends DateComponentBase {
      * @returns The date as string
      */
     formatValue(date) {
-        return this.getFormat().format(date);
+        return this.getValueFormat().format(date);
     }
     _togglePicker() {
         this.open = !this.open;
     }
     _toggleAndFocusInput() {
         this._togglePicker();
-        this._getInput().focus();
+        this._dateTimeInput.focus();
     }
     /**
      * Currently selected date represented as a Local JavaScript Date instance.
+     * Note: this getter can only be reliably used after the component is fully defined. Use dateValueAsync which resolves only when this condition is met.
      * @public
      * @default null
+     * @deprecated Use dateValueAsync instead
      */
     get dateValue() {
-        return this.liveValue ? this.getFormat().parse(this.liveValue) : this.getFormat().parse(this.value);
+        return this.liveValue ? this.getValueFormat().parse(this.liveValue) : this.getValueFormat().parse(this.value);
+    }
+    /**
+     * Promise that resolves to the currently selected date represented as a Local JavaScript Date instance.
+     * @public
+     * @default Promise
+     */
+    get dateValueAsync() {
+        return this.definePromise.then(() => {
+            return this.dateValue;
+        });
     }
     get dateValueUTC() {
-        return this.liveValue ? this.getFormat().parse(this.liveValue, true) : this.getFormat().parse(this.value);
+        return this.liveValue ? this.getValueFormat().parse(this.liveValue, true) : this.getValueFormat().parse(this.value);
+    }
+    get dateValueUTCAsync() {
+        return this.definePromise.then(() => {
+            return this.dateValueUTC;
+        });
     }
     get styles() {
         return {
@@ -601,14 +805,32 @@ __decorate([
     property()
 ], DatePicker.prototype, "accessibleNameRef", void 0);
 __decorate([
+    property()
+], DatePicker.prototype, "accessibleDescription", void 0);
+__decorate([
+    property()
+], DatePicker.prototype, "accessibleDescriptionRef", void 0);
+__decorate([
+    property({ type: Boolean })
+], DatePicker.prototype, "showClearIcon", void 0);
+__decorate([
     property({ type: Object })
 ], DatePicker.prototype, "_respPopoverConfig", void 0);
 __decorate([
     property()
 ], DatePicker.prototype, "_calendarCurrentPicker", void 0);
 __decorate([
-    slot({ type: HTMLElement })
+    slot()
 ], DatePicker.prototype, "valueStateMessage", void 0);
+__decorate([
+    query("[ui5-datetime-input]")
+], DatePicker.prototype, "_dateTimeInput", void 0);
+__decorate([
+    query("[ui5-calendar]")
+], DatePicker.prototype, "_calendar", void 0);
+__decorate([
+    i18n("@ui5/webcomponents")
+], DatePicker, "i18nBundle", void 0);
 DatePicker = DatePicker_1 = __decorate([
     customElement({
         tag: "ui5-date-picker",
@@ -619,90 +841,58 @@ DatePicker = DatePicker_1 = __decorate([
             datePickerCss,
             ResponsivePopoverCommonCss,
             datePickerPopoverCss,
-        ],
-        dependencies: [
-            Icon,
-            ResponsivePopover,
-            Calendar,
-            CalendarDateComponent,
-            Input,
-            Button,
+            ValueStateMessageCss,
         ],
     })
     /**
      * Fired when the input operation has finished by pressing Enter or on focusout.
-     * @allowPreventDefault
      * @public
      * @param {string} value The submitted value.
      * @param {boolean} valid Indicator if the value is in correct format pattern and in valid range.
      */
     ,
     event("change", {
-        detail: {
-            /**
-             * @public
-             */
-            value: {
-                type: String,
-            },
-            /**
-             * @public
-             */
-            valid: {
-                type: Boolean,
-            },
-        },
+        bubbles: true,
+        cancelable: true,
     })
     /**
      * Fired when the value of the component is changed at each key stroke.
-     * @allowPreventDefault
      * @public
      * @param {string} value The submitted value.
      * @param {boolean} valid Indicator if the value is in correct format pattern and in valid range.
      */
     ,
     event("input", {
-        detail: {
-            /**
-             * @public
-             */
-            value: {
-                type: String,
-            },
-            /**
-             * @public
-             */
-            valid: {
-                type: Boolean,
-            },
-        },
+        bubbles: true,
+        cancelable: true,
     })
     /**
      * Fired before the value state of the component is updated internally.
      * The event is preventable, meaning that if it's default action is
      * prevented, the component will not update the value state.
-     * @allowPreventDefault
      * @public
      * @param {string} valueState The new `valueState` that will be set.
      * @param {boolean} valid Indicator if the value is in correct format pattern and in valid range.
      */
     ,
     event("value-state-change", {
-        detail: {
-            /**
-             * @public
-             */
-            valueState: {
-                type: String,
-            },
-            /**
-             * @public
-             */
-            valid: {
-                type: Boolean,
-            },
-        },
+        bubbles: true,
+        cancelable: true,
     })
+    /**
+     * Fired after the component's picker is opened.
+     * @since 2.4.0
+     * @public
+     */
+    ,
+    event("open")
+    /**
+     * Fired after the component's picker is closed.
+     * @since 2.4.0
+     * @public
+     */
+    ,
+    event("close")
 ], DatePicker);
 DatePicker.define();
 export default DatePicker;

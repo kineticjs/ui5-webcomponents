@@ -13,21 +13,23 @@
 	</script>
 
 
-	
 
 
 	<script>
 		// delete Document.prototype.adoptedStyleSheets
 	</script>
 
-
-  <script type="module" crossorigin src="/ui5-webcomponents/nightly/assets/bundle.esm-e99cf90a.js"></script>
-  <link rel="stylesheet" href="/ui5-webcomponents/nightly/assets/ProductSwitch-3009edbe.css">
+  <script type="module" crossorigin src="/webcomponents/nightly/assets/bundle.esm-DJjXB5sr.js"></script>
+  <link rel="stylesheet" crossorigin href="/webcomponents/nightly/assets/ProductSwitch-hrjX8qk4.css">
 </head>
 
 <body class="productswitch2auto">
 	<ui5-product-switch id="productSwitchThreeColumn">
-		<ui5-product-switch-item title-text="Home" subtitle-text="Central Home" icon="home"></ui5-product-switch-item>
+		<ui5-product-switch-item title-text="Home" subtitle-text="Central Home">
+			<ui5-avatar slot="image" shape="Square" fallback-icon="employee" color-scheme="Transparent" size="S">
+				<img alt="Woman" src="https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg.adapt.svg/1493030643828.svg" />
+			</ui5-avatar>
+		</ui5-product-switch-item>
 		<ui5-product-switch-item title-text="Analytics Cloud" subtitle-text="Analytics Cloud" icon="business-objects-experience"></ui5-product-switch-item>
 		<ui5-product-switch-item title-text="Catalog" subtitle-text="Ariba" icon="contacts"></ui5-product-switch-item>
 		<ui5-product-switch-item title-text="Guided Buying" icon="credit-card"></ui5-product-switch-item>
@@ -53,6 +55,11 @@
 	<ui5-product-switch id="productSwitchFlex" style="display: flex; justify-content: center; align-items: center;">
 		<ui5-product-switch-item title-text="Home" subtitle-text="Central Home" icon="home"></ui5-product-switch-item>
 		<ui5-product-switch-item title-text="Analytics Cloud" subtitle-text="Analytics Cloud" icon="business-objects-experience"></ui5-product-switch-item>
+	</ui5-product-switch>
+
+	<ui5-product-switch id="productSwitchTextWrapping">
+		<ui5-product-switch-item title-text="Analytics Cloud Intelligence" subtitle-text="Business intelligence and reporting" icon="business-objects-experience"></ui5-product-switch-item>
+		<ui5-product-switch-item title-text="Home" subtitle-text="Central Home" icon="home"></ui5-product-switch-item>
 	</ui5-product-switch>
 
 	<ui5-input id="eventTest"></ui5-input>

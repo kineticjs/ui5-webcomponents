@@ -7,23 +7,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var DynamicPageHeaderActions_1;
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
-import { getI18nBundle } from "@ui5/webcomponents-base/dist/i18nBundle.js";
-import Button from "@ui5/webcomponents/dist/Button.js";
-import ToggleButton from "@ui5/webcomponents/dist/ToggleButton.js";
+import i18n from "@ui5/webcomponents-base/dist/decorators/i18n.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isLegacyThemeFamily } from "@ui5/webcomponents-base/dist/config/Theme.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-up.js";
 import "@ui5/webcomponents-icons/dist/slim-arrow-down.js";
 import "@ui5/webcomponents-icons/dist/pushpin-off.js";
 import "@ui5/webcomponents-icons/dist/pushpin-on.js";
 // Template
-import DynamicPageHeaderActionsTemplate from "./generated/templates/DynamicPageHeaderActionsTemplate.lit.js";
+import DynamicPageHeaderActionsTemplate from "./DynamicPageHeaderActionsTemplate.js";
 // Styles
 import DynamicPageHeaderActionsCss from "./generated/themes/DynamicPageHeaderActions.css.js";
 // Texts
-import { DYNAMIC_PAGE_ARIA_LABEL_EXPAND_HEADER, DYNAMIC_PAGE_ARIA_LABEL_SNAP_HEADER, DYNAMIC_PAGE_ARIA_LABEL_PIN_HEADER, } from "./generated/i18n/i18n-defaults.js";
+import { DYNAMIC_PAGE_ARIA_LABEL_EXPAND_HEADER, DYNAMIC_PAGE_ARIA_LABEL_SNAP_HEADER, DYNAMIC_PAGE_ARIA_LABEL_PIN_HEADER, DYNAMIC_PAGE_ARIA_LABEL_UNPIN_HEADER, } from "./generated/i18n/i18n-defaults.js";
 /**
  * @class
  *
@@ -72,9 +70,6 @@ let DynamicPageHeaderActions = DynamicPageHeaderActions_1 = class DynamicPageHea
          */
         this.accessibilityAttributes = {};
     }
-    static async onDefine() {
-        DynamicPageHeaderActions_1.i18nBundle = await getI18nBundle("@ui5/webcomponents-fiori");
-    }
     get arrowButtonIcon() {
         return this.snapped ? "slim-arrow-down" : "slim-arrow-up";
     }
@@ -91,7 +86,9 @@ let DynamicPageHeaderActions = DynamicPageHeaderActions_1 = class DynamicPageHea
         return this.shadowRoot.querySelector(".ui5-dynamic-page-header-action-pin");
     }
     get pinLabel() {
-        return DynamicPageHeaderActions_1.i18nBundle.getText(DYNAMIC_PAGE_ARIA_LABEL_PIN_HEADER);
+        return this.pinned
+            ? DynamicPageHeaderActions_1.i18nBundle.getText(DYNAMIC_PAGE_ARIA_LABEL_UNPIN_HEADER)
+            : DynamicPageHeaderActions_1.i18nBundle.getText(DYNAMIC_PAGE_ARIA_LABEL_PIN_HEADER);
     }
     get expandLabel() {
         return this.snapped
@@ -105,16 +102,16 @@ let DynamicPageHeaderActions = DynamicPageHeaderActions_1 = class DynamicPageHea
         this.pinButton?.focus();
     }
     onExpandClick() {
-        this.fireEvent("expand-button-click");
+        this.fireDecoratorEvent("expand-button-click");
     }
     onPinClick() {
-        this.fireEvent("pin-button-click");
+        this.fireDecoratorEvent("pin-button-click");
     }
     onExpandHoverIn() {
-        this.fireEvent("expand-button-hover-in");
+        this.fireDecoratorEvent("expand-button-hover-in");
     }
     onExpandHoverOut() {
-        this.fireEvent("expand-button-hover-out");
+        this.fireDecoratorEvent("expand-button-hover-out");
     }
     get showPinButton() {
         return !this.hidePinButton && !this.snapped;
@@ -132,13 +129,15 @@ __decorate([
 __decorate([
     property({ type: Object })
 ], DynamicPageHeaderActions.prototype, "accessibilityAttributes", void 0);
+__decorate([
+    i18n("@ui5/webcomponents-fiori")
+], DynamicPageHeaderActions, "i18nBundle", void 0);
 DynamicPageHeaderActions = DynamicPageHeaderActions_1 = __decorate([
     customElement({
         tag: "ui5-dynamic-page-header-actions",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: DynamicPageHeaderActionsCss,
         template: DynamicPageHeaderActionsTemplate,
-        dependencies: [Button, ToggleButton],
     })
     /**
      * Event that is being fired by clicking on the expand button.
@@ -146,21 +145,36 @@ DynamicPageHeaderActions = DynamicPageHeaderActions_1 = __decorate([
      * @protected
      */
     ,
-    event("expand-button-click")
+    event("expand-button-click", {
+        bubbles: true,
+    })
     /**
      * Event that is being fired by clicking on the pin button.
      *
      * @protected
      */
     ,
-    event("pin-button-click")
+    event("pin-button-click", {
+        bubbles: true,
+    })
     /**
-     * Event that is being fired by hovering over the expand button.
+     * Event that is being fired by hovering in the expand button.
      *
      * @protected
      */
     ,
-    event("expand-button-hover")
+    event("expand-button-hover-in", {
+        bubbles: true,
+    })
+    /**
+     * Event that is being fired by hovering out the expand button.
+     *
+     * @protected
+     */
+    ,
+    event("expand-button-hover-out", {
+        bubbles: true,
+    })
 ], DynamicPageHeaderActions);
 DynamicPageHeaderActions.define();
 export default DynamicPageHeaderActions;

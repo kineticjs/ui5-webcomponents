@@ -7,11 +7,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
 import property from "@ui5/webcomponents-base/dist/decorators/property.js";
-import event from "@ui5/webcomponents-base/dist/decorators/event.js";
-import litRender from "@ui5/webcomponents-base/dist/renderer/LitRenderer.js";
+import event from "@ui5/webcomponents-base/dist/decorators/event-strict.js";
+import jsxRenderer from "@ui5/webcomponents-base/dist/renderer/JsxRenderer.js";
 import { isSpace, isEnter, isSpaceShift } from "@ui5/webcomponents-base/dist/Keys.js";
-import Icon from "@ui5/webcomponents/dist/Icon.js";
-import WizardTabTemplate from "./generated/templates/WizardTabTemplate.lit.js";
+import { isDesktop } from "@ui5/webcomponents-base/dist/Device.js";
+import WizardTabTemplate from "./WizardTabTemplate.js";
 import WizardTabCss from "./generated/themes/WizardTab.css.js";
 /**
  * @class
@@ -63,9 +63,14 @@ let WizardTab = class WizardTab extends UI5Element {
          */
         this.branchingSeparator = false;
     }
+    onEnterDOM() {
+        if (isDesktop()) {
+            this.setAttribute("desktop", "");
+        }
+    }
     _onclick() {
         if (!this.disabled) {
-            this.fireEvent("selection-change-requested");
+            this.fireDecoratorEvent("selection-change-requested");
         }
     }
     _onkeyup(e) {
@@ -74,14 +79,20 @@ let WizardTab = class WizardTab extends UI5Element {
         }
         if ((isSpace(e) || isEnter(e)) && !isSpaceShift(e)) {
             e.preventDefault();
-            this.fireEvent("selection-change-requested");
+            this.fireDecoratorEvent("selection-change-requested");
         }
     }
-    _onfocusin() {
-        this.fireEvent("focused");
+    get effectiveTabIndex() {
+        if (this.disabled) {
+            return;
+        }
+        if (this.selected || this.forcedTabIndex === "0") {
+            return 0;
+        }
+        return -1;
     }
-    get tabIndex() {
-        return Number(this.forcedTabIndex);
+    _onfocusin() {
+        this.fireDecoratorEvent("focused");
     }
     get hasTexts() {
         return this.titleText || this.subtitleText;
@@ -91,7 +102,7 @@ let WizardTab = class WizardTab extends UI5Element {
             "ariaSetsize": this._wizardTabAccInfo && this._wizardTabAccInfo.ariaSetsize,
             "ariaPosinset": this._wizardTabAccInfo && this._wizardTabAccInfo.ariaPosinset,
             "ariaLabel": this._wizardTabAccInfo && this._wizardTabAccInfo.ariaLabel,
-            "ariaCurrent": this.selected ? "true" : undefined,
+            "ariaCurrent": this.selected ? "step" : undefined,
         };
     }
 };
@@ -125,20 +136,32 @@ __decorate([
 __decorate([
     property()
 ], WizardTab.prototype, "forcedTabIndex", void 0);
+__decorate([
+    property({ type: Object })
+], WizardTab.prototype, "_wizardTabAccInfo", void 0);
 WizardTab = __decorate([
     customElement({
         tag: "ui5-wizard-tab",
-        renderer: litRender,
+        renderer: jsxRenderer,
         styles: WizardTabCss,
         template: WizardTabTemplate,
-        dependencies: [Icon],
+    })
+    /**
+     * Fired when focus on a step.
+     * @private
+     */
+    ,
+    event("focused", {
+        bubbles: true,
     })
     /**
      * Fired when clicking on none disabled step.
      * @private
      */
     ,
-    event("selection-change-requested")
+    event("selection-change-requested", {
+        bubbles: true,
+    })
 ], WizardTab);
 WizardTab.define();
 export default WizardTab;

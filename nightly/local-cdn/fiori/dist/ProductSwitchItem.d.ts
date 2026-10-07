@@ -1,4 +1,5 @@
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import type { Slot } from "@ui5/webcomponents-base/dist/UI5Element.js";
 import type { IProductSwitchItem } from "./ProductSwitch.js";
 /**
  * @class
@@ -24,6 +25,12 @@ import type { IProductSwitchItem } from "./ProductSwitch.js";
  * @since 1.0.0-rc.5
  */
 declare class ProductSwitchItem extends UI5Element implements IProductSwitchItem {
+    eventDetails: {
+        click: {
+            item: ProductSwitchItem;
+        };
+        _focused: void;
+    };
     /**
      * Defines the title of the component.
      * @default undefined
@@ -86,6 +93,15 @@ declare class ProductSwitchItem extends UI5Element implements IProductSwitchItem
      * Defines the component tabindex.
      */
     forcedTabIndex?: string;
+    /**
+     * Defines an image to be displayed instead of the standard icon.
+     *
+     * **Note:** The image slot takes precedence over the icon property.
+     * **Note:** We recommend using non-interactive ui5-avatar with size S, Square shape and Transparent colorScheme for best alignment.
+     * @public
+     * @since 2.14.0
+     */
+    image: Slot<HTMLElement>;
     _deactivate: () => void;
     constructor();
     onEnterDOM(): void;
@@ -95,7 +111,7 @@ declare class ProductSwitchItem extends UI5Element implements IProductSwitchItem
     _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
     _onfocusout(): void;
-    _onfocusin(e: FocusEvent): void;
+    _onfocusin(): void;
     _fireItemClick(): void;
 }
 export default ProductSwitchItem;

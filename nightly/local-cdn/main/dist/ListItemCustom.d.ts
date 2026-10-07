@@ -1,4 +1,5 @@
-import type { ClassMap } from "@ui5/webcomponents-base/dist/types.js";
+import type I18nBundle from "@ui5/webcomponents-base/dist/i18nBundle.js";
+import type { ClassMap, AccessibilityInfo } from "@ui5/webcomponents-base/dist/types.js";
 import ListItem from "./ListItem.js";
 /**
  * @class
@@ -7,6 +8,28 @@ import ListItem from "./ListItem.js";
  * the same way as the standard `ui5-li`.
  *
  * The component accepts arbitrary HTML content to allow full customization.
+ *
+ * ### Keyboard Handling
+ *
+ * Interactive elements placed in the default slot (buttons, links, inputs, etc.)
+ * are **not** reached by [Tab] from outside the list. This follows the SAP Fiori
+ * "Intentional Edit Pattern" and preserves fast keyboard navigation between items.
+ *
+ * To activate an interactive element inside a `ui5-li-custom`:
+ *
+ * - [F2] on the focused item - moves focus to the first interactive element inside the item.
+ *   Pressing [F2] again returns focus to the item level.
+ * - [F7] on the focused item - moves focus to the last remembered interactive element
+ *   inside the item (or to the first interactive element if none is remembered).
+ *   Pressing [F7] again saves the current position and returns focus to the item level.
+ * - [Tab] or [Shift] + [Tab] then walks through the interactive elements within the item
+ *   and continues into the next/previous item.
+ * - [Up] or [Down] while focused on an interactive element moves focus to the element
+ *   at the same index in the previous/next item; items with no interactive elements
+ *   are skipped and `ui5-li-group` boundaries are crossed.
+ *
+ * See the `ui5-list` "Keyboard Handling" section for the full behavior.
+ *
  * @csspart native-li - Used to style the main li tag of the list item
  * @csspart content - Used to style the content area of the list item
  * @csspart detail-button - Used to style the button rendered when the list item is of type detail
@@ -19,6 +42,8 @@ import ListItem from "./ListItem.js";
  * @public
  */
 declare class ListItemCustom extends ListItem {
+    static i18nBundle: I18nBundle;
+    get isCustomListItem(): boolean;
     /**
      * Defines whether the item is movable.
      * @default false
@@ -35,8 +60,27 @@ declare class ListItemCustom extends ListItem {
      * @since 1.0.0-rc.15
      */
     accessibleName?: string;
-    _onkeydown(e: KeyboardEvent): Promise<void>;
+    _onkeydown(e: KeyboardEvent): void;
     _onkeyup(e: KeyboardEvent): void;
+    get _accessibleNameRef(): string;
+    _onfocusin(e: FocusEvent): void;
+    _onfocusout(e: FocusEvent): void;
+    /**
+     * Checks if this element is currently being dragged
+     * @returns True if this element is being dragged
+     * @private
+     */
+    _isDragging(): boolean;
+    private _updateInvisibleTextContent;
+    private _clearInvisibleTextContent;
+    /**
+     * Gets delete button nodes to process for accessibility
+     * @returns Array of nodes to process
+     * @private
+     */
+    private _getDeleteButtonNodes;
     get classes(): ClassMap;
+    get accessibilityInfo(): AccessibilityInfo;
 }
 export default ListItemCustom;
+export declare const isInstanceOfListItemCustom: (object: any) => object is ListItemCustom;

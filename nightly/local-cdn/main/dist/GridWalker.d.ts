@@ -31,5 +31,6 @@ declare class GridWalker {
     getFirstRowPos(): number;
     setLastRowPos(lastRowPos: number): void;
     getLastRowPos(): number;
+    includes(item: unknown): boolean;
 }
 export default GridWalker;

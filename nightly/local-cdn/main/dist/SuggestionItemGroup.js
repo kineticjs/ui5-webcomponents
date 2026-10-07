@@ -5,8 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import customElement from "@ui5/webcomponents-base/dist/decorators/customElement.js";
-import slot from "@ui5/webcomponents-base/dist/decorators/slot.js";
+import slot from "@ui5/webcomponents-base/dist/decorators/slot-strict.js";
 import ListItemGroup from "./ListItemGroup.js";
+import ListBoxItemGroupTemplate from "./ListBoxItemGroupTemplate.js";
 /**
  * @class
  * The `ui5-suggestion-item-group` is type of suggestion item,
@@ -15,6 +16,8 @@ import ListItemGroup from "./ListItemGroup.js";
  * @extends ListItemGroup
  * @public
  * @since 2.0.0
+ * @csspart header - Used to style the header item of the group
+ * @csspart title - Used to style the title of the group header
  */
 let SuggestionItemGroup = class SuggestionItemGroup extends ListItemGroup {
 };
@@ -28,6 +31,7 @@ __decorate([
 SuggestionItemGroup = __decorate([
     customElement({
         tag: "ui5-suggestion-item-group",
+        template: ListBoxItemGroupTemplate,
     })
 ], SuggestionItemGroup);
 SuggestionItemGroup.define();
